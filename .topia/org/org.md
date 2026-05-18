@@ -6,14 +6,17 @@ version: "1.0.0"
 
 # Organization: skill-topia
 
-> This file is parsed at compile time by `compiler/parser.js#parseOrgConfig` and
-> injected as an `<ORG-POLICY>` block into `sentinel` and `preflight`. Edit it to
-> match your team's actual policies; do NOT delete sections — the parser expects
-> all five (Teams, Roles, Policies, Approval Flows, Governance Level) to exist,
-> even if rows are empty.
+> **What is this file?** Your team's policies, roles, approval flows, and
+> governance level — read at compile time by `sentinel` and `preflight` and
+> baked into their runtime hooks. See [`docs/ORG-CONFIG.md`](../../docs/ORG-CONFIG.md)
+> for what each section drives and when to edit it.
 >
-> When you change this file, run `node compiler/bin/topia.js doctor` to confirm
-> the compiled hooks still validate.
+> **Editing rules:**
+> 1. Do NOT delete sections. Parser expects all five (Teams, Roles, Policies,
+>    Approval Flows, Governance Level), even with empty rows.
+> 2. After editing, re-run `node compiler/bin/topia.js setup --global --preset gentle`
+>    so the hooks pick up your changes.
+> 3. Verify with `node compiler/bin/topia.js doctor`.
 
 ## Teams
 

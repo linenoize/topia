@@ -28,15 +28,28 @@ One source of truth (`skills/`) compiles to six IDE rule formats — switch IDEs
 
 ## Install
 
+One command does the whole thing:
+
 ```bash
-git clone https://github.com/protopia/skill-topia.git ~/.claude/skills/skill-topia
-cd ~/.claude/skills/skill-topia
+git clone https://github.com/protopia/skill-topia.git
+cd skill-topia
 npm install
-claude plugin add .
-node compiler/bin/topia.js setup --global --preset gentle
+node compiler/bin/topia.js install
 ```
 
-The final command wires `preflight`, `sentinel`, `completion-gate`, and `quarantine` as native Claude Code hooks. Verify with:
+`topia install` is a one-shot orchestrator. In order, it:
+
+1. **Pre-flights rune-kit conflicts.** If [rune-kit](https://github.com/runedev/rune-kit) is detected on your machine, the installer halts and asks: migrate `.rune/` state into `.topia/` and disable rune-kit, abort so you can remove rune-kit manually, or skip (with a warning that the two plugins will fight over skill names).
+2. **Registers the plugin** with Claude Code via `claude plugin add .`.
+3. **Wires discipline hooks** globally: `preflight` (logic gates), `sentinel` (secrets/OWASP), `completion-gate` (claims-vs-evidence), `quarantine` (untrusted-input advisory).
+4. **Installs the agora-code MCP** for persistent memory if Python 3.10+ is on your machine. Registers `agora-memory` in your project's `.mcp.json`. Skip with `--skip-agora`. (No Python? You get a one-line notice, install continues without persistent memory.)
+5. **Runs `topia doctor`** to verify the install.
+
+> **Restart Claude Code after install** so it picks up the newly-registered plugin. Until you restart, `/topia <skill>` commands won't be available.
+
+Then edit [`.topia/org/org.md`](.topia/org/org.md) to set team policies and approval flows — `sentinel` and `preflight` read this. See [`docs/ORG-CONFIG.md`](docs/ORG-CONFIG.md) for what each section drives.
+
+### Verify
 
 ```bash
 node compiler/bin/topia.js doctor
@@ -51,25 +64,27 @@ node compiler/bin/topia.js init --platform cursor       # also: codex, antigravi
 
 Compiles all 65 skills to the target IDE's rule format.
 
-### Optional: persistent memory (agora-code MCP)
+### Install flags
 
 ```bash
-pip install ./mcp-servers/agora-code   # requires Python 3.10+
+node compiler/bin/topia.js install --dry-run        # preview every step, no writes
+node compiler/bin/topia.js install --here           # hooks per-project instead of global
+node compiler/bin/topia.js install --preset strict  # blocking gates (default: gentle / advisory)
+node compiler/bin/topia.js install --skip-agora     # don't install Python MCP
+node compiler/bin/topia.js install --yes            # non-interactive (CI-friendly; aborts on rune-kit)
 ```
 
-Then register in your project's `.mcp.json`:
+### About agora-code MCP
 
-```json
-{ "mcpServers": { "agora-memory": { "command": "agora-code", "args": ["memory-server"] } } }
-```
+Topia ships a vendored copy of [agora-code](https://github.com/thebnbrkr/agora-code) at [`mcp-servers/agora-code/`](mcp-servers/agora-code/). It provides SQLite-backed memory, symbol indexing, and semantic recall via the MCP protocol. Four Topia skills (`journal`, `build`, `idea`, `neural-memory`) detect it automatically and route recall / learning through it. Without it, those skills fall back to file-based `.topia/` persistence.
 
-Four skills (`journal`, `build`, `idea`, `neural-memory`) detect this MCP automatically and route recall / learning through it. Skip it and Topia falls back to file-based `.topia/` persistence. Full integration details: [`docs/mcp-integrations/agora-code.md`](docs/mcp-integrations/agora-code.md). Upstream README (vendored verbatim): [`mcp-servers/agora-code/README.md`](mcp-servers/agora-code/README.md).
+Integration details: [`docs/mcp-integrations/agora-code.md`](docs/mcp-integrations/agora-code.md). Upstream README (vendored verbatim): [`mcp-servers/agora-code/README.md`](mcp-servers/agora-code/README.md).
 
-> **Do NOT** run `agora-code install-hooks --claude-code`. Topia's hooks are canonical — running both installers produces a fragile dual-owner hook chain. See the integration doc for the full rationale.
+> **Do NOT** run `agora-code install-hooks --claude-code`. Topia's hooks are canonical — running both installers produces a fragile dual-owner hook chain. The `topia install` command above sets up agora-code as an **MCP server only**, never installs its hooks. See the integration doc for the full rationale.
 
 ### Coming from rune-kit?
 
-If your project already has a `.rune/` directory, Topia's session-start hook will prompt you to migrate it. Or run explicitly:
+`topia install` handles this for you. If you'd rather migrate explicitly outside the installer:
 
 ```bash
 node compiler/bin/topia.js migrate-from-rune --dry-run    # preview

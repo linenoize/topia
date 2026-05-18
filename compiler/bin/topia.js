@@ -24,6 +24,7 @@ import { checkHookDrift, formatHookDriftResult } from '../commands/hooks/drift.j
 import { installHooks } from '../commands/hooks/install.js';
 import { hookStatus } from '../commands/hooks/status.js';
 import { uninstallHooks } from '../commands/hooks/uninstall.js';
+import { runInstall } from '../commands/install.js';
 import { migrateFromRune } from '../commands/migrate-from-rune.js';
 import { formatSetupResult, runSetup } from '../commands/setup.js';
 import { generateDashboardHTML } from '../dashboard.js';
@@ -616,6 +617,9 @@ async function main() {
         skip: Boolean(args.skip),
         autoYes: Boolean(args.yes),
       });
+      break;
+    case 'install':
+      await runInstall({ TopiaRoot: TOPIA_ROOT, projectRoot, args });
       break;
     case 'version':
     case '--version':

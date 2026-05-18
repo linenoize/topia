@@ -4,6 +4,20 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
+## [1.2.1] — 2026-05-18
+
+### Added
+- **`topia install` command** — one-shot orchestrator that replaces the manual 5-step setup. Pre-flights rune-kit conflicts (offers migrate / abort / skip), registers the plugin with Claude Code (`claude plugin add .`), wires discipline hooks globally, installs the agora-code MCP if Python 3.10+ is available, registers it in `.mcp.json`, and runs `topia doctor` to verify. Cross-platform binary detection for `claude`, `python3` / `python` / `py`, `pip3` / `pip`. Flags: `--dry-run`, `--here`, `--preset`, `--skip-agora`, `--skip-rune-check`, `--yes`.
+- **`scripts/postinstall.js`** — fires after every `npm install`, prints the one-command next-step. Quiet in CI and when run as a transitive dependency.
+- **`docs/ORG-CONFIG.md`** — explains `.topia/org/org.md`: what each section drives (Teams / Roles / Policies / Approval Flows / Governance Level), when to edit, how to verify changes took effect, what happens if the file is missing or malformed.
+
+### Changed
+- **`README.md` install section** — replaces the 5-step manual flow with the single `node compiler/bin/topia.js install` command. Documents the `--dry-run`, `--here`, `--preset`, `--skip-agora`, `--yes` flags. Adds an explicit "restart Claude Code after install" note and a pointer to `.topia/org/org.md` + `docs/ORG-CONFIG.md`.
+- **`.topia/org/org.md`** — opening note now points users at `docs/ORG-CONFIG.md` for the full field reference and re-emphasises the "re-run `topia setup` after editing" step.
+- **`package.json`** — added `"postinstall": "node scripts/postinstall.js"`.
+
+---
+
 ## [1.2.0] — 2026-05-18
 
 ### Added

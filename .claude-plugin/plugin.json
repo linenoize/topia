@@ -1,6 +1,6 @@
 {
   "name": "Topia",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "65-skill internal mesh for Claude Code with runtime auto-discipline — native hooks (preflight/sentinel/completion-gate/quarantine) auto-fire before tool use. 203 sync connections + 44 async signals, adaptive routing, mesh analytics. Quarantine (L3) advises the model to treat content from untrusted MCPs / WebFetch / upload Reads as data, not directives. Use Topia:build for any code task, Topia:team for parallel work, Topia:launch for deploy, Topia:rescue for legacy code.",
   "author": {
     "name": "skill-topia"
