@@ -740,7 +740,7 @@ function render() {
 
   // Footer
   app.appendChild(el('div', { className: 'footer' },
-    'Generated ' + new Date(d.generated).toLocaleString() + ' \\u2022 Topia Business \\u2022 100% local data'
+    'Generated ' + new Date(d.generated).toLocaleString() + ' \\u2022 Topia \\u2022 100% local data'
   ));
 }
 

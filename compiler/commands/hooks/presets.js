@@ -27,9 +27,11 @@ const DISPATCH_CMD = 'npx --yes @protopia/skill-topia hook-dispatch';
 const Topia_DISPATCH_RE = /(^|\s)npx(\s+--yes)?\s+@protopia\/skill-topia\s+hook-dispatch\b/;
 
 /**
- * Regex that matches tier-emitted commands — they substitute a tier env var
- * (e.g. `${TOPIA_PRO_ROOT}`, `${TOPIA_BUSINESS_ROOT}`). These are Topia-managed
- * because only `Topia hooks install --tier <name>` writes them.
+ * Historical regex — matches `${TOPIA_*_ROOT}` env-var substitutions left
+ * over from the removed Pro/Business tiers. Kept defensively so that pre-1.0
+ * installs with tier-emitted entries still get recognised as Topia-managed
+ * and cleaned up by uninstall. Safe to delete once no tier-era settings
+ * files remain in the wild.
  */
 const Topia_TIER_RE = /\$\{TOPIA_[A-Z][A-Z0-9_]*_ROOT\}/;
 

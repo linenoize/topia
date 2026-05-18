@@ -1,8 +1,29 @@
 /**
- * Emitter
+ * emitter.js — IR → platform-specific files on disk.
  *
- * Writes transformed skill files to the platform's output directory.
- * Handles file naming, directory creation, index generation, and AGENTS.md creation.
+ * Public entry: `buildAll({ TopiaRoot, outputRoot, adapter, disabledSkills, enabledPacks })`.
+ * Side effects: writes to `<outputRoot>/<adapter.outputDir>/Topia-*.<ext>`,
+ *               `<outputRoot>/CLAUDE.md` (when applicable), `<outputRoot>/AGENTS.md`.
+ *
+ * Pipeline (per skill):
+ *   discoverSkills()        scan skills/ for SKILL.md
+ *   parseSkill()            → IR (see parser.js)
+ *   transformSkill()        → platform-rewritten IR (cross-refs, tool names, etc.)
+ *   adapter.generateHeader / Footer
+ *   writeFile(adapter path)
+ *
+ * Extension packs:
+ *   - Monolith packs: PACK.md compiled as a single file like any skill.
+ *   - Split packs:    PACK.md is the index; each `skillManifest[i].file` is its
+ *                     own SKILL.md compiled into the same output dir.
+ *
+ * Org policy injection:
+ *   If `.topia/org/org.md` exists, parseOrgConfig() + buildOrgPolicyBlock()
+ *   inject an `<ORG-POLICY>` block into sentinel + preflight outputs.
+ *
+ * Failures are collected into `stats.errors` per file; the build does not abort
+ * mid-pipeline. Adapter is the only platform-aware seam — keep all platform
+ * differences inside adapters/, never branch on adapter.name here.
  */
 
 import { existsSync } from 'node:fs';
@@ -13,10 +34,13 @@ import { transformSkill } from './transformer.js';
 import { resolveScriptsPath } from './transforms/scripts-path.js';
 
 /**
- * Discover all SKILL.md files in the skills directory
+ * discoverSkills — list every `skills/<name>/SKILL.md` path on disk.
  *
- * @param {string} skillsDir - path to skills/ directory
- * @returns {Promise<string[]>} array of SKILL.md file paths
+ * Read-only. Caller decides which skills to include/skip (see disabledSkills
+ * in buildAll). Returns paths only — caller calls parseSkill() to load.
+ *
+ * @param {string} skillsDir - absolute path to <TopiaRoot>/skills
+ * @returns {Promise<string[]>}
  */
 async function discoverSkills(skillsDir) {
   const entries = await readdir(skillsDir, { withFileTypes: true });

@@ -1,24 +1,51 @@
 /**
- * SKILL.md Parser
+ * parser.js — SKILL.md / PACK.md / org.md → IR
  *
- * Parses SKILL.md files into a structured intermediate representation (IR).
- * Extracts frontmatter, cross-references, tool references, HARD-GATE blocks, and sections.
+ * Pure functions, no I/O. Each `parse*` accepts a raw string and returns a
+ * structured object the transformer + emitter consume. CRLF tolerated.
+ *
+ * Exports (most important):
+ *   parseSkill(content)        → { name, description, layer, model, group,
+ *                                  contextFork, agentType, body, crossRefs,
+ *                                  toolRefs, hardGates, sections, emit, listen }
+ *   parsePack(content, path)   → { name, isSplit, skills[], skillManifest[], … }
+ *   parseTemplate(content)     → { name, description, body, … } (extension-pack template form)
+ *   parseOrgConfig(content)    → { name, teams[], roles[], policies{}, approvalFlows[],
+ *                                  governanceLevel{} }
+ *   extractCrossRefs(content)  → CrossRef[]
+ *   extractToolRefs(content)   → ToolRef[]
+ *   parseFrontmatter(content)  → { frontmatter, body }
+ *
+ * Contracts:
+ *  - Frontmatter is YAML-like; only the keys the compiler knows about are extracted.
+ *    Unknown keys land in `frontmatter` verbatim and pass through.
+ *  - `emit` / `listen` are always arrays (comma-split). Empty if missing.
+ *  - Cross-refs are case-sensitive on the canonical form `Topia:<name>`.
+ *  - Missing sections produce empty values, never throw — doctor.js detects gaps.
  */
 
-/**
- * Metadata fields that should be parsed as comma-separated arrays
- * e.g. emit: code.changed, tests.passed → ["code.changed", "tests.passed"]
- */
+// Frontmatter keys parsed as comma-separated arrays:
+//   `emit: code.changed, tests.passed` → ["code.changed", "tests.passed"]
 const COMMA_LIST_FIELDS = new Set(['emit', 'listen']);
 
+// Canonical patterns. CROSS_REF + TOOL_REF are used by extract* — keep in sync
+// with adapters/* if a platform changes its reference syntax.
 const CROSS_REF_PATTERN = /`?Topia:([a-z][\w-]*)`?/g;
 const TOOL_REF_PATTERN = /`(Read|Write|Edit|Glob|Grep|Bash|TodoWrite|Skill|Agent)`/g;
 const HARD_GATE_PATTERN = /<HARD-GATE>([\s\S]*?)<\/HARD-GATE>/g;
 const _SECTION_PATTERN = /^## (.+)$/gm;
 
 /**
- * Parse YAML-like frontmatter from SKILL.md
- * Handles nested metadata block
+ * parseFrontmatter — first `---\n...\n---` block + remaining body.
+ *
+ * Tolerant of:
+ *  - CRLF (normalized to LF first)
+ *  - Two indentation styles for nested `metadata:` block (`  key: val` or `key:\n  sub: val`)
+ *  - Quoted/unquoted values; quotes are stripped
+ *
+ * Returns:
+ *   { frontmatter: object, body: string }
+ * If no frontmatter block: returns `{ frontmatter: {}, body: <full content> }`.
  */
 function parseFrontmatter(content) {
   // Normalize line endings to \n for cross-platform compatibility

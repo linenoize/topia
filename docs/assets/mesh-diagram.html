@@ -3,25 +3,34 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Topia — 57-Skill Mesh Architecture</title>
+<title>Topia — Skill Toolkit Architecture</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  body {
+  html, body {
     background: #0a0e17;
     color: #e2e8f0;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    height: 100%;
+  }
+
+  body {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
     overflow: hidden;
+    padding: 12px;
   }
 
+  /* Canvas scales to fit the iframe / viewport while preserving aspect ratio.
+     The SVG inside uses viewBox="0 0 1200 900" so it scales cleanly. */
   .canvas {
     position: relative;
-    width: 1200px;
-    height: 900px;
+    width: 100%;
+    height: 100%;
+    max-width: min(1200px, 100%);
+    aspect-ratio: 1200 / 900;
+    max-height: 100%;
   }
 
   svg {
@@ -80,14 +89,17 @@
   /* Legend */
   .legend {
     position: absolute;
-    bottom: 30px;
+    bottom: 2%;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    gap: 32px;
-    font-size: 13px;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: clamp(12px, 2vw, 28px);
+    font-size: clamp(10px, 1.1vw, 13px);
     font-weight: 500;
     animation: fade-in-up 1s ease 0.5s both;
+    pointer-events: none;
   }
 
   .legend-item {
@@ -105,23 +117,24 @@
   /* Title */
   .title {
     position: absolute;
-    top: 24px;
+    top: 2%;
     left: 50%;
     transform: translateX(-50%);
     text-align: center;
     animation: fade-in-up 1s ease both;
+    pointer-events: none;
   }
 
   .title h1 {
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 28px;
+    font-size: clamp(16px, 2.2vw, 26px);
     font-weight: 700;
     color: #f8fafc;
     letter-spacing: -0.5px;
   }
 
   .title p {
-    font-size: 14px;
+    font-size: clamp(10px, 1.1vw, 13px);
     color: #64748b;
     margin-top: 4px;
   }
@@ -129,24 +142,27 @@
   /* Stats */
   .stats {
     position: absolute;
-    top: 24px;
-    right: 30px;
+    top: 2%;
+    right: 2.5%;
     text-align: right;
     animation: fade-in-up 1s ease 0.3s both;
+    pointer-events: none;
   }
 
   .stat-value {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 24px;
+    font-size: clamp(14px, 1.8vw, 22px);
     font-weight: 700;
     color: #f59e0b;
+    line-height: 1.1;
   }
 
   .stat-label {
-    font-size: 11px;
+    font-size: clamp(8px, 0.9vw, 10px);
     color: #64748b;
     text-transform: uppercase;
     letter-spacing: 1px;
+    margin-bottom: 4px;
   }
 </style>
 </head>
@@ -154,17 +170,17 @@
 
 <div class="canvas">
   <div class="title">
-    <h1>Topia Skill Mesh</h1>
-    <p>5-Layer Architecture &bull; 203 Connections + 40 Signals</p>
+    <h1>Topia Skill Toolkit</h1>
+    <p>5-Layer Architecture &bull; 203 Connections + 44 Signals</p>
   </div>
 
   <div class="stats">
-    <div class="stat-value">64</div>
     <div class="stat-label">Skills</div>
-    <div class="stat-value" style="margin-top:8px">203</div>
-    <div class="stat-label">Connections</div>
-    <div class="stat-value" style="margin-top:8px">40</div>
-    <div class="stat-label">Signals</div>
+    <div class="stat-value">65</div>
+    <div class="stat-label" style="margin-top:6px">Connections</div>
+    <div class="stat-value">203</div>
+    <div class="stat-label" style="margin-top:6px">Signals</div>
+    <div class="stat-value">44</div>
   </div>
 
   <svg viewBox="0 0 1200 900" xmlns="http://www.w3.org/2000/svg">
@@ -304,43 +320,31 @@
         <circle r="18" fill="#0e2a3a" stroke="#06b6d4" stroke-width="1.5" stroke-opacity="0.6"/>
         <text y="1" text-anchor="middle" fill="#06b6d4" font-size="6.5" font-weight="600">mobile</text>
       </g>
-      <g class="node-group" transform="translate(810,80)">
+      <g class="node-group" transform="translate(870,90)">
         <circle r="18" fill="#0e2a3a" stroke="#06b6d4" stroke-width="1.5" stroke-opacity="0.6"/>
         <text y="1" text-anchor="middle" fill="#06b6d4" font-size="6" font-weight="600">security</text>
       </g>
-      <g class="node-group" transform="translate(950,100)">
-        <circle r="18" fill="#0e2a3a" stroke="#06b6d4" stroke-width="1.5" stroke-opacity="0.6"/>
-        <text y="1" text-anchor="middle" fill="#06b6d4" font-size="6.5" font-weight="600">trading</text>
-      </g>
 
       <!-- Side nodes -->
-      <g class="node-group" transform="translate(170,280)">
-        <circle r="18" fill="#0e2a3a" stroke="#06b6d4" stroke-width="1.5" stroke-opacity="0.6"/>
-        <text y="1" text-anchor="middle" fill="#06b6d4" font-size="7" font-weight="600">saas</text>
-      </g>
       <g class="node-group" transform="translate(1030,280)">
         <circle r="18" fill="#0e2a3a" stroke="#06b6d4" stroke-width="1.5" stroke-opacity="0.6"/>
         <text y="1" text-anchor="middle" fill="#06b6d4" font-size="5.5" font-weight="600">ecomm</text>
       </g>
-
-      <!-- Bottom arc -->
-      <g class="node-group" transform="translate(170,560)">
+      <g class="node-group" transform="translate(170,400)">
         <circle r="18" fill="#0e2a3a" stroke="#06b6d4" stroke-width="1.5" stroke-opacity="0.6"/>
         <text y="1" text-anchor="middle" fill="#06b6d4" font-size="7" font-weight="600">ai-ml</text>
       </g>
-      <g class="node-group" transform="translate(300,680)">
-        <circle r="18" fill="#0e2a3a" stroke="#06b6d4" stroke-width="1.5" stroke-opacity="0.6"/>
-        <text y="1" text-anchor="middle" fill="#06b6d4" font-size="5.5" font-weight="600">gamedev</text>
-      </g>
-      <g class="node-group" transform="translate(500,730)">
+
+      <!-- Bottom arc -->
+      <g class="node-group" transform="translate(400,750)">
         <circle r="18" fill="#0e2a3a" stroke="#06b6d4" stroke-width="1.5" stroke-opacity="0.6"/>
         <text y="1" text-anchor="middle" fill="#06b6d4" font-size="5.5" font-weight="600">content</text>
       </g>
-      <g class="node-group" transform="translate(700,730)">
+      <g class="node-group" transform="translate(600,770)">
         <circle r="18" fill="#0e2a3a" stroke="#06b6d4" stroke-width="1.5" stroke-opacity="0.6"/>
         <text y="1" text-anchor="middle" fill="#06b6d4" font-size="5" font-weight="600">analytics</text>
       </g>
-      <g class="node-group" transform="translate(900,680)">
+      <g class="node-group" transform="translate(800,750)">
         <circle r="18" fill="#0e2a3a" stroke="#06b6d4" stroke-width="1.5" stroke-opacity="0.6"/>
         <text y="1" text-anchor="middle" fill="#06b6d4" font-size="4.5" font-weight="600">chrome</text>
       </g>

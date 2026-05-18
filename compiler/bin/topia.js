@@ -1,14 +1,31 @@
 #!/usr/bin/env node
 
 /**
- * Topia CLI
+ * bin/topia.js — Topia CLI entry point.
  *
- * Commands:
- *   Topia init    — Interactive setup for a new project
- *   Topia build   — Compile skills for the configured platform
- *   Topia doctor  — Validate compiled output + mesh integrity (--mesh for mesh only)
- *   Topia status  — Project dashboard (neofetch-style)
- *   Topia visualize — Interactive mesh graph
+ * Dispatch table (top-level `topia <cmd>`):
+ *   install            one-shot setup: rune-check → plugin add → hooks → agora-code → doctor
+ *   setup              hooks-only wizard (scope + preset)
+ *   init               compile skills for non-Claude IDE
+ *   build              recompile using existing topia.config.json
+ *   doctor             validate output + mesh integrity (--mesh, --hooks, --strict)
+ *   status             neofetch-style dashboard
+ *   visualize          open skill-graph in browser
+ *   analytics          usage analytics
+ *   hooks <sub>        install / uninstall / status — runtime hook lifecycle
+ *   migrate-from-rune  pull .rune/ → .topia/, disable rune-kit plugin
+ *
+ * Argument parsing: `parseArgs(argv)` splits flags. All commands accept
+ * `--platform`, `--output`, `--disable`. Command-specific flags live in the
+ * `case` block.
+ *
+ * Side effects: writes to disk per the chosen command. Read-only commands:
+ * doctor, status, visualize, analytics. All others mutate.
+ *
+ * Exit codes: 0 success, 1 fatal error caught in main().catch().
+ *
+ * TOPIA_ROOT is computed once from __dirname; downstream code receives it
+ * as an explicit argument — never re-derived deeper in the call stack.
  */
 
 import { existsSync } from 'node:fs';
@@ -80,8 +97,19 @@ async function prompt(question) {
   });
 }
 
-// ─── Commands ───
+// ─── Command handlers ───
+// Each cmd<X> is a top-level CLI subcommand. Contract:
+//   - Side effects allowed; document them in the handler's header comment.
+//   - Print user-visible status via log() / logStep(). Throw to exit non-zero.
+//   - Receive (projectRoot, args). projectRoot = process.cwd(). args = parsed flags.
+//   - Do not re-derive TOPIA_ROOT; pass the module-level constant down.
 
+/**
+ * cmdInit — for non-Claude IDEs: detect platform → write topia.config.json
+ * → compile all skills into the platform's rule directory.
+ * No-op for Claude (native plugin loads source directly).
+ * Side effects: writes topia.config.json + <outputDir>/*
+ */
 async function cmdInit(projectRoot, args) {
   log('');
   log('  ╭─────────╮');
@@ -159,6 +187,11 @@ async function cmdInit(projectRoot, args) {
   log('');
 }
 
+/**
+ * cmdBuild — recompile skills using the existing topia.config.json.
+ * Requires `topia init` to have run first (or `--platform <name>`).
+ * No-op for Claude. Side effects: overwrites <adapter.outputDir>/*.
+ */
 async function cmdBuild(projectRoot, args) {
   const config = await readConfig(projectRoot);
 
@@ -210,6 +243,16 @@ async function cmdBuild(projectRoot, args) {
   log('');
 }
 
+/**
+ * cmdDoctor — validate install + mesh integrity. Read-only.
+ *
+ * Mode flags (mutually exclusive, checked in order):
+ *   --hooks   hook drift report only (always exit 0; reporter)
+ *   --mesh    mesh integrity check only (exit 1 on errors)
+ *   (default) full: runDoctor() + mesh check + version-sync-check
+ *
+ * --strict   treat warnings as errors (CI mode).
+ */
 async function cmdDoctor(projectRoot, args) {
   const config = await readConfig(projectRoot);
 
@@ -274,6 +317,12 @@ async function cmdDoctor(projectRoot, args) {
   if (!results.healthy) process.exit(1);
 }
 
+/**
+ * cmdSetup — hooks-only wizard. Asks scope (current/global) + preset
+ * (gentle/strict/off). Non-interactive when --here/--global + --preset given.
+ * Side effects: writes <scope-root>/.claude/settings.json (and equivalents).
+ * Called transitively by `topia install`.
+ */
 async function cmdSetup(projectRoot, args) {
   log('');
   log('  Topia Setup Wizard');
@@ -299,6 +348,10 @@ async function readVersion() {
   }
 }
 
+/**
+ * cmdStatus — neofetch-style dashboard. Read-only.
+ * --json emits machine-readable; default is ANSI box.
+ */
 async function cmdStatus(projectRoot, args) {
   const config = await readConfig(projectRoot);
   const topiaRoot =
@@ -323,6 +376,10 @@ async function cmdStatus(projectRoot, args) {
   }
 }
 
+/**
+ * cmdVisualize — generate HTML skill-graph and open in browser.
+ * Side effect: writes <projectRoot>/.topia/mesh.html (or temp file) and opens it.
+ */
 async function cmdVisualize(projectRoot, args) {
   const config = await readConfig(projectRoot);
   const topiaRoot =
@@ -373,6 +430,11 @@ async function cmdVisualize(projectRoot, args) {
   }
 }
 
+/**
+ * cmdAnalytics — usage analytics over the last N days (default 30).
+ * Reads `.topia/metrics/*.jsonl`. --json emits raw; default writes
+ * a self-contained HTML dashboard via generateDashboardHTML().
+ */
 async function cmdAnalytics(projectRoot, args) {
   const days = args.days ? parseInt(args.days, 10) : 30;
 
@@ -416,6 +478,14 @@ async function cmdAnalytics(projectRoot, args) {
 }
 
 // ─── Hook Commands ───
+// `topia hooks <sub>` — runtime hook lifecycle.
+//   install     write Topia hooks to .claude/settings.json (and equivalents)
+//   uninstall   remove only Topia-managed entries (signature-matched)
+//   status      report which hooks are wired
+//
+// Hooks are platform-aware: each adapter knows how to translate the canonical
+// preset into its native settings format (Claude JSON, Cursor mdc, etc.).
+// `--global` operates on ~/.claude/settings.json across all projects.
 
 async function cmdHooks(projectRoot, args, subcommand) {
   if (!subcommand) {

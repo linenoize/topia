@@ -20,7 +20,7 @@ Document format utility. Generates and parses office documents (PDF, DOCX, XLSX,
 
 - Called by `docs` when export to PDF/DOCX is requested
 - Called by `marketing` for generating PDF reports, PPTX presentations
-- Called by Topia Pro packs for business document generation
+- Called by `@Topia/ecommerce`, `@Topia/content`, or any extension pack that needs business document generation
 - `/topia doc-processor generate <format> <source>` — manual document generation
 - `/topia doc-processor parse <file>` — manual document parsing
 
@@ -32,7 +32,7 @@ None — pure L3 utility. Receives content, produces formatted output.
 
 - `docs` (L2): export documentation to PDF/DOCX
 - `marketing` (L2): generate PDF reports, PPTX pitch decks
-- Topia Pro packs: business document generation (invoices, proposals, reports)
+- Extension packs (L4): business document generation (invoices, proposals, reports)
 - User: `/topia doc-processor` direct invocation
 
 ## Format Reference

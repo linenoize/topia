@@ -319,6 +319,45 @@
     .badge-sonnet { background: var(--sonnet-bg); color: var(--sonnet-color); }
     .badge-opus { background: var(--opus-bg); color: var(--opus-color); }
 
+    /* Invocation badge — who actually runs this skill */
+    .badge-invoke {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 7px;
+    }
+    .badge-invoke-label {
+      display: none; /* icon-only by default to save space */
+    }
+    .skill-card:hover .badge-invoke-label,
+    .badge-invoke:hover .badge-invoke-label {
+      display: inline; /* expand on hover */
+    }
+    .badge-invoke-user  { background: rgba(125,211,252,0.12); color: #7dd3fc; }
+    .badge-invoke-agent { background: rgba(167,139,250,0.12); color: #a78bfa; }
+    .badge-invoke-both  { background: rgba(110,231,183,0.12); color: #6ee7b7; }
+    [data-theme="light"] .badge-invoke-user  { background: rgba(2,132,199,0.10);  color: #0284c7; }
+    [data-theme="light"] .badge-invoke-agent { background: rgba(124,58,237,0.10); color: #7c3aed; }
+    [data-theme="light"] .badge-invoke-both  { background: rgba(5,150,105,0.10);  color: #059669; }
+
+    /* Legend strip under stats */
+    .invoke-legend {
+      max-width: var(--max-width); margin: 0 auto 18px;
+      padding: 10px 18px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      display: flex; flex-wrap: wrap; gap: 18px; align-items: center;
+      font-size: 12px; color: var(--text-secondary);
+    }
+    .invoke-legend strong { color: var(--text-primary); font-weight: 600; margin-right: 6px; }
+    .invoke-legend-item { display: inline-flex; align-items: center; gap: 6px; }
+    .invoke-legend-icon {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 22px; height: 22px; border-radius: 4px;
+      font-size: 13px;
+    }
+    .invoke-legend-icon-user  { background: rgba(125,211,252,0.12); color: #7dd3fc; }
+    .invoke-legend-icon-agent { background: rgba(167,139,250,0.12); color: #a78bfa; }
+    .invoke-legend-icon-both  { background: rgba(110,231,183,0.12); color: #6ee7b7; }
+
     .skill-desc {
       font-size: 13px; color: var(--text-secondary); line-height: 1.55;
       display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
@@ -379,12 +418,6 @@
     .pack-meta {
       display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
     }
-    .pack-badge {
-      font-family: var(--font-mono); font-size: 10px; font-weight: 700;
-      padding: 2px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.05em;
-    }
-    .pack-badge-free { background: var(--accent-dim); color: var(--accent); }
-    .pack-badge-paid { background: var(--l4-bg); color: var(--l4-color); }
     .pack-skills-count {
       font-size: 12px; color: var(--text-muted); font-family: var(--font-mono);
     }
@@ -458,7 +491,7 @@
       </a>
       <div class="nav-links">
         <a href="../index.html">Home</a>
-        <a href="../guides/">Guides</a>
+        <a href="../guides/index.html">Guides</a>
         <a href="index.html" class="active" data-keep>Skills</a>
         <div class="nav-controls">
           <button class="theme-toggle" id="theme-toggle" aria-label="Toggle light/dark mode" title="Toggle theme">&#9790;</button>
@@ -507,6 +540,23 @@
     </div>
   </div>
 
+  <!-- INVOCATION LEGEND -->
+  <div class="invoke-legend">
+    <strong>Invocation:</strong>
+    <span class="invoke-legend-item">
+      <span class="invoke-legend-icon invoke-legend-icon-user">&#128100;</span>
+      <span><strong>User</strong> — you run <code>/topia &lt;name&gt;</code></span>
+    </span>
+    <span class="invoke-legend-item">
+      <span class="invoke-legend-icon invoke-legend-icon-agent">&#129302;</span>
+      <span><strong>Agent</strong> — auto-fires via hook or inside another skill</span>
+    </span>
+    <span class="invoke-legend-item">
+      <span class="invoke-legend-icon invoke-legend-icon-both">&#8635;</span>
+      <span><strong>Either</strong> — standalone command OR called mid-workflow</span>
+    </span>
+  </div>
+
   <!-- CONTROLS -->
   <div class="catalog-controls">
     <div class="filter-row">
@@ -517,6 +567,15 @@
         <button class="filter-tab" data-layer="L1">L1 Orchestrators</button>
         <button class="filter-tab" data-layer="L2">L2 Workflows</button>
         <button class="filter-tab" data-layer="L3">L3 Utilities</button>
+      </div>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">Invoked by</span>
+      <div class="filter-tabs" id="invoke-tabs">
+        <button class="filter-tab active" data-invoke="all">All</button>
+        <button class="filter-tab" data-invoke="user">&#128100; User</button>
+        <button class="filter-tab" data-invoke="agent">&#129302; Agent</button>
+        <button class="filter-tab" data-invoke="both">&#8635; Either</button>
       </div>
     </div>
     <div class="search-row">
@@ -565,7 +624,7 @@
       <div class="footer-links">
         <a href="https://github.com/protopia/skill-topia" target="_blank" rel="noopener">GitHub</a>
         <a href="../index.html">Home</a>
-        <a href="../guides/">Guides</a>
+        <a href="../guides/index.html">Guides</a>
       </div>
     </div>
   </div>
@@ -585,82 +644,93 @@
     });
 
     // ─── SKILL DATA ───
+    // `invoke` field — who fires this skill in practice:
+    //   user  : you call it directly (`/topia <name>`); rare for other skills to call it
+    //   agent : auto-fires via hook or as a step inside another skill's flow; direct invocation is rare
+    //   both  : works as a standalone command AND gets called by orchestrators mid-workflow
+    // `tools` field — number of MCP tools the skill is permitted to use (Read, Write, Glob, Grep, Bash, …)
+    //                 from its frontmatter `metadata.tools`. Higher = broader surface area.
     const SKILLS = [
       // L0
-      { name: 'skill-router', layer: 'L0', model: 'haiku', tools: 3, desc: 'Meta-enforcement layer that routes every agent action through the correct skill. Prevents hallucinated commands by mapping intent to the canonical skill.' },
+      { name: 'skill-router', layer: 'L0', model: 'haiku', tools: 3, invoke: 'agent', desc: 'Meta-enforcement layer that routes every agent action through the correct skill. Prevents hallucinated commands by mapping intent to the canonical skill.' },
       // L1
-      { name: 'build', layer: 'L1', model: 'sonnet', tools: 6, desc: 'Feature implementation orchestrator. Use for ANY code change — the primary entry point for development work with phase-aware execution.' },
-      { name: 'team', layer: 'L1', model: 'opus', tools: 6, desc: 'Multi-agent meta-orchestrator for tasks spanning 5+ files or 3+ modules. Spawns and coordinates parallel specialist agents.' },
-      { name: 'launch', layer: 'L1', model: 'sonnet', tools: 6, desc: 'Deploy + marketing orchestrator. Handles production deployment plus announcement strategy in one coordinated workflow.' },
-      { name: 'rescue', layer: 'L1', model: 'sonnet', tools: 6, desc: 'Legacy refactoring orchestrator. Assesses technical debt, creates safety nets, and incrementally modernizes codebases.' },
-      { name: 'scaffold', layer: 'L1', model: 'sonnet', tools: 8, desc: 'Autonomous project bootstrapper. Generates a complete project from a description — structure, code, tests, and CI/CD config.' },
+      { name: 'build', layer: 'L1', model: 'sonnet', tools: 6, invoke: 'user', desc: 'Feature implementation orchestrator. Use for ANY code change — the primary entry point for development work with phase-aware execution.' },
+      { name: 'team', layer: 'L1', model: 'opus', tools: 6, invoke: 'user', desc: 'Multi-agent meta-orchestrator for tasks spanning 5+ files or 3+ modules. Spawns and coordinates parallel specialist agents.' },
+      { name: 'launch', layer: 'L1', model: 'sonnet', tools: 6, invoke: 'user', desc: 'Deploy + marketing orchestrator. Handles production deployment plus announcement strategy in one coordinated workflow.' },
+      { name: 'rescue', layer: 'L1', model: 'sonnet', tools: 6, invoke: 'user', desc: 'Legacy refactoring orchestrator. Assesses technical debt, creates safety nets, and incrementally modernizes codebases.' },
+      { name: 'scaffold', layer: 'L1', model: 'sonnet', tools: 8, invoke: 'user', desc: 'Autonomous project bootstrapper. Generates a complete project from a description — structure, code, tests, and CI/CD config.' },
       // L2
-      { name: 'adversary', layer: 'L2', model: 'opus', tools: 3, desc: 'Pre-implementation red-team analysis. Stress-tests plans across edge cases, security, scalability, and integration risk before code is written.' },
-      { name: 'audit', layer: 'L2', model: 'sonnet', tools: 4, desc: 'Comprehensive project audit across security, dependencies, code quality, architecture, and performance.' },
-      { name: 'autopsy', layer: 'L2', model: 'opus', tools: 4, desc: 'Full codebase health assessment. Analyzes complexity, dependencies, dead code, tech debt, and git history hotspots.' },
-      { name: 'idea', layer: 'L2', model: 'opus', tools: 3, desc: 'Requirements elicitation agent. Elicits and validates requirements before planning begins — uncovers hidden constraints and ambiguities.' },
-      { name: 'brainstorm', layer: 'L2', model: 'opus', tools: 3, desc: 'Creative ideation and solution exploration. Generates multiple approaches with trade-offs; includes Rescue Mode for divergent alternatives.' },
-      { name: 'db', layer: 'L2', model: 'sonnet', tools: 6, desc: 'Database workflow specialist. Generates migration files with rollback scripts, detects breaking schema changes, and audits query performance.' },
-      { name: 'debug', layer: 'L2', model: 'sonnet', tools: 4, desc: 'Root cause analysis for bugs and unexpected behavior. Traces symptoms to origin and classifies whether escalation is needed.' },
-      { name: 'deploy', layer: 'L2', model: 'sonnet', tools: 6, desc: 'Deploy application to target platform. Handles Vercel, Railway, Fly.io, AWS, and Docker with environment validation.' },
-      { name: 'design', layer: 'L2', model: 'sonnet', tools: 5, desc: 'Design system reasoning. Maps product domain to style, palette, typography, and platform-specific patterns.' },
-      { name: 'docs', layer: 'L2', model: 'sonnet', tools: 5, desc: 'Auto-generate and maintain project documentation — README, API docs, architecture docs, and changelogs.' },
-      { name: 'fix', layer: 'L2', model: 'sonnet', tools: 6, desc: 'Apply code changes and bug fixes. Writes implementation code and verifies changes with targeted tests.' },
-      { name: 'graft', layer: 'L2', model: 'sonnet', tools: 7, desc: 'Port features from external repos into your project. Enforces a challenge gate (license, fit, scope, quality) before any code touches your codebase. Modes: port, compare, copy, improve.' },
-      { name: 'incident', layer: 'L2', model: 'sonnet', tools: 6, desc: 'Structured incident response. Triage, mitigation, root cause analysis, and post-mortem generation.' },
-      { name: 'logic-guardian', layer: 'L2', model: 'sonnet', tools: 5, desc: 'Protects complex business logic from accidental deletion or overwrite during refactoring.' },
-      { name: 'marketing', layer: 'L2', model: 'sonnet', tools: 7, desc: 'Create marketing assets and execute launch strategy — copy, social posts, landing pages, and SEO audits.' },
-      { name: 'mcp-builder', layer: 'L2', model: 'sonnet', tools: 6, desc: 'Build Model Context Protocol servers from specifications in TypeScript or Python with tests and docs.' },
-      { name: 'onboard', layer: 'L2', model: 'sonnet', tools: 5, desc: 'Auto-generate project context for AI sessions — scans codebase, creates CLAUDE.md and architecture summaries.' },
-      { name: 'perf', layer: 'L2', model: 'sonnet', tools: 4, desc: 'Performance regression gate. Detects N+1 queries, sync-in-async patterns, missing indexes, and memory leaks.' },
-      { name: 'plan', layer: 'L2', model: 'opus', tools: 5, desc: 'Create structured implementation plans from requirements. Supports Feature Spec Mode and Roadmap Mode with ICE scoring.' },
-      { name: 'preflight', layer: 'L2', model: 'sonnet', tools: 4, desc: 'Pre-commit quality gate. Catches "almost right" code — type errors, missing tests, lint failures, and broken imports.' },
-      { name: 'review', layer: 'L2', model: 'sonnet', tools: 3, desc: 'Code quality review covering patterns, security vulnerabilities, performance, and correctness.' },
-      { name: 'review-intake', layer: 'L2', model: 'sonnet', tools: 3, desc: 'Process external code review feedback or PR comments before implementing changes.' },
-      { name: 'safeguard', layer: 'L2', model: 'sonnet', tools: 6, desc: 'Build safety nets before refactoring — characterization tests, boundary markers, and config freeze snapshots.' },
-      { name: 'scout', layer: 'L2', model: 'haiku', tools: 3, desc: 'Fast codebase scanner. Provides architecture context to other skills without loading full file contents.' },
-      { name: 'sentinel', layer: 'L2', model: 'sonnet', tools: 4, desc: 'Automated security gatekeeper. Blocks unsafe code — secret scanning, OWASP top 10, dependency vulnerabilities.' },
-      { name: 'sentinel-env', layer: 'L3', model: 'haiku', tools: 4, desc: 'Environment-aware pre-flight check. Validates OS, runtime versions, installed tools, and port availability.' },
-      { name: 'skill-forge', layer: 'L2', model: 'opus', tools: 6, desc: 'Create new Topia skills, edit existing ones, and verify skill quality before deployment.' },
-      { name: 'surgeon', layer: 'L2', model: 'sonnet', tools: 6, desc: 'Incremental refactorer. Refactors one module per session using Strangler Fig, Branch by Abstraction, and Parallel Run patterns.' },
-      { name: 'test', layer: 'L2', model: 'sonnet', tools: 6, desc: 'TDD test writer. Writes failing tests first (red), verifies they pass after implementation (green), enforces 80% coverage.' },
+      { name: 'adversary', layer: 'L2', model: 'opus', tools: 3, invoke: 'both', desc: 'Pre-implementation red-team analysis. Stress-tests plans across edge cases, security, scalability, and integration risk before code is written.' },
+      { name: 'audit', layer: 'L2', model: 'sonnet', tools: 4, invoke: 'user', desc: 'Comprehensive project audit across security, dependencies, code quality, architecture, and performance.' },
+      { name: 'autopsy', layer: 'L2', model: 'opus', tools: 4, invoke: 'user', desc: 'Full codebase health assessment. Analyzes complexity, dependencies, dead code, tech debt, and git history hotspots.' },
+      { name: 'idea', layer: 'L2', model: 'opus', tools: 3, invoke: 'user', desc: 'Requirements elicitation agent. Elicits and validates requirements before planning begins — uncovers hidden constraints and ambiguities.' },
+      { name: 'brainstorm', layer: 'L2', model: 'opus', tools: 3, invoke: 'user', desc: 'Creative ideation and solution exploration. Generates multiple approaches with trade-offs; includes Rescue Mode for divergent alternatives.' },
+      { name: 'db', layer: 'L2', model: 'sonnet', tools: 6, invoke: 'both', desc: 'Database workflow specialist. Generates migration files with rollback scripts, detects breaking schema changes, and audits query performance.' },
+      { name: 'debug', layer: 'L2', model: 'sonnet', tools: 4, invoke: 'user', desc: 'Root cause analysis for bugs and unexpected behavior. Traces symptoms to origin and classifies whether escalation is needed.' },
+      { name: 'deploy', layer: 'L2', model: 'sonnet', tools: 6, invoke: 'user', desc: 'Deploy application to target platform. Handles Vercel, Railway, Fly.io, AWS, and Docker with environment validation.' },
+      { name: 'design', layer: 'L2', model: 'sonnet', tools: 5, invoke: 'user', desc: 'Design system reasoning. Maps product domain to style, palette, typography, and platform-specific patterns.' },
+      { name: 'docs', layer: 'L2', model: 'sonnet', tools: 5, invoke: 'user', desc: 'Auto-generate and maintain project documentation — README, API docs, architecture docs, and changelogs.' },
+      { name: 'doc-processor', layer: 'L2', model: 'sonnet', tools: 6, invoke: 'user', desc: 'Generate and parse office documents — PDF, DOCX, XLSX, PPTX, and CSV files.' },
+      { name: 'fix', layer: 'L2', model: 'sonnet', tools: 6, invoke: 'both', desc: 'Apply code changes and bug fixes. Writes implementation code and verifies changes with targeted tests.' },
+      { name: 'graft', layer: 'L2', model: 'sonnet', tools: 7, invoke: 'user', desc: 'Port features from external repos into your project. Enforces a challenge gate (license, fit, scope, quality) before any code touches your codebase. Modes: port, compare, copy, improve.' },
+      { name: 'improve-architecture', layer: 'L2', model: 'opus', tools: 4, invoke: 'user', desc: 'Find architectural friction. Scores modules by depth/leverage/locality and proposes deepening opportunities for testability and AI-navigability.' },
+      { name: 'incident', layer: 'L2', model: 'sonnet', tools: 6, invoke: 'user', desc: 'Structured incident response. Triage, mitigation, root cause analysis, and post-mortem generation.' },
+      { name: 'logic-guardian', layer: 'L2', model: 'sonnet', tools: 5, invoke: 'agent', desc: 'Protects complex business logic from accidental deletion or overwrite during refactoring. Auto-fires when .topia/logic-manifest.json is present.' },
+      { name: 'marketing', layer: 'L2', model: 'sonnet', tools: 7, invoke: 'user', desc: 'Create marketing assets and execute launch strategy — copy, social posts, landing pages, and SEO audits.' },
+      { name: 'mcp-builder', layer: 'L2', model: 'sonnet', tools: 6, invoke: 'user', desc: 'Build Model Context Protocol servers from specifications in TypeScript or Python with tests and docs.' },
+      { name: 'onboard', layer: 'L2', model: 'sonnet', tools: 5, invoke: 'user', desc: 'Auto-generate project context for AI sessions — scans codebase, creates CLAUDE.md and architecture summaries.' },
+      { name: 'perf', layer: 'L2', model: 'sonnet', tools: 4, invoke: 'both', desc: 'Performance regression gate. Detects N+1 queries, sync-in-async patterns, missing indexes, and memory leaks.' },
+      { name: 'plan', layer: 'L2', model: 'opus', tools: 5, invoke: 'user', desc: 'Create structured implementation plans from requirements. Supports Feature Spec Mode and Roadmap Mode with ICE scoring.' },
+      { name: 'preflight', layer: 'L2', model: 'sonnet', tools: 4, invoke: 'agent', desc: 'Pre-commit quality gate. Auto-fires via hook. Catches "almost right" code — type errors, missing tests, lint failures, broken imports.' },
+      { name: 'quarantine', layer: 'L2', model: 'haiku', tools: 2, invoke: 'agent', desc: 'Prompt-injection advisory hook. Treats output from untrusted MCP servers, WebFetch, and upload reads as data, not directives.' },
+      { name: 'retro', layer: 'L2', model: 'sonnet', tools: 4, invoke: 'user', desc: 'Engineering retrospective. Analyzes commit history, work patterns, and code quality metrics for weekly / monthly reviews.' },
+      { name: 'review', layer: 'L2', model: 'sonnet', tools: 3, invoke: 'user', desc: 'Code quality review covering patterns, security vulnerabilities, performance, and correctness.' },
+      { name: 'review-intake', layer: 'L2', model: 'sonnet', tools: 3, invoke: 'both', desc: 'Process external code review feedback or PR comments before implementing changes. Issue Triage Mode for inbound tickets.' },
+      { name: 'safeguard', layer: 'L2', model: 'sonnet', tools: 6, invoke: 'agent', desc: 'Build safety nets before refactoring. Called by rescue before surgeon — characterization tests, boundary markers, config freeze.' },
+      { name: 'scout', layer: 'L2', model: 'haiku', tools: 3, invoke: 'user', desc: 'Fast codebase scanner. Provides architecture context to other skills without loading full file contents.' },
+      { name: 'sentinel', layer: 'L2', model: 'sonnet', tools: 4, invoke: 'agent', desc: 'Automated security gatekeeper. Auto-fires via pre-commit hook. Blocks unsafe code — secret scanning, OWASP top 10, dependency vulnerabilities.' },
+      { name: 'skill-forge', layer: 'L2', model: 'opus', tools: 6, invoke: 'user', desc: 'Create new Topia skills, edit existing ones, and verify skill quality before deployment.' },
+      { name: 'surgeon', layer: 'L2', model: 'sonnet', tools: 6, invoke: 'agent', desc: 'Incremental refactorer. Runs inside rescue workflow after safeguard. Strangler Fig, Branch by Abstraction, Parallel Run patterns.' },
+      { name: 'test', layer: 'L2', model: 'sonnet', tools: 6, invoke: 'both', desc: 'TDD test writer. Writes failing tests first (red), verifies they pass after implementation (green), enforces 80% coverage.' },
       // L3
-      { name: 'asset-creator', layer: 'L3', model: 'sonnet', tools: 5, desc: 'Creates code-based visual assets — SVG icons, OG image HTML templates, social banners, and icon sets.' },
-      { name: 'browser-pilot', layer: 'L3', model: 'sonnet', tools: 4, desc: 'Playwright browser automation. Navigates URLs, takes screenshots, checks accessibility, and interacts with web UIs.' },
-      { name: 'completion-gate', layer: 'L3', model: 'haiku', tools: 4, desc: 'Validates agent claims against evidence trail. Catches "done" without proof and "tests pass" without output.' },
-      { name: 'constraint-check', layer: 'L3', model: 'haiku', tools: 3, desc: 'Meta-validator for HARD-GATEs. Verifies that skills\' mandatory constraints were followed during a workflow step.' },
-      { name: 'context-engine', layer: 'L3', model: 'haiku', tools: 3, desc: 'Context window management. Auto-triggered when context is filling up — summarizes and compacts without losing state.' },
-      { name: 'dependency-doctor', layer: 'L3', model: 'haiku', tools: 4, desc: 'Dependency health management. Detects outdated packages and vulnerabilities across npm, pip, cargo, and go modules.' },
-      { name: 'doc-processor', layer: 'L3', model: 'sonnet', tools: 6, desc: 'Generate and parse office documents — PDF, DOCX, XLSX, PPTX, and CSV files.' },
-      { name: 'docs-seeker', layer: 'L3', model: 'haiku', tools: 5, desc: 'Find documentation for APIs, libraries, and error messages via web search and curated sources.' },
-      { name: 'git', layer: 'L3', model: 'haiku', tools: 4, desc: 'Specialized git operations — semantic commits, PR descriptions, branch management, and conflict resolution.' },
-      { name: 'hallucination-guard', layer: 'L3', model: 'haiku', tools: 4, desc: 'Verify AI-generated imports, API calls, and packages actually exist before code is written.' },
-      { name: 'integrity-check', layer: 'L3', model: 'haiku', tools: 3, desc: 'Verify integrity of persisted state, skill outputs, and context bus data across workflow steps.' },
-      { name: 'journal', layer: 'L3', model: 'haiku', tools: 5, desc: 'Persistent state tracking and Architecture Decision Records. Maintains project history across sessions.' },
-      { name: 'neural-memory', layer: 'L3', model: 'haiku', tools: 1, desc: 'Cross-session cognitive persistence via Neural Memory MCP. Stores and recalls decisions, patterns, and context.' },
-      { name: 'problem-solver', layer: 'L3', model: 'sonnet', tools: 3, desc: 'Structured reasoning frameworks for complex multi-variable problems. Applies first-principles and systems thinking.' },
-      { name: 'research', layer: 'L3', model: 'haiku', tools: 5, desc: 'Web search and external knowledge lookup. Gathers data on technologies, libraries, and best practices.' },
-      { name: 'sast', layer: 'L3', model: 'haiku', tools: 4, desc: 'Static analysis tool runner. Wraps ESLint, Semgrep, Bandit, Clippy, and language-specific analyzers.' },
-      { name: 'scope-guard', layer: 'L3', model: 'haiku', tools: 3, desc: 'Detects scope creep. Auto-triggered by L1 orchestrators when files exceed the original plan.' },
-      { name: 'sequential-thinking', layer: 'L3', model: 'sonnet', tools: 3, desc: 'Step-by-step complex reasoning for multi-variable problems with explicit dependency tracking.' },
-      { name: 'session-bridge', layer: 'L3', model: 'haiku', tools: 5, desc: 'Universal context persistence across sessions. Auto-saves decisions, conventions, and progress to project files.' },
-      { name: 'trend-scout', layer: 'L3', model: 'haiku', tools: 5, desc: 'Scan market trends, competitor activity, and emerging technology patterns.' },
-      { name: 'verification', layer: 'L3', model: 'haiku', tools: 4, desc: 'Universal verification runner. Runs lint, type-check, tests, and build in one coordinated pass.' },
-      { name: 'video-creator', layer: 'L3', model: 'sonnet', tools: 5, desc: 'Video content planning. Writes narration scripts, storyboards, shot lists, and asset checklists.' },
-      { name: 'watchdog', layer: 'L3', model: 'sonnet', tools: 4, desc: 'Post-deploy monitoring. Checks HTTP status, response times, error rates, and service health after deployment.' },
-      { name: 'worktree', layer: 'L3', model: 'haiku', tools: 4, desc: 'Git worktree lifecycle management. Creates isolated workspaces for parallel feature development.' }];
+      { name: 'asset-creator', layer: 'L3', model: 'sonnet', tools: 5, invoke: 'user', desc: 'Creates code-based visual assets — SVG icons, OG image HTML templates, social banners, and icon sets.' },
+      { name: 'browser-pilot', layer: 'L3', model: 'sonnet', tools: 4, invoke: 'both', desc: 'Playwright browser automation. Navigates URLs, takes screenshots, checks accessibility, and interacts with web UIs.' },
+      { name: 'completion-gate', layer: 'L3', model: 'haiku', tools: 4, invoke: 'agent', desc: 'Validates agent claims against evidence trail. Auto-fires at workflow end. Catches "done" without proof.' },
+      { name: 'constraint-check', layer: 'L3', model: 'haiku', tools: 3, invoke: 'agent', desc: 'Meta-validator for HARD-GATEs. Verifies that skills\' mandatory constraints were followed during a workflow step.' },
+      { name: 'context-engine', layer: 'L3', model: 'haiku', tools: 3, invoke: 'agent', desc: 'Context window management. Auto-triggered when context is filling up — summarizes and compacts without losing state.' },
+      { name: 'context-pack', layer: 'L3', model: 'haiku', tools: 4, invoke: 'agent', desc: 'Structured handoff briefings between agents. Packages task context, constraints, and progress into compact packets for subagent delegation.' },
+      { name: 'dependency-doctor', layer: 'L3', model: 'haiku', tools: 4, invoke: 'both', desc: 'Dependency health management. Detects outdated packages and vulnerabilities across npm, pip, cargo, and go modules.' },
+      { name: 'docs-seeker', layer: 'L3', model: 'haiku', tools: 5, invoke: 'both', desc: 'Find documentation for APIs, libraries, and error messages via web search and curated sources.' },
+      { name: 'git', layer: 'L3', model: 'haiku', tools: 4, invoke: 'both', desc: 'Specialized git operations — semantic commits, PR descriptions, branch management, and conflict resolution.' },
+      { name: 'hallucination-guard', layer: 'L3', model: 'haiku', tools: 4, invoke: 'agent', desc: 'Verify AI-generated imports, API calls, and packages actually exist. Auto-fires after fix / cook completes.' },
+      { name: 'integrity-check', layer: 'L3', model: 'haiku', tools: 3, invoke: 'agent', desc: 'Verify integrity of persisted state, skill outputs, and context bus data across workflow steps.' },
+      { name: 'journal', layer: 'L3', model: 'haiku', tools: 5, invoke: 'both', desc: 'Persistent state tracking and Architecture Decision Records. Maintains project history across sessions.' },
+      { name: 'neural-memory', layer: 'L3', model: 'haiku', tools: 1, invoke: 'both', desc: 'Cross-session cognitive persistence via Neural Memory MCP. Stores and recalls decisions, patterns, and context (uses agora-code MCP when registered).' },
+      { name: 'problem-solver', layer: 'L3', model: 'sonnet', tools: 3, invoke: 'both', desc: 'Structured reasoning frameworks for complex multi-variable problems. Applies first-principles and systems thinking.' },
+      { name: 'research', layer: 'L3', model: 'haiku', tools: 5, invoke: 'both', desc: 'Web search and external knowledge lookup. Gathers data on technologies, libraries, and best practices.' },
+      { name: 'sast', layer: 'L3', model: 'haiku', tools: 4, invoke: 'both', desc: 'Static analysis tool runner. Wraps ESLint, Semgrep, Bandit, Clippy, and language-specific analyzers.' },
+      { name: 'scope-guard', layer: 'L3', model: 'haiku', tools: 3, invoke: 'agent', desc: 'Detects scope creep. Auto-triggered by L1 orchestrators when files exceed the original plan.' },
+      { name: 'sentinel-env', layer: 'L3', model: 'haiku', tools: 4, invoke: 'user', desc: 'Environment-aware pre-flight check. Validates OS, runtime versions, installed tools, and port availability.' },
+      { name: 'sequential-thinking', layer: 'L3', model: 'sonnet', tools: 3, invoke: 'both', desc: 'Step-by-step complex reasoning for multi-variable problems with explicit dependency tracking.' },
+      { name: 'session-bridge', layer: 'L3', model: 'haiku', tools: 5, invoke: 'agent', desc: 'Universal context persistence across sessions. Auto-saves decisions, conventions, and progress to project files.' },
+      { name: 'slides', layer: 'L3', model: 'sonnet', tools: 4, invoke: 'user', desc: 'Generate Marp-compatible slide decks from a structured JSON schema. For tech talks, sprint demos, tutorials.' },
+      { name: 'trend-scout', layer: 'L3', model: 'haiku', tools: 5, invoke: 'user', desc: 'Scan market trends, competitor activity, and emerging technology patterns.' },
+      { name: 'verification', layer: 'L3', model: 'haiku', tools: 4, invoke: 'both', desc: 'Universal verification runner. Runs lint, type-check, tests, and build in one coordinated pass.' },
+      { name: 'video-creator', layer: 'L3', model: 'sonnet', tools: 5, invoke: 'user', desc: 'Video content planning. Writes narration scripts, storyboards, shot lists, and asset checklists.' },
+      { name: 'watchdog', layer: 'L3', model: 'sonnet', tools: 4, invoke: 'agent', desc: 'Post-deploy monitoring. Auto-fires from launch / deploy. Checks HTTP status, response times, error rates, and service health.' },
+      { name: 'worktree', layer: 'L3', model: 'haiku', tools: 4, invoke: 'both', desc: 'Git worktree lifecycle management. Creates isolated workspaces for parallel feature development.' }];
 
     const PACKS = [
-      { name: '@Topia/ui', desc: 'Frontend UI patterns — design systems, color palettes, typography, component architecture, landing page sections, accessibility audits, and animation patterns.', target: 'Frontend developers', price: 'free', skills: 8 },
-      { name: '@Topia/backend', desc: 'Backend patterns — API design, authentication, database patterns, middleware architecture, caching strategies, and background job processing.', target: 'Backend developers', price: 'free', skills: 7 },
-      { name: '@Topia/devops', desc: 'DevOps patterns — Docker, CI/CD pipelines, monitoring setup, server configuration, and SSL/domain management.', target: 'DevOps engineers', price: '$12', skills: 7 },
-      { name: '@Topia/mobile', desc: 'Mobile development patterns — React Native, Flutter, app store preparation, and native bridge integration.', target: 'Mobile developers', price: '$15', skills: 5 },
-      { name: '@Topia/security', desc: 'Deep security analysis — OWASP audit, penetration testing patterns, secret management, compliance checking, and API hardening.', target: 'Security engineers', price: '$15', skills: 6 },
-      { name: '@Topia/ecommerce', desc: 'E-commerce patterns — Shopify development, payment integration, shopping cart state machines, and inventory management.', target: 'E-commerce developers', price: '$12', skills: 5 },
-      { name: '@Topia/ai-ml', desc: 'AI/ML integration patterns — LLM integration, RAG pipelines, embeddings, fine-tuning workflows, and prompt engineering.', target: 'AI engineers', price: '$15', skills: 6 },
-      { name: '@Topia/content', desc: 'Content platform patterns — blog systems, CMS integration, MDX authoring, internationalization, and SEO.', target: 'Content creators', price: '$9', skills: 5 },
-      { name: '@Topia/analytics', desc: 'Analytics patterns — tracking setup, A/B testing, funnel analysis, statistical significance, and dashboard design.', target: 'Growth engineers', price: '$12', skills: 6 },
-      { name: '@Topia/chrome-ext', desc: 'Chrome extension development — Manifest V3 scaffolding, service worker lifecycle, message passing, CWS compliance, and Chrome AI integration.', target: 'Chrome extension developers', price: 'free', skills: 6 }];
+      { name: '@Topia/ui', desc: 'Frontend UI patterns — design systems, color palettes, typography, component architecture, landing page sections, accessibility audits, and animation patterns.', target: 'Frontend developers', skills: 10 },
+      { name: '@Topia/backend', desc: 'Backend patterns — API design, authentication, database patterns, middleware architecture, caching strategies, and background job processing.', target: 'Backend developers', skills: 8 },
+      { name: '@Topia/devops', desc: 'DevOps patterns — Docker, CI/CD pipelines, monitoring setup, server configuration, and SSL/domain management.', target: 'DevOps engineers', skills: 9 },
+      { name: '@Topia/mobile', desc: 'Mobile development patterns — React Native, Flutter, app store preparation, and native bridge integration.', target: 'Mobile developers', skills: 9 },
+      { name: '@Topia/security', desc: 'Deep security analysis — OWASP audit, penetration testing patterns, secret management, compliance checking, and API hardening.', target: 'Security engineers', skills: 7 },
+      { name: '@Topia/ecommerce', desc: 'E-commerce patterns — Shopify development, payment integration, shopping cart state machines, and inventory management.', target: 'E-commerce developers', skills: 7 },
+      { name: '@Topia/ai-ml', desc: 'AI/ML integration patterns — LLM integration, RAG pipelines, embeddings, fine-tuning workflows, and prompt engineering.', target: 'AI engineers', skills: 10 },
+      { name: '@Topia/content', desc: 'Content platform patterns — blog systems, CMS integration, MDX authoring, internationalization, and SEO.', target: 'Content creators', skills: 8 },
+      { name: '@Topia/analytics', desc: 'Analytics patterns — tracking setup, A/B testing, funnel analysis, statistical significance, and dashboard design.', target: 'Growth engineers', skills: 7 },
+      { name: '@Topia/chrome-ext', desc: 'Chrome extension development — Manifest V3 scaffolding, service worker lifecycle, message passing, CWS compliance, and Chrome AI integration.', target: 'Chrome extension developers', skills: 6 }];
 
     // ─── LAYER ORDER ───
     const LAYER_ORDER = { L0: 0, L1: 1, L2: 2, L3: 3, L4: 4 };
@@ -673,6 +743,7 @@
 
     // ─── STATE ───
     let activeLayer = 'all';
+    let activeInvoke = 'all';
     let searchQuery = '';
     let sortBy = 'layer';
 
@@ -688,23 +759,39 @@
       return escaped.replace(new RegExp(escapedQuery, 'gi'), match => `<mark>${match}</mark>`);
     }
 
+    // ─── Invocation glyph + label ───
+    // user  → 👤 you run /topia <name>
+    // agent → 🤖 fires automatically inside another skill or via a hook
+    // both  → 🔄 either; works as standalone OR called mid-workflow
+    const INVOKE_META = {
+      user:  { icon: '\u{1F464}', label: 'User-invoked',     tip: 'You invoke this directly via `/topia ' },
+      agent: { icon: '\u{1F916}', label: 'Agent / auto',     tip: 'Auto-fires inside another skill or via a hook. Direct invocation rare.' },
+      both:  { icon: '↻',    label: 'Either',           tip: 'Works as a standalone command AND gets called by orchestrators mid-workflow.' },
+    };
+
     function renderSkillCard(skill, query, delay) {
       const layerClass = `badge-${skill.layer.toLowerCase()}`;
       const modelClass = `badge-${skill.model}`;
+      const inv = INVOKE_META[skill.invoke] || INVOKE_META.both;
+      const invokeTip = skill.invoke === 'user'
+        ? inv.tip + skill.name + '`. Other skills rarely call it.'
+        : inv.tip;
+      const toolsTip = `Uses ${skill.tools} MCP tool${skill.tools !== 1 ? 's' : ''} (Read / Write / Glob / Grep / Bash / …) per its frontmatter \`metadata.tools\``;
       return `
-        <div class="skill-card" data-layer="${skill.layer}" style="animation-delay:${delay}ms">
+        <div class="skill-card" data-layer="${skill.layer}" data-invoke="${skill.invoke}" style="animation-delay:${delay}ms">
           <div class="skill-card-top">
             <span class="skill-name">${highlight(skill.name, query)}</span>
             <div class="skill-badges">
+              <span class="badge badge-invoke badge-invoke-${skill.invoke}" title="${escapeHTML(invokeTip)}">${inv.icon} <span class="badge-invoke-label">${inv.label}</span></span>
               <span class="badge ${layerClass}">${skill.layer}</span>
               <span class="badge ${modelClass}">${skill.model}</span>
             </div>
           </div>
           <p class="skill-desc">${highlight(skill.desc, query)}</p>
           <div class="skill-footer">
-            <span class="skill-tools">
+            <span class="skill-tools" title="${escapeHTML(toolsTip)}">
               <span class="skill-tools-dot"></span>
-              ${skill.tools} tool${skill.tools !== 1 ? 's' : ''}
+              ${skill.tools} MCP tool${skill.tools !== 1 ? 's' : ''}
             </span>
           </div>
         </div>`;
@@ -713,6 +800,7 @@
     function getFilteredSorted() {
       let filtered = SKILLS.filter(s => {
         if (activeLayer !== 'all' && s.layer !== activeLayer) return false;
+        if (activeInvoke !== 'all' && s.invoke !== activeInvoke) return false;
         if (searchQuery) {
           const q = searchQuery.toLowerCase();
           return s.name.includes(q) || s.desc.toLowerCase().includes(q);
@@ -788,22 +876,27 @@
 
     function renderPacks() {
       const grid = document.getElementById('packs-grid');
-      grid.innerHTML = PACKS.map((p, i) => {
-        const isFree = p.price === 'free';
-        return `
+      grid.innerHTML = PACKS.map((p, i) => `
           <div class="pack-card" style="animation-delay:${i * 40}ms">
             <span class="pack-name">${escapeHTML(p.name)}</span>
             <div class="pack-meta">
-              <span class="pack-badge ${isFree ? 'pack-badge-free' : 'pack-badge-paid'}">${isFree ? 'FREE' : p.price}</span>
               <span class="pack-skills-count">${p.skills} skills</span>
             </div>
             <p class="pack-desc">${escapeHTML(p.desc)}</p>
             <span class="pack-target">&#128100; ${escapeHTML(p.target)}</span>
-          </div>`;
-      }).join('');
+          </div>`).join('');
     }
 
     // ─── EVENT LISTENERS ───
+    document.getElementById('invoke-tabs').addEventListener('click', e => {
+      const tab = e.target.closest('.filter-tab');
+      if (!tab) return;
+      document.querySelectorAll('#invoke-tabs .filter-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      activeInvoke = tab.dataset.invoke;
+      render();
+    });
+
     document.getElementById('layer-tabs').addEventListener('click', e => {
       const tab = e.target.closest('.filter-tab');
       if (!tab) return;

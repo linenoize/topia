@@ -1,8 +1,35 @@
 /**
- * Doctor — Validates compiled output
+ * doctor.js — diagnostic + mesh integrity validator.
  *
- * Checks: files exist, cross-references resolve, layer discipline, source freshness.
- * Mesh checks: reciprocal connections, version suggestions, required sections.
+ * Two public entry points:
+ *
+ *   runDoctor({ outputRoot, adapter, config, TopiaRoot }) → results
+ *     Checks compiled platform output: config exists, output dir exists,
+ *     skill files present, cross-references resolve, index file present,
+ *     split-pack skill files exist, injection rules valid.
+ *     Side effects: none (read-only).
+ *
+ *   checkMeshIntegrity(TopiaRoot) → results
+ *     Walks every SKILL.md, validates the toolkit graph:
+ *       1. Reciprocal connections — every "Calls (outbound)" entry has a
+ *          matching "Called By" in the target skill.
+ *       2. Version maturity — skills with version ≥0.8 AND all required
+ *          sections get flagged for promotion to 1.0.
+ *       3. Required sections — Purpose, Constraints, Sharp Edges, Done When,
+ *          Cost Profile.
+ *       4. Frontmatter conformance — author, version, layer, model, group,
+ *          tools present.
+ *     Side effects: none.
+ *
+ *   formatMeshResults(results) / formatDoctorResults(results) → string
+ *     Pretty-prints results for the CLI. No I/O.
+ *
+ * Result shape (both entry points):
+ *   { checks: [{ name, status, detail? }], warnings: string[],
+ *     errors: string[], stats?: {...} }
+ *
+ * Doctor never modifies disk. If you need to FIX a finding, route to the
+ * relevant skill (idea / journal / surgeon, etc.).
  */
 
 import { existsSync } from 'node:fs';
@@ -11,14 +38,17 @@ import path from 'node:path';
 import { parsePack, parseTemplate } from './parser.js';
 
 /**
- * Run doctor checks on compiled output
+ * runDoctor — validate compiled platform output for a given adapter.
  *
- * @param {object} options
- * @param {string} options.outputRoot - project root
- * @param {object} options.adapter - platform adapter
- * @param {object} options.config - topia.config.json contents
- * @param {string} options.TopiaRoot - Topia source root
- * @returns {Promise<object>} doctor results
+ * Behaviour:
+ *  - Skips gracefully when no `topia.config.json` exists (source-only mode).
+ *  - Claude adapter is passthrough (no compiled dir to check) — early-returns
+ *    after the config check.
+ *  - Other adapters: verify outputDir exists, contains expected skill files,
+ *    cross-refs resolve, index file present, split packs intact.
+ *
+ * @param {{outputRoot:string, adapter:object, config:object, TopiaRoot:string}} opts
+ * @returns {Promise<{platform, checks, warnings, errors, healthy}>}
  */
 export async function runDoctor({ outputRoot, adapter, config, TopiaRoot }) {
   const results = {
