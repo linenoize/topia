@@ -3,7 +3,7 @@ description: "Topia skill ecosystem — interconnected workflows for the full pr
 disable-model-invocation: true
 ---
 
-# Topia — Less skills. Deeper connections.
+# Topia
 
 Route to the appropriate Topia skill based on the action:
 

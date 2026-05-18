@@ -84,9 +84,9 @@ async function prompt(question) {
 
 async function cmdInit(projectRoot, args) {
   log('');
-  log('  ╭──────────────────────────────────────────╮');
-  log('  │  Topia — Less skills. Deeper connections.  │');
-  log('  ╰──────────────────────────────────────────╯');
+  log('  ╭─────────╮');
+  log('  │  Topia  │');
+  log('  ╰─────────╯');
   log('');
 
   // Platform detection / selection

@@ -49,9 +49,9 @@ npx @protopia/skill-topia init
 ```
 
 ```
-  +----------------------------------------------+
-  |  Topia -- Less skills. Deeper connections.      |
-  +----------------------------------------------+
+  +---------+
+  |  Topia  |
+  +---------+
 
   -> Detected: cursor
   -> Created topia.config.json

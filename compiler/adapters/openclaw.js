@@ -164,9 +164,7 @@ export default {
 
     return `# Topia
 
-> Less skills. Deeper connections.
-
-**${skills.length}-skill mesh** for AI coding assistants — 5-layer architecture, 215+ connections, 10 extension packs.
+**${skills.length}-skill toolkit** for AI coding assistants — 5-layer architecture, 203 connections, 10 extension packs.
 
 ## Install
 

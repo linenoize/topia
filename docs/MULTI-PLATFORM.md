@@ -667,9 +667,9 @@ Every compiled skill file includes a footer that:
 ```
 $ npx @protopia/skill-topia init
 
-  ╭──────────────────────────────────────╮
-  │  Topia — Less skills. Deeper connections.  │
-  ╰──────────────────────────────────────╯
+  ╭─────────╮
+  │  Topia  │
+  ╰─────────╯
 
   Detected: .cursor/ directory → Cursor
 

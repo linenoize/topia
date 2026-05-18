@@ -2,7 +2,7 @@
 
 > Consolidated versions of `ROADMAP.md` and `TODO.md`. Going forward, both forward-looking plans (what we'll build) and outstanding cleanup items (what's loose) live here.
 
-Topia's goal: a disciplined, resilient, cost-effective skill toolkit for AI coding agents. Less skills, deeper connections.
+Topia's goal: a disciplined, resilient, cost-effective skill toolkit for AI coding agents.
 
 ---
 

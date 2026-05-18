@@ -1,11 +1,5 @@
 # Topia Vision
 
-> **"Less skills. Deeper connections."**
->
-> This document is the primary decision-making compass for Topia.
-> When in doubt about a design direction, a new feature, or a skill addition — consult this file first.
-> Last updated: 2026-05-13
-
 ---
 
 ## 1. Why Topia Exists
