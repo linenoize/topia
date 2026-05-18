@@ -8,7 +8,7 @@
 
 L4 packs add domain-specific skills on top of Topia's language-agnostic L1-L3 core. A pack is a directory containing a `PACK.md` file that defines 3-6 skills for a specific domain (React patterns, trading algorithms, mobile development, etc.).
 
-**The core mesh (L1-L3) is complete with 66 skills.** Further growth in Topia happens primarily through L4.
+**The core toolkit (L1-L3) is complete with 65 skills.** Further growth in Topia happens primarily through L4.
 
 ---
 

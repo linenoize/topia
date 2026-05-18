@@ -12,7 +12,7 @@
 ## Prerequisites
 
 - **Node.js 18+** (check: `node --version`)
-- One of: **Claude Code**, **Cursor**, **Windsurf**, **Google Antigravity**, **OpenAI Codex**, or **OpenCode**
+- One of: **Claude Code**, **Cursor**, **Google Antigravity**, **OpenAI Codex**, **OpenCode**, or **OpenClaw**
 - A project directory — existing or empty
 
 ---
@@ -31,10 +31,10 @@ This detects your AI assistant and writes the right config files:
 |-----------|------------------|
 | Claude Code | `.claude/` (plugin), skills invoke via `/topia <name>` |
 | Cursor | `.cursor/rules/*.mdc` |
-| Windsurf | `.windsurf/workflows/*.md` |
 | Antigravity | `.antigravity/workflows/*.md` |
 | Codex | `.codex/skills/` |
 | OpenCode | `.opencode/skills/` |
+| OpenClaw | `.openclaw/skills/` |
 
 Verify install:
 
