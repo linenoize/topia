@@ -17,11 +17,11 @@ describe('isTopiaManaged', () => {
     }
   });
 
-  test('T3: matches the exact @protopia/skill-topia hook-dispatch invocation', () => {
+  test('T3: matches the exact @linenoize/topia hook-dispatch invocation', () => {
     const truePositives = [
-      'npx --yes @protopia/skill-topia hook-dispatch preflight',
-      'npx @protopia/skill-topia hook-dispatch sentinel',
-      'npx --yes @protopia/skill-topia hook-dispatch completion-gate --gentle',
+      'npx --yes @linenoize/topia hook-dispatch preflight',
+      'npx @linenoize/topia hook-dispatch sentinel',
+      'npx --yes @linenoize/topia hook-dispatch completion-gate --gentle',
     ];
     for (const cmd of truePositives) {
       assert.strictEqual(isTopiaManaged({ command: cmd }), true, `should match: ${cmd}`);
@@ -72,7 +72,7 @@ describe('stripTopiaHooks', () => {
           {
             matcher: 'Edit|Write',
             hooks: [
-              { type: 'command', command: 'npx --yes @protopia/skill-topia hook-dispatch preflight --gentle' },
+              { type: 'command', command: 'npx --yes @linenoize/topia hook-dispatch preflight --gentle' },
               { type: 'command', command: 'my-custom-hook.sh' },
             ],
           },
@@ -91,7 +91,7 @@ describe('stripTopiaHooks', () => {
         Stop: [
           {
             matcher: '.*',
-            hooks: [{ type: 'command', command: 'npx --yes @protopia/skill-topia hook-dispatch completion-gate' }],
+            hooks: [{ type: 'command', command: 'npx --yes @linenoize/topia hook-dispatch completion-gate' }],
           },
         ],
       },
@@ -114,7 +114,7 @@ describe('stripTopiaHooks', () => {
       env: { FOO: 'bar' },
       hooks: {
         Stop: [
-          { matcher: '.*', hooks: [{ command: 'npx --yes @protopia/skill-topia hook-dispatch completion-gate' }] },
+          { matcher: '.*', hooks: [{ command: 'npx --yes @linenoize/topia hook-dispatch completion-gate' }] },
         ],
       },
     };
@@ -197,7 +197,7 @@ describe('detectPreset', () => {
     // manually inject a strict entry
     mixed.hooks.Stop[0].hooks.push({
       type: 'command',
-      command: 'npx --yes @protopia/skill-topia hook-dispatch sentinel',
+      command: 'npx --yes @linenoize/topia hook-dispatch sentinel',
     });
     assert.strictEqual(detectPreset(mixed), 'mixed');
   });

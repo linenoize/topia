@@ -138,7 +138,7 @@ export function summarizeTopiaHooks(settings) {
 
 function extractSkillFromCommand(command) {
   // Expected shapes:
-  //   "npx --yes @protopia/skill-topia hook-dispatch <skill> [--gentle]"  (Free preset / dispatch)
+  //   "npx --yes @linenoize/topia hook-dispatch <skill> [--gentle]"  (Free preset / dispatch)
   //   "node \"${Topia_*_ROOT}/hooks/run-hook.cjs\" <skill>"            (tier entry)
   const dispatch = command.match(/hook-dispatch\s+(\S+)/);
   if (dispatch) return dispatch[1];

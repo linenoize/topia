@@ -177,7 +177,7 @@ clawhub install skill-topia
 Or via npm:
 
 \`\`\`
-npx @protopia/skill-topia init
+npx @linenoize/topia init
 \`\`\`
 
 ## What is Topia?
@@ -202,9 +202,9 @@ ui · backend · devops · mobile · security · trading · saas · ecommerce ·
 
 ## Links
 
-- **Source**: [github.com/protopia/skill-topia](https://github.com/protopia/skill-topia)
-- **Docs**: [protopia.github.io/skill-topia](https://protopia.github.io/skill-topia)
-- **Guides**: [protopia.github.io/skill-topia/guides](https://protopia.github.io/skill-topia/guides)
+- **Source**: [github.com/linenoize/topia](https://github.com/linenoize/topia)
+- **Docs**: [linenoize.github.io/topia](https://linenoize.github.io/topia)
+- **Guides**: [linenoize.github.io/topia/guides](https://linenoize.github.io/topia/guides)
 
 ## License
 

@@ -25,7 +25,7 @@ Topia's goal: a disciplined, resilient, cost-effective skill toolkit for AI codi
 - [x] **Idempotency contract** — `.topia/migrated-from-rune.flag` (after success) and `.topia/skip-rune-migration.flag` (after explicit skip) both suppress further session-start warnings.
 - [x] **Reversible disable** — rune-kit cache renamed to `.disabled` rather than deleted; restore with one `mv`.
 - [x] **Doctor — frontmatter conformance check + extended required sections** — `topia doctor` now also verifies (a) every SKILL.md has all 6 metadata fields (`author/version/layer/model/group/tools`), and (b) every skill has `Purpose` + `Constraints` sections (in addition to Sharp Edges / Done When / Cost Profile).
-- [x] **Repo URLs moved** — `github.com/skill-topia/Topia` → `github.com/protopia/skill-topia`; npm `@skill-topia/topia` → `@protopia/skill-topia`. CLI stays `topia`; author identity stays `skill-topia`.
+- [x] **Repo URLs moved** — `github.com/skill-topia/Topia` → `github.com/linenoize/topia`; npm `@skill-topia/topia` → `@linenoize/topia`. CLI stays `topia`; author identity stays `skill-topia`.
 - [x] **Docs trimmed** — deleted `USER-GUIDE-CYCLE.md` + `DEVELOPER-CYCLE.md` (163 redundant lines).
 
 ### v1.1.0 — agora-code memory integration (2026-05-16) ✅

@@ -125,7 +125,7 @@ pack skill → sentinel (L2): infrastructure security scan
 
 ## Submission Process
 
-1. **Fork** `github.com/protopia/skill-topia`
+1. **Fork** `github.com/linenoize/topia`
 2. **Create** `extensions/your-pack-name/PACK.md`
 3. **Validate** your pack passes both gates (self-check below)
 4. **Run** structural validator: `node scripts/validate-skills.js`

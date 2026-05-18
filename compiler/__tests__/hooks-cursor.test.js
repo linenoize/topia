@@ -45,7 +45,7 @@ describe('cursor adapter', () => {
     assert.deepStrictEqual(names, ['Topia-dependency-doctor.mdc', 'Topia-preflight.mdc', 'Topia-sentinel.mdc']);
     for (const file of plan.files) {
       assert.ok(file.content.includes('Topia-managed: true'));
-      assert.ok(file.content.includes('@protopia/skill-topia hook-dispatch'));
+      assert.ok(file.content.includes('@linenoize/topia hook-dispatch'));
     }
   });
 

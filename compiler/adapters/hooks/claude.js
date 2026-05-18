@@ -77,8 +77,8 @@ function isTopiaStatusLine(command) {
   if (typeof command !== 'string') return false;
   // Match the installer's own output shapes only — not any command that happens
   // to contain the substring "Topia-pulse" (a user alias could legitimately contain it).
-  // Accepts: (1) npx @protopia/skill-topia ...
-  return /(^|\s)npx(\s+--yes)?\s+@protopia\/skill-topia\b/.test(command);
+  // Accepts: (1) npx @linenoize/topia ...
+  return /(^|\s)npx(\s+--yes)?\s+@linenoize\/topia\b/.test(command);
 }
 
 export async function status(projectRoot) {

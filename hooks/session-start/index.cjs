@@ -202,7 +202,7 @@ function detectTierHint() {
     console.log(`${cap} detected: ${source} (v${version})`);
   }
   const tierFlag = detected.map((d) => d.tier).join(',');
-  console.log(`Wire it: \`npx @protopia/skill-topia setup --global --tier ${tierFlag}\``);
+  console.log(`Wire it: \`npx @linenoize/topia setup --global --tier ${tierFlag}\``);
   console.log('(adds tier-specific hooks: autopilot circuit-breaker, context-sense, statusline)');
 }
 

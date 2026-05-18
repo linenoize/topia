@@ -31,7 +31,7 @@ One source of truth (`skills/`) compiles to six IDE rule formats — switch IDEs
 One command does the whole thing:
 
 ```bash
-git clone https://github.com/protopia/skill-topia.git
+git clone https://github.com/linenoize/topia.git
 cd skill-topia
 npm install
 node compiler/bin/topia.js install

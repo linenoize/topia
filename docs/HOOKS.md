@@ -135,20 +135,20 @@ For each platform, Topia writes artifacts that can be re-run idempotently and re
 
 ### Claude Code (`.claude/settings.json`)
 
-Merges into the `hooks` object, preserving any user-authored entries. Topia entries are identified by the `npx --yes @protopia/skill-topia hook-dispatch <skill>` command signature — no comment markers needed.
+Merges into the `hooks` object, preserving any user-authored entries. Topia entries are identified by the `npx --yes @linenoize/topia hook-dispatch <skill>` command signature — no comment markers needed.
 
 ```json
 {
   "hooks": {
     "PreToolUse": [
-      { "matcher": "Edit|Write", "hooks": [{ "type": "command", "command": "npx --yes @protopia/skill-topia hook-dispatch preflight --gentle" }] },
-      { "matcher": "Bash",        "hooks": [{ "type": "command", "command": "npx --yes @protopia/skill-topia hook-dispatch sentinel --gentle" }] }
+      { "matcher": "Edit|Write", "hooks": [{ "type": "command", "command": "npx --yes @linenoize/topia hook-dispatch preflight --gentle" }] },
+      { "matcher": "Bash",        "hooks": [{ "type": "command", "command": "npx --yes @linenoize/topia hook-dispatch sentinel --gentle" }] }
     ],
     "PostToolUse": [
-      { "matcher": "Edit|Write", "hooks": [{ "type": "command", "command": "npx --yes @protopia/skill-topia hook-dispatch dependency-doctor --gentle" }] }
+      { "matcher": "Edit|Write", "hooks": [{ "type": "command", "command": "npx --yes @linenoize/topia hook-dispatch dependency-doctor --gentle" }] }
     ],
     "Stop": [
-      { "matcher": ".*", "hooks": [{ "type": "command", "command": "npx --yes @protopia/skill-topia hook-dispatch completion-gate --gentle" }] }
+      { "matcher": ".*", "hooks": [{ "type": "command", "command": "npx --yes @linenoize/topia hook-dispatch completion-gate --gentle" }] }
     ]
   }
 }
@@ -179,7 +179,7 @@ Experimental — mirrors Cursor's rule-injection pattern because Antigravity doe
 
 ## Idempotency & safety
 
-- **Signature-based detection**: Claude hooks are identified by command substring, Cursor/Windsurf/Antigravity files by `Topia-managed: true` frontmatter + `@protopia/skill-topia hook-dispatch` signature. No HTML-comment markers.
+- **Signature-based detection**: Claude hooks are identified by command substring, Cursor/Windsurf/Antigravity files by `Topia-managed: true` frontmatter + `@linenoize/topia hook-dispatch` signature. No HTML-comment markers.
 - **User entries preserved**: Every adapter's `uninstall` walks the artifact directory and removes only files that carry the Topia signature. User-authored rules, workflows, and hooks in the same directory are untouched.
 - **Re-run safe**: `install` replaces Topia entries in-place; two consecutive runs produce byte-identical output.
 - **Malformed JSON**: `.claude/settings.json` with broken JSON throws an actionable error instead of overwriting — fix manually or delete and re-install.

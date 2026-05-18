@@ -10,7 +10,7 @@ The Topia CLI compiles 61 AI coding skills into any IDE platform. One skill tool
 
 ```bash
 cd your-project
-npx @protopia/skill-topia init
+npx @linenoize/topia init
 ```
 
 Topia auto-detects your platform (Cursor, Windsurf, Antigravity) and compiles skills into the correct format.
@@ -28,13 +28,13 @@ claude
 **Step 3** -- Verify the setup:
 
 ```bash
-npx @protopia/skill-topia doctor
+npx @linenoize/topia doctor
 ```
 
 That's it. 62 skills are now active in your AI assistant.
 
 > **Pro Tip**: For Claude Code, skip the CLI entirely. Install Topia as a plugin:
-> `claude plugin add protopia/skill-topia` -- skills load natively with zero compilation.
+> `claude plugin add linenoize/topia` -- skills load natively with zero compilation.
 
 ---
 
@@ -45,7 +45,7 @@ That's it. 62 skills are now active in your AI assistant.
 Interactive setup. Detects your platform, creates `topia.config.json`, and compiles all skills in one step.
 
 ```bash
-npx @protopia/skill-topia init
+npx @linenoize/topia init
 ```
 
 ```
@@ -75,7 +75,7 @@ If Claude Code is detected (`.claude-plugin/` exists), init exits early with a m
 Recompile skills using existing config. Run after updating Topia or changing `topia.config.json`.
 
 ```bash
-npx @protopia/skill-topia build
+npx @linenoize/topia build
 ```
 
 ```
@@ -105,7 +105,7 @@ npx @protopia/skill-topia build
 Validate compiled output. Checks that all skill files exist, cross-references resolve, and config is valid.
 
 ```bash
-npx @protopia/skill-topia doctor
+npx @linenoize/topia doctor
 ```
 
 Exits with code 0 if healthy, code 1 if issues found. Useful in CI pipelines.
@@ -123,7 +123,7 @@ Exits with code 0 if healthy, code 1 if issues found. Useful in CI pipelines.
 Show available commands and flags.
 
 ```bash
-npx @protopia/skill-topia help
+npx @linenoize/topia help
 ```
 
 ---
@@ -149,7 +149,7 @@ Topia is a native Claude Code plugin. No compilation needed.
 
 ```bash
 # Install as plugin (recommended)
-claude plugin add protopia/skill-topia
+claude plugin add linenoize/topia
 
 # Or use Topia as a local plugin during development
 claude --plugin-dir /path/to/Topia
@@ -166,7 +166,7 @@ Skills load directly from `skills/*/SKILL.md`. The CLI detects `.claude-plugin/`
 Skills compile to `.cursor/rules/*.mdc` (Cursor's rule format).
 
 ```bash
-npx @protopia/skill-topia init --platform cursor
+npx @linenoize/topia init --platform cursor
 ```
 
 Output: `.cursor/rules/Topia-build.mdc`, `.cursor/rules/Topia-plan.mdc`, etc.
@@ -178,7 +178,7 @@ Each skill file gets a Cursor-compatible header with `alwaysApply: false` frontm
 Skills compile to `.windsurf/rules/*.md`.
 
 ```bash
-npx @protopia/skill-topia init --platform windsurf
+npx @linenoize/topia init --platform windsurf
 ```
 
 Output: `.windsurf/rules/Topia-build.md`, `.windsurf/rules/Topia-plan.md`, etc.
@@ -188,7 +188,7 @@ Output: `.windsurf/rules/Topia-build.md`, `.windsurf/rules/Topia-plan.md`, etc.
 Skills compile to `.agent/rules/*.md` (Google Antigravity format).
 
 ```bash
-npx @protopia/skill-topia init --platform antigravity
+npx @linenoize/topia init --platform antigravity
 ```
 
 Output: `.agent/rules/Topia-build.md`, `.agent/rules/Topia-plan.md`, etc.
@@ -198,7 +198,7 @@ Output: `.agent/rules/Topia-build.md`, `.agent/rules/Topia-plan.md`, etc.
 Fallback for any AI IDE that reads markdown rules from a directory.
 
 ```bash
-npx @protopia/skill-topia init --platform generic
+npx @linenoize/topia init --platform generic
 ```
 
 Output: `.ai/rules/Topia-build.md`, `.ai/rules/Topia-plan.md`, etc.
@@ -208,7 +208,7 @@ Output: `.ai/rules/Topia-build.md`, `.ai/rules/Topia-plan.md`, etc.
 Skills compile to an OpenClaw plugin structure with manifest, TypeScript entry point, and skill files.
 
 ```bash
-npx @protopia/skill-topia init --platform openclaw
+npx @linenoize/topia init --platform openclaw
 ```
 
 Output structure:
@@ -270,7 +270,7 @@ If no marker is found, Topia shows the available platforms and asks you to choos
 
 ```json
 {
-  "$schema": "https://protopia.github.io/skill-topia/config-schema.json",
+  "$schema": "https://linenoize.github.io/topia/config-schema.json",
   "version": 1,
   "platform": "cursor",
   "source": "/path/to/Topia",
@@ -324,13 +324,13 @@ Topia ships 14 free extension packs (L4 layer). Each adds domain-specific skills
 **Enable specific packs**:
 
 ```bash
-npx @protopia/skill-topia init --extensions @Topia/ui,@Topia/backend
+npx @linenoize/topia init --extensions @Topia/ui,@Topia/backend
 ```
 
 **Enable all packs** (default):
 
 ```bash
-npx @protopia/skill-topia init
+npx @linenoize/topia init
 # extensions.enabled = null means all packs are included
 ```
 
@@ -353,29 +353,29 @@ npx @protopia/skill-topia init
 ```yaml
 # .github/workflows/topia.yml
 - name: Compile Topia skills
-  run: npx @protopia/skill-topia build
+  run: npx @linenoize/topia build
 - name: Validate output
-  run: npx @protopia/skill-topia doctor
+  run: npx @linenoize/topia doctor
 ```
 
 **Monorepo Setup** -- Compile to multiple packages from one Topia source:
 
 ```bash
-npx @protopia/skill-topia build --output packages/frontend --platform cursor
-npx @protopia/skill-topia build --output packages/backend --platform generic
+npx @linenoize/topia build --output packages/frontend --platform cursor
+npx @linenoize/topia build --output packages/backend --platform generic
 ```
 
 **Selective Skills** -- Disable skills you don't need to reduce noise:
 
 ```bash
-npx @protopia/skill-topia init --disable video-creator,asset-creator,trend-scout
+npx @linenoize/topia init --disable video-creator,asset-creator,trend-scout
 ```
 
 **Keep Updated** -- Pull latest skills and recompile:
 
 ```bash
 cd /path/to/topia && git pull
-cd /your/project && npx @protopia/skill-topia build
+cd /your/project && npx @linenoize/topia build
 ```
 
 ---
@@ -404,4 +404,4 @@ cd /your/project && npx @protopia/skill-topia build
 **Build errors on specific skills**:
 - Check the error output for the skill name and issue.
 - Use `--disable <skill>` to skip problematic skills temporarily.
-- Report issues at https://github.com/protopia/skill-topia/issues.
+- Report issues at https://github.com/linenoize/topia/issues.

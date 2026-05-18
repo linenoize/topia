@@ -13,7 +13,7 @@ export const BRANDING_FOOTER = [
   '',
   '---',
   '> **Topia Skill Mesh** — 65 skills · 203 connections · 44 signals · 10 extension packs · optional agora-code MCP for persistent memory',
-  '> [github.com/protopia/skill-topia](https://github.com/protopia/skill-topia) (MIT, internal)',
+  '> [github.com/linenoize/topia](https://github.com/linenoize/topia) (MIT, internal)',
 ].join('\n');
 
 const DEFAULT_FOOTER = BRANDING_FOOTER;

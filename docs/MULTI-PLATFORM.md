@@ -210,7 +210,7 @@ module.exports = {
     return [
       "",
       "---",
-      "> Topia Skill Toolkit — https://github.com/protopia/skill-topia",
+      "> Topia Skill Toolkit — https://github.com/linenoize/topia",
       "> Full experience with subagents, hooks, and adaptive routing: use Topia on Claude Code."].join("\n");
   },
 
@@ -268,7 +268,7 @@ module.exports = {
     return [
       "",
       "---",
-      "> Topia Skill Toolkit — https://github.com/protopia/skill-topia",
+      "> Topia Skill Toolkit — https://github.com/linenoize/topia",
       "> Full experience with subagents, hooks, and adaptive routing: use Topia on Claude Code."].join("\n");
   },
 
@@ -540,14 +540,14 @@ Topia/
 ```jsonc
 {
   // Schema version
-  "$schema": "https://protopia.github.io/skill-topia/config-schema.json",
+  "$schema": "https://linenoize.github.io/topia/config-schema.json",
   "version": 1,
 
   // Target platform — determines which adapter is used
   "platform": "cursor",  // "claude" | "cursor" | "windsurf" | "antigravity" | "generic"
 
   // Topia source location (default: node_modules/topia or global install)
-  "source": "@protopia/skill-topia",
+  "source": "@linenoize/topia",
 
   // Core skills configuration
   "skills": {
@@ -656,7 +656,7 @@ Every compiled skill file includes a footer that:
 ```markdown
 ---
 > **Topia Skill Toolkit** — 64 skills, 215+ connections
-> Source: https://github.com/protopia/skill-topia
+> Source: https://github.com/linenoize/topia
 > For the full experience with subagents, hooks, adaptive routing, and mesh analytics — use Topia as a Claude Code plugin.
 ```
 
@@ -665,7 +665,7 @@ Every compiled skill file includes a footer that:
 ### 13.1 `Topia init` User Experience
 
 ```
-$ npx @protopia/skill-topia init
+$ npx @linenoize/topia init
 
   ╭──────────────────────────────────────╮
   │  Topia — Less skills. Deeper connections.  │

@@ -1,5 +1,5 @@
 {
-  "name": "@protopia/skill-topia",
+  "name": "@linenoize/topia",
   "version": "1.2.1",
   "description": "65-skill internal mesh for AI coding assistants — runtime auto-discipline via native hooks (Claude/Cursor/Windsurf/Antigravity), 5-layer architecture, 203 connections + 44 signals, multi-platform compiler.",
   "type": "module",
@@ -39,7 +39,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/protopia/skill-topia"
+    "url": "https://github.com/linenoize/topia"
   },
   "engines": {
     "node": ">=18"
@@ -54,9 +54,9 @@
     "hooks/",
     "references/"
   ],
-  "homepage": "https://protopia.github.io/skill-topia",
+  "homepage": "https://linenoize.github.io/topia",
   "bugs": {
-    "url": "https://github.com/protopia/skill-topia/issues"
+    "url": "https://github.com/linenoize/topia/issues"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.15",

@@ -16,15 +16,15 @@ export const Topia_MANAGED_SIGNATURE = 'Topia hook-dispatch';
 /** Shared relative path to avoid per-file duplication. */
 export const SETTINGS_REL_PATH = '.claude/settings.json';
 
-const DISPATCH_CMD = 'npx --yes @protopia/skill-topia hook-dispatch';
+const DISPATCH_CMD = 'npx --yes @linenoize/topia hook-dispatch';
 
 /**
  * Regex that matches the exact dispatch invocation Topia writes.
- * Matches: `npx [--yes] @protopia/skill-topia hook-dispatch` or
- *          `node ... @protopia/skill-topia hook-dispatch` as word boundary.
+ * Matches: `npx [--yes] @linenoize/topia hook-dispatch` or
+ *          `node ... @linenoize/topia hook-dispatch` as word boundary.
  * Does NOT match arbitrary strings that merely contain those words.
  */
-const Topia_DISPATCH_RE = /(^|\s)npx(\s+--yes)?\s+@protopia\/skill-topia\s+hook-dispatch\b/;
+const Topia_DISPATCH_RE = /(^|\s)npx(\s+--yes)?\s+@linenoize\/topia\s+hook-dispatch\b/;
 
 /**
  * Regex that matches tier-emitted commands — they substitute a tier env var
@@ -115,7 +115,7 @@ export const WIRED_SKILLS = ['preflight', 'sentinel', 'dependency-doctor', 'comp
 
 /**
  * Detect if a hook command entry is Topia-managed.
- * Matches only the exact `npx [--yes] @protopia/skill-topia hook-dispatch` invocation
+ * Matches only the exact `npx [--yes] @linenoize/topia hook-dispatch` invocation
  * to avoid false-positives on user commands that merely contain those words.
  *
  * @param {Object} entry — single hook entry { type, command, ... }

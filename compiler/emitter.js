@@ -648,7 +648,7 @@ function generateIndex(stats, adapter) {
     lines.push('## Extension Packs', '', ...extFiles.map((f) => `- ${f}`), '');
   }
 
-  lines.push('---', '> Topia Skill Mesh — https://github.com/protopia/skill-topia');
+  lines.push('---', '> Topia Skill Mesh — https://github.com/linenoize/topia');
 
   return lines.join('\n');
 }
@@ -682,7 +682,7 @@ function generateAgentsMd(stats, adapter) {
     `Skills are located in: ${adapter.outputDir}/`,
     '',
     '---',
-    '> Topia Skill Mesh — https://github.com/protopia/skill-topia',
+    '> Topia Skill Mesh — https://github.com/linenoize/topia',
     '',
   ];
 

@@ -8,7 +8,7 @@
   <meta property="og:title" content="Topia Guides — From Install to Production">
   <meta property="og:description" content="Learn how to use Topia's 62-skill toolkit to supercharge your AI coding assistant.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://protopia.github.io/skill-topia/guides/">
+  <meta property="og:url" content="https://linenoize.github.io/topia/guides/">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -474,7 +474,7 @@
             </div>
           </div>
         </div>
-        <a href="https://github.com/protopia/skill-topia" class="btn btn-ghost btn-sm" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/linenoize/topia" class="btn btn-ghost btn-sm" target="_blank" rel="noopener">GitHub</a>
       </div>
     </div>
   </nav>
@@ -624,12 +624,12 @@
           <p>Cursor uses <code>.mdc</code> rule files. Topia compiles all 62 skills into Cursor's format.</p>
           <div class="code-wrapper">
             <div class="code-block"><span class="comment"># In your project directory</span>
-<span class="cmd">npx --yes @protopia/skill-topia init <span class="flag">--platform cursor</span></span>
+<span class="cmd">npx --yes @linenoize/topia init <span class="flag">--platform cursor</span></span>
 
 <span class="output">  → Detected: cursor</span>
 <span class="output">  ✓ Created topia.config.json</span>
 <span class="output">  ✓ Built 62 skills + 14 extensions to .cursor/rules/</span></div>
-            <button class="copy-btn" data-copy="npx --yes @protopia/skill-topia init --platform cursor">Copy</button>
+            <button class="copy-btn" data-copy="npx --yes @linenoize/topia init --platform cursor">Copy</button>
           </div>
           <p>Skills are compiled into <code>.cursor/rules/</code>. Cursor picks them up automatically.</p>
         </div>
@@ -637,20 +637,20 @@
         <div class="tab-panel" id="install-windsurf">
           <p>Windsurf uses <code>.md</code> rule files in its rules directory.</p>
           <div class="code-wrapper">
-            <div class="code-block"><span class="cmd">npx --yes @protopia/skill-topia init <span class="flag">--platform windsurf</span></span>
+            <div class="code-block"><span class="cmd">npx --yes @linenoize/topia init <span class="flag">--platform windsurf</span></span>
 
 <span class="output">  ✓ Built 62 skills + 14 extensions to .windsurf/rules/</span></div>
-            <button class="copy-btn" data-copy="npx --yes @protopia/skill-topia init --platform windsurf">Copy</button>
+            <button class="copy-btn" data-copy="npx --yes @linenoize/topia init --platform windsurf">Copy</button>
           </div>
         </div>
 
         <div class="tab-panel" id="install-antigravity">
           <p>Google Antigravity (formerly Jules) uses the <code>.agent/</code> directory.</p>
           <div class="code-wrapper">
-            <div class="code-block"><span class="cmd">npx --yes @protopia/skill-topia init <span class="flag">--platform antigravity</span></span>
+            <div class="code-block"><span class="cmd">npx --yes @linenoize/topia init <span class="flag">--platform antigravity</span></span>
 
 <span class="output">  ✓ Built 62 skills + 14 extensions to .agent/rules/</span></div>
-            <button class="copy-btn" data-copy="npx --yes @protopia/skill-topia init --platform antigravity">Copy</button>
+            <button class="copy-btn" data-copy="npx --yes @linenoize/topia init --platform antigravity">Copy</button>
           </div>
           <div class="callout callout-info">
             <strong>Note:</strong> Antigravity is currently in early access. Install it from
@@ -1008,7 +1008,7 @@
       </p>
 
       <div class="code-wrapper">
-        <div class="code-block"><span class="cmd">npx --yes @protopia/skill-topia init <span class="flag">--platform cursor</span></span>
+        <div class="code-block"><span class="cmd">npx --yes @linenoize/topia init <span class="flag">--platform cursor</span></span>
 
 <span class="comment"># Skills appear in .cursor/rules/Topia/</span>
 <span class="comment"># Cursor auto-loads them for every conversation</span></div>
@@ -1017,7 +1017,7 @@
       <h2 id="ide-windsurf">Windsurf</h2>
 
       <div class="code-wrapper">
-        <div class="code-block"><span class="cmd">npx --yes @protopia/skill-topia init <span class="flag">--platform windsurf</span></span>
+        <div class="code-block"><span class="cmd">npx --yes @linenoize/topia init <span class="flag">--platform windsurf</span></span>
 
 <span class="comment"># Skills appear in .windsurf/rules/Topia/</span></div>
       </div>
@@ -1025,7 +1025,7 @@
       <h2 id="ide-antigravity">Antigravity</h2>
 
       <div class="code-wrapper">
-        <div class="code-block"><span class="cmd">npx --yes @protopia/skill-topia init <span class="flag">--platform antigravity</span></span>
+        <div class="code-block"><span class="cmd">npx --yes @linenoize/topia init <span class="flag">--platform antigravity</span></span>
 
 <span class="comment"># Skills appear in .agent/rules/Topia/</span></div>
       </div>
@@ -1038,7 +1038,7 @@
       </p>
 
       <div class="code-wrapper">
-        <div class="code-block"><span class="cmd">npx --yes @protopia/skill-topia init <span class="flag">--platform codex</span></span>
+        <div class="code-block"><span class="cmd">npx --yes @linenoize/topia init <span class="flag">--platform codex</span></span>
 
 <span class="comment"># Output structure:</span>
 <span class="output">  .codex/skills/</span>
@@ -1070,10 +1070,10 @@
 
       <div class="code-wrapper">
         <div class="code-block"><span class="comment"># Build Topia skills for OpenCode</span>
-<span class="cmd">npx @protopia/skill-topia build <span class="flag">--platform opencode</span> <span class="flag">--output .</span></span>
+<span class="cmd">npx @linenoize/topia build <span class="flag">--platform opencode</span> <span class="flag">--output .</span></span>
 
 <span class="comment"># Or initialize with auto-detection</span>
-<span class="cmd">npx @protopia/skill-topia init</span>
+<span class="cmd">npx @linenoize/topia init</span>
 
 <span class="comment"># Output structure:</span>
 <span class="output">  .opencode/</span>
@@ -1136,7 +1136,7 @@
 <span class="comment"># When build detects a SaaS project patterns activate automatically.</span>
 
 <span class="comment"># To manually compile with specific packs only:</span>
-<span class="cmd">npx --yes @protopia/skill-topia build <span class="flag">--extensions trading,saas</span></span></div>
+<span class="cmd">npx --yes @linenoize/topia build <span class="flag">--extensions trading,saas</span></span></div>
       </div>
 
       <h2 id="ext-list">Available Packs</h2>
@@ -1181,7 +1181,7 @@
 
       <div class="code-wrapper">
         <div class="code-block">{
-  <span class="comment">"$schema"</span>: "https://protopia.github.io/skill-topia/config-schema.json",
+  <span class="comment">"$schema"</span>: "https://linenoize.github.io/topia/config-schema.json",
   <span class="flag">"version"</span>: 1,
   <span class="flag">"platform"</span>: "cursor",
   <span class="flag">"skills"</span>: {
@@ -1202,7 +1202,7 @@
 
       <div class="code-wrapper">
         <div class="code-block"><span class="comment"># Via CLI flag</span>
-<span class="cmd">npx --yes @protopia/skill-topia build <span class="flag">--disable marketing,video-creator</span></span>
+<span class="cmd">npx --yes @linenoize/topia build <span class="flag">--disable marketing,video-creator</span></span>
 
 <span class="comment"># Or in topia.config.json</span>
 "skills": { "disabled": ["marketing", "video-creator"] }</div>
@@ -1218,7 +1218,7 @@
       <div class="code-wrapper">
         <div class="code-block"><span class="comment"># Reinstall the plugin</span>
 <span class="cmd">claude plugin uninstall Topia</span>
-<span class="cmd">claude plugin install protopia/skill-topia</span>
+<span class="cmd">claude plugin install linenoize/topia</span>
 
 <span class="comment"># Restart Claude Code to pick up changes</span></div>
       </div>
@@ -1226,7 +1226,7 @@
       <h3>"npx command not found" (Cursor/Windsurf)</h3>
       <p>Make sure Node.js 18+ is installed. Or install globally:</p>
       <div class="code-wrapper">
-        <div class="code-block"><span class="cmd">npm install -g @protopia/skill-topia</span>
+        <div class="code-block"><span class="cmd">npm install -g @linenoize/topia</span>
 <span class="cmd">Topia init <span class="flag">--platform cursor</span></span></div>
       </div>
 
@@ -1239,10 +1239,10 @@
       <h3>"How do I update Topia?"</h3>
       <div class="code-wrapper">
         <div class="code-block"><span class="comment"># Claude Code</span>
-<span class="cmd">claude plugin install protopia/skill-topia</span>  <span class="comment"># reinstall gets latest</span>
+<span class="cmd">claude plugin install linenoize/topia</span>  <span class="comment"># reinstall gets latest</span>
 
 <span class="comment"># Other platforms</span>
-<span class="cmd">npx --yes @protopia/skill-topia@latest build</span></div>
+<span class="cmd">npx --yes @linenoize/topia@latest build</span></div>
       </div>
 
       <!-- FAQ -->
@@ -1283,9 +1283,9 @@
         <p style="color:var(--text-muted);font-size:13px;">
           <span class="logo-Topia">&#9670;</span> Topia — Less skills. Deeper connections.
           <br>
-          <a href="https://github.com/protopia/skill-topia" target="_blank" rel="noopener">GitHub</a> &bull;
-          <a href="https://www.npmjs.com/package/@protopia/skill-topia" target="_blank" rel="noopener">npm</a> &bull;
-          <a href="https://github.com/protopia/skill-topia/issues" target="_blank" rel="noopener">Issues</a>
+          <a href="https://github.com/linenoize/topia" target="_blank" rel="noopener">GitHub</a> &bull;
+          <a href="https://www.npmjs.com/package/@linenoize/topia" target="_blank" rel="noopener">npm</a> &bull;
+          <a href="https://github.com/linenoize/topia/issues" target="_blank" rel="noopener">Issues</a>
         </p>
       </div>
 

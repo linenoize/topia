@@ -22,7 +22,7 @@
 From your project root:
 
 ```bash
-npx @protopia/skill-topia init
+npx @linenoize/topia init
 ```
 
 This detects your AI assistant and writes the right config files:
@@ -39,7 +39,7 @@ This detects your AI assistant and writes the right config files:
 Verify install:
 
 ```bash
-npx @protopia/skill-topia doctor
+npx @linenoize/topia doctor
 ```
 
 You should see: `✓ 65 skills, 10 packs, mesh valid`.
@@ -92,7 +92,7 @@ Compare vanilla AI coding vs Topia:
 By default, Topia skills only run when you invoke them. To auto-fire quality gates on every tool use:
 
 ```bash
-npx @protopia/skill-topia hooks install --preset gentle
+npx @linenoize/topia hooks install --preset gentle
 ```
 
 Presets:
@@ -107,9 +107,9 @@ Now `preflight`, `sentinel`, and `completion-gate` auto-fire on every file edit.
 ## Step 5: Explore the Mesh
 
 ```bash
-npx @protopia/skill-topia status       # project health dashboard (neofetch-style)
-npx @protopia/skill-topia visualize    # interactive mesh graph (Canvas 2D)
-npx @protopia/skill-topia doctor       # validate install + mesh integrity
+npx @linenoize/topia status       # project health dashboard (neofetch-style)
+npx @linenoize/topia visualize    # interactive mesh graph (Canvas 2D)
+npx @linenoize/topia doctor       # validate install + mesh integrity
 ```
 
 Read next:

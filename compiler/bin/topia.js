@@ -115,10 +115,10 @@ async function cmdInit(projectRoot, args) {
 
   // Build config
   const config = {
-    $schema: 'https://protopia.github.io/skill-topia/config-schema.json',
+    $schema: 'https://linenoize.github.io/topia/config-schema.json',
     version: 1,
     platform,
-    source: '@protopia/skill-topia',
+    source: '@linenoize/topia',
     skills: {
       disabled: args.disable ? args.disable.split(',') : [],
     },
@@ -174,7 +174,7 @@ async function cmdBuild(projectRoot, args) {
   }
 
   const adapter = getAdapter(platform);
-  const topiaRoot = config?.source === '@protopia/skill-topia' ? TOPIA_ROOT : config?.source || TOPIA_ROOT;
+  const topiaRoot = config?.source === '@linenoize/topia' ? TOPIA_ROOT : config?.source || TOPIA_ROOT;
   const outputRoot = typeof args.output === 'string' ? args.output : projectRoot;
   const disabledSkills = config?.skills?.disabled || [];
   const enabledPacks = config?.extensions?.enabled || null;
@@ -255,7 +255,7 @@ async function cmdDoctor(projectRoot, args) {
 
   const platform = args.platform || config.platform;
   const adapter = getAdapter(platform);
-  const topiaRoot = config.source === '@protopia/skill-topia' ? TOPIA_ROOT : config.source || TOPIA_ROOT;
+  const topiaRoot = config.source === '@linenoize/topia' ? TOPIA_ROOT : config.source || TOPIA_ROOT;
 
   const results = await runDoctor({
     outputRoot: projectRoot,
@@ -302,7 +302,7 @@ async function readVersion() {
 async function cmdStatus(projectRoot, args) {
   const config = await readConfig(projectRoot);
   const topiaRoot =
-    config?.source === '@protopia/skill-topia'
+    config?.source === '@linenoize/topia'
       ? TOPIA_ROOT
       : config?.source
         ? path.resolve(projectRoot, config.source)
@@ -326,7 +326,7 @@ async function cmdStatus(projectRoot, args) {
 async function cmdVisualize(projectRoot, args) {
   const config = await readConfig(projectRoot);
   const topiaRoot =
-    config?.source === '@protopia/skill-topia'
+    config?.source === '@linenoize/topia'
       ? TOPIA_ROOT
       : config?.source
         ? path.resolve(projectRoot, config.source)

@@ -15,7 +15,7 @@ export const id = 'antigravity';
 
 const RULES_REL_DIR = '.antigravity/rules';
 const Topia_PREFIX = 'Topia-';
-const AUTO_SIGNATURE = '@protopia/skill-topia hook-dispatch';
+const AUTO_SIGNATURE = '@linenoize/topia hook-dispatch';
 
 export function detect(projectRoot) {
   return existsSync(path.join(projectRoot, '.antigravity'));

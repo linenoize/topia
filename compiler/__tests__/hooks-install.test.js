@@ -216,7 +216,7 @@ describe('uninstallHooks (claude adapter)', () => {
               {
                 matcher: 'Edit|Write',
                 hooks: [
-                  { type: 'command', command: 'npx --yes @protopia/skill-topia hook-dispatch preflight' },
+                  { type: 'command', command: 'npx --yes @linenoize/topia hook-dispatch preflight' },
                   { type: 'command', command: 'user-lint.sh' },
                 ],
               },

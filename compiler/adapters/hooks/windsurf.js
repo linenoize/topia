@@ -23,7 +23,7 @@ export const id = 'windsurf';
 const WORKFLOWS_REL_DIR = '.windsurf/workflows';
 const RULES_REL_DIR = '.windsurf/rules';
 const Topia_PREFIX = 'Topia-';
-const AUTO_SIGNATURE = '@protopia/skill-topia hook-dispatch';
+const AUTO_SIGNATURE = '@linenoize/topia hook-dispatch';
 
 export function detect(projectRoot) {
   return existsSync(path.join(projectRoot, '.windsurf'));

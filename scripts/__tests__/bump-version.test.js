@@ -22,7 +22,7 @@ function seedFixture(version) {
   // type: module required so the ESM bump-version.js can be executed from this fixture root
   writeFileSync(
     join(root, 'package.json'),
-    JSON.stringify({ name: '@protopia/skill-topia', version, type: 'module' }, null, 2),
+    JSON.stringify({ name: '@linenoize/topia', version, type: 'module' }, null, 2),
   );
   writeFileSync(join(root, '.claude-plugin', 'plugin.json'), JSON.stringify({ name: 'Topia', version }, null, 2));
   writeFileSync(

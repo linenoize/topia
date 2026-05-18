@@ -30,7 +30,7 @@ All notable changes to Topia will be documented in this file.
 ### Changed
 - **`compiler/bin/topia.js`** — new `migrate-from-rune` subcommand wired with `--dry-run` / `--force` / `--skip` / `--yes` flags.
 - **Doctor: `Required sections` extended** — now requires `Purpose` and `Constraints` in addition to `Sharp Edges`, `Done When`, `Cost Profile`. Added `## Purpose` headings to `scout`, `test`, `verification` SKILL.md files where the intro paragraph existed without the heading.
-- **Repo URLs updated** — moved from `github.com/skill-topia/Topia` to `github.com/protopia/skill-topia`; npm package `@skill-topia/topia` → `@protopia/skill-topia`; landing page links + install instructions + hook-detection regexes updated across ~32 files. CLI command stays `topia`; author identity stays `skill-topia`.
+- **Repo URLs updated** — moved from `github.com/skill-topia/Topia` to `github.com/linenoize/topia`; npm package `@skill-topia/topia` → `@linenoize/topia`; landing page links + install instructions + hook-detection regexes updated across ~32 files. CLI command stays `topia`; author identity stays `skill-topia`.
 - **Docs trimmed** — deleted `docs/USER-GUIDE-CYCLE.md` and `docs/DEVELOPER-CYCLE.md` (163 lines of content redundant with `docs/index.html` "How it works" + "Scenarios" sections and `docs/GETTING_STARTED.md`).
 
 ---
