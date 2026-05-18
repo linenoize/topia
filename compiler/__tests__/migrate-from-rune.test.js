@@ -2,13 +2,13 @@ import assert from 'node:assert';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { afterEach, beforeEach, describe, test } from 'node:test';
+import { afterEach, describe, test } from 'node:test';
 import {
-  MIGRATED_FLAG,
-  SKIP_FLAG,
   detectRuneState,
+  MIGRATED_FLAG,
   migrateFromRune,
   planMigration,
+  SKIP_FLAG,
 } from '../commands/migrate-from-rune.js';
 
 function makeRuneProject(opts = {}) {

@@ -209,7 +209,10 @@ describe('sentinel/preflight org policy integration', () => {
 
   test('preflight references .topia/org/org.md', () => {
     const content = readFileSync(preflightPath, 'utf-8');
-    assert.ok(content.includes('.topia/org/org.md'), 'preflight should reference .topia/org/org.md for org requirements');
+    assert.ok(
+      content.includes('.topia/org/org.md'),
+      'preflight should reference .topia/org/org.md for org requirements',
+    );
   });
 
   test('preflight has Organization Approval Requirements step', () => {

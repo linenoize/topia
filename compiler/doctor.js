@@ -8,8 +8,7 @@
 import { existsSync } from 'node:fs';
 import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { detectPlatforms } from './adapters/hooks/index.js';
-import { parseOrgConfig, parsePack, parseTemplate } from './parser.js';
+import { parsePack, parseTemplate } from './parser.js';
 
 /**
  * Run doctor checks on compiled output
@@ -203,7 +202,7 @@ async function checkSplitPacks(extensionsDir) {
  */
 async function checkInjectionRules(TopiaRoot, _config) {
   const errors = [];
-  const parentDir = path.resolve(TopiaRoot, '..');
+  const _parentDir = path.resolve(TopiaRoot, '..');
 
   // Collect known skill names from Free core
   const knownSkills = new Set();
@@ -256,7 +255,7 @@ async function checkInjectionRules(TopiaRoot, _config) {
  * Check that template signal references exist in the skill ecosystem.
  * Scans templates/ in Pro/Business extension dirs (relative to TopiaRoot parent).
  */
-async function checkTemplateSignals(TopiaRoot, _config) {
+async function _checkTemplateSignals(TopiaRoot, _config) {
   const errors = [];
 
   // Collect all known signals from core + pack skills

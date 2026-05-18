@@ -13,7 +13,6 @@
  *   - global   — `~/.claude/settings.json` (every Claude Code session)
  */
 
-import { existsSync, readFileSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { createInterface } from 'node:readline';
@@ -111,4 +110,3 @@ export function formatSetupResult(result) {
   lines.push('');
   return lines.join('\n');
 }
-

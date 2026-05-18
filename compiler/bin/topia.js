@@ -20,11 +20,11 @@ import { fileURLToPath } from 'node:url';
 import { getAdapter, listPlatforms } from '../adapters/index.js';
 import { getAllAnalytics } from '../analytics.js';
 import { dispatchHook } from '../commands/hook-dispatch.js';
-import { migrateFromRune } from '../commands/migrate-from-rune.js';
 import { checkHookDrift, formatHookDriftResult } from '../commands/hooks/drift.js';
 import { installHooks } from '../commands/hooks/install.js';
 import { hookStatus } from '../commands/hooks/status.js';
 import { uninstallHooks } from '../commands/hooks/uninstall.js';
+import { migrateFromRune } from '../commands/migrate-from-rune.js';
 import { formatSetupResult, runSetup } from '../commands/setup.js';
 import { generateDashboardHTML } from '../dashboard.js';
 import { checkMeshIntegrity, formatDoctorResults, formatMeshResults, runDoctor } from '../doctor.js';
@@ -427,9 +427,7 @@ async function cmdHooks(projectRoot, args, subcommand) {
     log(
       '    uninstall [--platform <name>|all]                              Remove Topia-managed entries (keeps user entries)',
     );
-    log(
-      '    status [--platform <name>|all]                                Show active preset, wired skills',
-    );
+    log('    status [--platform <name>|all]                                Show active preset, wired skills');
     log('');
     log('  Platforms: claude, cursor, windsurf, antigravity (auto-detected if omitted)');
     log('');
@@ -633,9 +631,7 @@ async function main() {
       log('  Topia CLI — Skill mesh for AI coding assistants');
       log('');
       log('  Commands:');
-      log(
-        '    setup    Interactive wizard — pick scope, install hooks (recommended for first-time)',
-      );
+      log('    setup    Interactive wizard — pick scope, install hooks (recommended for first-time)');
       log('             [--here|--global] [--preset gentle|strict] [--dry]');
       log('    init     Interactive setup for build pipeline (auto-detects platform)');
       log('    build    Compile skills for configured platform');

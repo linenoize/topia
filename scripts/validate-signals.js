@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -120,9 +120,7 @@ export function validateSignals(skillsDir) {
   for (const [name, data] of Object.entries(coreSkills)) {
     for (const signal of [...data.emit, ...data.listen]) {
       if (!SIGNAL_NAME_PATTERN.test(signal)) {
-        issues.push(
-          `Skill "${name}" declares invalid signal name "${signal}" — must match lowercase.dot.notation`,
-        );
+        issues.push(`Skill "${name}" declares invalid signal name "${signal}" — must match lowercase.dot.notation`);
       }
     }
   }

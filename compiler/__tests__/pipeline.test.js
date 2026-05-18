@@ -48,7 +48,10 @@ describe('full pipeline: build skill', () => {
         assert.ok(result.body.includes('Topia:'), `claude: should preserve Topia: cross-refs`);
       } else {
         // Non-Claude: should have transformed cross-refs
-        assert.ok(!result.body.includes('`Topia:build`'), `${platform}: should not have backticked Topia:build cross-ref`);
+        assert.ok(
+          !result.body.includes('`Topia:build`'),
+          `${platform}: should not have backticked Topia:build cross-ref`,
+        );
 
         // Should have footer with branding
         assert.ok(result.footer.includes('Topia'), `${platform}: footer missing branding`);

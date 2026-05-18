@@ -210,7 +210,8 @@ async function applyInjections(body, rules) {
         `\n\n<!-- Topia Reference: ${rule.pack}/${rule.ref} -->\n` +
           `<CONTEXT-INJECTION source="${rule.pack}" context="${rule.context}">\n` +
           `${cleaned}\n` +
-          `</CONTEXT-INJECTION>`);
+          `</CONTEXT-INJECTION>`,
+      );
     } catch {
       // Unreadable reference — skip
     }
@@ -333,13 +334,7 @@ function outputFileName(skillName, adapter) {
  * @param {string[]} [options.disabledSkills] - skills to skip
  * @param {string[]} [options.enabledPacks] - extension packs to include (null = all)
  * @returns {Promise<object>} build result stats
- */export async function buildAll({
-  TopiaRoot,
-  outputRoot,
-  adapter,
-  disabledSkills = [],
-  enabledPacks = null,
-}) {
+ */ export async function buildAll({ TopiaRoot, outputRoot, adapter, disabledSkills = [], enabledPacks = null }) {
   // Claude Code = passthrough, no build needed
   if (adapter.name === 'claude') {
     return {
@@ -528,12 +523,14 @@ function outputFileName(skillName, adapter) {
           'Pre-built multi-phase workflows for `build --template <name>`:',
           '',
           ...templates.map(
-            (t) => `| \`${t.name}\` | ${t.parsed.description.slice(0, 100)} | chain: ${t.parsed.chain} |`),
+            (t) => `| \`${t.name}\` | ${t.parsed.description.slice(0, 100)} | chain: ${t.parsed.chain} |`,
+          ),
           '',
           ...templates.map((t) => {
             const header = `### Template: ${t.name}`;
             return `${header}\n\n${t.parsed.body}`;
-          })];
+          }),
+        ];
         parsed.body = `${parsed.body}\n\n${templateSection.join('\n')}`;
         // Re-extract refs after template injection
         parsed.crossRefs = extractCrossRefs(parsed.body);
@@ -643,7 +640,8 @@ function generateIndex(stats, adapter) {
     '## Core Skills',
     '',
     ...stats.files.filter((f) => !f.match(/[-/]ext-/) && !f.includes('index')).map((f) => `- ${f}`),
-    ''];
+    '',
+  ];
 
   const extFiles = stats.files.filter((f) => f.match(/[-/]ext-/));
   if (extFiles.length > 0) {
@@ -685,7 +683,8 @@ function generateAgentsMd(stats, adapter) {
     '',
     '---',
     '> Topia Skill Mesh — https://github.com/protopia/skill-topia',
-    ''];
+    '',
+  ];
 
   return lines.join('\n');
 }

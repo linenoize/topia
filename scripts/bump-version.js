@@ -31,7 +31,7 @@ const args = process.argv.slice(2);
 const newVersion = args.find((a) => /^\d+\.\d+\.\d+$/.test(a));
 const dryRun = args.includes('--dry-run');
 const titleIdx = args.indexOf('--title');
-const newTitle = titleIdx >= 0 ? args[titleIdx + 1] : null;
+const _newTitle = titleIdx >= 0 ? args[titleIdx + 1] : null;
 
 if (!newVersion) {
   console.error('Usage: node scripts/bump-version.js <X.Y.Z> [--dry-run] [--title "Wave Name"]');

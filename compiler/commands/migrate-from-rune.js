@@ -19,9 +19,9 @@
  *   8. Write `.topia/migrated-from-rune.flag` recording what was done.
  */
 
-import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, statSync, writeFileSync, copyFileSync } from 'node:fs';
-import path from 'node:path';
+import { copyFileSync, existsSync, mkdirSync, readdirSync, renameSync, statSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
+import path from 'node:path';
 import { createInterface } from 'node:readline';
 
 const RUNE_STATE_FILES = [
@@ -181,9 +181,16 @@ function printPlan(plan, opts) {
   console.log(lines.join('\n'));
 }
 
-export async function migrateFromRune({ cwd = process.cwd(), dryRun = false, force = false, skip = false, autoYes = false, homeDir } = {}) {
+export async function migrateFromRune({
+  cwd = process.cwd(),
+  dryRun = false,
+  force = false,
+  skip = false,
+  autoYes = false,
+  homeDir,
+} = {}) {
   const plan = planMigration(cwd, homeDir);
-  const { topiaDir, runeState, runeKit, flags } = plan;
+  const { topiaDir, runeState, runeKit } = plan;
 
   // --skip path: write flag and exit
   if (skip) {
@@ -294,4 +301,4 @@ export async function migrateFromRune({ cwd = process.cwd(), dryRun = false, for
 }
 
 // Export for tests
-export { planMigration, detectRuneState, detectRuneKit, RUNE_STATE_FILES, RUNE_STATE_DIRS, MIGRATED_FLAG, SKIP_FLAG };
+export { detectRuneKit, detectRuneState, MIGRATED_FLAG, planMigration, RUNE_STATE_DIRS, RUNE_STATE_FILES, SKIP_FLAG };

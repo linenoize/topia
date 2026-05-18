@@ -9,12 +9,7 @@
 import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import {
-  appendHookBlock,
-  detectPreset,
-  stripTopiaHooks,
-  summarizeTopiaHooks,
-} from '../../commands/hooks/merge.js';
+import { appendHookBlock, detectPreset, stripTopiaHooks, summarizeTopiaHooks } from '../../commands/hooks/merge.js';
 import { buildPreset, SETTINGS_REL_PATH, WIRED_SKILLS } from '../../commands/hooks/presets.js';
 
 export const id = 'claude';

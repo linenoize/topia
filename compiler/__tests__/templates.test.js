@@ -141,4 +141,3 @@ describe('YAML list parsing in frontmatter', () => {
     assert.deepStrictEqual(parsed.signals.emit, ['code.changed']);
   });
 });
-

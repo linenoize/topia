@@ -88,4 +88,3 @@ function resolvePlatforms(projectRoot, requested) {
   }
   return Array.from(new Set(expanded));
 }
-

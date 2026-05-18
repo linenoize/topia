@@ -175,8 +175,10 @@ describe('buildAll split pack auto-discovery', () => {
         '',
         '# test-skill',
         '',
-        'Hello.'].join('\n'),
-      'utf-8');
+        'Hello.',
+      ].join('\n'),
+      'utf-8',
+    );
 
     // Split pack WITHOUT skills: array in frontmatter
     await writeFile(
@@ -192,8 +194,10 @@ describe('buildAll split pack auto-discovery', () => {
         '',
         '# @Topia/test-pack',
         '',
-        'Pack index body.'].join('\n'),
-      'utf-8');
+        'Pack index body.',
+      ].join('\n'),
+      'utf-8',
+    );
 
     // Two skill files in skills/ subdir
     await writeFile(
@@ -207,8 +211,10 @@ describe('buildAll split pack auto-discovery', () => {
         '',
         '# alpha',
         '',
-        'Alpha body content here.'].join('\n'),
-      'utf-8');
+        'Alpha body content here.',
+      ].join('\n'),
+      'utf-8',
+    );
     await writeFile(
       path.join(extSkillsDir, 'beta.md'),
       [
@@ -220,8 +226,10 @@ describe('buildAll split pack auto-discovery', () => {
         '',
         '# beta',
         '',
-        'Beta body content here.'].join('\n'),
-      'utf-8');
+        'Beta body content here.',
+      ].join('\n'),
+      'utf-8',
+    );
 
     return tmp;
   }

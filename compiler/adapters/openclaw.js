@@ -111,7 +111,8 @@ export default {
           'OPENCLAW_OUTPUT_DIR',
           'OPENCLAW_AGENT_DIR/artifacts/<skill>',
           'OPENCLAW_STATE_DIR/artifacts/<skill>',
-          './.topia/<skill>/'],
+          './.topia/<skill>/',
+        ],
         outputContract: {
           stdout: 'one artifact path per line (default) or JSON (--json mode)',
           stderr: 'diagnostics + warnings',
