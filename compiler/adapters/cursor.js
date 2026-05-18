@@ -1,0 +1,69 @@
+/**
+ * Cursor Adapter
+ *
+ * Emits .mdc rule files for .cursor/rules/ directory.
+ * Uses @file references for cross-skill mesh.
+ *
+ * MODEL TIER MAPPING (v2.15+):
+ * No-op. Cursor's Anthropic API integration understands `model: opus|sonnet|haiku`
+ * natively. No translation required.
+ */
+
+import { BRANDING_FOOTER } from '../transforms/branding.js';
+
+const TOOL_MAP = {
+  Read: 'read the file',
+  Write: 'write/create the file',
+  Edit: 'edit the file',
+  Glob: 'search for files by pattern',
+  Grep: 'search file contents',
+  Bash: 'run a terminal command',
+  TodoWrite: 'track progress',
+  Skill: 'follow the referenced skill rules',
+  Agent: 'execute the workflow',
+};
+
+export default {
+  name: 'cursor',
+  outputDir: '.cursor/rules',
+  fileExtension: '.mdc',
+  skillPrefix: 'Topia-',
+  skillSuffix: '',
+
+  transformReference(skillName, raw) {
+    const isBackticked = raw.startsWith('`') && raw.endsWith('`');
+    const ref = `@Topia-${skillName}.mdc`;
+    return isBackticked ? `\`${ref}\`` : ref;
+  },
+
+  transformToolName(toolName) {
+    return TOOL_MAP[toolName] || toolName;
+  },
+
+  generateHeader(skill) {
+    return [
+      '---',
+      `description: "${skill.description}"`,
+      'globs: []',
+      `alwaysApply: ${skill.layer === 'L0'}`,
+      '---',
+      '',
+    ].join('\n');
+  },
+
+  generateFooter() {
+    return BRANDING_FOOTER;
+  },
+
+  transformSubagentInstruction(text) {
+    return text;
+  },
+
+  scriptsDir(skillName) {
+    return `Topia-${skillName}-scripts`;
+  },
+
+  postProcess(content) {
+    return content.replace(/^context: fork\n/gm, '').replace(/^agent: general-purpose\n/gm, '');
+  },
+};

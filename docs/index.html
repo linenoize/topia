@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Topia &mdash; discipline rails for AI coding agents</title>
+  <meta name="description" content="A workflow toolkit that gives AI coding agents structured rails: plan before code, test before merge, persist context across sessions. Internal-only, 65 skills, multi-platform.">
+  <meta property="og:title" content="Topia &mdash; discipline rails for AI coding agents">
+  <meta property="og:description" content="Plan before code. Test before merge. Persist context across sessions. Hooks block bad commits. Memory survives session resets.">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=1.2.0">
+</head>
+<body>
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">
+        <span class="logo-Topia">&#9670;</span> Topia
+      </a>
+      <div class="nav-links">
+        <a href="#problem">Problem</a>
+        <a href="#how">How it works</a>
+        <a href="#memory">Memory</a>
+        <a href="#guarantees">Guarantees</a>
+        <a href="#scenarios">Scenarios</a>
+        <a href="#install">Install</a>
+        <div class="nav-controls notranslate" translate="no">
+          <button class="theme-toggle" id="theme-toggle" aria-label="Toggle light/dark mode" title="Toggle theme">&#9728;</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-mesh" aria-hidden="true">
+      <canvas id="mesh-canvas"></canvas>
+    </div>
+    <div class="hero-content">
+      <p class="hero-badge">v1.2.0 &middot; 65 skills &middot; persistent memory via agora-code · rune-kit migration</p>
+      <h1>AI coding agents are smart.<br><span class="accent">Topia makes them disciplined.</span></h1>
+      <p class="hero-sub">A workflow toolkit for Claude Code, Cursor, Codex, and other AI coding IDEs. Plan before code. Tests before commits. Decisions persist across sessions. Hooks block bad work before it lands.</p>
+      <div class="hero-actions">
+        <a href="#install" class="btn btn-primary">Install</a>
+        <a href="#how" class="btn btn-ghost">How it works</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLEM -->
+  <section class="section" id="problem">
+    <div class="container">
+      <h2>What goes wrong without rails</h2>
+      <p class="section-sub">AI coding agents have three reliable failure modes. Topia attacks each one directly.</p>
+      <div class="compare-grid">
+        <div class="compare-card compare-bad">
+          <h3>Skipped steps</h3>
+          <pre class="compare-diagram">"add user auth"
+&darr;
+write code &harr; ???
+       &harr; no plan, no tests</pre>
+          <p>Agents jump straight to code. No requirements, no plan, no failing test first. Bug count drifts up; reviewers burn out.</p>
+        </div>
+        <div class="compare-card compare-bad">
+          <h3>Forgotten context</h3>
+          <pre class="compare-diagram">Session 1: pick approach A
+Session 2: <span class="text-loss">redo discovery</span>
+Session 3: <span class="text-loss">pick approach B</span></pre>
+          <p>Every new session starts cold. Decisions, gotchas, "we tried that already" &mdash; gone. The agent re-asks what it should already know.</p>
+        </div>
+        <div class="compare-card compare-bad">
+          <h3>Bad work shipped</h3>
+          <pre class="compare-diagram">code &rarr; <span class="text-loss">secret in commit</span>
+     &rarr; <span class="text-loss">SQL injection</span>
+     &rarr; <span class="text-loss">unverified claim</span></pre>
+          <p>Secrets leak into git. OWASP patterns slip past review. Agents claim "tests pass" without running them. No gate, no proof.</p>
+        </div>
+      </div>
+      <p style="text-align:center;margin-top:2rem;color:var(--text-muted);font-size:0.85rem;">
+        Topia doesn't make agents smarter &mdash; they already know how to code.<br>
+        Topia gives them <strong style="color:var(--accent);">rails</strong> the model can't skip.
+      </p>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="section section-dark" id="how">
+    <div class="container">
+      <h2>How it works</h2>
+      <p class="section-sub">A request hits Topia. Eight things happen in order. The agent can't skip any of them.</p>
+
+      <div class="how-flow">
+        <div class="how-step">
+          <div class="how-step-num">1</div>
+          <div>
+            <strong>Route</strong>
+            <p><code>skill-router</code> maps the request to a workflow. "add auth" routes to <code>build</code>; "production is down" routes to <code>incident</code>; "research X" routes to <code>research</code>. No more ambiguous prompts.</p>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="how-step-num">2</div>
+          <div>
+            <strong>Recall</strong>
+            <p>Before any work starts, the agent pulls prior context: past decisions from <code>journal</code>, codebase shape from <code>scout</code>, and (if registered) prior learnings from the <strong>agora-code MCP</strong> &mdash; persistent memory across sessions.</p>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="how-step-num">3</div>
+          <div>
+            <strong>Plan</strong>
+            <p><code>idea</code> elicits the WHAT (5 probing questions, max), then <code>plan</code> writes a phase-by-phase blueprint. Optionally, <code>adversary</code> red-teams the plan before code is written &mdash; finds edge cases at plan-time, not at review-time.</p>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="how-step-num">4</div>
+          <div>
+            <strong>Test (first)</strong>
+            <p><code>test</code> writes failing tests against the acceptance criteria from the plan. Red phase. No implementation yet. TDD enforced, not suggested.</p>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="how-step-num">5</div>
+          <div>
+            <strong>Implement</strong>
+            <p><code>fix</code> writes code until tests go green. If an error surfaces, <code>debug</code> finds the root cause before another patch attempt. No guessing.</p>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="how-step-num">6</div>
+          <div>
+            <strong>Gate</strong>
+            <p>Three checks run before commit: <code>preflight</code> (logic, completeness, regressions), <code>sentinel</code> (secrets, OWASP, dep audit), <code>review</code> (quality, conventions). Each is a gate, not a suggestion &mdash; BLOCK verdicts stop the commit.</p>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="how-step-num">7</div>
+          <div>
+            <strong>Verify</strong>
+            <p><code>verification</code> runs lint + type-check + tests + build. <code>hallucination-guard</code> confirms every import and API call actually exists. <code>completion-gate</code> validates the agent's claims against the evidence trail &mdash; "tests pass" requires the output.</p>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="how-step-num">8</div>
+          <div>
+            <strong>Persist + commit</strong>
+            <p><code>journal</code> writes the decision (and pushes it to agora-code if registered). <code>git</code> creates a semantic commit. Next session's <code>recall</code> step now sees this decision.</p>
+          </div>
+        </div>
+      </div>
+
+      <p style="text-align:center;margin-top:2.5rem;color:var(--text-muted);font-size:0.9rem;">
+        Eight steps, one prompt. The model fills in the work; the toolkit enforces the order.
+      </p>
+    </div>
+  </section>
+
+  <!-- PERSISTENT MEMORY (agora-code) -->
+  <section class="section" id="memory">
+    <div class="container">
+      <h2>Persistent memory across sessions</h2>
+      <p class="section-sub">The #1 complaint about AI coding agents is amnesia. v1.1.0 ships with <a href="https://github.com/thebnbrkr/agora-code" target="_blank" rel="noopener">agora-code</a> vendored as an optional MCP backend &mdash; SQLite-backed memory, symbol index, semantic recall.</p>
+
+      <div class="compare-grid">
+        <div class="compare-card compare-bad">
+          <h3>Without memory</h3>
+          <pre class="compare-diagram">Mon: agent reads 12 files,
+     decides on Zustand
+Wed: <span class="text-loss">agent re-reads 12 files</span>
+     <span class="text-loss">picks Redux instead</span>
+Fri: <span class="text-loss">re-asks "where's auth?"</span></pre>
+          <p>Every session starts cold. Discovery cost paid 3&times; per week. No durable answer to "why did we decide this?"</p>
+        </div>
+        <div class="compare-card compare-good">
+          <h3>With agora-code</h3>
+          <pre class="compare-diagram">Mon: decision stored
+Wed: <span class="text-profit">recall_learnings("state")</span>
+     &rarr; "we picked Zustand on
+        Mon because [reason]"
+Fri: <span class="text-profit">get_file_symbols("auth")</span>
+     &rarr; lines, no re-read</pre>
+          <p>Decisions, gotchas, file symbols persist. <code>recall_learnings</code> surfaces them at the start of the next related task &mdash; before the agent re-discovers.</p>
+        </div>
+      </div>
+
+      <div class="memory-tools">
+        <h3>What the MCP exposes</h3>
+        <table class="memory-table">
+          <thead>
+            <tr><th>Tool</th><th>Topia skill that calls it</th><th>What it replaces</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>store_learning</code></td><td><code>journal</code></td><td>Markdown append-only ADR</td></tr>
+            <tr><td><code>recall_learnings</code></td><td><code>build</code>, <code>idea</code>, <code>neural-memory</code></td><td>Re-reading old <code>.topia/</code> files</td></tr>
+            <tr><td><code>get_file_symbols</code></td><td><code>neural-memory</code></td><td>Re-reading source for function lookups</td></tr>
+            <tr><td><code>search_symbols</code></td><td><code>neural-memory</code></td><td>Project-wide grep</td></tr>
+            <tr><td><code>recall_file_history</code></td><td><code>neural-memory</code></td><td><code>git log</code> + memory of why</td></tr>
+            <tr><td><code>complete_session</code></td><td><code>journal</code></td><td>Manual session summary</td></tr>
+          </tbody>
+        </table>
+        <p class="memory-note">Opt-in. Requires Python 3.10+ and <code>pip install ./mcp-servers/agora-code</code>. Skills fall back to file-based <code>.topia/</code> persistence if the MCP isn't registered &mdash; never a hard dependency. <a href="mcp-integrations/agora-code.html">Integration guide &rarr;</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- GUARANTEES (replaces internal benchmark) -->
+  <section class="section section-dark" id="guarantees">
+    <div class="container">
+      <h2>What dev teams actually see</h2>
+      <p class="section-sub">Forget token counts. These are the behaviors that change when an agent runs on Topia.</p>
+
+      <div class="guarantees-grid">
+        <div class="guarantee">
+          <div class="guarantee-icon">&#128274;</div>
+          <h3>Secrets stay out of git</h3>
+          <p><code>sentinel</code> runs as a pre-commit hook. Hardcoded API keys, AWS credentials, and OAuth tokens are blocked &mdash; not flagged in a comment, blocked. Same for OWASP top-10 patterns.</p>
+        </div>
+        <div class="guarantee">
+          <div class="guarantee-icon">&#9989;</div>
+          <h3>Tests precede code</h3>
+          <p><code>build</code> Phase 3 writes failing tests against the plan's acceptance criteria <em>before</em> Phase 4 implements anything. PRs ship with tests that map 1:1 to requirements. Reviewers stop having to ask "but where are the tests?"</p>
+        </div>
+        <div class="guarantee">
+          <div class="guarantee-icon">&#128221;</div>
+          <h3>"Why did we do it this way?"<br>has an answer</h3>
+          <p>Every architecturally meaningful decision goes through <code>journal</code>'s 3-criteria gate (sum &ge; 11, each axis &ge; 3, counter-test filled). The ADR persists to <code>.topia/adr/</code> and (optionally) to agora-code's recall index.</p>
+        </div>
+        <div class="guarantee">
+          <div class="guarantee-icon">&#128270;</div>
+          <h3>"Tests pass" requires the output</h3>
+          <p><code>completion-gate</code> is a lie detector. Every claim ("tests pass", "build is green", "deployed") must have evidence in the tool-call trail. Default-FAIL mindset &mdash; no evidence, no PASS.</p>
+        </div>
+        <div class="guarantee">
+          <div class="guarantee-icon">&#127760;</div>
+          <h3>Same rules across IDEs</h3>
+          <p>One source of truth in <code>skills/</code> compiles to Claude Code, Cursor, Antigravity, Codex, OpenCode, and OpenClaw. Switch IDEs without rewriting your workflow rules.</p>
+        </div>
+        <div class="guarantee">
+          <div class="guarantee-icon">&#9881;</div>
+          <h3>Imports actually exist</h3>
+          <p><code>hallucination-guard</code> fires after any AI-generated code introduces new imports or API calls. Phantom functions, typosquatted packages, and made-up SDK methods get caught before commit, not in production.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORKFLOWS -->
+  <section class="section" id="workflows">
+    <div class="container">
+      <h2>Workflows</h2>
+      <p class="section-sub">Three top-level commands cover most of what you'll run.</p>
+      <div class="workflow-grid">
+        <div class="workflow-card">
+          <h3><code>/topia build</code></h3>
+          <p class="workflow-desc">Default for any code change &mdash; features, fixes, refactors.</p>
+          <div class="workflow-phases">
+            <div class="phase"><span class="phase-num">0</span> RESUME &mdash; detect existing plans</div>
+            <div class="phase"><span class="phase-num">1</span> UNDERSTAND &mdash; scout + idea + recall</div>
+            <div class="phase"><span class="phase-num">2</span> PLAN &mdash; phase files + adversary review</div>
+            <div class="phase"><span class="phase-num">3</span> TEST &mdash; failing tests first</div>
+            <div class="phase"><span class="phase-num">4</span> IMPLEMENT &mdash; fix until green</div>
+            <div class="phase"><span class="phase-num">5</span> GATE &mdash; preflight + sentinel + review</div>
+            <div class="phase"><span class="phase-num">6</span> VERIFY &mdash; verification + hallucination-guard</div>
+            <div class="phase"><span class="phase-num">7</span> COMMIT &mdash; semantic git commit</div>
+          </div>
+        </div>
+        <div class="workflow-card">
+          <h3><code>/topia rescue</code></h3>
+          <p class="workflow-desc">Modernize legacy code without breaking it.</p>
+          <div class="workflow-phases">
+            <div class="phase"><span class="phase-num">0</span> RECON &mdash; autopsy health score</div>
+            <div class="phase"><span class="phase-num">1</span> SAFETY NET &mdash; characterization tests</div>
+            <div class="phase"><span class="phase-num">2</span> SURGERY &mdash; one module per session</div>
+            <div class="phase"><span class="phase-num">3</span> CLEANUP &mdash; remove legacy markers</div>
+            <div class="phase"><span class="phase-num">4</span> VERIFY &mdash; before vs after score</div>
+          </div>
+        </div>
+        <div class="workflow-card">
+          <h3><code>/topia team</code></h3>
+          <p class="workflow-desc">Parallel work when 5+ files or 3+ modules.</p>
+          <div class="workflow-phases">
+            <div class="phase"><span class="phase-num">1</span> DECOMPOSE &mdash; dependency DAG</div>
+            <div class="phase"><span class="phase-num">2</span> ASSIGN &mdash; worktree per stream</div>
+            <div class="phase"><span class="phase-num">3</span> EXECUTE &mdash; parallel agents</div>
+            <div class="phase"><span class="phase-num">4</span> MERGE &mdash; conflict resolution</div>
+            <div class="phase"><span class="phase-num">5</span> VALIDATE &mdash; completion-gate</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMMON SCENARIOS -->
+  <section class="section" id="scenarios">
+    <div class="container">
+      <h2>What this looks like in practice</h2>
+      <p class="section-sub">Concrete situations a developer or small team runs into, and the path Topia takes through them.</p>
+
+      <div class="scenarios-grid">
+        <div class="scenario">
+          <h3>"I just inherited this codebase."</h3>
+          <ol class="scenario-flow">
+            <li><code>/topia onboard</code> &mdash; scans repo, drafts <code>CLAUDE.md</code> + <code>.topia/</code></li>
+            <li><code>/topia autopsy</code> &mdash; per-module health scores, hotspot map</li>
+            <li><code>/topia retro</code> &mdash; commit history patterns, who-shipped-what</li>
+          </ol>
+          <p class="scenario-outcome">In 5 minutes you have a map, a health report, and a shipping log &mdash; before reading a single line of source.</p>
+        </div>
+
+        <div class="scenario">
+          <h3>"I need to add a feature without breaking the rest."</h3>
+          <ol class="scenario-flow">
+            <li><code>/topia build "add user auth with magic-link"</code></li>
+            <li>Routes through <code>idea</code> &rarr; <code>plan</code> &rarr; <code>test</code> (red) &rarr; <code>fix</code> (green) &rarr; gates &rarr; commit</li>
+            <li><code>journal</code> stores the design decision for future "why did we do it this way?"</li>
+          </ol>
+          <p class="scenario-outcome">One prompt produces a planned, tested, security-scanned commit. Reviewers see tests-first PRs.</p>
+        </div>
+
+        <div class="scenario">
+          <h3>"Production is down."</h3>
+          <ol class="scenario-flow">
+            <li><code>/topia incident</code> &mdash; triage to P1/P2/P3, contain BEFORE investigating</li>
+            <li><code>/topia debug</code> &mdash; find root cause (no guessing at fixes yet)</li>
+            <li><code>/topia fix</code> + <code>/topia deploy</code> &mdash; ship the patch; <code>watchdog</code> verifies live</li>
+            <li><code>/topia journal</code> &mdash; postmortem as ADR</li>
+          </ol>
+          <p class="scenario-outcome">Containment first; root cause before patch; postmortem captured for the next on-call rotation.</p>
+        </div>
+
+        <div class="scenario">
+          <h3>"This module is a mess and tests barely exist."</h3>
+          <ol class="scenario-flow">
+            <li><code>/topia rescue</code> &mdash; multi-session legacy refactor orchestrator</li>
+            <li><code>autopsy</code> &rarr; <code>safeguard</code> (characterization tests + rollback tags) &rarr; <code>surgeon</code> (one module per session)</li>
+            <li>Before/after health score on completion</li>
+          </ol>
+          <p class="scenario-outcome">Refactor with safety nets. Tests capture current behavior <em>before</em> a single line gets edited.</p>
+        </div>
+
+        <div class="scenario">
+          <h3>"I want to steal a pattern from a GitHub repo."</h3>
+          <ol class="scenario-flow">
+            <li><code>/topia graft &lt;url&gt; --port</code> (or <code>--copy</code>, <code>--improve</code>, <code>--compare</code>)</li>
+            <li>5-dimension challenge gate: license, stack fit, scope, quality, maintenance</li>
+            <li>Adaptation plan &rarr; written with your stack's conventions</li>
+          </ol>
+          <p class="scenario-outcome">Adopt before you copy. Apache 2.0 dropped into MIT? You get the attribution prompt before any file lands.</p>
+        </div>
+
+        <div class="scenario">
+          <h3>"My team needs to ship 5 changes this sprint without conflicts."</h3>
+          <ol class="scenario-flow">
+            <li><code>/topia team "&lt;tasks&gt;"</code> &mdash; decomposes into dependency DAG</li>
+            <li>Each independent stream gets its own git worktree + parallel agent</li>
+            <li><code>completion-gate</code> validates every claim before merge</li>
+          </ol>
+          <p class="scenario-outcome">Parallel work without merge-conflict roulette. Each agent sees a clean working tree.</p>
+        </div>
+
+        <div class="scenario">
+          <h3>"I'm starting a new project from a one-paragraph description."</h3>
+          <ol class="scenario-flow">
+            <li><code>/topia scaffold "&lt;description&gt;"</code></li>
+            <li>Pipeline: <code>idea</code> &rarr; <code>plan</code> &rarr; <code>design</code> &rarr; <code>fix</code> &rarr; <code>test</code> &rarr; <code>docs</code> &rarr; <code>git</code></li>
+            <li>Output: working project, passing tests, first commit, documented decisions</li>
+          </ol>
+          <p class="scenario-outcome">0 to production-ready in one orchestrated pass. No "I forgot to add tests" three sprints in.</p>
+        </div>
+
+        <div class="scenario">
+          <h3>"Why did we pick X back in March?"</h3>
+          <ol class="scenario-flow">
+            <li>If agora-code MCP registered: <code>recall_learnings("X")</code> from <code>neural-memory</code></li>
+            <li>Else: <code>journal</code> reads <code>.topia/adr/</code> ADRs</li>
+            <li>Either way: the decision, the rejected alternatives, the rationale</li>
+          </ol>
+          <p class="scenario-outcome">Decisions persist as first-class artifacts. The "why" survives team turnover.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ARCHITECTURE (simplified, no L4) -->
+  <section class="section section-dark" id="architecture">
+    <div class="container">
+      <h2>The toolkit, in layers</h2>
+      <p class="section-sub">Skills are organized by responsibility. Higher layers call lower layers (with one documented exception). No circular dependencies.</p>
+      <div class="layers">
+        <div class="layer layer-0">
+          <div class="layer-label">L0</div>
+          <div class="layer-content">
+            <strong>Router</strong>
+            <span class="layer-count">1</span>
+            <p><code>skill-router</code> &mdash; meta-enforcement. Routes every action to the right skill before any work starts.</p>
+          </div>
+        </div>
+        <div class="layer layer-1">
+          <div class="layer-label">L1</div>
+          <div class="layer-content">
+            <strong>Orchestrators</strong>
+            <span class="layer-count">5</span>
+            <p><code>build</code> &middot; <code>team</code> &middot; <code>launch</code> &middot; <code>rescue</code> &middot; <code>scaffold</code></p>
+          </div>
+        </div>
+        <div class="layer layer-2">
+          <div class="layer-label">L2</div>
+          <div class="layer-content">
+            <strong>Workflow hubs</strong>
+            <span class="layer-count">~30</span>
+            <p><code>plan</code> &middot; <code>idea</code> &middot; <code>debug</code> &middot; <code>fix</code> &middot; <code>test</code> &middot; <code>review</code> &middot; <code>sentinel</code> &middot; <code>preflight</code> &middot; <code>journal</code> &middot; and the rest</p>
+          </div>
+        </div>
+        <div class="layer layer-3">
+          <div class="layer-label">L3</div>
+          <div class="layer-content">
+            <strong>Utilities</strong>
+            <span class="layer-count">~27</span>
+            <p><code>scout</code> &middot; <code>research</code> &middot; <code>verification</code> &middot; <code>git</code> &middot; <code>completion-gate</code> &middot; <code>hallucination-guard</code> &middot; <code>neural-memory</code> &middot; and the rest</p>
+          </div>
+        </div>
+        <div class="layer layer-ext">
+          <div class="layer-label">MCP</div>
+          <div class="layer-content">
+            <strong>External servers</strong>
+            <span class="layer-count">opt-in</span>
+            <p><code>agora-code</code> (vendored) &mdash; persistent memory + symbol index + semantic recall via the MCP protocol.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INSTALL -->
+  <section class="section" id="install">
+    <div class="container">
+      <h2>Install</h2>
+      <p class="section-sub">Internal-only. Clone the repo, point your IDE at it.</p>
+      <div class="install-grid">
+        <div class="install-card">
+          <h3>Claude Code</h3>
+          <p class="install-badge">Native plugin</p>
+          <pre class="code-block"><code># 1. Clone into your Claude skills dir
+git clone &lt;internal-git-url&gt;/skill-topia \
+  ~/.claude/skills/skill-topia
+
+# 2. Install deps + register plugin
+cd ~/.claude/skills/skill-topia
+npm install
+claude plugin add .
+
+# 3. Wire discipline hooks (one-shot wizard)
+node compiler/bin/topia.js setup --global --preset gentle</code></pre>
+          <p>Full toolkit: subagents, hooks (preflight / sentinel / completion-gate / quarantine), all 65 skills.</p>
+        </div>
+        <div class="install-card">
+          <h3>Cursor / Codex / Antigravity</h3>
+          <p class="install-badge">Compiled rules</p>
+          <pre class="code-block"><code>node compiler/bin/topia.js init --platform cursor
+node compiler/bin/topia.js init --platform codex
+node compiler/bin/topia.js init --platform antigravity</code></pre>
+          <p>Compiles all 65 skills into the target IDE's rule format. Same workflows, different rule files.</p>
+        </div>
+        <div class="install-card">
+          <h3>Persistent memory (optional)</h3>
+          <p class="install-badge">agora-code MCP</p>
+          <pre class="code-block"><code># Requires Python 3.10+
+pip install ./mcp-servers/agora-code
+
+# Register the MCP server in your project
+cat &gt;&gt; .mcp.json &lt;&lt; 'EOF'
+{ "mcpServers": { "agora-memory": {
+  "command": "agora-code",
+  "args": ["memory-server"] } } }
+EOF</code></pre>
+          <p>Skills detect this MCP automatically and route recall/learning through it. Skip it and Topia uses file-based persistence.</p>
+        </div>
+      </div>
+      <p style="text-align:center;margin-top:1.5rem;color:var(--text-muted);font-size:0.85rem;">
+        Do <strong>not</strong> run <code>agora-code install-hooks --claude-code</code>. Topia's hooks are canonical &mdash; running both installers produces a fragile dual-owner hook chain. <a href="mcp-integrations/agora-code.html">Why &rarr;</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- LEARN -->
+  <section class="section section-dark" id="learn">
+    <div class="container">
+      <h2>Learn Topia</h2>
+      <p class="section-sub">Install in 2 minutes; understand the toolkit in an afternoon.</p>
+      <div class="guide-grid">
+        <a href="guides/#install" class="guide-link">
+          <span class="guide-icon">&#9889;</span>
+          <div>
+            <strong>Quick Start</strong>
+            <span>Install + first run in 2 minutes</span>
+          </div>
+        </a>
+        <a href="guides/#wf-build" class="guide-link">
+          <span class="guide-icon">&#9881;</span>
+          <div>
+            <strong>Workflows</strong>
+            <span>build &middot; rescue &middot; team &middot; debug</span>
+          </div>
+        </a>
+        <a href="mcp-integrations/agora-code.html" class="guide-link">
+          <span class="guide-icon">&#128221;</span>
+          <div>
+            <strong>Persistent Memory</strong>
+            <span>The agora-code MCP integration</span>
+          </div>
+        </a>
+        <a href="guides/#ide-claude" class="guide-link">
+          <span class="guide-icon">&#128187;</span>
+          <div>
+            <strong>Platform Guides</strong>
+            <span>Claude, Cursor, Codex, OpenClaw</span>
+          </div>
+        </a>
+        <a href="SKILLS.html" class="guide-link">
+          <span class="guide-icon">&#128214;</span>
+          <div>
+            <strong>Skill Catalog</strong>
+            <span>All 65 skills, one page</span>
+          </div>
+        </a>
+        <a href="guides/#faq" class="guide-link">
+          <span class="guide-icon">&#10067;</span>
+          <div>
+            <strong>FAQ &amp; Troubleshooting</strong>
+            <span>Common issues + answers</span>
+          </div>
+        </a>
+      </div>
+      <div style="text-align:center;margin-top:24px">
+        <a href="guides/" class="btn btn-ghost">View full guide &rarr;</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- NUMBERS -->
+  <section class="section" id="numbers">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat">
+          <span class="stat-num" data-target="65">0</span>
+          <span class="stat-label">Skills</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num" data-target="8">0</span>
+          <span class="stat-label">Discipline gates</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num" data-target="6">0</span>
+          <span class="stat-label">Supported IDEs</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num" data-target="1025">0</span>
+          <span class="stat-label">Tests passing</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <p><span class="logo-Topia">&#9670;</span> Topia &mdash; discipline rails for AI coding agents</p>
+      <div class="footer-links">
+        <a href="#how">How it works</a>
+        <a href="#memory">Memory</a>
+        <a href="#guarantees">Guarantees</a>
+        <a href="#install">Install</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+
+  <!-- Theme toggle -->
+  <script>
+    (function initTheme() {
+      const toggle = document.getElementById('theme-toggle');
+      const stored = localStorage.getItem('Topia-theme');
+      const theme = stored || 'dark'; // default dark (terminal)
+
+      if (theme === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+        toggle.innerHTML = '&#9728;'; // sun
+      } else {
+        toggle.innerHTML = '&#9790;'; // moon
+      }
+
+      toggle.addEventListener('click', () => {
+        const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+        if (isLight) {
+          document.documentElement.removeAttribute('data-theme');
+          toggle.innerHTML = '&#9790;';
+          localStorage.setItem('Topia-theme', 'dark');
+        } else {
+          document.documentElement.setAttribute('data-theme', 'light');
+          toggle.innerHTML = '&#9728;';
+          localStorage.setItem('Topia-theme', 'light');
+        }
+      });
+    })();
+  </script>
+
+</body>
+</html>

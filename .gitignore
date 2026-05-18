@@ -1,0 +1,116 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Node
+node_modules/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*.bak
+*.tmp
+*~
+
+# Topia local state — per-project session state, never committed.
+# Exception: .topia/org/ holds stable team/policy config (committed).
+# Use the dir/* + !dir/sub/ pattern so the re-include actually works in git.
+/.topia/*
+!/.topia/org/
+!/.topia/org/**
+
+# Rune-kit state — older sibling project's `.rune/` directory.
+# Topia migrates these into `.topia/` via `topia migrate-from-rune`.
+.rune/
+
+# /remember plugin state — session/memory cache (per-machine).
+.remember/
+
+# AI assistant per-machine settings
+.claude/skills/
+.claude/settings.local.json
+.openclaw/
+.cursor/
+.codex/cache/
+.opencode/cache/
+.windsurf/cache/
+.antigravity/cache/
+
+# AI assistant project files (per-project, generated)
+CLAUDE.md
+AGENTS.md
+
+# Compiler output
+dist/
+
+# Coverage
+coverage/
+*.lcov
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Cached/temp directories
+.cache/
+.tmp/
+tmp/
+logs/
+.DS_Store
+
+# Admin dashboard (local-only)
+docs/dashboard.html
+
+# Audit reports
+AUDIT-REPORT.md
+
+# Internal-only docs (competitive analysis, audits, video production assets)
+docs/ANTIGRAVITY-GAP-ANALYSIS.md
+docs/CROSS-IDE-ANALYSIS.md
+docs/SKILL-DEPTH-AUDIT.md
+docs/TRADE-MATRIX.md
+docs/video-demo-plan.md
+docs/references/claudekit-analysis.md
+docs/references/voltagent-analysis.md
+docs/assets/demo-subtitles.srt
+docs/assets/end-card.html
+docs/assets/thumbnail.html
+
+# Migration markers — these are runtime state, not source
+.topia/migrated-from-rune.flag
+.topia/skip-rune-migration.flag
+
+# Secrets and credentials (defense-in-depth — .env above usually covers this)
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+secrets.json
+.aws/
+.gcloud/
+
+# Python (in case agora-code is built locally)
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+build/
+.venv/
+venv/
+
+# OS temp / lock files
+.~lock.*
+ehthumbs.db

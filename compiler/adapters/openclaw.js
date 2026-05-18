@@ -1,0 +1,257 @@
+/**
+ * OpenClaw Adapter
+ *
+ * Emits an OpenClaw plugin structure:
+ *   .openclaw/Topia/openclaw.plugin.json  (manifest)
+ *   .openclaw/Topia/src/index.ts          (register entrypoint)
+ *   .openclaw/Topia/skills/*.md           (transformed skill files)
+ *
+ * Follows the NeuralMemory OpenClaw plugin pattern.
+ *
+ * ARTIFACT CONVENTION (v2.13+):
+ * OpenClaw skills that produce file artifacts (images, reports, data) should
+ * resolve output directory in this fallback order — honored by the Topia script
+ * output contract (see skills/skill-forge Phase 5.25):
+ *
+ *   1. --out-dir <path>                       (explicit caller intent)
+ *   2. <SKILL>_OUT_DIR                        (skill-specific env var)
+ *   3. OPENCLAW_OUTPUT_DIR                    (platform-wide override)
+ *   4. OPENCLAW_AGENT_DIR/artifacts/<skill>   (per-agent scoped default)
+ *   5. OPENCLAW_STATE_DIR/artifacts/<skill>   (state-scoped fallback)
+ *   6. ./.topia/<skill>/                       (project-local default)
+ *
+ * Reference codex-imagen repo (darkamenosa/codex-imagen) documents the
+ * de-facto in-the-wild convention this adapter formalizes.
+ *
+ * MODEL TIER MAPPING (v2.15+):
+ * OpenClaw is provider-agnostic — emits semantic tier hints in the
+ * markdown header. Skill frontmatter `model: opus|sonnet|haiku` is
+ * translated to `tier:heavy|mid|light`. The OpenClaw runtime resolves
+ * the tier to its configured provider model.
+ */
+
+import { BRANDING_FOOTER } from '../transforms/branding.js';
+
+const MODEL_MAP = {
+  opus: 'tier:heavy',
+  sonnet: 'tier:mid',
+  haiku: 'tier:light',
+};
+
+const TOOL_MAP = {
+  Read: 'read_file',
+  Write: 'write_file',
+  Edit: 'edit_file',
+  Glob: 'glob',
+  Grep: 'grep',
+  Bash: 'run_command',
+  TodoWrite: 'todo_write',
+  Skill: 'follow the referenced skill',
+  Agent: 'execute the workflow',
+};
+
+export default {
+  name: 'openclaw',
+  outputDir: '.openclaw/Topia/skills',
+  fileExtension: '.md',
+  skillPrefix: 'Topia-',
+  skillSuffix: '',
+
+  transformReference(skillName, raw) {
+    const isBackticked = raw.startsWith('`') && raw.endsWith('`');
+    const ref = `Topia-${skillName}.md`;
+    return isBackticked ? `\`${ref}\`` : ref;
+  },
+
+  transformToolName(toolName) {
+    return TOOL_MAP[toolName] || toolName;
+  },
+
+  generateHeader(skill) {
+    const translatedModel = skill.model ? MODEL_MAP[skill.model] || skill.model : null;
+    const modelSuffix = translatedModel ? ` | model: ${translatedModel}` : '';
+    return `# Topia-${skill.name}\n\n> Topia ${skill.layer} Skill | ${skill.group}${modelSuffix}\n\n`;
+  },
+
+  generateFooter() {
+    return BRANDING_FOOTER;
+  },
+
+  transformSubagentInstruction(text) {
+    return text;
+  },
+
+  scriptsDir(skillName) {
+    return `Topia-${skillName}-scripts`;
+  },
+
+  postProcess(content) {
+    return content.replace(/^context: fork\n/gm, '').replace(/^agent: general-purpose\n/gm, '');
+  },
+
+  /**
+   * Generate openclaw.plugin.json manifest
+   *
+   * @param {object[]} skills - parsed skill objects
+   * @param {object} pluginJson - Topia's .claude-plugin/plugin.json
+   * @returns {object} manifest object
+   */
+  generateManifest(skills, pluginJson) {
+    return {
+      id: 'Topia',
+      name: 'Topia',
+      kind: 'skills',
+      description: `${skills.length}-skill mesh for AI coding assistants. Routes all code tasks through specialized skills. 203 sync connections + 40 async signals, 10 extension packs.`,
+      version: pluginJson.version || '0.0.0',
+      skills: ['./skills'],
+      artifactConvention: {
+        outputDirPriority: [
+          '--out-dir <path>',
+          '<SKILL>_OUT_DIR',
+          'OPENCLAW_OUTPUT_DIR',
+          'OPENCLAW_AGENT_DIR/artifacts/<skill>',
+          'OPENCLAW_STATE_DIR/artifacts/<skill>',
+          './.topia/<skill>/'],
+        outputContract: {
+          stdout: 'one artifact path per line (default) or JSON (--json mode)',
+          stderr: 'diagnostics + warnings',
+          exitCodes: {
+            0: 'success',
+            1: 'execution failed (retryable)',
+            2: 'usage error (bug)',
+            3: 'data-integrity error (halt)',
+            4: 'timeout with partial results (accept)',
+            124: 'timeout with zero results (retry or abort)',
+          },
+        },
+      },
+      configSchema: {
+        jsonSchema: {
+          type: 'object',
+          properties: {
+            disabledSkills: {
+              type: 'array',
+              items: { type: 'string' },
+              description: 'Skills to disable (by name)',
+              default: [],
+            },
+          },
+          additionalProperties: false,
+        },
+        uiHints: {
+          disabledSkills: {
+            label: 'Disabled Skills',
+            help: 'Comma-separated list of skill names to exclude from routing',
+          },
+        },
+      },
+    };
+  },
+
+  /**
+   * Generate README.md for ClawHub listing page
+   *
+   * @param {object[]} skills - parsed skill objects
+   * @param {object} pluginJson - Topia's .claude-plugin/plugin.json
+   * @returns {string} markdown content
+   */
+  generateReadme(skills, pluginJson) {
+    const version = pluginJson.version || '0.0.0';
+    const l1 = skills.filter((s) => s.layer === 'L1').map((s) => s.name);
+    const l2 = skills.filter((s) => s.layer === 'L2').map((s) => s.name);
+    const l3 = skills.filter((s) => s.layer === 'L3').map((s) => s.name);
+
+    return `# Topia
+
+> Less skills. Deeper connections.
+
+**${skills.length}-skill mesh** for AI coding assistants — 5-layer architecture, 215+ connections, 10 extension packs.
+
+## Install
+
+\`\`\`
+clawhub install skill-topia
+\`\`\`
+
+Or via npm:
+
+\`\`\`
+npx @protopia/skill-topia init
+\`\`\`
+
+## What is Topia?
+
+Topia is a **mesh** — skills call each other bidirectionally, forming resilient workflows. If one skill fails, the mesh routes around it.
+
+Use \`Topia:build\` for any code task, \`Topia:team\` for parallel work, \`Topia:launch\` for deploy, \`Topia:rescue\` for legacy code.
+
+## Architecture
+
+| Layer | Role | Skills |
+|-------|------|--------|
+| L0 | Router | skill-router |
+| L1 | Orchestrators | ${l1.join(', ')} |
+| L2 | Workflow Hubs | ${l2.join(', ')} |
+| L3 | Utilities | ${l3.join(', ')} |
+| L4 | Extensions | 10 domain packs |
+
+## Extension Packs (L4)
+
+ui · backend · devops · mobile · security · trading · saas · ecommerce · ai-ml · gamedev · content · analytics · chrome-ext · zalo
+
+## Links
+
+- **Source**: [github.com/protopia/skill-topia](https://github.com/protopia/skill-topia)
+- **Docs**: [protopia.github.io/skill-topia](https://protopia.github.io/skill-topia)
+- **Guides**: [protopia.github.io/skill-topia/guides](https://protopia.github.io/skill-topia/guides)
+
+## License
+
+MIT — v${version}
+`;
+  },
+
+  /**
+   * Generate src/index.ts entry point with register(api) pattern
+   *
+   * @param {object[]} skills - parsed skill objects
+   * @param {string} routerContent - skill-router SKILL.md content for injection
+   * @returns {string} TypeScript source
+   */
+  generateEntryPoint(skills, routerContent) {
+    const skillNames = skills.map((s) => s.name);
+    const routingTable = skills.map((s) => `//   ${s.name} (${s.layer}) — ${s.description || s.group}`).join('\n');
+
+    // Escape backticks and backslashes in router content for template literal
+    const escapedRouter = (routerContent || '').replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$/g, '\\$');
+
+    return `/**
+ * Topia — OpenClaw Plugin Entry Point
+ *
+ * Auto-generated by Topia compiler.
+ * Do not edit manually — regenerate with: Topia build --platform openclaw
+ *
+ * Skills (${skillNames.length}):
+${routingTable}
+ */
+
+const SKILL_ROUTER_INSTRUCTIONS = \`${escapedRouter}\`;
+
+const plugin = {
+  id: 'Topia',
+  name: 'Topia',
+
+  register(api: any): void {
+    // Inject skill-router instructions so the agent routes through Topia skills
+    api.on('before_agent_start', async () => {
+      return {
+        prependSystemContext: SKILL_ROUTER_INSTRUCTIONS,
+      };
+    }, { priority: 5 });
+  },
+};
+
+export default plugin;
+`;
+  },
+};

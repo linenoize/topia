@@ -1,0 +1,188 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 400" width="1280" height="400">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0e1014"/>
+      <stop offset="100%" stop-color="#0a0d12"/>
+    </linearGradient>
+    <linearGradient id="term-bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#11181f"/>
+      <stop offset="100%" stop-color="#0c1218"/>
+    </linearGradient>
+    <linearGradient id="accent-line" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"  stop-color="#7dd3fc" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#7dd3fc" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#7dd3fc" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2.5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="400" fill="url(#bg)"/>
+
+  <!-- Subtle grid -->
+  <g stroke="#1a2230" stroke-width="0.5" opacity="0.35">
+    <line x1="0" y1="100" x2="1280" y2="100"/>
+    <line x1="0" y1="200" x2="1280" y2="200"/>
+    <line x1="0" y1="300" x2="1280" y2="300"/>
+    <line x1="160" y1="0" x2="160" y2="400"/>
+    <line x1="320" y1="0" x2="320" y2="400"/>
+    <line x1="480" y1="0" x2="480" y2="400"/>
+    <line x1="640" y1="0" x2="640" y2="400"/>
+    <line x1="800" y1="0" x2="800" y2="400"/>
+    <line x1="960" y1="0" x2="960" y2="400"/>
+    <line x1="1120" y1="0" x2="1120" y2="400"/>
+  </g>
+
+  <!-- ============================================ -->
+  <!-- LEFT: Branding                                -->
+  <!-- ============================================ -->
+  <g transform="translate(60, 90)">
+    <!-- Diamond logo -->
+    <g filter="url(#glow)">
+      <polygon points="22,0 44,22 22,44 0,22" fill="#7dd3fc" opacity="0.9"/>
+      <polygon points="22,7 37,22 22,37 7,22" fill="#0e1014" opacity="0.5"/>
+    </g>
+
+    <!-- Title -->
+    <text x="58" y="20" font-family="'Inter', 'SF Pro', system-ui, sans-serif" font-size="42" font-weight="700" fill="#f0f9ff" letter-spacing="-1.5">Topia</text>
+    <text x="58" y="44" font-family="'JetBrains Mono', 'SF Mono', monospace" font-size="11" fill="#7dd3fc" letter-spacing="2.5" font-weight="500">DISCIPLINE RAILS</text>
+
+    <!-- Tagline (two lines) -->
+    <text x="0" y="110" font-family="'Inter', 'SF Pro', system-ui, sans-serif" font-size="22" font-weight="600" fill="#e2e8f0" letter-spacing="-0.3">AI coding agents</text>
+    <text x="0" y="138" font-family="'Inter', 'SF Pro', system-ui, sans-serif" font-size="22" font-weight="600" fill="#e2e8f0" letter-spacing="-0.3">are smart.</text>
+    <text x="0" y="174" font-family="'Inter', 'SF Pro', system-ui, sans-serif" font-size="22" font-weight="600" fill="#7dd3fc" letter-spacing="-0.3">Topia makes them</text>
+    <text x="0" y="202" font-family="'Inter', 'SF Pro', system-ui, sans-serif" font-size="22" font-weight="600" fill="#7dd3fc" letter-spacing="-0.3">disciplined.</text>
+
+    <!-- Stat strip -->
+    <g transform="translate(0, 240)">
+      <text font-family="'JetBrains Mono', 'SF Mono', monospace" font-size="12">
+        <tspan fill="#34d399" font-weight="700">v1.1.0</tspan><tspan fill="#475569"> · </tspan>
+        <tspan fill="#7dd3fc" font-weight="700">65</tspan><tspan fill="#64748b"> skills</tspan>
+        <tspan fill="#475569"> · </tspan>
+        <tspan fill="#7dd3fc" font-weight="700">10</tspan><tspan fill="#64748b"> packs</tspan>
+        <tspan fill="#475569"> · </tspan>
+        <tspan fill="#7dd3fc" font-weight="700">MIT</tspan>
+      </text>
+    </g>
+  </g>
+
+  <!-- ============================================ -->
+  <!-- RIGHT: Terminal "screenshot"                  -->
+  <!-- ============================================ -->
+  <g transform="translate(540, 50)">
+    <!-- Window frame -->
+    <rect x="0" y="0" width="680" height="300" rx="10" fill="url(#term-bg)" stroke="#1e2937" stroke-width="1"/>
+
+    <!-- Title bar -->
+    <rect x="0" y="0" width="680" height="30" rx="10" fill="#13191f"/>
+    <rect x="0" y="20" width="680" height="10" fill="#13191f"/>
+    <line x1="0" y1="30" x2="680" y2="30" stroke="#1e2937" stroke-width="1"/>
+
+    <!-- Window dots -->
+    <circle cx="18" cy="15" r="5" fill="#f87171"/>
+    <circle cx="36" cy="15" r="5" fill="#fbbf24"/>
+    <circle cx="54" cy="15" r="5" fill="#34d399"/>
+
+    <!-- Title text -->
+    <text x="340" y="19" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="11" fill="#64748b">Topia &#8212; v1.1.0</text>
+
+    <!-- Terminal body -->
+    <g font-family="'JetBrains Mono', 'SF Mono', monospace" font-size="13">
+
+      <!-- Prompt line -->
+      <text x="22" y="60">
+        <tspan fill="#64748b">$</tspan>
+        <tspan fill="#e2e8f0"> /topia build</tspan>
+        <tspan fill="#7dd3fc"> "add user auth with magic-link"</tspan>
+      </text>
+
+      <!-- Step 1 -->
+      <text x="22" y="92">
+        <tspan fill="#475569">[1/8]</tspan>
+        <tspan fill="#94a3b8"> route       </tspan>
+        <tspan fill="#7dd3fc">&#8594; build</tspan>
+      </text>
+
+      <!-- Step 2 -->
+      <text x="22" y="114">
+        <tspan fill="#475569">[2/8]</tspan>
+        <tspan fill="#94a3b8"> recall      </tspan>
+        <tspan fill="#7dd3fc">agora-code</tspan>
+        <tspan fill="#64748b"> &#183; 3 prior decisions</tspan>
+      </text>
+
+      <!-- Step 3 -->
+      <text x="22" y="136">
+        <tspan fill="#475569">[3/8]</tspan>
+        <tspan fill="#94a3b8"> plan        </tspan>
+        <tspan fill="#7dd3fc">idea</tspan>
+        <tspan fill="#64748b"> &#8594; </tspan>
+        <tspan fill="#7dd3fc">plan</tspan>
+        <tspan fill="#64748b"> &#183; 4 phases</tspan>
+      </text>
+
+      <!-- Step 4 -->
+      <text x="22" y="158">
+        <tspan fill="#475569">[4/8]</tspan>
+        <tspan fill="#94a3b8"> test (red)  </tspan>
+        <tspan fill="#f87171">3 failing</tspan>
+      </text>
+
+      <!-- Step 5 -->
+      <text x="22" y="180">
+        <tspan fill="#475569">[5/8]</tspan>
+        <tspan fill="#94a3b8"> implement   </tspan>
+        <tspan fill="#7dd3fc">fix</tspan>
+        <tspan fill="#64748b"> &#8594; </tspan>
+        <tspan fill="#34d399">green</tspan>
+      </text>
+
+      <!-- Step 6 -->
+      <text x="22" y="202">
+        <tspan fill="#475569">[6/8]</tspan>
+        <tspan fill="#94a3b8"> gate        </tspan>
+        <tspan fill="#34d399">&#10003; preflight</tspan>
+        <tspan fill="#64748b"> &#183; </tspan>
+        <tspan fill="#34d399">&#10003; sentinel</tspan>
+        <tspan fill="#64748b"> &#183; </tspan>
+        <tspan fill="#34d399">&#10003; review</tspan>
+      </text>
+
+      <!-- Step 7 -->
+      <text x="22" y="224">
+        <tspan fill="#475569">[7/8]</tspan>
+        <tspan fill="#94a3b8"> verify      </tspan>
+        <tspan fill="#34d399">&#10003; 1024/1024 tests</tspan>
+        <tspan fill="#64748b"> &#183; </tspan>
+        <tspan fill="#34d399">&#10003; no hallucinations</tspan>
+      </text>
+
+      <!-- Step 8 -->
+      <text x="22" y="246">
+        <tspan fill="#475569">[8/8]</tspan>
+        <tspan fill="#94a3b8"> persist     </tspan>
+        <tspan fill="#7dd3fc">journal</tspan>
+        <tspan fill="#64748b"> &#183; ADR-0042 stored</tspan>
+      </text>
+
+      <!-- Final commit line -->
+      <text x="22" y="278">
+        <tspan fill="#34d399">&#10003;</tspan>
+        <tspan fill="#e2e8f0"> committed </tspan>
+        <tspan fill="#7dd3fc">4f3a91c</tspan>
+        <tspan fill="#64748b">: feat(auth): magic-link login</tspan>
+      </text>
+
+      <!-- Blinking cursor -->
+      <rect x="22" y="285" width="8" height="2" fill="#7dd3fc">
+        <animate attributeName="opacity" values="1;0;1" dur="1.2s" repeatCount="indefinite"/>
+      </rect>
+    </g>
+  </g>
+
+  <!-- Bottom accent line -->
+  <rect x="0" y="398" width="1280" height="2" fill="url(#accent-line)"/>
+</svg>

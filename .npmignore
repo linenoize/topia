@@ -1,0 +1,20 @@
+# Dev/CI files
+.claude/
+.claude-plugin/
+.topia/
+.github/
+compiler/__tests__/
+
+# Docs (served via GitHub Pages, not npm)
+docs/
+
+# Config
+.gitignore
+.eslintrc*
+.prettierrc*
+topia.config.json
+
+# Internal files
+CLAUDE.md
+AGENTS.md
+ROADMAP.md

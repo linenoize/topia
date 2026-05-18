@@ -1,0 +1,62 @@
+/**
+ * Windsurf Adapter
+ *
+ * Emits .md rule files for .windsurf/rules/ directory.
+ * Uses prose references for cross-skill mesh (no @file support).
+ *
+ * MODEL TIER MAPPING (v2.15+):
+ * No-op. Windsurf's Anthropic API integration understands `model: opus|sonnet|haiku`
+ * natively. No translation required.
+ */
+
+import { BRANDING_FOOTER } from '../transforms/branding.js';
+
+const TOOL_MAP = {
+  Read: 'read the file',
+  Write: 'write/create the file',
+  Edit: 'edit the file',
+  Glob: 'find files matching a pattern',
+  Grep: 'search for text in files',
+  Bash: 'run a shell command',
+  TodoWrite: 'track task progress',
+  Skill: 'follow the referenced skill workflow',
+  Agent: 'execute the workflow',
+};
+
+export default {
+  name: 'windsurf',
+  outputDir: '.windsurf/rules',
+  fileExtension: '.md',
+  skillPrefix: 'Topia-',
+  skillSuffix: '',
+
+  transformReference(skillName, raw) {
+    const isBackticked = raw.startsWith('`') && raw.endsWith('`');
+    const ref = `the Topia-${skillName} rule file`;
+    return isBackticked ? `\`${ref}\`` : ref;
+  },
+
+  transformToolName(toolName) {
+    return TOOL_MAP[toolName] || toolName;
+  },
+
+  generateHeader(skill) {
+    return `# Topia-${skill.name}\n\n> Layer: ${skill.layer} | Group: ${skill.group}\n\n`;
+  },
+
+  generateFooter() {
+    return BRANDING_FOOTER;
+  },
+
+  transformSubagentInstruction(text) {
+    return text;
+  },
+
+  scriptsDir(skillName) {
+    return `Topia-${skillName}-scripts`;
+  },
+
+  postProcess(content) {
+    return content.replace(/^context: fork\n/gm, '').replace(/^agent: general-purpose\n/gm, '');
+  },
+};

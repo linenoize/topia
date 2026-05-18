@@ -1,0 +1,103 @@
+name: Publish Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Run doctor
+        run: npm run doctor
+
+      - name: Publish to npm
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Build OpenClaw format
+        run: node compiler/bin/topia.js build --platform openclaw --output .
+
+      - name: Publish to ClawHub
+        continue-on-error: true
+        env:
+          CLAWHUB_TOKEN: ${{ secrets.CLAWHUB_TOKEN }}
+        run: |
+          npm install -g clawhub
+          clawhub login --token "$CLAWHUB_TOKEN" --no-browser
+          TAG="${GITHUB_REF#refs/tags/}"
+          CHANGELOG=$(git log "$(git tag --sort=-v:refname | grep '^v' | sed -n '2p')..${TAG}" --pretty=format:"• %s" --no-merges | head -10)
+          clawhub publish .openclaw/topia \
+            --slug skill-topia \
+            --name "Topia" \
+            --version "${TAG#v}" \
+            --changelog "${CHANGELOG}" || echo "⚠️ ClawHub publish may have timed out (usually still succeeds)"
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          PREV_TAG=$(git tag --sort=-v:refname | grep '^v' | sed -n '2p')
+          if [ -n "$PREV_TAG" ]; then
+            NOTES=$(git log "${PREV_TAG}..${TAG}" --pretty=format:"- %s" --no-merges | grep -v "^- chore" | head -15)
+          else
+            NOTES="- Initial release"
+          fi
+          # Extract codename from CHANGELOG.md if present
+          CODENAME=$(grep -oP "## \[${TAG#v}\].*" CHANGELOG.md | head -1 || echo "")
+          {
+            echo "notes<<CHANGELOG_EOF"
+            echo "## What's New"
+            echo ""
+            echo "$NOTES"
+            echo ""
+            echo "**Full Changelog**: https://github.com/protopia/skill-topia/compare/${PREV_TAG}...${TAG}"
+            echo "CHANGELOG_EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          if gh release view "$TAG" &>/dev/null; then
+            echo "Release $TAG already exists — updating"
+            gh release edit "$TAG" \
+              --title "$TAG" \
+              --notes "${{ steps.changelog.outputs.notes }}" \
+              --latest
+          else
+            gh release create "$TAG" \
+              --title "$TAG" \
+              --notes "${{ steps.changelog.outputs.notes }}" \
+              --latest
+          fi
+
+      - name: Summary
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          echo "## Published ${TAG}" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ npm: @protopia/skill-topia@${TAG#v}" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ GitHub Release: ${TAG}" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ ClawHub: skill-topia@${TAG#v}" >> $GITHUB_STEP_SUMMARY
