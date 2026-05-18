@@ -160,7 +160,7 @@ Rules:
 | DOCUMENTS | doc-processor |
 | SECURITY | sentinel-env |
 
-## Runtime Layer (v2.12.0)
+## Runtime Layer
 
 The mesh ships as a **library** (invoke via slash commands) and as a **runtime** (native hooks that auto-fire on tool use). The runtime converts passive advice into enforced discipline.
 
@@ -184,7 +184,7 @@ Topia hooks status                                             # inspect wiring
 Topia hooks uninstall                                          # remove Topia entries only
 ```
 
-## Mesh Signals (v2.10.0)
+## Signals
 
 Event-driven skill communication via frontmatter declarations. Skills declare what signals they `emit` and `listen` to — the compiler builds a signal graph and validates consistency.
 
@@ -415,7 +415,7 @@ graft → review        (validate grafted code quality)
 graft → journal       (record grafting decision as ADR)
 graft → sentinel      (security check on ported code)
 
-# New connections (v2.10.0)
+# New connections
 brainstorm → design   (ideas feed into design system generation)
 idea → design           (requirements feed into UI design)
 rescue → retro        (post-rescue retrospective)

@@ -123,7 +123,7 @@ if (fs.existsSync(TopiaDir)) {
   console.log('[Topia: No .topia/ directory found. Run /topia onboard to set up project context.]');
 }
 
-// Tier detection hint (v2.17.1+) — Pro/Business plugins live in private repos
+// Tier detection hint — historical Pro/Business plugin paths; tiers no longer ship
 // and aren't auto-loaded like the Free plugin. If detected at sibling / env /
 // well-known path AND tier hooks aren't already wired in settings.json, nudge
 // user toward `Topia setup`. Self-suppressing — once wired, the check fails and

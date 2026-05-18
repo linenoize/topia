@@ -205,7 +205,7 @@ Topia operates on three time horizons. The roadmap is intentionally non-prescrip
 
 **Implementation**: Zero new L1-L3 skills added. 1 new hook (`metrics-collector`), 3 modified hooks, 4 extended skills (`audit`, `build`, `skill-router`, `onboard`), 2 new commands (`/topia metrics`, `/topia pack`).
 
-**Constraint:** Core graph expanded to 66 skills (v2.17.1+). Further growth happens in L4 packs.
+**Constraint:** Core graph holds at 65 skills. Further growth happens in L4 packs.
 
 ### H4 — Runtime Discipline ✅ COMPLETE (v2.12)
 

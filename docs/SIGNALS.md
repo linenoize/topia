@@ -2,9 +2,8 @@
 
 > **Event-driven skill communication**. Skills emit signals when they finish work; other skills listen and auto-trigger. No central orchestrator required.
 
-**Status:** 25 signals in core · all emitters have listeners · 0 orphans
+**Status:** 44 signals in core · all emitters have listeners · 0 orphans
 **Enforced by:** `scripts/validate-signals.js` (run in CI)
-**Last updated:** v2.12.3 (2026-04-22)
 
 ## How Signals Work
 

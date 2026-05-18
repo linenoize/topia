@@ -1,7 +1,5 @@
 # Shared Formulas — Cross-Skill Computation Standards
 
-Version: 1.0.0 | Since: v2.9.0
-
 ## Purpose
 
 When multiple skills compute the same metric, they MUST use the same formula. Inconsistent scoring across skills produces conflicting recommendations — "review says quality is 72/100 but audit says 85/100" erodes trust.

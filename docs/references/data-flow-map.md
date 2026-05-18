@@ -1,7 +1,5 @@
 # Data Flow Map — Skill-to-Skill Data Dependencies
 
-Version: 1.0.0 | Since: v2.9.0
-
 ## Purpose
 
 The mesh has three communication layers:

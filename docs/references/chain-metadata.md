@@ -1,7 +1,5 @@
 # Chain Metadata — Cross-Skill Data Forwarding Contract
 
-Version: 1.0.0 | Since: v2.9.0
-
 ## Purpose
 
 Chain metadata is a structured YAML block appended to every skill output report. It enables:
