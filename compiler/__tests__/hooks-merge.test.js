@@ -1,7 +1,10 @@
 import assert from 'node:assert';
+import path from 'node:path';
 import { describe, test } from 'node:test';
 import { detectPreset, mergePreset, stripTopiaHooks, summarizeTopiaHooks } from '../commands/hooks/merge.js';
 import { buildPreset, isTopiaManaged } from '../commands/hooks/presets.js';
+
+const REPO_ROOT = path.resolve(import.meta.dirname, '../..');
 
 describe('isTopiaManaged', () => {
   // T3: must reject strings that merely contain "Topia" or "hook-dispatch"
@@ -26,6 +29,11 @@ describe('isTopiaManaged', () => {
     for (const cmd of truePositives) {
       assert.strictEqual(isTopiaManaged({ command: cmd }), true, `should match: ${cmd}`);
     }
+  });
+
+  test('matches local node topia.js hook-dispatch invocation', () => {
+    const cmd = `node ${JSON.stringify(path.join(REPO_ROOT, 'compiler', 'bin', 'topia.js'))} hook-dispatch readiness --gentle`;
+    assert.strictEqual(isTopiaManaged({ command: cmd }), true);
   });
 });
 

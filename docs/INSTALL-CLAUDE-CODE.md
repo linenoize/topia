@@ -16,10 +16,19 @@ Works for any machine with Claude Code — no manual clone required for the plug
 /reload-plugins
 ```
 
-Then wire global discipline hooks (one-time per machine):
+Then wire global discipline hooks (one-time per machine). **Do not use `npx @protopia/skill-topia`** unless the package is published to your npm registry — a private GitHub repo does not make npm work.
+
+**After marketplace install** (auto-finds the plugin cache):
 
 ```bash
-npx @protopia/skill-topia setup --global --preset gentle
+node ~/.claude/plugins/cache/protopia/skill-topia/*/compiler/bin/topia.js setup --global --preset gentle
+```
+
+On Windows PowerShell, use the version folder name instead of `*` (e.g. `2.0.1`), or run from a clone:
+
+```powershell
+cd path\to\skill-topia
+node compiler/bin/topia.js setup --global --preset gentle
 ```
 
 Restart Claude Code if `/Topia:build` or `/topia build` does not appear.
@@ -29,7 +38,7 @@ Restart Claude Code if `/Topia:build` or `/topia build` does not appear.
 ```bash
 claude plugin marketplace add protopia/skill-topia
 claude plugin install skill-topia@protopia
-npx @protopia/skill-topia setup --global --preset gentle
+# Then wire hooks from the installed plugin (see "node … setup" above), or from a clone.
 ```
 
 ### Private GitHub repo
@@ -72,7 +81,7 @@ cd ~/.claude/skills/skill-topia && npm install && node compiler/bin/topia.js ins
 | Onboard | `/topia onboard` or `/Topia:onboard` |
 | Rune migration | If `.rune/` exists: `node path/to/skill-topia/compiler/bin/topia.js migrate-from-rune` |
 | Team policy | Edit `skill-topia/.topia/org/org.md` in the clone, then `topia setup --global` |
-| Verify | `npx @protopia/skill-topia doctor` |
+| Verify | `node <skill-topia>/compiler/bin/topia.js doctor` |
 
 ---
 
@@ -90,7 +99,7 @@ Both work when the plugin is enabled. The `Topia` prefix comes from `.claude-plu
 ## Two hook layers
 
 1. **Plugin hooks** (`hooks/hooks.json`) — loaded automatically when the plugin is enabled (session-start, secrets-scan, quarantine, etc.).
-2. **Dispatch hooks** (`topia setup --global`) — writes `npx @protopia/skill-topia hook-dispatch` entries into `~/.claude/settings.json` for `readiness`, `guardian`, `completion-gate`, and org policy from `.topia/org/org.md`.
+2. **Dispatch hooks** (`topia setup --global`) — writes `node …/compiler/bin/topia.js hook-dispatch` entries into `~/.claude/settings.json` (local path from clone or plugin cache; not `npx` unless the npm package is published).
 
 Most teams want **plugin install + `setup --global`**.
 
@@ -123,7 +132,8 @@ claude plugin validate .
 |---------|-----|
 | Plugin not in menu | `/plugin marketplace add protopia/skill-topia` then install; restart Claude |
 | `/topia` missing | `/reload-plugins` or restart |
-| Hooks not firing | `npx @protopia/skill-topia doctor --hooks`; re-run `setup --global` |
+| Hooks not firing | Re-run `node …/topia.js setup --global`; `node …/topia.js doctor --hooks` |
+| `npm 404` on `@protopia/skill-topia` | Expected if unpublished — use `node …/topia.js` from clone or plugin cache, not `npx` |
 | Relative path install fails | Add marketplace via **git** (`protopia/skill-topia`), not a raw URL to `marketplace.json` only |
 
 See [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md).

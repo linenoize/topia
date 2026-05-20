@@ -202,7 +202,8 @@ function detectTierHint() {
     console.log(`${cap} detected: ${source} (v${version})`);
   }
   const tierFlag = detected.map((d) => d.tier).join(',');
-  console.log(`Wire it: \`npx @protopia/skill-topia setup --global --tier ${tierFlag}\``);
+  console.log('Wire dispatch hooks: `node <skill-topia>/compiler/bin/topia.js setup --global --preset gentle`');
+  console.log('(See docs/INSTALL-CLAUDE-CODE.md — do not use npx unless @protopia/skill-topia is on npm.)');
   console.log('(adds tier-specific hooks: autopilot circuit-breaker, context-sense, statusline)');
 }
 

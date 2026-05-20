@@ -523,6 +523,7 @@ async function cmdHooks(projectRoot, args, subcommand) {
         preset: args.preset,
         dry: args.dry,
         platform,
+        topiaRoot: TOPIA_ROOT,
       });
       log('');
       if (result.platforms.length === 0) {

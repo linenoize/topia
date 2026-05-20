@@ -37,10 +37,10 @@ Install like any other Claude Code plugin — no clone required for the plugin i
 /plugin install skill-topia@protopia
 ```
 
-Then wire global discipline hooks (one-time per machine):
+Then wire global discipline hooks (one-time per machine). The npm package is **not** required for a private repo — use `node` against a clone or the Claude plugin cache (see [`docs/INSTALL-CLAUDE-CODE.md`](docs/INSTALL-CLAUDE-CODE.md)):
 
 ```bash
-npx @protopia/skill-topia setup --global --preset gentle
+cd skill-topia && node compiler/bin/topia.js setup --global --preset gentle
 ```
 
 Restart Claude Code, then use `/topia build` or `/Topia:build`. Full guide: [`docs/INSTALL-CLAUDE-CODE.md`](docs/INSTALL-CLAUDE-CODE.md). Team repos can merge [`docs/templates/team-claude-settings.json`](docs/templates/team-claude-settings.json) into `.claude/settings.json` to prompt the marketplace on folder trust.

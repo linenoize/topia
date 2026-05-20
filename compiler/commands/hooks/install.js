@@ -37,7 +37,7 @@ export async function installHooks(projectRoot, args = {}) {
   let totalWrites = 0;
   for (const id of platforms) {
     const adapter = getAdapter(id);
-    const plan = await adapter.emit({ preset, projectRoot });
+    const plan = await adapter.emit({ preset, projectRoot, topiaRoot: args.topiaRoot });
     let platformWrites = 0;
     if (!args.dry) {
       for (const file of plan.files) {

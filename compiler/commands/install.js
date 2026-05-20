@@ -29,6 +29,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { createInterface } from 'node:readline';
 import { migrateFromRune, planMigration as planRuneMigration } from './migrate-from-rune.js';
+import { resolveTopiaRoot } from './hooks/resolve-topia-root.js';
 import { runSetup } from './setup.js';
 
 /** Claude Code marketplace id (`.claude-plugin/marketplace.json` → `name`). */
@@ -356,9 +357,19 @@ export async function runInstall({ TopiaRoot, projectRoot = process.cwd(), args 
   console.log(`    Nexus health       : ${doctor.ok ? '✓' : '✗'}`);
 
   console.log('');
+  const resolvedRoot = resolveTopiaRoot(TopiaRoot);
+  const setupCli = resolvedRoot
+    ? `node ${JSON.stringify(path.join(resolvedRoot, 'compiler', 'bin', 'topia.js'))}`
+    : 'node <path-to-skill-topia>/compiler/bin/topia.js';
+
   console.log('  Next steps:');
   console.log('    1. Restart Claude Code so it picks up the plugin.');
-  console.log('    2. Run `topia visualize` to explore the Nexus graph in your browser.');
+  if (!hooks.ok) {
+    console.log(`    2. Wire dispatch hooks: ${setupCli} setup --global --preset gentle`);
+    console.log('       (Do not use npx @protopia/skill-topia unless published to npm.)');
+  } else {
+    console.log('    2. Run `topia visualize` to explore the Nexus graph in your browser.');
+  }
   console.log('    3. Edit `.topia/org/org.md` to define your team / policy / approval flow.');
   console.log('       (guardian + readiness read this at compile time. See docs/ORG-CONFIG.md.)');
   if (!plugin.ok && plugin.skipped) {

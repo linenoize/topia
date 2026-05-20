@@ -22,7 +22,7 @@ import { installHooks } from './hooks/install.js';
  * @param {{ projectRoot: string, TopiaRoot: string, args: object }} opts
  * @returns {Promise<{ scope: string, preset: string, written: boolean, files: string[], notes: string[] }>}
  */
-export async function runSetup({ projectRoot, TopiaRoot: _TopiaRoot, args = {} }) {
+export async function runSetup({ projectRoot, TopiaRoot, args = {} }) {
   // Scope resolution
   let scope;
   if (args.global) scope = 'global';
@@ -44,6 +44,7 @@ export async function runSetup({ projectRoot, TopiaRoot: _TopiaRoot, args = {} }
     preset,
     platform,
     dry: args.dry,
+    topiaRoot: TopiaRoot,
   });
 
   return {

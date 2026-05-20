@@ -18,7 +18,7 @@ export function detect(projectRoot) {
   return existsSync(path.join(projectRoot, '.claude'));
 }
 
-export async function emit({ preset, projectRoot }) {
+export async function emit({ preset, projectRoot, topiaRoot }) {
   if (preset === 'off') return uninstall({ projectRoot });
   if (preset !== 'off' && preset !== 'strict' && preset !== 'gentle') {
     throw new Error(`claude adapter: invalid preset '${preset}'`);
@@ -37,7 +37,7 @@ export async function emit({ preset, projectRoot }) {
   const notes = [];
 
   if (preset !== 'off') {
-    merged = appendHookBlock(merged, buildPreset(preset));
+    merged = appendHookBlock(merged, buildPreset(preset, { topiaRoot }));
   }
 
   return {
@@ -78,7 +78,7 @@ function isTopiaStatusLine(command) {
   // Match the installer's own output shapes only — not any command that happens
   // to contain the substring "Topia-pulse" (a user alias could legitimately contain it).
   // Accepts: (1) npx @protopia/skill-topia ...
-  return /(^|\s)npx(\s+--yes)?\s+@protopia\/skill-topia\b/.test(command);
+  return /(^|\s)(npx(\s+--yes)?\s+@protopia\/skill-topia|node\s+[^\s]*topia\.js)\b/.test(command);
 }
 
 export async function status(projectRoot) {
