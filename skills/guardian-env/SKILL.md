@@ -1,5 +1,5 @@
 ---
-name: sentinel-env
+name: guardian-env
 description: "Environment-aware pre-flight check. Use when starting work in a new environment, switching machines, or when 'works on my machine' bugs surface. Validates OS, runtime versions, installed tools, port availability, env vars, and disk space BEFORE coding starts. Like sentinel but for the environment, not the code."
 metadata:
   author: skill-topia
@@ -10,13 +10,13 @@ metadata:
   tools: "Bash, Read, Glob, Grep"
 ---
 
-# sentinel-env
+# guardian-env
 
 ## Purpose
 
 Catch environment mismatches before they waste debugging time. Validates that the developer's machine has the right runtime versions, tools, ports, and configuration to run the project. Prevents the entire class of "works on my machine" failures that masquerade as code bugs.
 
-This is the environment counterpart to `sentinel` (which checks code security) and `preflight` (which checks code quality). sentinel-env checks the MACHINE, not the code.
+This is the environment counterpart to `guardian` (which checks code security) and `readiness` (which checks code quality). guardian-env checks the MACHINE, not the code.
 
 ## Triggers
 
@@ -28,7 +28,7 @@ This is the environment counterpart to `sentinel` (which checks code security) a
 
 ## Calls (outbound)
 
-None — sentinel-env is a pure read-only utility. It checks and reports, never modifies.
+None — guardian-env is a pure read-only utility. It checks and reports, never modifies.
 
 ## Called By (inbound)
 

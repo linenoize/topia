@@ -8,12 +8,13 @@
  *   setup              hooks-only wizard (scope + preset)
  *   init               compile skills for non-Claude IDE
  *   build              recompile using existing topia.config.json
- *   doctor             validate output + mesh integrity (--mesh, --hooks, --strict)
+ *   doctor             validate output + nexus integrity (--nexus, --hooks, --strict)
  *   status             neofetch-style dashboard
  *   visualize          open skill-graph in browser
  *   analytics          usage analytics
  *   hooks <sub>        install / uninstall / status — runtime hook lifecycle
  *   migrate-from-rune  pull .rune/ → .topia/, disable rune-kit plugin
+ *   migrate-v1         rewrite v1 skill names in .topia/ state files
  *
  * Argument parsing: `parseArgs(argv)` splits flags. All commands accept
  * `--platform`, `--output`, `--disable`. Command-specific flags live in the
@@ -43,12 +44,13 @@ import { hookStatus } from '../commands/hooks/status.js';
 import { uninstallHooks } from '../commands/hooks/uninstall.js';
 import { runInstall } from '../commands/install.js';
 import { migrateFromRune } from '../commands/migrate-from-rune.js';
+import { migrateFromV1 } from '../commands/migrate-v1.js';
 import { formatSetupResult, runSetup } from '../commands/setup.js';
 import { generateDashboardHTML } from '../dashboard.js';
-import { checkMeshIntegrity, formatDoctorResults, formatMeshResults, runDoctor } from '../doctor.js';
+import { checkNexusIntegrity, formatDoctorResults, formatNexusResults, runDoctor } from '../doctor.js';
 import { buildAll } from '../emitter.js';
-import { collectStats, renderStatus, renderStatusJson } from '../status.js';
-import { collectGraphData, generateMeshHTML } from '../visualizer.js';
+import { collectStats, detectMemoryHealth, renderStatus, renderStatusJson } from '../status.js';
+import { collectGraphData, generateNexusHTML } from '../visualizer.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -244,12 +246,12 @@ async function cmdBuild(projectRoot, args) {
 }
 
 /**
- * cmdDoctor — validate install + mesh integrity. Read-only.
+ * cmdDoctor — validate install + nexus integrity. Read-only.
  *
  * Mode flags (mutually exclusive, checked in order):
  *   --hooks   hook drift report only (always exit 0; reporter)
- *   --mesh    mesh integrity check only (exit 1 on errors)
- *   (default) full: runDoctor() + mesh check + version-sync-check
+ *   --nexus    nexus integrity check only (exit 1 on errors)
+ *   (default) full: runDoctor() + nexus check + version-sync-check
  *
  * --strict   treat warnings as errors (CI mode).
  */
@@ -264,14 +266,16 @@ async function cmdDoctor(projectRoot, args) {
     return;
   }
 
-  // --mesh flag: run mesh integrity check only
-  if (args.mesh) {
+  const runNexusOnly = args.nexus || args.mesh;
+  if (args.mesh && !args.nexus) {
+    log('  ⚠ --mesh is deprecated; use --nexus');
+  }
+  if (runNexusOnly) {
     log('');
-    const meshResults = await checkMeshIntegrity(TOPIA_ROOT);
-    log(formatMeshResults(meshResults));
-    if (meshResults.errors.length > 0) process.exit(1);
-    // Exit with warning code if there are warnings (for CI awareness)
-    if (args.strict && meshResults.warnings.length > 0) process.exit(1);
+    const nexusResults = await checkNexusIntegrity(TOPIA_ROOT);
+    log(formatNexusResults(nexusResults));
+    if (nexusResults.errors.length > 0) process.exit(1);
+    if (args.strict && nexusResults.warnings.length > 0) process.exit(1);
     return;
   }
 
@@ -287,10 +291,10 @@ async function cmdDoctor(projectRoot, args) {
     });
     log(formatDoctorResults(results));
 
-    // Also run mesh check in source-only mode
+    // Also run nexus check in source-only mode
     log('');
-    const meshResults = await checkMeshIntegrity(TOPIA_ROOT);
-    log(formatMeshResults(meshResults));
+    const meshResults = await checkNexusIntegrity(TOPIA_ROOT);
+    log(formatNexusResults(meshResults));
 
     if (!results.healthy) process.exit(1);
     return;
@@ -309,10 +313,10 @@ async function cmdDoctor(projectRoot, args) {
 
   log(formatDoctorResults(results));
 
-  // Also run mesh check
+  // Also run nexus check
   log('');
-  const meshResults = await checkMeshIntegrity(topiaRoot);
-  log(formatMeshResults(meshResults));
+  const meshResults = await checkNexusIntegrity(topiaRoot);
+  log(formatNexusResults(meshResults));
 
   if (!results.healthy) process.exit(1);
 }
@@ -366,19 +370,21 @@ async function cmdStatus(projectRoot, args) {
   const projectName = path.basename(projectRoot);
 
   const stats = await collectStats(topiaRoot);
+  const memoryHealth = detectMemoryHealth(projectRoot);
+  const opts = { version: pkg.version, platform, projectName, memoryHealth };
 
   if (args.json) {
-    log(renderStatusJson(stats, { version: pkg.version, platform, projectName }));
+    log(renderStatusJson(stats, opts));
   } else {
     log('');
-    log(renderStatus(stats, { version: pkg.version, platform, projectName }));
+    log(renderStatus(stats, opts));
     log('');
   }
 }
 
 /**
  * cmdVisualize — generate HTML skill-graph and open in browser.
- * Side effect: writes <projectRoot>/.topia/mesh.html (or temp file) and opens it.
+ * Side effect: writes <projectRoot>/.topia/nexus.html (or temp file) and opens it.
  */
 async function cmdVisualize(projectRoot, args) {
   const config = await readConfig(projectRoot);
@@ -389,15 +395,15 @@ async function cmdVisualize(projectRoot, args) {
         ? path.resolve(projectRoot, config.source)
         : TOPIA_ROOT;
 
-  logStep('◎', 'Collecting mesh data...');
+  logStep('◎', 'Collecting nexus data...');
   const graphData = await collectGraphData(topiaRoot);
 
   logStep(
     '◎',
-    `Found ${graphData.stats.nodeCount} nodes, ${graphData.stats.edgeCount} edges, ${graphData.stats.signalCount} signals`,
+    `Found ${graphData.stats.nodeCount} nodes, ${graphData.stats.edgeCount} synapses, ${graphData.stats.signalCount} pulses`,
   );
 
-  const html = generateMeshHTML(graphData);
+  const html = generateNexusHTML(graphData);
 
   const topiaDir = path.join(projectRoot, '.topia');
   if (!existsSync(topiaDir)) {
@@ -405,11 +411,11 @@ async function cmdVisualize(projectRoot, args) {
     await mkdirFs(topiaDir, { recursive: true });
   }
 
-  const outputPath = args.output ? path.resolve(projectRoot, args.output) : path.join(topiaDir, 'mesh.html');
+  const outputPath = args.output ? path.resolve(projectRoot, args.output) : path.join(topiaDir, 'nexus.html');
 
   const { writeFile: writeFileFs } = await import('node:fs/promises');
   await writeFileFs(outputPath, html, 'utf-8');
-  logStep('✓', `Mesh visualization written to ${path.relative(projectRoot, outputPath)}`);
+  logStep('✓', `Nexus visualization written to ${path.relative(projectRoot, outputPath)}`);
 
   if (args.json) {
     log(JSON.stringify(graphData, null, 2));
@@ -688,6 +694,14 @@ async function main() {
         autoYes: Boolean(args.yes),
       });
       break;
+    case 'migrate-v1':
+      await migrateFromV1({
+        cwd: projectRoot,
+        dryRun: Boolean(args['dry-run']),
+        force: Boolean(args.force),
+        autoYes: Boolean(args.yes),
+      });
+      break;
     case 'install':
       await runInstall({ TopiaRoot: TOPIA_ROOT, projectRoot, args });
       break;
@@ -702,19 +716,22 @@ async function main() {
     case '--help':
     case undefined:
       log('');
-      log('  Topia CLI — Skill mesh for AI coding assistants');
+      log('  Topia CLI — Topia Nexus for AI coding assistants');
       log('');
       log('  Commands:');
       log('    setup    Interactive wizard — pick scope, install hooks (recommended for first-time)');
       log('             [--here|--global] [--preset gentle|strict] [--dry]');
       log('    init     Interactive setup for build pipeline (auto-detects platform)');
       log('    build    Compile skills for configured platform');
-      log('    doctor   Validate compiled output + mesh integrity');
-      log('             --mesh   Mesh integrity only (reciprocals, versions, sections)');
+      log('    doctor   Validate compiled output + nexus integrity');
+      log('             --nexus   Nexus integrity only (reciprocals, versions, sections)');
+      log('             --mesh    Deprecated alias for --nexus');
       log('             --hooks  Hook drift report — compare installed vs canonical preset (reporter, exit 0)');
       log('             --strict Fail on warnings (for CI)');
-      log('    status   Project dashboard (skills, signals, packs, health)');
-      log('    visualize  Interactive mesh graph (opens in browser)');
+      log('    status   Project dashboard (skills, pulses, nexus health, memory)');
+      log('    visualize  Interactive nexus graph (opens in browser)');
+      log('    migrate-v1   Rewrite v1 skill names in .topia/ state');
+      log('               [--dry-run] [--force] [--yes]');
       log('    analytics  Usage analytics dashboard');
       log('    hooks      Install/uninstall/status for multi-platform auto-discipline');
       log(

@@ -25,8 +25,8 @@ Auto-generate project context for AI sessions. Scans the codebase and creates a 
 
 ## Calls (outbound)
 
-- `scout` (L2): deep codebase scan — structure, frameworks, patterns, dependencies
-- `sentinel-env` (L3): validate developer environment (runtime versions, required tools, env vars) so the onboarded project is actually runnable
+- `recon` (L2): deep codebase scan — structure, frameworks, patterns, dependencies
+- `guardian-env` (L3): validate developer environment (runtime versions, required tools, env vars) so the onboarded project is actually runnable
 - `autopsy` (L2): when project appears messy or undocumented — health assessment
 
 ## Called By (inbound)
@@ -54,7 +54,7 @@ project/
 ## Executable Steps
 
 ### Step 1 — Full Scan
-Invoke `Topia:scout` on the project root. Collect:
+Invoke `Topia:recon` on the project root. Collect:
 - Top-level directory structure (depth 2)
 - All config files: `package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod`, `composer.json`, `.nvmrc`, `.python-version`, `Pipfile.lock`, `poetry.lock`, `uv.lock`
 - Python environment markers: `.venv/`, `venv/`, `conda-meta/`, `.python-version`

@@ -1,6 +1,6 @@
-// ─── Mesh Canvas Animation ───
+// ─── Nexus Canvas Animation ───
 (function initMesh() {
-  const canvas = document.getElementById('mesh-canvas');
+  const canvas = document.getElementById('nexus-canvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
   let w, h, nodes, animId;
@@ -98,7 +98,7 @@
     });
   }, { threshold: 0.1 });
 
-  document.querySelectorAll('.layer, .feature-card, .workflow-card, .compare-card, .ext-card, .install-card, .stat, .mesh-tier, .mesh-point').forEach(el => {
+  document.querySelectorAll('.layer, .feature-card, .workflow-card, .compare-card, .ext-card, .install-card, .stat, .nexus-tier, .nexus-point').forEach(el => {
     el.style.animationPlayState = 'paused';
     observer.observe(el);
   });

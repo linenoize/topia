@@ -64,8 +64,8 @@ contributor proposes → admin approves → deploy
 
 **Moderate** — Balanced speed and safety.
 
-- sentinel: enforce mode
-- preflight: full checks
+- guardian: enforce mode
+- readiness: full checks
 `;
 
   test('parses frontmatter correctly', () => {
@@ -138,7 +138,10 @@ contributor proposes → admin approves → deploy
     const result = parseOrgConfig(minimalTemplate);
     assert.strictEqual(result.governanceLevel.level, 'moderate');
     assert.ok(result.governanceLevel.settings.length >= 2);
-    assert.ok(result.governanceLevel.settings[0].includes('sentinel'));
+    assert.ok(
+      result.governanceLevel.settings[0].includes('guardian') ||
+        result.governanceLevel.settings[0].includes('sentinel'),
+    );
   });
 
   test('handles missing sections gracefully', () => {
@@ -180,61 +183,61 @@ No table here.
   });
 });
 
-// ─── Sentinel + preflight org integration ─────────────────────────
+// ─── Guardian + readiness org integration ─────────────────────────
 
-describe('sentinel/preflight org policy integration', () => {
-  const sentinelPath = path.join(SKILLS_DIR, 'sentinel', 'SKILL.md');
-  const preflightPath = path.join(SKILLS_DIR, 'preflight', 'SKILL.md');
+describe('guardian/readiness org policy integration', () => {
+  const guardianPath = path.join(SKILLS_DIR, 'guardian', 'SKILL.md');
+  const readinessPath = path.join(SKILLS_DIR, 'readiness', 'SKILL.md');
 
-  test('sentinel references .topia/org/org.md', () => {
-    const content = readFileSync(sentinelPath, 'utf-8');
+  test('guardian references .topia/org/org.md', () => {
+    const content = readFileSync(guardianPath, 'utf-8');
     assert.ok(
       content.includes('.topia/org/org.md'),
-      'sentinel should reference .topia/org/org.md for org policy loading',
+      'guardian should reference .topia/org/org.md for org policy loading',
     );
   });
 
-  test('sentinel has Organization Policy Enforcement step', () => {
-    const content = readFileSync(sentinelPath, 'utf-8');
+  test('guardian has Organization Policy Enforcement step', () => {
+    const content = readFileSync(guardianPath, 'utf-8');
     assert.ok(
       content.includes('Organization Policy Enforcement'),
-      'sentinel should have Organization Policy Enforcement step',
+      'guardian should have Organization Policy Enforcement step',
     );
   });
 
-  test('sentinel handles missing org config gracefully', () => {
-    const content = readFileSync(sentinelPath, 'utf-8');
-    assert.ok(content.includes('no org config'), 'sentinel should handle missing org config');
+  test('guardian handles missing org config gracefully', () => {
+    const content = readFileSync(guardianPath, 'utf-8');
+    assert.ok(content.includes('no org config'), 'guardian should handle missing org config');
   });
 
-  test('preflight references .topia/org/org.md', () => {
-    const content = readFileSync(preflightPath, 'utf-8');
+  test('readiness references .topia/org/org.md', () => {
+    const content = readFileSync(readinessPath, 'utf-8');
     assert.ok(
       content.includes('.topia/org/org.md'),
-      'preflight should reference .topia/org/org.md for org requirements',
+      'readiness should reference .topia/org/org.md for org requirements',
     );
   });
 
-  test('preflight has Organization Approval Requirements step', () => {
-    const content = readFileSync(preflightPath, 'utf-8');
+  test('readiness has Organization Approval Requirements step', () => {
+    const content = readFileSync(readinessPath, 'utf-8');
     assert.ok(
       content.includes('Organization Approval Requirements'),
-      'preflight should have Organization Approval Requirements step',
+      'readiness should have Organization Approval Requirements step',
     );
   });
 
-  test('preflight handles missing org config gracefully', () => {
-    const content = readFileSync(preflightPath, 'utf-8');
-    assert.ok(content.includes('no org config'), 'preflight should handle missing org config');
+  test('readiness handles missing org config gracefully', () => {
+    const content = readFileSync(readinessPath, 'utf-8');
+    assert.ok(content.includes('no org config'), 'readiness should handle missing org config');
   });
 
-  test('sentinel step is numbered 4.86 (between contract 4.85 and six-gate 4.9)', () => {
-    const content = readFileSync(sentinelPath, 'utf-8');
-    assert.ok(content.includes('Step 4.86'), 'sentinel org policy step should be numbered 4.86');
+  test('guardian step is numbered 4.86 (between contract 4.85 and six-gate 4.9)', () => {
+    const content = readFileSync(guardianPath, 'utf-8');
+    assert.ok(content.includes('Step 4.86'), 'guardian org policy step should be numbered 4.86');
   });
 
-  test('preflight step is numbered 4.6 (between domain hooks 4.5 and composite score 4.8)', () => {
-    const content = readFileSync(preflightPath, 'utf-8');
-    assert.ok(content.includes('Step 4.6'), 'preflight org requirements step should be numbered 4.6');
+  test('readiness step is numbered 4.6 (between domain hooks 4.5 and composite score 4.8)', () => {
+    const content = readFileSync(readinessPath, 'utf-8');
+    assert.ok(content.includes('Step 4.6'), 'readiness org requirements step should be numbered 4.6');
   });
 });

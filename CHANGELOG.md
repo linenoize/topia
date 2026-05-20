@@ -4,6 +4,31 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
+## [2.0.0] — 2026-05-19
+
+### Breaking changes
+
+- **Nexus terminology** — mesh → nexus, connections → synapses, signals → pulses across CLI, docs, and compiler output. `topia doctor --nexus` replaces `--mesh` (alias kept one release).
+- **Skill renames** — `sentinel`→`guardian`, `preflight`→`readiness`, `graft`→`integrate`, `scout`→`recon`, `sentinel-env`→`guardian-env`. Run `topia migrate-v1` to rewrite `.topia/` state files.
+- **Hook dispatch** — presets wire `readiness` and `guardian`; v1 names still accepted with deprecation warning.
+
+### Added
+
+- **`compiler/nexus-constants.js`** — single source of truth for stats and branding footer.
+- **`docs/NEXUS-GLOSSARY.md`** — canonical Nexus / Synapse / Pulse / Maestro definitions.
+- **`docs/NEXUS-RULES.md`** — cross-cutting skill rules (replaces MESH-RULES).
+- **`topia migrate-v1`** — migrates v1 skill references in `.topia/` project state.
+- **`docs/migration/v1-to-v2.md`** — upgrade guide.
+- **`topia status`** — memory health (agora-code), nexus density, layer emojis, pulse section.
+
+### Changed
+
+- **`topia visualize`** — writes `.topia/nexus.html` (was `mesh.html`).
+- **`scripts/validate-nexus.js`** — synapse validation (`validate-mesh.js` re-exports for compatibility).
+- **Platform hook adapters** — Cursor/Windsurf/Antigravity rules use v2 skill IDs.
+
+---
+
 ## [1.2.1] — 2026-05-18
 
 ### Added
@@ -58,7 +83,7 @@ Initial internal release of Topia — an interconnected skill ecosystem for AI c
 - **65 skills** wired into a 5-layer mesh:
   - **L0 Router** (1): `skill-router`
   - **L1 Orchestrators** (5): `build`, `team`, `launch`, `rescue`, `scaffold`
-  - **L2 Workflow Hubs** (~30): `plan`, `scout`, `idea`, `debug`, `fix`, `test`, `review`, `sentinel`, `design`, `db`, `mcp-builder`, …
+  - **L2 Workflow Hubs** (~30): `plan`, `scout`, `idea`, `debug`, `fix`, `test`, `review`, `guardian`, `design`, `db`, `mcp-builder`, …
   - **L3 Utilities** (~27): `research`, `verification`, `git`, `journal`, `worktree`, `constraint-check`, `sast`, …
 - **203 sync connections** + **44 async signals** between skills, with reciprocal `Called By` tracking enforced by `topia doctor`.
 - **5-layer rule**: L1 calls L2/L3, L2 calls L2/L3, L3 calls nothing (with documented exceptions for `team` meta-orchestration).
@@ -66,10 +91,10 @@ Initial internal release of Topia — an interconnected skill ecosystem for AI c
 ### Multi-platform compiler
 - Single `skills/` source of truth compiles to Claude Code (native plugin), Cursor, Windsurf, Antigravity, Codex, OpenCode, and a generic target.
 - CLI commands: `topia init`, `build`, `doctor`, `status`, `visualize`, `hooks install`.
-- Runtime layer wires `preflight` / `sentinel` / `completion-gate` / `quarantine` as native hooks on Claude Code, Cursor, Windsurf, Antigravity.
+- Runtime layer wires `readiness` / `guardian` / `completion-gate` / `quarantine` as native hooks on Claude Code, Cursor, Windsurf, Antigravity.
 
 ### Workflow enforcement
-- Step 0 prerequisite checks on every skill — e.g., `build` requires an approved plan, `fix` requires a diagnosis from `debug`, `deploy` requires passing `verification` + `sentinel`.
+- Step 0 prerequisite checks on every skill — e.g., `build` requires an approved plan, `fix` requires a diagnosis from `debug`, `deploy` requires passing `verification` + `guardian`.
 - `Mandatory Skill Routing` table in `CLAUDE.md` maps user intent → skill, blocking casual ad-hoc work.
 
 ### Extension packs (10)

@@ -10,7 +10,7 @@ You are the **deploy** skill — Topia's deployment executor.
 ## Step 0 — Prerequisite Check (BEFORE deploying)
 
 1. **Tests pass?** Invoke `Topia:verification` if not already run this session. Deploy without passing tests = shipping broken code.
-2. **Security clean?** Invoke `Topia:sentinel` if not already run. Deploy with CRITICAL findings = shipping vulnerabilities.
+2. **Security clean?** Invoke `Topia:guardian` if not already run. Deploy with CRITICAL findings = shipping vulnerabilities.
 3. **Rollback plan?** For production deploys, check for `.topia/deploy/rollback-*.md`. If missing → create one first.
 
 Only proceed after ALL Step 0 checks pass.

@@ -26,7 +26,7 @@ const SAMPLE = `# Project Invariants
 #### build
 - **WHAT**: L1 orchestrator, 70% of tasks
 - **WHERE**: \`skills/build/**\`
-- **WHY**: breaking build breaks the mesh
+- **WHY**: breaking build breaks the nexus
 
 ### Critical Invariants
 

@@ -1,5 +1,5 @@
 /**
- * Hook Tests — intent-router + pre-tool-guard (privacy mesh)
+ * Hook Tests — intent-router + pre-tool-guard (privacy nexus)
  *
  * Tests hook scripts via child_process to verify stdin/stdout behavior.
  */
@@ -33,13 +33,13 @@ function runHook(hookName, stdinInput, env = {}) {
   }
 }
 
-// --- Pre-Tool Guard (Privacy Mesh) ---
+// --- Pre-Tool Guard (Privacy Nexus) ---
 
-describe('pre-tool-guard: privacy mesh', () => {
+describe('pre-tool-guard: privacy nexus', () => {
   test('WARN on .env file', () => {
     const { stdout, exitCode } = runHook('pre-tool-guard', '{"tool_input": {"file_path": ".env"}}');
     assert.strictEqual(exitCode, 0, 'WARN should not block (exit 0)');
-    assert.ok(stdout.includes('privacy-mesh'), 'should show privacy-mesh label');
+    assert.ok(stdout.includes('privacy-nexus'), 'should show privacy-nexus label');
     assert.ok(stdout.includes('Sensitive file'), 'should warn about sensitive file');
   });
 

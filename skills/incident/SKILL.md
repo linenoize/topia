@@ -30,7 +30,7 @@ Structured incident response for production issues. Follows a strict order: tria
 - `watchdog` (L3): current system state — which endpoints are down, response times
 - `autopsy` (L2): root cause analysis after containment
 - `journal` (L3): record incident timeline and decisions
-- `sentinel` (L2): check for security dimension (data exposure, unauthorized access)
+- `guardian` (L2): check for security dimension (data exposure, unauthorized access)
 - `neural-memory` (ext): after resolution — capture incident root cause + fix pattern cross-session so the same failure mode is never diagnosed twice
 
 ## Called By (inbound)
@@ -88,14 +88,14 @@ If watchdog returns `DOWN` — return to Step 2 with a different containment str
 
 ### Step 4 — Security Check
 
-Invoke `sentinel` to check if the incident has a security dimension:
+Invoke `guardian` to check if the incident has a security dimension:
 - Data exposure (PII, credentials in logs/responses)
 - Unauthorized access pattern in logs
 - Injection attack vector triggered the incident
 - Dependency with known CVE involved
 
-If `sentinel` returns `BLOCK`: escalate to security incident — different protocol (notify security team, preserve logs, document access chain).
-If `sentinel` returns `PASS` or `WARN`: continue to root cause.
+If `guardian` returns `BLOCK`: escalate to security incident — different protocol (notify security team, preserve logs, document access chain).
+If `guardian` returns `PASS` or `WARN`: continue to root cause.
 
 ### Step 5 — Root Cause Analysis
 
@@ -208,7 +208,7 @@ File: src/middleware/auth.ts:47
 5. MUST NOT make code changes during incident response — incident investigates only; fixes are a separate task
 6. MUST generate postmortem for every P1 and P2 — P3 optional
 
-## Mesh Gates (L1/L2 only)
+## Nexus Gates (L1/L2 only)
 
 | Gate | Requires | If Missing |
 |------|----------|------------|
@@ -243,7 +243,7 @@ Known failure modes for this skill. Check these before declaring done.
 
 - Severity triaged (P1/P2/P3) with impact description
 - Containment executed and watchdog confirms stable
-- sentinel ran and security dimension addressed (or escalated)
+- guardian ran and security dimension addressed (or escalated)
 - Root cause identified via autopsy with file:line evidence
 - Full timeline constructed
 - Postmortem saved to .topia/incidents/ with Prevention Actions table

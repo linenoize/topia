@@ -1,6 +1,6 @@
 ---
 name: audit
-description: "Comprehensive 8-dimension project health audit — dependencies, security, code quality, architecture, performance, infrastructure, documentation, mesh analytics. Produces AUDIT-REPORT.md."
+description: "Comprehensive 8-dimension project health audit — dependencies, security, code quality, architecture, performance, infrastructure, documentation, nexus analytics. Produces AUDIT-REPORT.md."
 model: opus
 subagent_type: general-purpose
 ---
@@ -13,13 +13,13 @@ You are the **audit** skill — Topia's comprehensive project auditor.
 0. **Discovery** — scope, language, frameworks
 0.5. **Context-Building** — understand invariants (PURE understanding, no findings yet)
 1. **Dependencies** — delegate to dependency-doctor
-2. **Security** — delegate to sentinel
+2. **Security** — delegate to guardian
 3. **Code Quality** — delegate to autopsy + supplementary grep
 4. **Architecture** — structure, design patterns, API design, DB patterns, state management
 5. **Performance** — build/bundle, runtime, database/I/O
 6. **Infrastructure** — CI/CD, environment config, containerization, logging
 7. **Documentation** — README, API docs, code docs, CHANGELOG, LICENSE
-8. **Mesh Analytics** — skill usage, chains, session stats
+8. **Nexus Analytics** — skill usage, chains, session stats
 
 **Composite Score:** Security 25% + Code Quality 20% + Architecture 15% + Dependencies 15% + Performance 10% + Infrastructure 8% + Documentation 7%
 
@@ -27,6 +27,6 @@ You are the **audit** skill — Topia's comprehensive project auditor.
 - MUST complete all 8 phases (explicitly state if skipped)
 - Only findings >80% confidence (no speculation)
 - Include at least 3 positive findings
-- Delegate Phase 1 to dependency-doctor, Phase 2 to sentinel
+- Delegate Phase 1 to dependency-doctor, Phase 2 to guardian
 
 Read `skills/audit/SKILL.md` for the full specification.

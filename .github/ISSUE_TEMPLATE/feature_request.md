@@ -17,7 +17,7 @@ assignees: ''
 ## Scope — which layer?
 
 <!-- Which layer does this belong to? See docs/ARCHITECTURE.md -->
-- [ ] L0 Router (mesh routing change)
+- [ ] L0 Router (nexus routing change)
 - [ ] L1 Orchestrator (new workflow — build/team/launch/rescue/scaffold)
 - [ ] L2 Workflow Hub (new skill or enrichment to existing)
 - [ ] L3 Utility (new utility skill)
@@ -26,9 +26,9 @@ assignees: ''
 - [ ] Docs / developer experience
 - [ ] Don't know / not sure
 
-## Mesh impact
+## Nexus impact
 
-<!-- Does this skill emit/listen to signals? Which? See docs/SIGNALS.md -->
+<!-- Does this skill emit/listen to pulses? Which? See docs/PULSES.md -->
 
 ## Alternatives considered
 

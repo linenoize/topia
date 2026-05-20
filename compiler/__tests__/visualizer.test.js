@@ -2,7 +2,7 @@ import assert from 'node:assert';
 import path from 'node:path';
 import { describe, test } from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { collectGraphData, generateMeshHTML } from '../visualizer.js';
+import { collectGraphData, generateNexusHTML } from '../visualizer.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const Topia_ROOT = path.resolve(__dirname, '../..');
@@ -143,12 +143,12 @@ describe('collectGraphData', () => {
   });
 });
 
-// ─── generateMeshHTML ───
+// ─── generateNexusHTML ───
 
-describe('generateMeshHTML', () => {
+describe('generateNexusHTML', () => {
   test('generates valid HTML document', async () => {
     const data = await collectGraphData(Topia_ROOT);
-    const html = generateMeshHTML(data);
+    const html = generateNexusHTML(data);
     assert.ok(html.startsWith('<!DOCTYPE html>'));
     assert.ok(html.includes('<html'));
     assert.ok(html.includes('</html>'));
@@ -156,7 +156,7 @@ describe('generateMeshHTML', () => {
 
   test('is self-contained (no CDN links)', async () => {
     const data = await collectGraphData(Topia_ROOT);
-    const html = generateMeshHTML(data);
+    const html = generateNexusHTML(data);
     assert.ok(!html.includes('cdn.'), 'Should not reference CDN');
     assert.ok(!html.includes('unpkg.com'), 'Should not reference unpkg');
     assert.ok(!html.includes('cdnjs.'), 'Should not reference cdnjs');
@@ -164,49 +164,49 @@ describe('generateMeshHTML', () => {
 
   test('embeds graph data as JSON', async () => {
     const data = await collectGraphData(Topia_ROOT);
-    const html = generateMeshHTML(data);
+    const html = generateNexusHTML(data);
     assert.ok(html.includes('const DATA ='));
     assert.ok(html.includes('"nodeCount"'));
   });
 
   test('includes inline CSS', async () => {
     const data = await collectGraphData(Topia_ROOT);
-    const html = generateMeshHTML(data);
+    const html = generateNexusHTML(data);
     assert.ok(html.includes('<style>'));
     assert.ok(html.includes('</style>'));
   });
 
   test('includes inline JavaScript', async () => {
     const data = await collectGraphData(Topia_ROOT);
-    const html = generateMeshHTML(data);
+    const html = generateNexusHTML(data);
     assert.ok(html.includes('<script>'));
     assert.ok(html.includes('</script>'));
   });
 
   test('includes search input', async () => {
     const data = await collectGraphData(Topia_ROOT);
-    const html = generateMeshHTML(data);
+    const html = generateNexusHTML(data);
     assert.ok(html.includes('id="search"'));
     assert.ok(html.includes('Search skills'));
   });
 
   test('includes layer filter buttons', async () => {
     const data = await collectGraphData(Topia_ROOT);
-    const html = generateMeshHTML(data);
+    const html = generateNexusHTML(data);
     assert.ok(html.includes('id="filters"'));
     assert.ok(html.includes('filter-btn'));
   });
 
   test('includes detail panel', async () => {
     const data = await collectGraphData(Topia_ROOT);
-    const html = generateMeshHTML(data);
+    const html = generateNexusHTML(data);
     assert.ok(html.includes('detail-panel'));
     assert.ok(html.includes('detail-content'));
   });
 
   test('includes legend', async () => {
     const data = await collectGraphData(Topia_ROOT);
-    const html = generateMeshHTML(data);
+    const html = generateNexusHTML(data);
     assert.ok(html.includes('L0 Router'));
     assert.ok(html.includes('L1 Orchestrator'));
     assert.ok(html.includes('L2 Workflow'));
@@ -218,13 +218,13 @@ describe('generateMeshHTML', () => {
 
   test('includes canvas element', async () => {
     const data = await collectGraphData(Topia_ROOT);
-    const html = generateMeshHTML(data);
+    const html = generateNexusHTML(data);
     assert.ok(html.includes('<canvas id="canvas"'));
   });
 
   test('includes layer colors config', async () => {
     const data = await collectGraphData(Topia_ROOT);
-    const html = generateMeshHTML(data);
+    const html = generateNexusHTML(data);
     assert.ok(html.includes('#f59e0b')); // L0
     assert.ok(html.includes('#ef4444')); // L1
     assert.ok(html.includes('#6366f1')); // L2
@@ -234,7 +234,7 @@ describe('generateMeshHTML', () => {
 
   test('handles interaction code', async () => {
     const data = await collectGraphData(Topia_ROOT);
-    const html = generateMeshHTML(data);
+    const html = generateNexusHTML(data);
     assert.ok(html.includes('mousemove'));
     assert.ok(html.includes('mousedown'));
     assert.ok(html.includes('wheel'));
@@ -243,14 +243,14 @@ describe('generateMeshHTML', () => {
 
   test('has zoom/pan support', async () => {
     const data = await collectGraphData(Topia_ROOT);
-    const html = generateMeshHTML(data);
+    const html = generateNexusHTML(data);
     assert.ok(html.includes('cam.zoom'));
     assert.ok(html.includes('cam.x'));
   });
 
   test('HTML escapes data to prevent XSS', async () => {
     const data = await collectGraphData(Topia_ROOT);
-    const html = generateMeshHTML(data);
+    const html = generateNexusHTML(data);
     assert.ok(html.includes('function esc('));
     assert.ok(html.includes('&amp;'));
     assert.ok(html.includes('&lt;'));

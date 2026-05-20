@@ -42,7 +42,7 @@ describe('cursor adapter', () => {
     const plan = await cursor.emit({ preset: 'gentle', projectRoot: tmpRoot });
     assert.strictEqual(plan.files.length, 3);
     const names = plan.files.map((f) => path.basename(f.path)).sort();
-    assert.deepStrictEqual(names, ['Topia-dependency-doctor.mdc', 'Topia-preflight.mdc', 'Topia-sentinel.mdc']);
+    assert.deepStrictEqual(names, ['Topia-dependency-doctor.mdc', 'Topia-guardian.mdc', 'Topia-readiness.mdc']);
     for (const file of plan.files) {
       assert.ok(file.content.includes('Topia-managed: true'));
       assert.ok(file.content.includes('@protopia/skill-topia hook-dispatch'));
@@ -52,8 +52,8 @@ describe('cursor adapter', () => {
   test('emit(strict) renders WARN → BLOCK guidance', async () => {
     const gentle = await cursor.emit({ preset: 'gentle', projectRoot: tmpRoot });
     const strict = await cursor.emit({ preset: 'strict', projectRoot: tmpRoot });
-    const gentlePreflight = gentle.files.find((f) => f.path.endsWith('Topia-preflight.mdc')).content;
-    const strictPreflight = strict.files.find((f) => f.path.endsWith('Topia-preflight.mdc')).content;
+    const gentlePreflight = gentle.files.find((f) => f.path.endsWith('Topia-readiness.mdc')).content;
+    const strictPreflight = strict.files.find((f) => f.path.endsWith('Topia-readiness.mdc')).content;
     assert.ok(gentlePreflight.includes('WARN'));
     assert.ok(strictPreflight.includes('BLOCK'));
   });
@@ -76,8 +76,8 @@ describe('cursor adapter', () => {
     assert.strictEqual(result.written, true);
     const rulesDir = path.join(tmpRoot, RULES_DIR);
     const files = await readdir(rulesDir);
-    assert.ok(files.includes('Topia-preflight.mdc'));
-    assert.ok(files.includes('Topia-sentinel.mdc'));
+    assert.ok(files.includes('Topia-readiness.mdc'));
+    assert.ok(files.includes('Topia-guardian.mdc'));
     assert.ok(files.includes('Topia-dependency-doctor.mdc'));
   });
 
@@ -85,9 +85,9 @@ describe('cursor adapter', () => {
     await seedCursor(tmpRoot);
     await installHooks(tmpRoot, { preset: 'gentle', platform: 'cursor' });
     const rulesDir = path.join(tmpRoot, RULES_DIR);
-    const first = await readFile(path.join(rulesDir, 'Topia-preflight.mdc'), 'utf-8');
+    const first = await readFile(path.join(rulesDir, 'Topia-readiness.mdc'), 'utf-8');
     await installHooks(tmpRoot, { preset: 'gentle', platform: 'cursor' });
-    const second = await readFile(path.join(rulesDir, 'Topia-preflight.mdc'), 'utf-8');
+    const second = await readFile(path.join(rulesDir, 'Topia-readiness.mdc'), 'utf-8');
     assert.strictEqual(first, second);
   });
 
@@ -127,8 +127,8 @@ describe('cursor adapter', () => {
     const r = result.results.find((x) => x.platform === 'cursor');
     assert.strictEqual(r.installed, true);
     assert.strictEqual(r.preset, 'strict');
-    assert.ok(r.wired.includes('preflight'));
-    assert.ok(r.wired.includes('sentinel'));
+    assert.ok(r.wired.includes('readiness'));
+    assert.ok(r.wired.includes('guardian'));
     assert.ok(r.wired.includes('dependency-doctor'));
   });
 
@@ -136,6 +136,6 @@ describe('cursor adapter', () => {
     const result = await hookStatus(tmpRoot, Topia_ROOT, { platform: 'cursor' });
     const r = result.results.find((x) => x.platform === 'cursor');
     assert.strictEqual(r.installed, false);
-    assert.ok(r.missing.includes('preflight'));
+    assert.ok(r.missing.includes('readiness'));
   });
 });

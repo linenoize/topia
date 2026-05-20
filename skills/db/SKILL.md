@@ -26,7 +26,7 @@ Database workflow specialist. Handles the parts of database work that cause prod
 
 ## Calls (outbound)
 
-- `scout` (L2): find schema files, migration files, ORM config
+- `recon` (L2): find schema files, migration files, ORM config
 - `verification` (L3): run migration in test environment if configured
 - `hallucination-guard` (L3): verify SQL syntax and ORM method names
 
@@ -224,7 +224,7 @@ Emit structured report:
 4. MUST use hallucination-guard to verify SQL syntax before writing migration files
 5. MUST NOT rename columns silently — always present impact and require confirmation
 
-## Mesh Gates (L1/L2 only)
+## Nexus Gates (L1/L2 only)
 
 | Gate | Requires | If Missing |
 |------|----------|------------|

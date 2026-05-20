@@ -60,7 +60,7 @@ For each skill in invoked_skills:
   Extract:
     - <HARD-GATE> blocks → mandatory, violation = BLOCK
     - ## Constraints numbered list → required, violation = WARN
-    - ## Mesh Gates table → required gates
+    - ## Nexus Gates table → required gates
 ```
 
 ### Step 3 — Audit Compliance
@@ -147,7 +147,7 @@ Constraint Check Report with status (COMPLIANT/VIOLATIONS_FOUND/CRITICAL_VIOLATI
 | Failure Mode | Severity | Mitigation |
 |---|---|---|
 | Agent self-reports compliance and constraint-check trusts it | CRITICAL | Constraint 5: check tool calls independently, not agent narrative |
-| Only checking build constraints, missing test/sentinel/etc | HIGH | Constraint 1: audit ALL invoked skills, not just the orchestrator |
+| Only checking build constraints, missing test/guardian/etc | HIGH | Constraint 1: audit ALL invoked skills, not just the orchestrator |
 | Temporal check wrong (tool calls reordered in context) | MEDIUM | Use tool call sequence numbers, not message ordering |
 | Too strict on optional steps (INFO treated as BLOCK) | LOW | Step 4 classification: only HARD-GATE = BLOCK, constraints = WARN |
 

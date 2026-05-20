@@ -1,6 +1,6 @@
 # Auth & Cryptography Reference
 
-> Loaded by `sentinel` when authentication, password hashing, encryption, or token management patterns detected.
+> Loaded by `guardian` when authentication, password hashing, encryption, or token management patterns detected.
 
 ---
 

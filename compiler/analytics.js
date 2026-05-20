@@ -281,9 +281,9 @@ export async function getSessionTimeline(TopiaRoot, days = 30, limit = 5) {
   }));
 }
 
-// ─── Skill Mesh (connections from skill frequency) ───
+// ─── Topia Nexus (connections from skill frequency) ───
 
-export async function getSkillMesh(TopiaRoot, days = 30) {
+export async function getSkillNexus(TopiaRoot, days = 30) {
   const { sessions, chains } = await loadMetrics(TopiaRoot);
   const filtered = filterByDays(sessions, days);
 
@@ -344,6 +344,9 @@ export async function getSkillMesh(TopiaRoot, days = 30) {
   return { nodes, edges, maxCount: Math.max(1, ...nodes.map((n) => n.count)) };
 }
 
+/** @deprecated Use getSkillNexus */
+export const getSkillMesh = getSkillNexus;
+
 // ─── All Queries ───
 
 export async function getAllAnalytics(TopiaRoot, days = 30) {
@@ -356,7 +359,7 @@ export async function getAllAnalytics(TopiaRoot, days = 30) {
     toolDistribution,
     skillHeatmap,
     sessionTimeline,
-    skillMesh,
+    skillNexus,
   ] = await Promise.all([
     getSessionOverview(TopiaRoot, days),
     getSkillFrequency(TopiaRoot, days),
@@ -366,7 +369,7 @@ export async function getAllAnalytics(TopiaRoot, days = 30) {
     getToolDistribution(TopiaRoot, days),
     getSkillHeatmap(TopiaRoot, days),
     getSessionTimeline(TopiaRoot, days, 5),
-    getSkillMesh(TopiaRoot, days),
+    getSkillNexus(TopiaRoot, days),
   ]);
 
   return {
@@ -378,7 +381,8 @@ export async function getAllAnalytics(TopiaRoot, days = 30) {
     toolDistribution,
     skillHeatmap,
     sessionTimeline,
-    skillMesh,
+    skillNexus,
+    skillMesh: skillNexus, // deprecated v1 alias
     generated: new Date().toISOString(),
     days,
   };

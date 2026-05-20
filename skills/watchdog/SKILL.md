@@ -113,7 +113,7 @@ Output the following report structure:
 - Total endpoints checked: [n]
 - Healthy: [n]
 - Alerts: [n]
-- Perf Signals: [n]
+- Perf Pulses: [n]
 - Overall status: ALL_HEALTHY | DEGRADED | DOWN
 ```
 

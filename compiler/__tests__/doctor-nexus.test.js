@@ -1,5 +1,5 @@
 /**
- * Tests for doctor mesh integrity checks
+ * Tests for doctor nexus integrity checks
  */
 
 import assert from 'node:assert';
@@ -7,12 +7,12 @@ import { mkdir, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, test } from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { checkMeshIntegrity, formatMeshResults } from '../doctor.js';
+import { checkNexusIntegrity, formatNexusResults } from '../doctor.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const TEST_ROOT = path.join(__dirname, '.test-mesh-skills');
+const TEST_ROOT = path.join(__dirname, '.test-nexus-skills');
 
-describe('checkMeshIntegrity', () => {
+describe('checkNexusIntegrity', () => {
   beforeEach(async () => {
     await mkdir(path.join(TEST_ROOT, 'skills', 'skill-a'), { recursive: true });
     await mkdir(path.join(TEST_ROOT, 'skills', 'skill-b'), { recursive: true });
@@ -66,7 +66,7 @@ None
 `,
     );
 
-    const results = await checkMeshIntegrity(TEST_ROOT);
+    const results = await checkNexusIntegrity(TEST_ROOT);
 
     assert.strictEqual(results.stats.skills, 2, 'Should find 2 skills');
     assert.strictEqual(results.stats.missingReciprocals, 1, 'Should detect 1 missing reciprocal');
@@ -119,7 +119,7 @@ None
 `,
     );
 
-    const results = await checkMeshIntegrity(TEST_ROOT);
+    const results = await checkNexusIntegrity(TEST_ROOT);
 
     assert.strictEqual(results.stats.missingReciprocals, 0, 'Should have no missing reciprocals');
     assert.strictEqual(
@@ -157,7 +157,7 @@ None
 `,
     );
 
-    const results = await checkMeshIntegrity(TEST_ROOT);
+    const results = await checkNexusIntegrity(TEST_ROOT);
 
     assert.ok(
       results.warnings.some((w) => w.includes('skill-a') && w.includes('1.0')),
@@ -181,7 +181,7 @@ None
 `,
     );
 
-    const results = await checkMeshIntegrity(TEST_ROOT);
+    const results = await checkNexusIntegrity(TEST_ROOT);
 
     assert.ok(
       results.warnings.some((w) => w.includes('skill-a') && w.includes('Sharp Edges')),
@@ -228,7 +228,7 @@ None
 `,
     );
 
-    const results = await checkMeshIntegrity(TEST_ROOT);
+    const results = await checkNexusIntegrity(TEST_ROOT);
 
     const fmCheck = results.checks.find((c) => c.name === 'Frontmatter conformance');
     assert.strictEqual(fmCheck?.status, 'warn', 'Frontmatter check should warn');
@@ -274,14 +274,14 @@ None
 `,
     );
 
-    const results = await checkMeshIntegrity(TEST_ROOT);
+    const results = await checkNexusIntegrity(TEST_ROOT);
 
     const fmCheck = results.checks.find((c) => c.name === 'Frontmatter conformance');
     assert.strictEqual(fmCheck?.status, 'pass', 'Frontmatter check should pass');
   });
 });
 
-describe('formatMeshResults', () => {
+describe('formatNexusResults', () => {
   test('formats results for console output', () => {
     const results = {
       checks: [
@@ -290,13 +290,13 @@ describe('formatMeshResults', () => {
       ],
       warnings: ['skill-a v0.9.0: consider promoting to 1.0'],
       errors: [],
-      stats: { skills: 10, connections: 50, missingReciprocals: 0 },
+      stats: { skills: 10, synapses: 50, pulses: 5, pulseEdges: 0, missingReciprocals: 0 },
     };
 
-    const output = formatMeshResults(results);
+    const output = formatNexusResults(results);
 
     assert.ok(output.includes('Skills: 10'), 'Should show skill count');
-    assert.ok(output.includes('Connections: 50'), 'Should show connection count');
+    assert.ok(output.includes('Synapses: 50'), 'Should show connection count');
     assert.ok(output.includes('[✓] Reciprocal'), 'Should show pass icon');
     assert.ok(output.includes('[!] Version'), 'Should show warn icon');
     assert.ok(output.includes('skill-a v0.9.0'), 'Should include warnings');
@@ -304,19 +304,17 @@ describe('formatMeshResults', () => {
 });
 
 describe('integration: real skills', () => {
-  test('runs mesh check on actual Topia skills directory', async () => {
+  test('runs nexus check on actual Topia skills directory', async () => {
     const TopiaRoot = path.resolve(__dirname, '../..');
-    const results = await checkMeshIntegrity(TopiaRoot);
+    const results = await checkNexusIntegrity(TopiaRoot);
 
     // Should find skills
     assert.ok(results.stats.skills > 50, `Should find 50+ skills, got ${results.stats.skills}`);
 
     // Should find connections
-    assert.ok(results.stats.connections > 100, `Should find 100+ connections, got ${results.stats.connections}`);
+    assert.ok(results.stats.synapses > 100, `Should find 100+ synapses, got ${results.stats.synapses}`);
 
-    // Should find signals (emit/listen mesh — separate from sync calls)
-    // Free core scan only — Pro/Business packs scanned separately by validate-signals.js
-    assert.ok(results.stats.signals > 20, `Should find 20+ signals, got ${results.stats.signals}`);
+    assert.ok(results.stats.pulses > 20, `Should find 20+ pulses, got ${results.stats.pulses}`);
     assert.ok(results.stats.signalEdges > 0, `Should find signal edges, got ${results.stats.signalEdges}`);
 
     // Should not have errors

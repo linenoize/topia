@@ -1,6 +1,6 @@
 # Org Config — `.topia/org/org.md`
 
-The single file where your team's policies, roles, approval flows, and governance level live. `sentinel` and `preflight` read this **at compile time** and bake your rules into their runtime hooks — so the rules a developer hits at commit time match what the doc says.
+The single file where your team's policies, roles, approval flows, and governance level live. `guardian` and `readiness` read this **at compile time** and bake your rules into their runtime hooks — so the rules a developer hits at commit time match what the doc says.
 
 It's the only file under `.topia/` that gets committed to git (the rest is per-session state). You can — and should — edit it for each project.
 
@@ -24,28 +24,28 @@ You do **not** need to touch this file for routine development. It's a policy fi
 ## What each section drives
 
 ### `## Teams`
-Used by `sentinel` and `review` to attribute findings ("eng team owns this file"). Future: `team` orchestrator can route domain-tagged work to the right team's reviewers.
+Used by `guardian` and `review` to attribute findings ("eng team owns this file"). Future: `team` orchestrator can route domain-tagged work to the right team's reviewers.
 
 ### `## Roles`
-Defines who can override what. `completion-gate` and `sentinel` consult this when an agent claims an override is authorised.
+Defines who can override what. `completion-gate` and `guardian` consult this when an agent claims an override is authorised.
 
 | Role | What it gates |
 |---|---|
 | `admin` | Can override any gate including `sentinel BLOCK` |
-| `maintainer` | Can override `preflight` and `review`; cannot override `sentinel` |
+| `maintainer` | Can override `readiness` and `review`; cannot override `guardian` |
 | `contributor` | Cannot override any blocking gate |
 | `reviewer` | Read + comment only |
 
 ### `## Policies > Code Review`
 - **Minimum reviewers** → `review` enforces a minimum on PRs
 - **Self-merge allowed** → `git` blocks self-merges if `No`
-- **Required reviewers for security-tagged files** → routed to `sentinel`
+- **Required reviewers for security-tagged files** → routed to `guardian`
 
 ### `## Policies > Security`
 - **Dependency audit frequency** → `dependency-doctor` schedule
-- **Secret rotation** → flagged by `sentinel` when secrets are detected past rotation date
+- **Secret rotation** → flagged by `guardian` when secrets are detected past rotation date
 - **CVE response SLA** → `dependency-doctor` priority bucketing
-- **OWASP scan on every PR** → `sentinel` enforce/advise mode
+- **OWASP scan on every PR** → `guardian` enforce/advise mode
 
 ### `## Policies > Deployment`
 - **Staging required** → `deploy` blocks production without a staging deploy in the same session
@@ -74,7 +74,7 @@ You can also override per-gate inline (see the example file's bottom section).
 
 ## How it's parsed
 
-`compiler/parser.js#parseOrgConfig` reads this file at **compile time** — when `topia hooks install` runs, or when `topia setup` regenerates the hook scripts. The parsed config becomes an `<ORG-POLICY>` block injected into `sentinel` and `preflight`'s SKILL.md outputs.
+`compiler/parser.js#parseOrgConfig` reads this file at **compile time** — when `topia hooks install` runs, or when `topia setup` regenerates the hook scripts. The parsed config becomes an `<ORG-POLICY>` block injected into `guardian` and `readiness`'s SKILL.md outputs.
 
 **You must re-run `topia setup` after editing `org.md`** for changes to take effect at runtime. Otherwise the previously-compiled hooks keep enforcing the old rules.
 
@@ -89,7 +89,7 @@ node compiler/bin/topia.js doctor    # verifies the parse succeeded
 ## What happens if it's missing
 
 If `.topia/org/org.md` doesn't exist:
-- `sentinel` and `preflight` fall back to their default rules (the conservative defaults you'd expect: block secrets, require tests, etc.)
+- `guardian` and `readiness` fall back to their default rules (the conservative defaults you'd expect: block secrets, require tests, etc.)
 - `topia doctor` does **not** complain — it's optional.
 - You get no team attribution, no custom approval flows, no governance overrides.
 
@@ -112,7 +112,7 @@ Run `topia doctor` to see the parser's view of your file:
 node compiler/bin/topia.js doctor
 ```
 
-If parsing fails outright, `sentinel` / `preflight` skip the `<ORG-POLICY>` injection and fall back to defaults. Your code keeps working; you just don't get the custom rules.
+If parsing fails outright, `guardian` / `readiness` skip the `<ORG-POLICY>` injection and fall back to defaults. Your code keeps working; you just don't get the custom rules.
 
 ---
 
@@ -154,5 +154,5 @@ node compiler/bin/topia.js setup --global --preset gentle
 
 - **Template + full field reference**: [`.topia/org/org.md`](../.topia/org/org.md) — the live file in this repo, pre-filled with realistic defaults
 - **Hook architecture**: [`docs/HOOKS.md`](HOOKS.md)
-- **Sentinel skill spec**: [`skills/sentinel/SKILL.md`](../skills/sentinel/SKILL.md)
-- **Preflight skill spec**: [`skills/preflight/SKILL.md`](../skills/preflight/SKILL.md)
+- **Sentinel skill spec**: [`skills/guardian/SKILL.md`](../skills/guardian/SKILL.md)
+- **Preflight skill spec**: [`skills/readiness/SKILL.md`](../skills/readiness/SKILL.md)

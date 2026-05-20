@@ -26,7 +26,7 @@ Complex projects (trading bots, payment systems, game engines, state machines) c
 
 ## Calls (outbound connections)
 
-- `scout` (L2): scan project to discover logic files and extract function signatures
+- `recon` (L2): scan project to discover logic files and extract function signatures
 - `verification` (L3): run tests after logic edits to confirm no regression
 - `hallucination-guard` (L3): verify that referenced functions/imports actually exist after edit
 - `journal` (L3): record logic changes as ADRs for cross-session persistence
@@ -225,7 +225,7 @@ Ensure the next session can pick up where this one left off:
 5. MUST update manifest after validated edits — stale manifests provide false confidence
 6. MUST NOT auto-generate manifest for files the agent hasn't read — manifest must reflect actual understanding
 
-## Mesh Gates
+## Nexus Gates
 
 | Gate | Requires | If Missing |
 |------|----------|------------|

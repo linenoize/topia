@@ -54,7 +54,7 @@ interface ParsedSkill {
 }
 
 interface CrossRef {
-  raw: string;       // "Topia:scout", "Topia:build"
+  raw: string;       // "Topia:recon", "Topia:build"
   skillName: string; // "scout", "build"
   line: number;      // line number in source
   context: string;   // surrounding text for rewrite
@@ -318,7 +318,7 @@ The toolkit is Topia's core value. Here is how it works per platform:
 ```
 Pattern 1: `Topia:build`                     — backtick-wrapped reference
 Pattern 2: Topia:build                        — bare reference
-Pattern 3: Use `Topia:scout`                 — instruction to invoke
+Pattern 3: Use `Topia:recon`                 — instruction to invoke
 Pattern 4: REQUIRED SUB-SKILL: Use `Topia:X` — hard requirement
 Pattern 5: invoke `Topia:debug`              — conditional invocation
 Pattern 6: → invoke `Topia:plan`             — flow arrow reference
@@ -337,11 +337,11 @@ const CROSS_REF_PATTERN = /`?Topia:([a-z][\w-]*)`?/g;
 
 | Source | Claude Code | Cursor | Windsurf / Antigravity |
 |--------|------------|--------|------------------------|
-| `Use Topia:scout` | `Use Topia:scout` (unchanged) | `Use @Topia-scout.mdc` | `Follow the Topia-scout rule file` |
+| `Use Topia:recon` | `Use Topia:recon` (unchanged) | `Use @Topia-scout.mdc` | `Follow the Topia-scout rule file` |
 | `REQUIRED SUB-SKILL: Use Topia:plan` | unchanged | `REQUIRED: Follow @Topia-plan.mdc` | `REQUIRED: Follow the Topia-plan rule file` |
 | `invoke Topia:debug` | unchanged | `follow @Topia-debug.mdc` | `follow the Topia-debug rule file` |
 
-### 5.4 Mesh Integrity Check
+### 5.4 Nexus Integrity Check
 
 After compilation, the `Topia doctor` command verifies:
 - Every cross-reference target exists as an output file on the target platform
@@ -614,7 +614,7 @@ jobs:
         with:
           node-version: 20
       - run: node scripts/validate-skills.js
-      - run: node scripts/validate-mesh.js
+      - run: node scripts/validate-nexus.js
       - run: node scripts/validate-pack.js
 
   build-platforms:
@@ -655,9 +655,9 @@ Every compiled skill file includes a footer that:
 
 ```markdown
 ---
-> **Topia Skill Toolkit** — 65 skills, 203 connections
+> **Topia Skill Toolkit** — 65 skills, 203 synapses
 > Source: https://github.com/protopia/skill-topia
-> For the full experience with subagents, hooks, adaptive routing, and mesh analytics — use Topia as a Claude Code plugin.
+> For the full experience with subagents, hooks, adaptive routing, and nexus analytics — use Topia as a Claude Code plugin.
 ```
 
 ## 13. Personalization Flow

@@ -336,11 +336,11 @@
     .layer-badge.l4 { background: rgba(245, 158, 11, 0.15); color: var(--amber); }
 
     /* ─── MESH EMBED ─── */
-    .mesh-embed {
+    .nexus-embed {
       width: 100%; height: 500px; border: 1px solid var(--border);
       border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 24px;
     }
-    .mesh-embed iframe { width: 100%; height: 100%; border: none; }
+    .nexus-embed iframe { width: 100%; height: 100%; border: none; }
 
     /* ─── BEFORE/AFTER ─── */
     .before-after {
@@ -419,7 +419,7 @@
       .sidebar-toggle { display: block; }
       .main { margin-left: 0; padding: 32px 20px 80px; }
       .before-after { grid-template-columns: 1fr; }
-      .mesh-embed { height: 350px; }
+      .nexus-embed { height: 350px; }
       .nav-links a:not(.btn):not(.active) { display: none; }
     }
     @media (max-width: 640px) {
@@ -498,7 +498,7 @@
 
       <div class="sidebar-group">
         <div class="sidebar-group-title">Core Concepts</div>
-        <a href="#mesh-architecture" class="sidebar-link">Architecture</a>
+        <a href="#nexus-architecture" class="sidebar-link">Architecture</a>
         <a href="#five-layers" class="sidebar-link">5-Layer System</a>
         <a href="#skill-connections" class="sidebar-link">Skill Connections</a>
         <a href="#model-routing" class="sidebar-link">Model Routing</a>
@@ -721,19 +721,19 @@
       <!-- CORE CONCEPTS -->
       <!-- ═══════════════════════════════════ -->
 
-      <h2 id="mesh-architecture">Architecture</h2>
+      <h2 id="nexus-architecture">Architecture</h2>
 
       <p>
-        Unlike a pipeline (A→B→C) or hub-spoke (everything through one center), Topia's mesh means
+        Unlike a pipeline (A→B→C) or hub-spoke (everything through one center), Topia's nexus means
         <strong>skills call each other bidirectionally</strong> and <strong>route around failures</strong>.
       </p>
 
-      <div class="mesh-embed">
-        <iframe src="../assets/mesh-diagram.html" title="Topia Toolkit Architecture — Interactive Diagram" loading="lazy"></iframe>
+      <div class="nexus-embed">
+        <iframe src="../assets/nexus-diagram.html" title="Topia Toolkit Architecture — Interactive Diagram" loading="lazy"></iframe>
       </div>
 
       <p>
-        203 connections + 44 signals across 65 skills. When <code>debug</code> can't find the cause,
+        203 synapses + 44 pulses across 65 skills. When <code>debug</code> can't find the cause,
         it escalates to <code>problem-solver</code>. When <code>build</code> hits a wall 3 times,
         it pivots to <code>brainstorm</code>. When <code>sentinel</code> finds a vulnerability,
         it blocks the commit. The toolkit is self-healing.
@@ -774,7 +774,7 @@
             <td><span class="layer-badge l3">L3</span></td>
             <td>Utilities</td>
             <td>24</td>
-            <td>research, verification, git, session-bridge, sentinel-env...</td>
+            <td>research, verification, git, session-bridge, guardian-env...</td>
           </tr>
           <tr>
             <td><span class="layer-badge l4">L4</span></td>
@@ -836,7 +836,7 @@
           <tr><th>Model</th><th>Cost</th><th>Used For</th></tr>
         </thead>
         <tbody>
-          <tr><td><strong>Haiku</strong></td><td>Lowest</td><td>scout, verification, git, sentinel-env — scanning, checking</td></tr>
+          <tr><td><strong>Haiku</strong></td><td>Lowest</td><td>scout, verification, git, guardian-env — scanning, checking</td></tr>
           <tr><td><strong>Sonnet</strong></td><td>Medium</td><td>fix, test, review, design — code writing, analysis</td></tr>
           <tr><td><strong>Opus</strong></td><td>Highest</td><td>plan, architect, adversary, idea — deep reasoning, decisions</td></tr>
         </tbody>
@@ -1092,7 +1092,7 @@
 
       <div class="callout callout-warn">
         <strong>Important:</strong> Topia skills are NOT published individually on ClawHub.
-        The toolkit requires all 203 connections + 44 signals to function — installing skills separately would break routing.
+        The toolkit requires all 203 synapses + 44 pulses to function — installing skills separately would break routing.
       </div>
 
       <div class="callout callout-info">

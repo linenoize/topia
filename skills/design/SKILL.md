@@ -25,7 +25,7 @@ Design system reasoning layer. Converts a product description into a concrete de
 
 ## Calls (outbound)
 
-- `scout` (L2): detect existing design tokens, component library, platform targets
+- `recon` (L2): detect existing design tokens, component library, platform targets
 - `asset-creator` (L3): generate base visual assets (logo, OG image) from design system
 - `review` (L2): accessibility violations found → flag for fix in next code review
 
@@ -615,7 +615,7 @@ Trading/Fintech — Data-Dense Dark — Web
 9. MUST use Phosphor/Huge icons or boxed placeholders — NEVER generate custom SVG for standard iconography (Step 2.9 Rule 2)
 10. MUST derive accent variants via `oklch(from var(--accent) ...)` — NEVER hand-shade hex values (Step 2.9 Rule 3)
 
-## Mesh Gates (L1/L2 only)
+## Nexus Gates (L1/L2 only)
 
 | Gate | Requires | If Missing |
 |------|----------|------------|

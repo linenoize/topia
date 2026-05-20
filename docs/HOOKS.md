@@ -1,6 +1,6 @@
 # Topia Hooks — Multi-Platform Auto-Discipline
 
-Topia skills are libraries by default. `Topia hooks install` turns them into a **runtime**: your IDE auto-invokes `preflight`, `sentinel`, `dependency-doctor`, `completion-gate`, and `quarantine` at the right moments — before you commit insecure code, before you forget to run tests, before you ship a half-finished change, before you trust an untrusted external content blob.
+Topia skills are libraries by default. `Topia hooks install` turns them into a **runtime**: your IDE auto-invokes `readiness`, `guardian`, `dependency-doctor`, `completion-gate`, and `quarantine` at the right moments — before you commit insecure code, before you forget to run tests, before you ship a half-finished change, before you trust an untrusted external content blob.
 
 Different AI IDEs expose different primitives. This doc explains what "auto-fire" actually means on each platform so you know what you're getting.
 

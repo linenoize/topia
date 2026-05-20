@@ -1,6 +1,6 @@
 # Desktop App Security Reference
 
-> Loaded by `sentinel` when Electron or Tauri project detected (package.json contains `electron`, `@tauri-apps/cli`, or `tauri.conf.json` exists).
+> Loaded by `guardian` when Electron or Tauri project detected (package.json contains `electron`, `@tauri-apps/cli`, or `tauri.conf.json` exists).
 
 ---
 

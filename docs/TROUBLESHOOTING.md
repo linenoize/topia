@@ -21,8 +21,8 @@ Common issues and how to fix them.
 ## 2. Hooks Not Auto-Firing
 
 **Symptoms:**
-- You edit a file and `preflight` doesn't run.
-- You run a shell command and `sentinel` doesn't run.
+- You edit a file and `readiness` doesn't run.
+- You run a shell command and `guardian` doesn't run.
 
 **Fixes:**
 - **Re-install hooks**: `npx @protopia/skill-topia hooks install --preset gentle`.
@@ -60,7 +60,7 @@ Common issues and how to fix them.
 
 **Symptoms:**
 - `verification` fails because of a missing tool (e.g., `npm`, `python`).
-- `sentinel-env` flags a missing binary.
+- `guardian-env` flags a missing binary.
 
 **Fixes:**
 - **Install the tool**: Topia uses your local environment. If the skill needs `biome`, you must have it installed.

@@ -43,7 +43,7 @@ These eight terms have precise meanings. Banned aliases: "boundary" (overloaded 
 
 ## Calls (outbound)
 
-- `scout` (L2): re-scan target module + callers when input context is stale
+- `recon` (L2): re-scan target module + callers when input context is stale
 - `brainstorm` (L2): when the deepened module needs a new interface, hand off in `design-it-twice` mode (see brainstorm v0.6+)
 - `journal` (L3): record an ADR if the user rejects a candidate with a load-bearing reason
 

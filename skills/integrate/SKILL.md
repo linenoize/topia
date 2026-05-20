@@ -1,5 +1,5 @@
 ---
-name: graft
+name: integrate
 description: "Clone, port, or convert features from any GitHub repo into your project. Use when stealing patterns from external repos or porting proven code. Understand before copy, challenge before implement. 4 modes: port (rewrite), compare (analysis), copy (transplant), improve (copy + optimize)."
 metadata:
   author: skill-topia
@@ -8,15 +8,15 @@ metadata:
   model: sonnet
   group: creation
   tools: "Read, Write, Edit, Bash, Glob, Grep, WebFetch"
-  emit: graft.complete
+  emit: integrate.complete
   listen: codebase.scanned
 ---
 
-# graft
+# integrate
 
 ## Purpose
 
-External code intelligence — structured workflow for learning from, adapting, and integrating features from any public repository into your project. Graft is NOT a copy-paste tool. It enforces understanding before adoption through a mandatory challenge gate that evaluates license compatibility, stack fit, scope, quality, and maintenance health before any code touches your codebase.
+External code intelligence — structured workflow for learning from, adapting, and integrating features from any public repository into your project. Integrate is NOT a copy-paste tool. It enforces understanding before adoption through a mandatory challenge gate that evaluates license compatibility, stack fit, scope, quality, and maintenance health before any code touches your codebase.
 
 ## Core Rule: The Tree is a Menu, Not the Meal
 
@@ -80,20 +80,20 @@ Copy the feature, then refactor and optimize. Fix anti-patterns, add missing tes
 
 ## Triggers
 
-- `/topia graft <url> [--port|--compare|--copy|--improve] [--auto|--fast]`
+- `/topia integrate <url> [--port|--compare|--copy|--improve] [--auto|--fast]`
 - Delegated from `build` when task contains "graft", "port from", "copy from repo", "clone feature from"
 - Auto-trigger: when user pastes a GitHub URL with context like "use this", "like this repo", "steal this"
 
 ## Calls (outbound)
 
 - `research` (L3): fetch repo README, docs, understand purpose and architecture
-- `scout` (L2): scan LOCAL codebase for conventions, patterns, stack detection
+- `recon` (L2): scan LOCAL codebase for conventions, patterns, stack detection
 - `fix` (L2): implement adapted code (port and improve modes)
-- `review` (L2): post-graft quality check (improve mode only)
+- `review` (L2): post-integrate quality check (improve mode only)
 
 ## Called By (inbound)
 
-- User: `/topia graft <url>` direct invocation
+- User: `/topia integrate <url>` direct invocation
 - `build` (L1): delegation when task is "port feature from external repo"
 
 ## Data Flow
@@ -101,14 +101,14 @@ Copy the feature, then refactor and optimize. Fix anti-patterns, add missing tes
 ### Feeds Into →
 
 - `fix` (L2): adaptation plan → fix's implementation targets (port/improve modes)
-- `review` (L2): grafted code → review's analysis targets (improve mode)
-- `test` (L2): new grafted code → test coverage targets
-- `journal` (L3): graft.complete signal → auto-logged for pattern tracking
+- `review` (L2): integrated code → review's analysis targets (improve mode)
+- `test` (L2): new integrated code → test coverage targets
+- `journal` (L3): integrate.complete pulse → auto-logged for pattern tracking
 
 ### Fed By ←
 
-- `scout` (L2): local codebase conventions → graft's adaptation strategy
-- `research` (L3): repo analysis → graft's understanding of source architecture
+- `recon` (L2): local codebase conventions → integrate's adaptation strategy
+- `research` (L3): repo analysis → integrate's understanding of source architecture
 
 ## Executable Steps
 
@@ -127,8 +127,8 @@ Validate URL is accessible. If private repo or URL fails → suggest raw file UR
 
 ```bash
 # Sparse clone for large repos (skip if small or specific files)
-git clone --depth 1 --filter=blob:none --sparse <url> /tmp/graft-<hash>
-cd /tmp/graft-<hash>
+git clone --depth 1 --filter=blob:none --sparse <url> /tmp/integrate-<hash>
+cd /tmp/integrate-<hash>
 git sparse-checkout set <target-dir>
 ```
 
@@ -136,7 +136,7 @@ For specific files or small repos: use `WebFetch` on raw GitHub URLs instead of 
 
 **Read in this order** (stop when you have enough context — see Core Rule: the tree is a menu):
 1. README.md — purpose, architecture overview
-2. Target dir's files — the actual code to graft (aim for 2-5 files, hard-cap at 10)
+2. Target dir's files — the actual code to integrate (aim for 2-5 files, hard-cap at 10)
 3. package.json / pyproject.toml / Cargo.toml — dependencies and stack
 4. Tests for target feature — understand expected behavior
 
@@ -157,7 +157,7 @@ Output a brief analysis (not full report — save context for later steps).
 
 ### Step 3 — Scan Local Codebase
 
-Invoke `Topia:scout` (or use cached output if `codebase.scanned` signal received):
+Invoke `Topia:recon` (or use cached output if `codebase.scanned` signal received):
 - Local tech stack and version
 - Naming conventions (camelCase vs snake_case, file structure)
 - Existing patterns that overlap with target feature
@@ -180,7 +180,7 @@ If stack differs significantly → force port mode.
 <MUST-READ path="references/challenge-framework.md" trigger="always (unless --fast)"/>
 
 <HARD-GATE>
-Score all 5 dimensions. If 2+ dimensions score ❌ → BLOCK graft.
+Score all 5 dimensions. If 2+ dimensions score ❌ → BLOCK integration.
 If 1 dimension scores ❌ → WARN + require explicit user override.
 Only --fast skips this gate entirely.
 </HARD-GATE>
@@ -226,18 +226,18 @@ Present plan to user. Wait for approval (unless `--auto`).
 
 ### Step 6 — Execute
 
-**Compare mode**: Output report → emit `graft.complete` → done.
+**Compare mode**: Output report → emit `integrate.complete` → done.
 
 **Copy/Port/Improve modes**:
 1. Create/modify files per adaptation plan
 2. For port/improve: invoke `Topia:fix` for complex rewrites
-3. For improve: invoke `Topia:review` on grafted code
+3. For improve: invoke `Topia:review` on integrated code
 4. Run project verification (lint, type-check, test if applicable)
 5. Clean up temp clone dir
 
-**Post-execution**: Emit `graft.complete` signal with payload:
+**Post-execution**: Emit `integrate.complete` pulse with payload:
 ```yaml
-graft.complete:
+integrate.complete:
   mode: "port|copy|improve|compare"
   source_url: "<url>"
   files_changed: ["src/auth/middleware.ts", "src/auth/types.ts"]
@@ -248,7 +248,7 @@ graft.complete:
 
 ### Compare Mode Output
 ```markdown
-## Graft Comparison: [feature] — [source repo] vs [local]
+## Integrate Comparison: [feature] — [source repo] vs [local]
 
 ### Summary
 [2-3 sentences: what was compared, key differences]
@@ -261,12 +261,12 @@ graft.complete:
 ### Recommendations
 - [what to adopt from source]
 - [what to keep from local]
-- [what to graft: specific files/patterns]
+- [what to integrate: specific files/patterns]
 ```
 
 ### Port/Copy/Improve Output
 ```markdown
-## Graft Complete: [feature] from [source]
+## Integrate Complete: [feature] from [source]
 
 ### Mode: [port|copy|improve]
 ### Files Changed
@@ -299,28 +299,28 @@ graft.complete:
 2. MUST clean up temp clone directories after completion
 3. MUST detect and warn about license incompatibility before proceeding
 4. MUST use sparse checkout for repos >100MB — never full clone large repos
-5. MUST respect local conventions — grafted code should look native, not foreign
+5. MUST respect local conventions — integrated code should look native, not foreign
 6. MUST NOT modify the source repository — read-only access only
-7. MUST NOT graft without scoping — always narrow to specific feature/module
+7. MUST NOT integrate without scoping — always narrow to specific feature/module
 8. MUST treat the source file tree as a menu, not a meal — read the 2-5 files the feature actually needs, not every file you can see
 
-## Mesh Gates
+## Nexus Gates
 
 | Gate | Requires | If Missing |
 |------|----------|------------|
 | Challenge Gate | 5-dimension score with 0-1 ❌ | BLOCK if 2+ ❌, WARN if 1 ❌ |
-| Scout Gate | Local codebase scanned | Invoke `Topia:scout` first |
+| Recon Gate | Local codebase scanned | Invoke `Topia:recon` first |
 | Scope Gate | Target feature ≤15 files | WARN user, suggest narrowing |
 
 ## Sharp Edges
 
 | Failure Mode | Severity | Mitigation |
 |---|---|---|
-| Grafting GPL code into MIT project | CRITICAL | Challenge gate checks license — blocks incompatible |
+| Integrating GPL code into MIT project | CRITICAL | Challenge gate checks license — blocks incompatible |
 | Blindly copying code without understanding | CRITICAL | HARD-GATE: challenge before implement |
 | Context overflow from large source files | HIGH | Scope guard: >15 files or >2000 LOC triggers warning |
 | Reading the whole repo instead of the feature | HIGH | "Tree is a menu" rule — pause before file #6, justify each read |
-| Grafted code doesn't match local conventions | HIGH | Step 3 scans local patterns, Step 5 plans adaptation |
+| Integrated code doesn't match local conventions | HIGH | Step 3 scans local patterns, Step 5 plans adaptation |
 | Stale source (abandoned repo) | MEDIUM | Maintenance dimension in challenge gate |
 | Private repo URL fails | MEDIUM | Fallback to WebFetch raw URLs or manual paste |
 | Port mode when copy would suffice (wasted effort) | MEDIUM | Mode decision tree suggests optimal mode |
@@ -328,13 +328,13 @@ graft.complete:
 ## Self-Validation
 
 ```
-SELF-VALIDATION (run before emitting graft.complete):
+SELF-VALIDATION (run before emitting integrate.complete):
 - [ ] Challenge gate was executed (or --fast acknowledged)
-- [ ] All grafted files follow local naming conventions
+- [ ] All integrated files follow local naming conventions
 - [ ] No source-specific imports remain (wrong paths, missing packages)
 - [ ] License compatibility confirmed (or user override documented)
 - [ ] Temp clone directory cleaned up
-- [ ] Grafted code compiles/lints without new errors
+- [ ] Integrated code compiles/lints without new errors
 - [ ] Source files read count ≤10 (menu discipline) — if >10, document why in the output
 IF ANY check fails → fix before reporting done. Do NOT defer to completion-gate.
 ```
@@ -343,8 +343,8 @@ IF ANY check fails → fix before reporting done. Do NOT defer to completion-gat
 
 If this skill is added to the repo (first time):
 - [ ] `README.md` — skill count (61→62), L2 count (28→29)
-- [ ] `docs/ARCHITECTURE.md` — add graft to L2 list
-- [ ] `CLAUDE.md` — add graft to L2 list, routing table, skill count
+- [ ] `docs/ARCHITECTURE.md` — add integrate to L2 list
+- [ ] `CLAUDE.md` — add integrate to L2 list, routing table, skill count
 - [ ] `docs/index.html` — update meta stats if applicable
 
 ## Done When
@@ -355,14 +355,14 @@ If this skill is added to the repo (first time):
 - Challenge gate passed (5 dimensions scored, 0-1 ❌)
 - Local codebase scanned for conventions
 - Adaptation plan produced and approved
-- Code grafted per mode (port/copy/improve/compare)
+- Code integrated per mode (port/copy/improve/compare)
 - Verification passed (lint, type-check, tests)
 - Temp files cleaned up
-- `graft.complete` signal emitted
+- `integrate.complete` pulse emitted
 - Self-Validation: all checks passed
 
 ## Cost Profile
 
 ~2000-4000 tokens input (SKILL.md + 1-2 references), ~3000-8000 tokens output (analysis + adaptation + code). Sonnet for execution. Heaviest when port mode rewrites significant code — but that's where the value is highest.
 
-**Scope guardrail**: Do not become a general-purpose code review tool. Graft analyzes external code for adoption purposes only — use `Topia:review` for reviewing your own code, `Topia:research` for general technology research.
+**Scope guardrail**: Do not become a general-purpose code review tool. Integrate analyzes external code for adoption purposes only — use `Topia:review` for reviewing your own code, `Topia:research` for general technology research.

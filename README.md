@@ -4,7 +4,7 @@
 
 <p align="center">
   <strong>Topia — internal skill toolkit for AI coding assistants.</strong><br>
-  65 skills · 203 connections · 44 signals · 10 extension packs · optional persistent memory via agora-code MCP
+  65 skills · 203 synapses · 44 pulses · 10 extension packs · optional persistent memory via agora-code MCP
 </p>
 
 <p align="center">
@@ -19,7 +19,7 @@ AI coding agents are smart but undisciplined. They skip steps, forget context ac
 
 - **Plan before code** — `idea` elicits requirements, `plan` writes phase files, `adversary` red-teams the plan, all before a line of code.
 - **Tests before commits** — `test` writes failing tests first (red), `fix` implements until green. TDD enforced, not suggested.
-- **Hooks block bad work** — `sentinel` (secrets, OWASP), `preflight` (logic, regressions), `completion-gate` (validates agent claims have evidence). Auto-fire on tool use.
+- **Hooks block bad work** — `guardian` (secrets, OWASP), `readiness` (logic, regressions), `completion-gate` (validates agent claims have evidence). Auto-fire on tool use.
 - **Memory survives sessions** — `journal` persists ADRs to `.topia/`, optional [agora-code MCP](mcp-servers/agora-code/README.md) adds SQLite-backed semantic recall across sessions.
 
 One source of truth (`skills/`) compiles to six IDE rule formats — switch IDEs without rewriting your workflow rules.
@@ -41,19 +41,25 @@ node compiler/bin/topia.js install
 
 1. **Pre-flights rune-kit conflicts.** If [rune-kit](https://github.com/runedev/rune-kit) is detected on your machine, the installer halts and asks: migrate `.rune/` state into `.topia/` and disable rune-kit, abort so you can remove rune-kit manually, or skip (with a warning that the two plugins will fight over skill names).
 2. **Registers the plugin** with Claude Code via `claude plugin add .`.
-3. **Wires discipline hooks** globally: `preflight` (logic gates), `sentinel` (secrets/OWASP), `completion-gate` (claims-vs-evidence), `quarantine` (untrusted-input advisory).
+3. **Wires discipline hooks** globally: `readiness` (logic gates), `guardian` (secrets/OWASP), `completion-gate` (claims-vs-evidence), `quarantine` (untrusted-input advisory).
 4. **Installs the agora-code MCP** for persistent memory if Python 3.10+ is on your machine. Registers `agora-memory` in your project's `.mcp.json`. Skip with `--skip-agora`. (No Python? You get a one-line notice, install continues without persistent memory.)
 5. **Runs `topia doctor`** to verify the install.
 
 > **Restart Claude Code after install** so it picks up the newly-registered plugin. Until you restart, `/topia <skill>` commands won't be available.
 
-Then edit [`.topia/org/org.md`](.topia/org/org.md) to set team policies and approval flows — `sentinel` and `preflight` read this. See [`docs/ORG-CONFIG.md`](docs/ORG-CONFIG.md) for what each section drives.
+Then edit [`.topia/org/org.md`](.topia/org/org.md) to set team policies and approval flows — `guardian` and `readiness` read this. See [`docs/ORG-CONFIG.md`](docs/ORG-CONFIG.md) for what each section drives.
+
+Explore the skill graph:
+
+```bash
+node compiler/bin/topia.js visualize   # writes .topia/nexus.html and opens in browser
+```
 
 ### Verify
 
 ```bash
 node compiler/bin/topia.js doctor
-# ✓ 65 skills, 203 connections, 44 signals — mesh is healthy
+# ✓ 65 skills, 203 synapses, 44 pulses — nexus is healthy
 ```
 
 ### Non-Claude IDEs
@@ -131,7 +137,7 @@ The 8-step build flow (route → recall → plan → test → implement → gate
 | `verification` | Run lint + type-check + tests + build. |
 | `db` | Migrations, rollbacks, query validation. |
 | `git` | Semantic commits, PR bodies, branch naming. |
-| `graft` | Port features from external GitHub repos. |
+| `integrate` | Port features from external GitHub repos. |
 | `surgeon` | Incremental refactor (Strangler Fig, Branch by Abstraction). |
 | `safeguard` | Characterization tests + rollback markers before risky refactors. |
 | `improve-architecture` | Find friction; propose deepening opportunities. |
@@ -140,9 +146,9 @@ The 8-step build flow (route → recall → plan → test → implement → gate
 ### Security, governance, infrastructure
 | Skill | Purpose |
 |---|---|
-| `sentinel` | Pre-commit security gate — OWASP, secrets, deps. |
-| `preflight` | Pre-commit quality gate — logic, regressions, completeness. |
-| `sentinel-env` | OS + runtime + tools + ports + env-var check before work starts. |
+| `guardian` | Pre-commit security gate — OWASP, secrets, deps. |
+| `readiness` | Pre-commit quality gate — logic, regressions, completeness. |
+| `guardian-env` | OS + runtime + tools + ports + env-var check before work starts. |
 | `sast` | Static-analysis wrapper (ESLint, Semgrep, Bandit, Clippy). |
 | `adversary` | Pre-implementation red-team analysis on high-risk plans. |
 | `logic-guardian` | Protects business logic from accidental deletion. |
@@ -239,8 +245,8 @@ node compiler/bin/topia.js hooks uninstall                   # remove cleanly
 
 | Event | Skill | Fires |
 |---|---|---|
-| `PreToolUse(Edit\|Write)` | `preflight` | Before source-file edits |
-| `PreToolUse(Bash)` | `sentinel` | Before shell commands |
+| `PreToolUse(Edit\|Write)` | `readiness` | Before source-file edits |
+| `PreToolUse(Bash)` | `guardian` | Before shell commands |
 | `PostToolUse(Edit\|Write)` | `dependency-doctor` | After manifest edits |
 | `Stop` | `completion-gate` | End of session |
 
@@ -258,7 +264,7 @@ Five layers, each with one responsibility:
 | **L3 Utilities** | Stateless, pure capabilities | 27 |
 | **L4 Extensions** | Domain-specific packs | 10 |
 
-Skills only call downward (with documented L3→L3 exceptions). Connections are declared in `## Calls` / `## Called By`. Event-driven coordination is declared in `emit` / `listen` signals — full inventory in [`docs/SIGNALS.md`](docs/SIGNALS.md). Full architecture: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+Skills only call downward (with documented L3→L3 exceptions). Connections are declared in `## Calls` / `## Called By`. Event-driven coordination is declared in `emit` / `listen` pulses — full inventory in [`docs/PULSES.md`](docs/PULSES.md). Full architecture: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 ---
 
@@ -278,7 +284,7 @@ Skills only call downward (with documented L3→L3 exceptions). Connections are 
 
 Every new session loads `.topia/` automatically.
 
-The `org/org.md` is the only `.topia/` file committed to the repo — it holds stable team and policy configuration. `sentinel` and `preflight` consume it at compile time and inject an `<ORG-POLICY>` block into their runtime hooks. See [`.topia/org/org.md`](.topia/org/org.md) for the template.
+The `org/org.md` is the only `.topia/` file committed to the repo — it holds stable team and policy configuration. `guardian` and `readiness` consume it at compile time and inject an `<ORG-POLICY>` block into their runtime hooks. See [`.topia/org/org.md`](.topia/org/org.md) for the template.
 
 ---
 
@@ -290,7 +296,7 @@ The `org/org.md` is the only `.topia/` file committed to the repo — it holds s
 | [`docs/SKILLS.md`](docs/SKILLS.md) | Full skill catalog with invocation markers |
 | [`docs/SKILL-CATEGORIES.md`](docs/SKILL-CATEGORIES.md) | Skill taxonomy reference |
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | 5-layer architecture details |
-| [`docs/SIGNALS.md`](docs/SIGNALS.md) | Signal inventory + emit/listen graph |
+| [`docs/PULSES.md`](docs/PULSES.md) | Pulse inventory + emit/listen graph |
 | [`docs/HOOKS.md`](docs/HOOKS.md) | Hook reference per platform |
 | [`docs/mcp-integrations/agora-code.md`](docs/mcp-integrations/agora-code.md) | Persistent-memory MCP integration |
 | [`docs/migration/from-rune.md`](docs/migration/from-rune.md) | Migrating from rune-kit |
@@ -307,8 +313,8 @@ The `org/org.md` is the only `.topia/` file committed to the repo — it holds s
 ```
 Skills:            65 (L0:1 · L1:5 · L2:~30 · L3:27)
 Extension Packs:   10
-Connections:       203 (3.1 avg/skill)
-Signals:           44 (51 emit/listen edges)
+Synapses:       203 (3.1 avg/skill)
+Pulses:           44 (51 emit/listen edges)
 Platforms:         Claude Code, Cursor, Codex, Antigravity, OpenCode, OpenClaw, Generic
 Tests:             1,035 passing
 ```

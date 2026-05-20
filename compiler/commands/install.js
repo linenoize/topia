@@ -11,7 +11,7 @@
  *   1. claude plugin add . — register Topia with Claude Code
  *   2. setup --global --preset gentle — wire discipline hooks globally
  *   3. agora-code MCP — detect Python 3.10+, pip install, register in .mcp.json
- *   4. doctor — verify mesh integrity
+ *   4. doctor — verify nexus integrity
  *   5. Print "restart Claude Code" + edit `.topia/org/org.md` hints
  *
  * Flags:
@@ -260,7 +260,7 @@ function runDoctorBriefly({ TopiaRoot, dryRun }) {
   try {
     const doctorPath = path.join(TopiaRoot, 'compiler', 'bin', 'topia.js');
     execFileSync('node', [doctorPath, 'doctor'], { stdio: ['pipe', 'pipe', 'pipe'] });
-    step('✓', 'topia doctor — mesh healthy.');
+    step('✓', 'topia doctor — nexus healthy.');
     return { ok: true };
   } catch (err) {
     step('!', `topia doctor reported issues: ${err.message.split('\n')[0]}`);
@@ -318,13 +318,14 @@ export async function runInstall({ TopiaRoot, projectRoot = process.cwd(), args 
   console.log(
     `    agora-code MCP     : ${agora.ok ? '✓' : agora.skipped ? '— (skipped)' : `✗ (${agora.reason || 'failed'})`}`,
   );
-  console.log(`    Mesh health        : ${doctor.ok ? '✓' : '✗'}`);
+  console.log(`    Nexus health       : ${doctor.ok ? '✓' : '✗'}`);
 
   console.log('');
   console.log('  Next steps:');
   console.log('    1. Restart Claude Code so it picks up the plugin.');
-  console.log('    2. Edit `.topia/org/org.md` to define your team / policy / approval flow.');
-  console.log('       (Sentinel + preflight read this at compile time. See docs/ORG-CONFIG.md.)');
+  console.log('    2. Run `topia visualize` to explore the Nexus graph in your browser.');
+  console.log('    3. Edit `.topia/org/org.md` to define your team / policy / approval flow.');
+  console.log('       (guardian + readiness read this at compile time. See docs/ORG-CONFIG.md.)');
   if (!plugin.ok && plugin.skipped) {
     console.log('    3. Install Claude Code, then run: claude plugin add .');
   }

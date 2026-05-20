@@ -84,7 +84,7 @@ export function SplitHero() {
           <em className="not-italic text-[var(--primary)]">before the sprint</em>
         </h1>
         <p className="text-[var(--text-secondary)] text-body leading-relaxed mb-8 max-w-md">
-          Topia wires your AI coding assistant to a mesh of 62 skills so you spend time building, not prompting.
+          Topia wires your AI coding assistant to a nexus of 65 skills so you spend time building, not prompting.
         </p>
         <div className="flex flex-wrap gap-3">
           <a
@@ -124,7 +124,7 @@ export function BentoFeatures() {
     <section className="py-24 px-6">
       <div className="max-w-5xl mx-auto">
         <h2 className="font-display text-h2 font-semibold text-[var(--text-primary)] mb-12 text-center">
-          One mesh. Every workflow.
+          One nexus. Every workflow.
         </h2>
         {/* Intentionally unequal grid — NOT uniform cards */}
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-[200px]">

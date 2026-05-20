@@ -1,5 +1,5 @@
 /**
- * doctor.js — diagnostic + mesh integrity validator.
+ * doctor.js — diagnostic + nexus integrity validator.
  *
  * Two public entry points:
  *
@@ -9,9 +9,9 @@
  *     split-pack skill files exist, injection rules valid.
  *     Side effects: none (read-only).
  *
- *   checkMeshIntegrity(TopiaRoot) → results
+ *   checkNexusIntegrity(TopiaRoot) → results
  *     Walks every SKILL.md, validates the toolkit graph:
- *       1. Reciprocal connections — every "Calls (outbound)" entry has a
+ *       1. Reciprocal synapses — every "Calls (outbound)" entry has a
  *          matching "Called By" in the target skill.
  *       2. Version maturity — skills with version ≥0.8 AND all required
  *          sections get flagged for promotion to 1.0.
@@ -21,8 +21,10 @@
  *          tools present.
  *     Side effects: none.
  *
- *   formatMeshResults(results) / formatDoctorResults(results) → string
+ *   formatNexusResults(results) / formatDoctorResults(results) → string
  *     Pretty-prints results for the CLI. No I/O.
+ *
+ *   checkNexusIntegrity / formatNexusResults — deprecated aliases (v1).
  *
  * Result shape (both entry points):
  *   { checks: [{ name, status, detail? }], warnings: string[],
@@ -374,17 +376,27 @@ function extractFrontmatterSignals(content) {
 }
 
 /**
- * Check mesh integrity: reciprocal connections, version suggestions, required sections
+ * Check nexus integrity: reciprocal synapses, version suggestions, required sections
  *
  * @param {string} TopiaRoot - path to Topia source root
- * @returns {Promise<object>} mesh check results
+ * @returns {Promise<object>} nexus check results
  */
-export async function checkMeshIntegrity(TopiaRoot) {
+export async function checkNexusIntegrity(TopiaRoot) {
   const results = {
     checks: [],
     warnings: [],
     errors: [],
-    stats: { skills: 0, connections: 0, signals: 0, signalEdges: 0, missingReciprocals: 0 },
+    stats: {
+      skills: 0,
+      synapses: 0,
+      pulses: 0,
+      pulseEdges: 0,
+      missingReciprocals: 0,
+      // deprecated v1 keys (mirrored at end)
+      connections: 0,
+      signals: 0,
+      signalEdges: 0,
+    },
   };
 
   const skillsDir = path.join(TopiaRoot, 'skills');
@@ -427,10 +439,10 @@ export async function checkMeshIntegrity(TopiaRoot) {
         });
       }
     }
-    results.stats.connections += skill.calls.length;
+    results.stats.synapses += skill.calls.length;
   }
 
-  // Step 2.5: Count async signal mesh (emit/listen pairs) — separate from sync calls
+  // Step 2.5: Count async pulses (emit/listen pairs) — separate from sync synapses
   const emitters = new Map(); // signal → Set<skill>
   const listeners = new Map(); // signal → Set<skill>
   for (const [name, skill] of skills) {
@@ -444,15 +456,20 @@ export async function checkMeshIntegrity(TopiaRoot) {
     }
   }
   const allSignals = new Set([...emitters.keys(), ...listeners.keys()]);
-  results.stats.signals = allSignals.size;
-  // Edges = sum over each signal of (emitter_count × listener_count)
+  results.stats.pulses = allSignals.size;
+  // Edges = sum over each pulse of (emitter_count × listener_count)
   let edges = 0;
   for (const sig of allSignals) {
     const emCount = emitters.get(sig)?.size || 0;
     const liCount = listeners.get(sig)?.size || 0;
     edges += emCount * liCount;
   }
-  results.stats.signalEdges = edges;
+  results.stats.pulseEdges = edges;
+
+  // Deprecated v1 stat mirrors
+  results.stats.connections = results.stats.synapses;
+  results.stats.signals = results.stats.pulses;
+  results.stats.signalEdges = results.stats.pulseEdges;
 
   results.stats.missingReciprocals = missingReciprocals.length;
 
@@ -606,8 +623,8 @@ function parseSkillConnections(content, skillName) {
   if (callsMatch) {
     const lines = callsMatch[1].split('\n');
     for (const line of lines) {
-      // Match patterns like: - `scout` (L2): scan codebase
-      // Or: - scout (L2): scan codebase
+      // Match patterns like: - `recon` (L2): scan codebase
+      // Or: - recon (L2): scan codebase
       const match = line.match(/^-\s*`?([a-z][\w-]*)`?\s*\(L\d\)/i);
       if (match) {
         const skillRef = match[1].toLowerCase();
@@ -655,16 +672,15 @@ function parseSkillConnections(content, skillName) {
 }
 
 /**
- * Format mesh results for console output
+ * Format nexus results for console output
  */
-export function formatMeshResults(results) {
+export function formatNexusResults(results) {
   const lines = [];
-  lines.push(`\n  Mesh Integrity Check`);
-  const sig = results.stats.signals ?? 0;
-  const edges = results.stats.signalEdges ?? 0;
-  lines.push(
-    `  Skills: ${results.stats.skills} | Connections: ${results.stats.connections} | Signals: ${sig} (${edges} edges)`,
-  );
+  lines.push(`\n  Nexus Integrity Check`);
+  const pulseCount = results.stats.pulses ?? results.stats.signals ?? 0;
+  const edges = results.stats.pulseEdges ?? results.stats.signalEdges ?? 0;
+  const synapses = results.stats.synapses ?? results.stats.connections ?? 0;
+  lines.push(`  Skills: ${results.stats.skills} | Synapses: ${synapses} | Pulses: ${pulseCount} (${edges} edges)`);
   lines.push('');
 
   for (const check of results.checks) {
@@ -689,10 +705,16 @@ export function formatMeshResults(results) {
 
   const healthy = results.errors.length === 0 && results.warnings.length === 0;
   lines.push('');
-  lines.push(healthy ? '  ✓ Mesh is healthy' : `  ! Mesh has ${results.warnings.length} warnings`);
+  lines.push(healthy ? '  ✓ Nexus is healthy' : `  ! Nexus has ${results.warnings.length} warnings`);
 
   return lines.join('\n');
 }
+
+/** @deprecated Use checkNexusIntegrity */
+export const checkMeshIntegrity = checkNexusIntegrity;
+
+/** @deprecated Use formatNexusResults */
+export const formatMeshResults = formatNexusResults;
 
 /**
  * Format doctor results for console output

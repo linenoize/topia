@@ -55,7 +55,7 @@ function detectRuneMigration() {
   console.log('    1. Pull your prior decisions, ADRs, conventions, and learnings');
   console.log('       from .rune/ into .topia/ so this session can recall them.');
   console.log('    2. Disable rune-kit so it does not conflict with Topia. The two');
-  console.log('       plugins share ~30 skill names (build, plan, scout, graft, etc.);');
+  console.log('       plugins share ~30 skill names (build, plan, recon, integrate, etc.);');
   console.log('       with both active, the router will pick one non-deterministically.');
   console.log('');
   console.log('  If you decline:');

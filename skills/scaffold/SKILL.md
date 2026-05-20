@@ -30,7 +30,7 @@ Generated projects MUST build and pass tests. A scaffold that produces broken co
 ## Calls (outbound)
 
 - `idea` (L2): Phase 1 — requirement elicitation (always, even in Express mode)
-- `sentinel-env` (L3): Phase 1.5 — environment pre-flight (validate runtime versions, ports, required tools before generating code)
+- `guardian-env` (L3): Phase 1.5 — environment pre-flight (validate runtime versions, ports, required tools before generating code)
 - `research` (L3): Phase 2 — best practices, starter templates, library comparison
 - `plan` (L2): Phase 3 — architecture and implementation plan
 - `design` (L2): Phase 4 — design system (frontend projects only)
@@ -41,7 +41,7 @@ Generated projects MUST build and pass tests. A scaffold that produces broken co
 - `docs` (L2): Phase 7 — README, API docs, architecture doc
 - `git` (L3): Phase 8 — initial commit with semantic message
 - `verification` (L3): Phase 9 — lint + types + tests + build
-- `sentinel` (L2): Phase 9 — security scan on generated code
+- `guardian` (L2): Phase 9 — security scan on generated code
 
 ## Called By (inbound)
 
@@ -189,7 +189,7 @@ Invoke `Topia:verification` to run ALL checks:
 2. **Types**: tsc --noEmit / mypy — zero errors
 3. **Tests**: npm test / pytest — all pass
 4. **Build**: npm run build / python -m build — succeeds
-5. **Security**: `Topia:sentinel` quick scan — no critical issues
+5. **Security**: `Topia:guardian` quick scan — no critical issues
 
 <HARD-GATE>
 If ANY check fails → fix the issue (invoke Topia:fix) and re-verify.

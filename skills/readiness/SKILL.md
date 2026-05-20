@@ -1,5 +1,5 @@
 ---
-name: preflight
+name: readiness
 description: "Pre-commit quality gate that catches 'almost right' code. Use when about to commit — auto-fires before commit to validate logic correctness, error handling, regressions, and completeness. Goes beyond linting."
 metadata:
   author: skill-topia
@@ -8,16 +8,16 @@ metadata:
   model: sonnet
   group: quality
   tools: "Read, Bash, Glob, Grep"
-  emit: preflight.passed, preflight.blocked
+  emit: readiness.passed, readiness.blocked
   listen: code.changed
 ---
 
-# preflight
+# readiness
 
 ## Purpose
 
 <HARD-GATE>
-Preflight verdict of BLOCK stops the pipeline. The calling skill (build, deploy, launch) MUST halt until all BLOCK findings are resolved and preflight re-runs clean.
+Readiness verdict of BLOCK stops the pipeline. The calling skill (build, deploy, launch) MUST halt until all BLOCK findings are resolved and readiness re-runs clean.
 </HARD-GATE>
 
 Pre-commit quality gate that catches "almost right" code — the kind that compiles and passes linting but has logic errors, missing error handling, or incomplete implementations. Goes beyond static analysis to check data flow, edge cases, async correctness, and regression impact. The last defense before code enters the repository.
@@ -26,13 +26,13 @@ Pre-commit quality gate that catches "almost right" code — the kind that compi
 
 - Called automatically by `build` before commit phase
 - Called by `fix` after applying fixes (verify fix quality)
-- `/topia preflight` — manual quality check
+- `/topia readiness` — manual quality check
 - Auto-trigger: when staged changes exceed 100 LOC
 
 ## Calls (outbound)
 
-- `scout` (L2): find code affected by changes (dependency tracing)
-- `sentinel` (L2): security sub-check on changed files
+- `recon` (L2): find code affected by changes (dependency tracing)
+- `guardian` (L2): security sub-check on changed files
 - `hallucination-guard` (L3): verify imports and API references exist
 - `test` (L2): run test suite as pre-commit check
 
@@ -47,7 +47,7 @@ LOGIC       — data flow errors, edge case misses, async bugs
 ERROR       — missing try/catch, bare catches, unhelpful error messages
 REGRESSION  — untested impact zones, breaking changes to public API
 COMPLETE    — missing validation, missing loading states, missing tests
-SECURITY    — delegated to sentinel
+SECURITY    — delegated to guardian
 IMPORTS     — delegated to hallucination-guard
 ```
 
@@ -71,7 +71,7 @@ Use `Read` to load the approved plan from the calling skill (build passes plan c
 
 **Output**: List of plan-vs-diff mismatches. Any missing planned change = BLOCK. Any unplanned change = WARN.
 
-If no plan is available (manual preflight invocation), skip Stage A and proceed to Step 1.
+If no plan is available (manual readiness invocation), skip Stage A and proceed to Step 1.
 
 ### Step 1 — Logic Review
 Use `Read` to load each changed file. For every modified function or method:
@@ -135,7 +135,7 @@ app.use((err, req, res, next) => {
 Flag each violation with: file path, line number, category (bare-catch | missing-status-check | raw-error-exposure), and description.
 
 ### Step 3 — Regression Check
-Use `Topia:scout` to identify all files that import or depend on the changed files/functions.
+Use `Topia:recon` to identify all files that import or depend on the changed files/functions.
 For each dependent file:
 - Check if the changed function signature is still compatible (parameter count, types, return type).
 - Check if the dependent file has tests that cover the interaction with the changed code.
@@ -197,7 +197,7 @@ Apply domain-specific quality checks based on detected file types in the diff. T
 
 <HARD-GATE>
 Domain hooks are additive — they add checks, never remove generic ones from Steps 1-4.
-If a domain hook flags BLOCK, the overall preflight verdict is BLOCK regardless of other steps.
+If a domain hook flags BLOCK, the overall readiness verdict is BLOCK regardless of other steps.
 </HARD-GATE>
 
 #### Hook Selection (auto-detect from diff)
@@ -220,7 +220,7 @@ For each detected domain, run its checks on the relevant files in the diff:
 2. **Load** domain-specific check rules (inline above, or from pack reference files if a pack is installed)
 3. **Scan** each relevant file for domain violations
 4. **Classify** findings: BLOCK (data loss risk, breaking contract) or WARN (best practice, incomplete)
-5. **Append** to preflight report under `### Domain Quality` section
+5. **Append** to readiness report under `### Domain Quality` section
 
 #### UI/Frontend Domain Checks
 
@@ -252,9 +252,9 @@ When UI/Frontend hook is triggered, run these checks on all `.tsx`/`.jsx`/`.svel
 
 #### Pack Integration
 
-When a domain pack is installed (e.g., `@Topia/security`), preflight checks the pack's **Hard-Stop Thresholds** table and applies matching rules to staged files. This means:
-- Installing automatically adds fintech quality gates to preflight
-- Installing `@Topia/security` automatically adds OWASP/compliance checks to preflight
+When a domain pack is installed (e.g., `@Topia/security`), readiness checks the pack's **Hard-Stop Thresholds** table and applies matching rules to staged files. This means:
+- Installing automatically adds fintech quality gates to readiness
+- Installing `@Topia/security` automatically adds OWASP/compliance checks to readiness
 - No manual configuration needed — pack presence = hooks active
 
 #### Output Section
@@ -298,7 +298,7 @@ contributor proposes → admin approves → deploy
 \`\`\`
 
 ### Governance Settings
-- preflight: full checks
+- readiness: full checks
 - ...
 </ORG-POLICY>
 ```
@@ -317,24 +317,24 @@ contributor proposes → admin approves → deploy
 | Approval flow steps | Triggering change type requires named approver chain | BLOCK: "Approval flow `<name>` not satisfied: missing <role>" |
 
 3. Honor `Governance Settings`:
-   - `preflight: full checks` → all approval gates BLOCK on violation
-   - `preflight: warn mode` → violations are WARN, change can proceed with acknowledgement
-   - `preflight: advisory` → violations are INFO
+   - `readiness: full checks` → all approval gates BLOCK on violation
+   - `readiness: warn mode` → violations are WARN, change can proceed with acknowledgement
+   - `readiness: advisory` → violations are INFO
 
-4. Aggregate violations into a single `### Organization Approval` section of the preflight report, ordered by severity.
+4. Aggregate violations into a single `### Organization Approval` section of the readiness report, ordered by severity.
 
 5. Org-approval violations are NOT subject to Composite Score downgrading when governance is `full checks` — they are organizational invariants.
 
 If `.topia/org/org.md` does not exist (no `<ORG-POLICY>` block was injected), skip and log INFO: "no org config, organization approval check skipped".
 
-### Step 4.8 — Preflight Composite Score
+### Step 4.8 — Readiness Composite Score
 
-After all domain hooks (Step 4.5) and completeness checks (Step 4) complete, compute a **Preflight Health Score** to make the verdict numeric and comparable across runs.
+After all domain hooks (Step 4.5) and completeness checks (Step 4) complete, compute a **Readiness Health Score** to make the verdict numeric and comparable across runs.
 
 ### Formula
 
 ```
-Preflight Score = (Logic × 0.30) + (Error Handling × 0.20) + (Completeness × 0.20) + (Coherence × 0.15) + (Regression Risk × 0.15)
+Readiness Score = (Logic × 0.30) + (Error Handling × 0.20) + (Completeness × 0.20) + (Coherence × 0.15) + (Regression Risk × 0.15)
 ```
 
 **5 verification axes** (Completeness + Correctness via Logic + Coherence — 3D verification model):
@@ -355,11 +355,11 @@ Each dimension is scored per staged files:
 | 40–59 | Poor | WARN (escalate to developer) |
 | 0–39 | Critical | BLOCK |
 
-Score is appended to the Preflight Report footer. Useful for tracking quality trend across sprints when build logs preflight scores to `.topia/metrics/`.
+Score is appended to the Readiness Report footer. Useful for tracking quality trend across sprints when build logs readiness scores to `.topia/metrics/`.
 
 
 ### Step 5 — Security Sub-Check
-Invoke `Topia:sentinel` on the changed files. Attach sentinel's output verbatim under the "Security" section of the preflight report. If sentinel returns BLOCK, preflight verdict is also BLOCK.
+Invoke `Topia:guardian` on the changed files. Attach sentinel's output verbatim under the "Security" section of the readiness report. If sentinel returns BLOCK, readiness verdict is also BLOCK.
 
 ### Step 6 — Generate Verdict
 Aggregate all findings:
@@ -372,7 +372,7 @@ Report PASS, WARN, or BLOCK. For WARN, list each item the developer must acknowl
 ## Output Format
 
 ```
-## Preflight Report
+## Readiness Report
 - **Status**: PASS | WARN | BLOCK
 - **Files Checked**: [count]
 - **Changes**: +[added] -[removed] lines across [files] files
@@ -400,7 +400,7 @@ Report PASS, WARN, or BLOCK. For WARN, list each item the developer must acknowl
 
 ### Composite Score
 - Logic: [score] | Error: [score] | Completeness: [score] | Coherence: [score] | Regression: [score]
-- **Preflight Score**: [weighted value] → Grade: [Excellent/Good/Fair/Poor/Critical]
+- **Readiness Score**: [weighted value] → Grade: [Excellent/Good/Fair/Poor/Critical]
 
 ### Verdict
 WARN — 3 issues found (0 blocking, 3 must-acknowledge). Resolve before commit or explicitly acknowledge each WARN.
@@ -418,9 +418,9 @@ WARN — 3 issues found (0 blocking, 3 must-acknowledge). Resolve before commit 
 
 | Artifact | Format | Location |
 |----------|--------|----------|
-| Preflight report | Markdown | inline (chat output) |
+| Readiness report | Markdown | inline (chat output) |
 | Issue list (BLOCK/WARN by category) | Markdown list | inline |
-| Preflight health score | Markdown table | inline (footer of report) |
+| Readiness health score | Markdown table | inline (footer of report) |
 | Spec compliance verdict | Markdown table | inline |
 | Domain quality findings | Markdown section | inline |
 
@@ -430,13 +430,13 @@ WARN — 3 issues found (0 blocking, 3 must-acknowledge). Resolve before commit 
 |---|---|---|
 | Stopping at first BLOCK finding without checking remaining files | HIGH | Aggregate all findings first — developer needs the complete list, not just the first blocker |
 | "Happy path works" accepted as sufficient | HIGH | CONSTRAINT blocks this — edge case analysis is mandatory on every function |
-| Calling verification directly instead of the test skill | MEDIUM | Preflight calls Topia:test for test suite execution; Topia:verification for lint/type/build checks |
-| Skipping sentinel sub-check because "this file doesn't look security-relevant" | HIGH | MUST invoke sentinel — security relevance is sentinel's job to determine, not preflight's |
+| Calling verification directly instead of the test skill | MEDIUM | Readiness calls Topia:test for test suite execution; Topia:verification for lint/type/build checks |
+| Skipping sentinel sub-check because "this file doesn't look security-relevant" | HIGH | MUST invoke sentinel — security relevance is sentinel's job to determine, not readiness's |
 | Skipping Stage A (spec compliance) when plan is available | HIGH | If build provides an approved plan, Stage A is mandatory — catches incomplete implementations |
 | Agent modified files not in plan without flagging | MEDIUM | Stage A flags unplanned file changes as WARN — scope creep detection |
 | Domain hooks not triggered when pack is installed | HIGH | Step 4.5 auto-detects file patterns — if pack is installed but hooks don't fire, check file pattern matching |
 | Domain hooks overriding generic checks | HIGH | HARD-GATE: domain hooks are ADDITIVE — they never replace Steps 1-4 |
-| Pack Hard-Stop Thresholds ignored in preflight | MEDIUM | Step 4.5 Pack Integration must read installed pack thresholds — test with each new pack |
+| Pack Hard-Stop Thresholds ignored in readiness | MEDIUM | Step 4.5 Pack Integration must read installed pack thresholds — test with each new pack |
 
 ## Done When
 

@@ -10,7 +10,7 @@ You are the **review** skill — Topia's code quality reviewer.
 ## Step 0 — Prerequisite Check (BEFORE reviewing)
 
 1. **Code exists?** Get the exact diff (`git diff` or specific files). If no code changes to review → nothing to do.
-2. **Context loaded?** If reviewing unfamiliar code → invoke `Topia:scout` to understand the module structure first.
+2. **Context loaded?** If reviewing unfamiliar code → invoke `Topia:recon` to understand the module structure first.
 
 Only proceed after Step 0 is satisfied.
 

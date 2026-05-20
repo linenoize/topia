@@ -1,5 +1,5 @@
 ---
-name: scout
+name: recon
 description: "Fast codebase scanner. Use when any skill needs codebase context. Finds files, patterns, dependencies, project structure. Pure read-only — never modifies files."
 metadata:
   author: skill-topia
@@ -12,11 +12,11 @@ metadata:
   listen: agent.stuck
 ---
 
-# scout
+# recon
 
 ## Purpose
 
-Fast, lightweight codebase scanning. Scout is the eyes of the Topia ecosystem. Pure read-only — discovers structure, files, patterns, and dependencies so other skills don't have to re-scan.
+Fast, lightweight codebase scanning. Recon is the eyes of the Topia ecosystem. Pure read-only — discovers structure, files, patterns, and dependencies so other skills don't have to re-scan.
 
 ## Instructions
 
@@ -42,17 +42,17 @@ TodoWrite: [
   { content: "Map dependencies", status: "pending" },
   { content: "Detect conventions", status: "pending" },
   { content: "Generate codebase map (if full scan)", status: "pending" },
-  { content: "Generate scout report", status: "pending" }
+  { content: "Generate recon report", status: "pending" }
 ]
 ```
 
 ### Phase 2: Targeted Search (Search-First)
 
-**Search-first principle**: Before building anything new, scout checks if a solution already exists — in the codebase, in package registries, or in available MCP servers.
+**Search-first principle**: Before building anything new, recon checks if a solution already exists — in the codebase, in package registries, or in available MCP servers.
 
 **Adopt / Extend / Compose / Build decision matrix**:
 
-When scout finds the caller's target domain, classify the situation:
+When recon finds the caller's target domain, classify the situation:
 
 ```
 ADOPT     — Exact match exists (in codebase, npm, PyPI, MCP). Use as-is.
@@ -84,7 +84,7 @@ Based on the scan request, run focused searches:
 
 #### Info Saturation Detection (Know When to Stop)
 
-Scout's default is "max 10 file reads" — but the real question is whether additional reads are productive. Track saturation across Phase 2 searches:
+Recon's default is "max 10 file reads" — but the real question is whether additional reads are productive. Track saturation across Phase 2 searches:
 
 **Entity tracking**: As you scan files, extract key entities (function names, class names, imports, API endpoints, config keys). Maintain a running set of discovered entities.
 
@@ -94,14 +94,14 @@ Scout's default is "max 10 file reads" — but the real question is whether addi
 | **Content similarity** | Last 2 files share >70% of the same imports/patterns | Files are in the same module, redundant reads | Skip remaining files in this directory |
 | **Query variation** | 3+ Glob/Grep queries with different patterns all return the same files | All search angles converge | Domain is fully mapped, proceed |
 
-**When saturation detected**: Emit in Scout Report:
+**When saturation detected**: Emit in Recon Report:
 ```
 ### Saturation
 - Reached after [N] file reads — last 2 reads added [M] new entities
 - Recommendation: synthesize_and_report (further scanning unlikely to yield new insights)
 ```
 
-**Why**: Without saturation detection, scout reads its full budget of 10 files even when 3 files already contain everything needed. This wastes context tokens and delays the calling skill. Early saturation detection returns control faster.
+**Why**: Without saturation detection, recon reads its full budget of 10 files even when 3 files already contain everything needed. This wastes context tokens and delays the calling skill. Early saturation detection returns control faster.
 
 ### Phase 3: Dependency Mapping
 
@@ -124,7 +124,7 @@ Scout's default is "max 10 file reads" — but the real question is whether addi
 
 Triggered by `mode="zoom-out"` from the caller, OR auto-triggered by listening on `agent.stuck` signal (emitted by `fix` after 2+ failed attempts on the same file, or by `debug` after 3+ disproved hypothesis cycles).
 
-When activated, scout produces a 3-layer ascent map:
+When activated, recon produces a 3-layer ascent map:
 
 | Layer | What it includes | Cap |
 |-------|------------------|-----|
@@ -148,7 +148,7 @@ graph LR
 
 **Bounded** — L2 ascent caps at 8 modules. If exceeded, collapse to "showing top 8 by import-frequency". Never blow past the cap silently.
 
-After emitting the map, scout returns to its normal Phase 6 (Generate Report) with the zoom-out section as the primary output.
+After emitting the map, recon returns to its normal Phase 6 (Generate Report) with the zoom-out section as the primary output.
 
 ### Phase 5: Codebase Map (Optional)
 
@@ -187,7 +187,7 @@ graph LR
 4. Dependencies = import statements between modules (from Phase 3)
 5. Domain = inferred from module name + file contents (auth, payments, frontend, infra, data, config, etc.)
 
-**Skip this phase** when called by skills that only need targeted search (debug, fix, review, sentinel).
+**Skip this phase** when called by skills that only need targeted search (debug, fix, review, guardian).
 
 ### Phase 6: Generate Report
 
@@ -218,8 +218,8 @@ None — pure scanner using Glob, Grep, Read, and Bash tools directly. Does not 
 - `fix` (L2): understand dependencies before changing code
 - `build` (L1): Phase 1 UNDERSTAND — scan codebase
 - `team` (L1): understand full project scope
-- `sentinel` (L2): scan changed files for security issues
-- `preflight` (L2): find affected code paths
+- `guardian` (L2): scan changed files for security issues
+- `readiness` (L2): find affected code paths
 - `onboard` (L2): full project scan for CLAUDE.md generation
 - `autopsy` (L2): comprehensive health assessment
 - `surgeon` (L2): scan module before refactoring
@@ -234,7 +234,7 @@ None — pure scanner using Glob, Grep, Read, and Bash tools directly. Does not 
 - `skill-forge` (L2): scan existing skills for patterns when creating new skills
 - `idea` (L2): scan existing codebase for context before requirements elicitation
 - `retro` (L2): scan commit history and codebase for retrospective analysis
-- `graft` (L2): scan target codebase before grafting code from external repo
+- `integrate` (L2): scan target codebase before integrating code from external repo
 - `docs` (L2): scan codebase structure for documentation generation
 - `logic-guardian` (L2): scan business logic modules for protection mapping
 - `adversary` (L2): scan codebase before red-team analysis
@@ -243,7 +243,7 @@ None — pure scanner using Glob, Grep, Read, and Bash tools directly. Does not 
 ## Output Format
 
 ```
-## Scout Report
+## Recon Report
 - **Project**: [name] | **Framework**: [detected] | **Language**: [detected]
 - **Files**: [count] | **Test Framework**: [detected]
 
@@ -273,7 +273,7 @@ None — pure scanner using Glob, Grep, Read, and Bash tools directly. Does not 
 
 | Artifact | Format | Location |
 |----------|--------|----------|
-| Scout Report | Markdown (inline) | Emitted to calling skill |
+| Recon Report | Markdown (inline) | Emitted to calling skill |
 | Codebase map | Markdown | `.topia/codebase-map.md` (when called by build, team, onboard, autopsy) |
 
 ## Sharp Edges
@@ -295,10 +295,10 @@ Known failure modes for this skill. Check these before declaring done.
 - Dependency blast radius identified for target files
 - Conventions detected (naming, test framework, linting config)
 - Codebase map written to `.topia/codebase-map.md` (when called by build, team, onboard, autopsy)
-- Scout Report emitted in structured format with Relevant Files table
+- Recon Report emitted in structured format with Relevant Files table
 
 ## Cost Profile
 
-~500-2000 tokens input, ~200-500 tokens output. Always haiku. Cheapest skill in the mesh.
+~500-2000 tokens input, ~200-500 tokens output. Always haiku. Cheapest skill in the nexus.
 
 **Scope guardrail**: Do not expand the scan to unrelated modules or write files beyond `.topia/codebase-map.md` unless explicitly delegated by the parent agent.

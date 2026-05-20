@@ -47,7 +47,7 @@ test(<scope>): <behavior phrase>      ← RED commit
 feat(<scope>): <behavior phrase>      ← GREEN commit
 ```
 
-The receiving skill (`completion-gate`, `preflight`) reads `git log --oneline -n 20` and counts `test:` / `feat:` pairs. Claim "I did TDD" without paired commits = REJECTED.
+The receiving skill (`completion-gate`, `readiness`) reads `git log --oneline -n 20` and counts `test:` / `feat:` pairs. Claim "I did TDD" without paired commits = REJECTED.
 
 This gate is honest because it's mechanical: git history doesn't lie about ordering. It also lets a parent agent verify a subagent's TDD claim without re-running the full pipeline.
 

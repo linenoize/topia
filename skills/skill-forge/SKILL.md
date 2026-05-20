@@ -14,7 +14,7 @@ metadata:
 
 ## Purpose
 
-The skill that builds skills. Applies Test-Driven Development to skill authoring: write a pressure test first, watch agents fail without the skill, write the skill to fix those failures, then close loopholes until bulletproof. Ensures every Topia skill is battle-tested before it enters the mesh.
+The skill that builds skills. Applies Test-Driven Development to skill authoring: write a pressure test first, watch agents fail without the skill, write the skill to fix those failures, then close loopholes until bulletproof. Ensures every Topia skill is battle-tested before it enters the nexus.
 
 ## Triggers
 
@@ -24,7 +24,7 @@ The skill that builds skills. Applies Test-Driven Development to skill authoring
 
 ## Calls (outbound)
 
-- `scout` (L3): scan existing skills for patterns and naming conventions
+- `recon` (L3): scan existing skills for patterns and naming conventions
 - `plan` (L2): structure complex skills with multiple phases
 - `hallucination-guard` (L3): verify referenced skills/tools actually exist
 - `verification` (L3): validate SKILL.md format compliance
@@ -48,11 +48,11 @@ Before writing anything, understand the landscape:
 1. **Scan existing skills** via `scout` — is this already covered?
 2. **Check for overlap** — will this duplicate or conflict with existing skills?
 3. **Identify layer** — L1 (orchestrator), L2 (workflow hub), L3 (utility)?
-4. **Identify mesh connections** — what calls this? What does this call?
+4. **Identify nexus synapses** — what calls this? What does this call?
 
 <HARD-GATE>
 If a skill with >70% overlap already exists → extend it, don't create new.
-The mesh grows stronger by deepening connections, not by adding nodes.
+The nexus grows stronger by deepening synapses, not by adding nodes.
 </HARD-GATE>
 
 ### Phase 2 — RED (Baseline Test)
@@ -102,7 +102,7 @@ Follow `docs/SKILL-TEMPLATE.md` format. Required sections:
 | Frontmatter | YES | Name, description, metadata |
 | Purpose | YES | One paragraph, ecosystem role |
 | Triggers | YES | When to invoke |
-| Calls / Called By | YES | Mesh connections (control flow) |
+| Calls / Called By | YES | Nexus synapses (control flow) |
 | Data Flow | YES | Feeds Into / Fed By / Feedback Loops (data flow) |
 | Workflow | YES | Step-by-step execution |
 | Output Format | YES | Structured, parseable output |
@@ -111,7 +111,7 @@ Follow `docs/SKILL-TEMPLATE.md` format. Required sections:
 | Self-Validation | YES | Domain-specific QA checklist (per-skill, not centralized) |
 | Done When | YES | Verifiable completion criteria |
 | Cost Profile | YES | Token estimate |
-| Mesh Gates | L1/L2 only | Progression guards |
+| Nexus Gates | L1/L2 only | Progression guards |
 
 #### SKILL.md Anatomy — WHY vs HOW Split
 
@@ -422,11 +422,11 @@ If Security Model is required but missing → Phase 7 EVAL HARD-GATE blocks ship
 
 ### Phase 6 — INTEGRATE
 
-Wire the skill into the mesh:
+Wire the skill into the nexus:
 
 1. **Update `docs/ARCHITECTURE.md`** — add to correct layer/group table
 2. **Update `CLAUDE.md`** — increment skill count, add to layer list
-3. **Add mesh connections** — update SKILL.md of skills that should call/be called by this one
+3. **Add nexus synapses** — update SKILL.md of skills that should call/be called by this one
 4. **Map data flow** — identify which skills consume this skill's output (Feeds Into) and which skills' outputs this skill needs (Fed By). Look for feedback loops where two skills refine each other's work
 5. **Write Self-Validation** — 3-5 domain-specific checks unique to this skill's output. Ask: "What quality issues can ONLY this skill catch?"
 6. **Verify no conflicts** — new skill's output format compatible with consumers?
@@ -491,7 +491,7 @@ install_method: "non-destructive"    # MUST be non-destructive
 #### When to Build an Extension (vs a Skill or Pack)
 
 - Build an **extension** when: the capability requires an external API/MCP, is optional, and augments an existing skill
-- Build a **skill** when: the capability is self-contained and fits a layer in the mesh
+- Build a **skill** when: the capability is self-contained and fits a layer in the nexus
 - Build a **pack** when: you're bundling multiple related skills for a domain
 
 ### Phase 7 — EVAL (Behavior Tests)
@@ -547,7 +547,7 @@ git commit -m "feat: add [skill-name] — [one-line purpose]"
 - [ ] Baseline test run BEFORE skill was written
 - [ ] At least one observed failure documented
 - [ ] Anti-rationalization table from real test failures
-- [ ] Mesh connections bidirectional (calls AND called-by both updated)
+- [ ] Nexus synapses bidirectional (calls AND called-by both updated)
 - [ ] Data flow mapped (Feeds Into / Fed By / Feedback Loops)
 - [ ] Self-Validation has 3-5 domain-specific checks (not generic)
 - [ ] Output format is structured and parseable by other skills
@@ -623,7 +623,7 @@ Techniques:
 - docs/ARCHITECTURE.md — [updated | skipped]
 - CLAUDE.md — [updated | skipped]
 
-### Mesh Impact
+### Nexus Impact
 - New connections: [count] ([list of skills])
 - Bidirectional check: PASS | FAIL
 - Data flow mapped: [count] feeds-into, [count] fed-by, [count] feedback loops
@@ -647,7 +647,7 @@ Techniques:
 | Writing skill without baseline test | CRITICAL | Phase 2 HARD-GATE: must observe failure first |
 | Description summarizes workflow → agents skip content | HIGH | Phase 3 description rules: "Use when..." triggers only |
 | New skill duplicates existing skill | HIGH | Phase 1 HARD-GATE: >70% overlap → extend, don't create |
-| Skill passes test but breaks mesh connections | MEDIUM | Phase 6 integration: verify output compatibility |
+| Skill passes test but breaks nexus synapses | MEDIUM | Phase 6 integration: verify output compatibility |
 | Editing skill without testing the edit | MEDIUM | Adapting section: same TDD cycle for edits |
 | Overly verbose skill burns context tokens | MEDIUM | Token efficiency guidelines: layer-based word targets |
 | Code blocks in SKILL.md bloat every invocation | HIGH | WHY vs HOW split: SKILL.md ≤10-line code blocks, extract rest to references/ |
@@ -663,7 +663,7 @@ Techniques:
 - SKILL.md follows template format completely
 - Skill passes pressure test (agent complies with skill loaded)
 - No new failures in 2 consecutive varied-pressure test runs
-- Mesh connections wired (ARCHITECTURE.md, CLAUDE.md, related skills)
+- Nexus synapses wired (ARCHITECTURE.md, CLAUDE.md, related skills)
 - Git committed with conventional commit message
 
 ## Returns
@@ -678,6 +678,6 @@ Techniques:
 
 ## Cost Profile
 
-~3000-8000 tokens per skill creation (opus for Phase 2-5 reasoning, haiku for scout/verification). Most cost is in the iterative test-refine loop (Phase 4-5). Budget 2-4 test iterations per skill.
+~3000-8000 tokens per skill creation (opus for Phase 2-5 reasoning, haiku for recon/verification). Most cost is in the iterative test-refine loop (Phase 4-5). Budget 2-4 test iterations per skill.
 
 **Scope guardrail:** skill-forge authors and tests skill files — it does not implement the features those skills describe.

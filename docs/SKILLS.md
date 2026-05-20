@@ -3,7 +3,7 @@
 > **Need a skill?** Invoke via `/topia <skill-name>` in Claude Code, or `@Topia:<skill-name>` in Cursor / Codex / Antigravity.
 > Every skill has a `SKILL.md` at `skills/<name>/SKILL.md` — read that for the full spec.
 
-**Total:** 65 skills across 5 layers · 203 connections + 44 signals
+**Total:** 65 skills across 5 layers · 203 synapses + 44 pulses
 **Quick find:** use Ctrl+F on this page
 
 ---
@@ -35,10 +35,10 @@ Each skill is marked by who invokes it in practice:
 | Gather requirements | 👤 [`idea`](#-idea) |
 | Set up a new project | 👤 [`scaffold`](#-scaffold) |
 | Rescue legacy code | 👤 [`rescue`](#-rescue) |
-| Port code from another repo | 👤 [`graft`](#-graft) |
+| Port code from another repo | 👤 [`integrate`](#-graft) |
 | Parallel work across 5+ files | 👤 [`team`](#-team) |
 | Handle a production incident | 👤 [`incident`](#-incident) |
-| Run a security audit | 👤 [`sentinel`](#-sentinel) or 👤 [`audit`](#-audit) |
+| Run a security audit | 👤 [`guardian`](#-sentinel) or 👤 [`audit`](#-audit) |
 | Generate docs | 👤 [`docs`](#-docs) |
 | Onboard an existing codebase | 👤 [`onboard`](#-onboard) |
 | Recall past decisions | 🔄 [`neural-memory`](#-neural-memory) or 🔄 [`journal`](#-journal) |
@@ -238,7 +238,7 @@ Generate and parse office documents — PDF, DOCX, XLSX, PPTX, CSV. Pure format 
 | 👤 | **slides** | Marp-compatible slide decks from structured JSON |
 | 🔄 | **dependency-doctor** | Dependency health — outdated packages, CVEs, breaking change risk |
 | 🔄 | **git** | Semantic commits, PR descriptions, branch naming, changelog generation |
-| 👤 | **sentinel-env** | Environment pre-flight — OS, runtime versions, tools, ports, env vars |
+| 👤 | **guardian-env** | Environment pre-flight — OS, runtime versions, tools, ports, env vars |
 
 ---
 
@@ -265,6 +265,6 @@ Domain packs bundle multiple skills for a specific vertical. All invokable via `
 
 - **Too many skills?** Start with `build`. It routes to the right skills automatically.
 - **Don't know what to invoke?** Describe what you want; `skill-router` handles routing.
-- **Skill chains:** see [`SIGNALS.md`](SIGNALS.md) for how skills auto-trigger each other.
+- **Skill chains:** see [`PULSES.md`](PULSES.md) for how skills auto-trigger each other.
 - **Full skill graph:** run `node compiler/bin/topia.js visualize` for an interactive view.
 - **Skill template:** see [`SKILL-TEMPLATE.md`](SKILL-TEMPLATE.md) to understand structure.

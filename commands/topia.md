@@ -19,7 +19,7 @@ These are entry-points the user runs in their shell. They do not invoke a skill 
 - `topia setup` — interactive wizard for the hook-installer step only (scope + preset). Useful when you've already cloned + `npm install`'d but want to (re)wire hooks.
 - `topia init` — for non-Claude IDEs: compile skills into the target platform's rule format (`--platform cursor|codex|antigravity|opencode|openclaw|generic`).
 - `topia build` — recompile skills using the existing `topia.config.json`.
-- `topia doctor` — validate compiled output + mesh integrity (`--mesh` for mesh only, `--hooks` for hook drift, `--strict` for CI).
+- `topia doctor` — validate compiled output + nexus integrity (`--nexus` for nexus only, `--hooks` for hook drift, `--strict` for CI).
 - `topia status` — neofetch-style project dashboard.
 - `topia visualize` — open the interactive skill-graph in a browser.
 - `topia analytics` — usage analytics dashboard.
@@ -61,8 +61,8 @@ These are entry-points the user runs in their shell. They do not invoke a skill 
 ### Quality
 - 👤 `/topia review` — code-quality review with `file:line` findings.
 - ↻ `/topia review-intake <PR-url-or-issue>` — process external review feedback or triage inbound issues. Also auto-runs in `build` Phase 5 when external feedback is detected.
-- 🤖 `/topia preflight` — pre-commit quality gate (logic, regressions, completeness). Auto-fires via hook.
-- 🤖 `/topia sentinel` — security gate (secrets, OWASP, deps). Auto-fires via hook.
+- 🤖 `/topia readiness` — pre-commit quality gate (logic, regressions, completeness). Auto-fires via hook.
+- 🤖 `/topia guardian` — security gate (secrets, OWASP, deps). Auto-fires via hook.
 - 🤖 `/topia logic-guardian` — protects business logic from accidental deletion. Auto-fires when `.topia/logic-manifest.json` exists.
 - 🤖 `/topia quarantine` — prompt-injection advisory on untrusted MCP / WebFetch / upload reads. Auto-fires.
 - 👤 `/topia audit` — comprehensive 8-dimension health audit.
@@ -112,7 +112,7 @@ These are entry-points the user runs in their shell. They do not invoke a skill 
 - ↻ `/topia journal` — ADRs + decision history. User runs to log; also called by `build`/`rescue`.
 - 🤖 `/topia session-bridge` — auto-saves decisions / conventions / progress to `.topia/`. Fires at session boundaries.
 - ↻ `/topia neural-memory <recall|store>` — semantic memory graph (uses agora-code MCP when registered).
-- 🤖 `/topia integrity-check` — detect adversarial content in `.topia/` files. Called by `sentinel` / `session-bridge`.
+- 🤖 `/topia integrity-check` — detect adversarial content in `.topia/` files. Called by `guardian` / `session-bridge`.
 
 ### Monitoring / Scope
 - 🤖 `/topia watchdog` — post-deploy HTTP / response-time / error-rate checks. Auto-fires after `deploy`.
@@ -122,7 +122,7 @@ These are entry-points the user runs in their shell. They do not invoke a skill 
 - ↻ `/topia git <task>` — semantic commits, PR descriptions, branch naming, changelog.
 - ↻ `/topia worktree <create|cleanup|list>` — git worktree lifecycle for parallel streams.
 - ↻ `/topia dependency-doctor` — outdated packages + CVE scan + prioritized update plan.
-- 👤 `/topia sentinel-env` — environment pre-flight (OS, runtime versions, tools, ports, env vars).
+- 👤 `/topia guardian-env` — environment pre-flight (OS, runtime versions, tools, ports, env vars).
 
 ### Browser / Media
 - ↻ `/topia browser-pilot <url>` — Playwright automation + a11y audit.

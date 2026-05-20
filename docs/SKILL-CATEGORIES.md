@@ -17,7 +17,7 @@ These tools are the primary drivers for implementing features, fixing bugs, and 
 | `verification` | **Runner**: Executes linting, type-checks, tests, and builds to ensure nothing is broken. |
 | `db` | **Database Specialist**: Manages migrations, rollback scripts, and validates queries. |
 | `git` | **Utility**: Handles semantic commits, PR descriptions, and branch management. |
-| `graft` | **Porter**: Clones or converts features from external GitHub repos into your project. |
+| `integrate` | **Porter**: Clones or converts features from external GitHub repos into your project. |
 | `surgeon` | **Refactorer**: Performs incremental surgery on legacy code using proven patterns (e.g., Strangler Fig). |
 | `safeguard` | **Safety Net**: Builds characterization tests and rollback points before risky refactors. |
 | `mcp-builder` | **Tool Builder**: Generates Model Context Protocol servers from specifications. |
@@ -32,8 +32,8 @@ Tools focused on keeping the codebase secure, compliant, and correctly deployed.
 
 | Skill | Purpose |
 | :--- | :--- |
-| `sentinel` | **Gatekeeper**: Blocks unsafe code (secrets, OWASP Top 10) before commit. A hard gate. |
-| `sentinel-env` | **Environment Audit**: Validates OS, runtimes, and tools before work starts. |
+| `guardian` | **Gatekeeper**: Blocks unsafe code (secrets, OWASP Top 10) before commit. A hard gate. |
+| `guardian-env` | **Environment Audit**: Validates OS, runtimes, and tools before work starts. |
 | `sast` | **Static Analysis**: Wraps ESLint, Semgrep, and other analyzers for deep code auditing. |
 | `adversary` | **Red-Team**: Challenges high-risk plans before code is written to find security and logic holes. |
 | `logic-guardian` | **Protector**: Prevents accidental deletion or corruption of critical business logic. |
@@ -43,7 +43,7 @@ Tools focused on keeping the codebase secure, compliant, and correctly deployed.
 | `watchdog` | **Monitor**: Verifies application health immediately after deployment. |
 | `dependency-doctor` | **Health Check**: Scans for outdated packages and CVEs with a prioritized update plan. |
 | `audit` | **Holistic Check**: Comprehensive audit across 8 dimensions (security, performance, etc.). |
-| `preflight` | **Pre-Commit Gate**: Catches "almost right" code — logic correctness, error handling, regressions, completeness. |
+| `readiness` | **Pre-Commit Gate**: Catches "almost right" code — logic correctness, error handling, regressions, completeness. |
 | `perf` | **Perf Regression Gate**: Detects N+1 queries, sync-in-async, missing indexes, memory leaks, bundle bloat. |
 | `incident` | **Responder**: Structured incident response — triage, contain, verify, root-cause, postmortem. |
 
@@ -124,7 +124,7 @@ Specialized vertical patterns for specific application domains.
 
 ---
 
-## 🔧 Internal Mesh Tools
+## 🔧 Internal Nexus Tools
 Internal primitives that power the Topia infrastructure.
 
 | Tool | Purpose |

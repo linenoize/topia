@@ -1,12 +1,14 @@
 /**
- * OpenClaw Adapter
+ * adapters/openclaw.js — OpenClaw plugin adapter.
  *
- * Emits an OpenClaw plugin structure:
- *   .openclaw/Topia/openclaw.plugin.json  (manifest)
- *   .openclaw/Topia/src/index.ts          (register entrypoint)
- *   .openclaw/Topia/skills/*.md           (transformed skill files)
+ * Output: a full plugin structure under .openclaw/Topia/:
+ *   openclaw.plugin.json    plugin manifest
+ *   src/index.ts            register(api) entry point with before_agent_start hook
+ *   skills/Topia-*.md       transformed skill files
  *
- * Follows the NeuralMemory OpenClaw plugin pattern.
+ * Unlike rule-file adapters, OpenClaw expects a real plugin package — this
+ * adapter emits manifest + TS entry + skills together. Modeled after the
+ * NeuralMemory OpenClaw plugin layout (which Topia coexists with).
  *
  * ARTIFACT CONVENTION (v2.13+):
  * OpenClaw skills that produce file artifacts (images, reports, data) should
@@ -101,7 +103,7 @@ export default {
       id: 'Topia',
       name: 'Topia',
       kind: 'skills',
-      description: `${skills.length}-skill mesh for AI coding assistants. Routes all code tasks through specialized skills. 203 sync connections + 40 async signals, 10 extension packs.`,
+      description: `${skills.length}-skill Topia Nexus for AI coding assistants. Routes all code tasks through specialized skills. 203 synapses + 44 pulses, 10 extension packs.`,
       version: pluginJson.version || '0.0.0',
       skills: ['./skills'],
       artifactConvention: {
@@ -164,7 +166,7 @@ export default {
 
     return `# Topia
 
-**${skills.length}-skill toolkit** for AI coding assistants — 5-layer architecture, 203 connections, 10 extension packs.
+**${skills.length}-skill toolkit** for AI coding assistants — 5-layer architecture, 203 synapses, 10 extension packs.
 
 ## Install
 
@@ -180,7 +182,7 @@ npx @protopia/skill-topia init
 
 ## What is Topia?
 
-Topia is a **mesh** — skills call each other bidirectionally, forming resilient workflows. If one skill fails, the mesh routes around it.
+Topia is a **nexus** — skills call each other bidirectionally, forming resilient workflows. If one skill fails, the nexus routes around it.
 
 Use \`Topia:build\` for any code task, \`Topia:team\` for parallel work, \`Topia:launch\` for deploy, \`Topia:rescue\` for legacy code.
 

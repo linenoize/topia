@@ -17,7 +17,13 @@
 
 import { WIRED_SKILLS } from './hooks/presets.js';
 
-const ALLOWLIST = new Set(WIRED_SKILLS);
+/** v1 skill IDs accepted with deprecation warning (one release cycle). */
+const V1_SKILL_ALIASES = {
+  preflight: 'readiness',
+  sentinel: 'guardian',
+};
+
+const ALLOWLIST = new Set([...WIRED_SKILLS, ...Object.keys(V1_SKILL_ALIASES)]);
 
 /**
  * @param {string[]} argv — positional args after `hook-dispatch`
@@ -44,6 +50,11 @@ export async function dispatchHook(argv, io = {}) {
     return gentle ? 0 : 1;
   }
 
+  const resolvedSkill = V1_SKILL_ALIASES[skill] || skill;
+  if (V1_SKILL_ALIASES[skill]) {
+    stderr.write(`Topia hook-dispatch: "${skill}" is deprecated — use "${resolvedSkill}" (v2.0)\n`);
+  }
+
   // Read event JSON from stdin (best-effort; hooks may pass empty stdin)
   let eventJson = {};
   try {
@@ -55,9 +66,9 @@ export async function dispatchHook(argv, io = {}) {
 
   // Skill invocation placeholder — skills don't yet expose a headless API.
   // For v1: emit advisory line, pass through. This unblocks hook installation
-  // while skill-forge adds `--hook-mode` to preflight/sentinel/etc.
+  // while skill-forge adds `--hook-mode` to readiness/guardian/etc.
   const mode = gentle ? 'advisory' : 'enforcing';
-  stdout.write(`Topia-hook: ${skill} [${mode}] — tool=${eventJson?.tool_name || 'unknown'}\n`);
+  stdout.write(`Topia-hook: ${resolvedSkill} [${mode}] — tool=${eventJson?.tool_name || 'unknown'}\n`);
 
   // Until skills expose headless verdicts, dispatcher returns neutral success.
   // When skills add `--hook-mode`, extend this to run them and propagate exit codes.

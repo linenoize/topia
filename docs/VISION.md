@@ -139,14 +139,14 @@ The skill must fit one of these phases: planning, coding, testing, reviewing, de
 A skill must either call at least one existing skill OR be called by at least two existing skills — and ideally both. Connections must be meaningful (actual data flow), not ceremonial.
 
 ❌ **Fail example:** `code-formatter` — no inbound, no outbound, pure L3 with 0 connections
-✅ **Pass example:** `audit` — calls `sentinel`, `dependency-doctor`, `autopsy`, `scout`, `journal`; called by `build`, `launch`
+✅ **Pass example:** `audit` — calls `guardian`, `dependency-doctor`, `autopsy`, `scout`, `journal`; called by `build`, `launch`
 
 ### Gate 3 — Non-Redundancy
 > Can this skill's function be achieved by composing 2 existing skills?
 
 If yes, add a new workflow to an existing skill instead of creating a new one. Topia's philosophy is deepening connections in existing skills before adding new nodes.
 
-❌ **Fail example:** `quick-security-check` — just `sentinel` with fewer checks; redundant
+❌ **Fail example:** `quick-security-check` — just `guardian` with fewer checks; redundant
 ✅ **Pass example:** `audit` — orchestrates multiple skills into a unified 7-phase report; not achievable by a single existing skill
 
 ### Gate 4 — Layer Assignment
@@ -164,7 +164,7 @@ L1 if: full lifecycle orchestration, user-facing entry point
 This test separates essential skills from convenience features. If the skill's absence could be worked around trivially, it's not core.
 
 ❌ **Fail example:** `git-log-formatter` — convenience wrapper; absence has no workflow impact
-✅ **Pass example:** `sentinel` — no other skill provides security scanning; its absence leaves a critical gap
+✅ **Pass example:** `guardian` — no other skill provides security scanning; its absence leaves a critical gap
 
 ---
 
@@ -211,7 +211,7 @@ Topia operates on three time horizons. The roadmap is intentionally non-prescrip
 
 **Goal:** Move workflow discipline from "invoke the skill" (opt-in) to "the platform fires it" (automatic).
 
-- ✅ **Native hooks across 4 platforms** — `Topia hooks install` wires `preflight`, `sentinel`, `completion-gate`, `dependency-doctor` as pre-tool-use hooks on Claude Code, Cursor, Windsurf, Antigravity
+- ✅ **Native hooks across 4 platforms** — `Topia hooks install` wires `readiness`, `guardian`, `completion-gate`, `dependency-doctor` as pre-tool-use hooks on Claude Code, Cursor, Windsurf, Antigravity
 - ✅ **Three presets** — `strict` (blocking), `gentle` (warnings, default), `off` (uninstall). Idempotent with full user-hook restore
 - ✅ **logic-guardian auto-seeding** — `Topia init` writes `.topia/INVARIANTS.md` with project-detected rules; preflight reads as a hard gate
 
@@ -226,7 +226,7 @@ Topia operates on three time horizons. The roadmap is intentionally non-prescrip
 *Topia is successful when these are true. Not when the feature list is long.*
 
 ### Graph Health
-- **Connection density** ≥ 3.0 connections/skill (currently: 3.3 at 203 connections / 65 skills) — do not let this drop below 2.5
+- **Connection density** ≥ 3.0 connections/skill (currently: 3.3 at 203 synapses / 65 skills) — do not let this drop below 2.5
 - **Dead nodes** = 0 — every skill has ≥1 inbound and ≥1 outbound connection
 - **Max chain depth used** < 6 in practice (ceiling is 8) — if chains regularly hit 8, the toolkit needs restructuring
 - **Bloat Index** = 0.00 — dead nodes / total skills

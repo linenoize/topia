@@ -113,7 +113,7 @@ Block deploy if ANY of:
   [ ] Tests failing (failed count > 0)
   [ ] TypeScript errors present
   [ ] Build fails
-  [ ] sentinel CRITICAL issues detected (invoke Topia:sentinel if not already run)
+  [ ] sentinel CRITICAL issues detected (invoke Topia:guardian if not already run)
 
 If any check fails:
   → STOP immediately
@@ -270,12 +270,12 @@ Mark todo[4] `completed`.
 4. MUST NOT deploy and run marketing simultaneously — deploy first, verify, then market
 5. MUST verify deploy is live and healthy before triggering marketing skills
 
-## Mesh Gates
+## Nexus Gates
 
 | Gate | Requires | If Missing |
 |------|----------|------------|
 | Test Gate | verification output showing all green | Run Topia:verification first |
-| Security Gate | sentinel output with no CRITICAL findings | Run Topia:sentinel first |
+| Security Gate | sentinel output with no CRITICAL findings | Run Topia:guardian first |
 | Deploy Gate | Successful deploy confirmation before marketing | Deploy first |
 
 ## Output Format

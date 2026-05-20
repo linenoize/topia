@@ -1,6 +1,6 @@
 # Supply Chain Security Reference
 
-> Loaded by `sentinel` when dependency changes detected (package.json, package-lock.json, requirements.txt, Cargo.toml modified).
+> Loaded by `guardian` when dependency changes detected (package.json, package-lock.json, requirements.txt, Cargo.toml modified).
 
 ---
 

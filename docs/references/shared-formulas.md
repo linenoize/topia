@@ -40,7 +40,7 @@ Each component is scored 0.0-1.0:
 
 ### 2. Finding Priority Score
 
-Used by: `review`, `sentinel`, `preflight`, `audit`, `content-decay-detector` (adapted)
+Used by: `review`, `guardian`, `readiness`, `audit`, `content-decay-detector` (adapted)
 
 ```
 priority = severity_weight × confidence × blast_radius

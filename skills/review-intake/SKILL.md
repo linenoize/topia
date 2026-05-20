@@ -38,11 +38,11 @@ Both modes share Phase 4.5 (Rejection KB Write) — `wontfix-enhancement` from I
 
 ## Calls (outbound)
 
-- `scout` (L3): verify reviewer claims against actual codebase
+- `recon` (L3): verify reviewer claims against actual codebase
 - `fix` (L2): apply verified changes
 - `test` (L2): add tests for edge cases reviewers found
 - `hallucination-guard` (L3): verify suggested APIs/packages exist
-- `sentinel` (L2): re-check security if reviewer flagged concerns
+- `guardian` (L2): re-check security if reviewer flagged concerns
 
 ## Called By (inbound)
 
@@ -179,7 +179,7 @@ Execute in priority order: P0 → P1 → P2 → P3 → P4.
 For each fix:
 1. Apply change via `fix`
 2. Run tests — verify no regression
-3. If fix touches security → run `sentinel`
+3. If fix touches security → run `guardian`
 4. Move to next item only after current passes
 
 ## Source Trust Levels
@@ -241,7 +241,7 @@ How to push back:
 5. MUST run tests after each individual fix — not batch-and-pray
 6. MUST STOP and ask if any item is unclear — do not implement clear items while unclear ones remain
 
-## Mesh Gates
+## Nexus Gates
 
 | Gate | Requires | If Missing |
 |------|----------|------------|
@@ -287,6 +287,6 @@ How to push back:
 
 ## Cost Profile
 
-~2000-5000 tokens depending on feedback volume. Sonnet for evaluation logic, haiku for scout/grep verification.
+~2000-5000 tokens depending on feedback volume. Sonnet for evaluation logic, haiku for recon/grep verification.
 
 **Scope guardrail:** review-intake processes the feedback items provided — it does not pull new reviews, open PRs, or change architectural decisions without owner confirmation.

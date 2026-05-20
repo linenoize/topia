@@ -51,7 +51,7 @@ describe('dispatchHook', () => {
     const io = makeIO({ stdinData: JSON.stringify({ tool_name: 'Edit' }) });
     const code = await dispatchHook(['preflight', '--gentle'], io);
     assert.strictEqual(code, 0);
-    assert.match(io.getOut(), /Topia-hook: preflight/);
+    assert.match(io.getOut(), /Topia-hook: readiness/);
     assert.match(io.getOut(), /advisory/);
     assert.match(io.getOut(), /Edit/);
   });

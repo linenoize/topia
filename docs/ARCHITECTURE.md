@@ -45,7 +45,7 @@ L4 packs are domain-specific instruction sets stored as `extensions/*/PACK.md` f
 - `team` (L1) can call other L1 orchestrators — meta-orchestration pattern.
 - *L3→L3 coordination: `context-engine` → `session-bridge`, `hallucination-guard` → `research`, `session-bridge` → `integrity-check` (documented in SKILL.md).
 
-## Mesh Protocol
+## Nexus Protocol
 
 ### Loop Prevention
 
@@ -158,11 +158,11 @@ Rules:
 | WORKSPACE | worktree |
 | GIT | git |
 | DOCUMENTS | doc-processor |
-| SECURITY | sentinel-env |
+| SECURITY | guardian-env |
 
 ## Runtime Layer
 
-The mesh ships as a **library** (invoke via slash commands) and as a **runtime** (native hooks that auto-fire on tool use). The runtime converts passive advice into enforced discipline.
+The nexus ships as a **library** (invoke via slash commands) and as a **runtime** (native hooks that auto-fire on tool use). The runtime converts passive advice into enforced discipline.
 
 ### Hook adapter registry
 
@@ -200,46 +200,47 @@ metadata:
 
 Lowercase, dot-separated: `<domain>.<event>` (e.g. `code.changed`, `tests.failed`, `deploy.complete`).
 
-### Signal Catalog
+### Pulse Catalog
 
-| Signal | Emitters | Listeners |
+| Pulse | Emitters | Listeners |
 |--------|----------|-----------|
-| `code.changed` | fix | test, sentinel, review, preflight, verification |
+| `code.changed` | fix | test, guardian, review, readiness, verification |
 | `tests.passed` | test | deploy |
 | `tests.failed` | test | debug |
-| `tdd.horizontal.violation` | test | completion-gate, preflight |
+| `tdd.horizontal.violation` | test | completion-gate, readiness |
 | `architecture.shallow.flagged` | improve-architecture, audit | surgeon, review |
 | `architecture.deletion.passed` | improve-architecture | audit |
 | `outofscope.match` | idea | review-intake, build, plan |
-| `agent.stuck` | fix, debug | scout, adversary |
+| `agent.stuck` | fix, debug | recon, adversary |
 | `oracle.dispatched` | adversary | session-bridge |
 | `oracle.response` | adversary | debug, fix |
 | `oracle.failed` | adversary, session-bridge | debug, fix |
 | `context.preview` | context-engine | adversary, team, review, audit |
-| `security.passed` | sentinel | deploy |
-| `security.blocked` | sentinel | fix, plan |
+| `security.passed` | guardian | deploy |
+| `security.blocked` | guardian | fix, plan |
 | `review.complete` | review | build |
 | `review.issues` | review | fix |
 | `plan.ready` | plan | build |
-| `codebase.scanned` | scout | plan, brainstorm |
+| `codebase.scanned` | recon | plan, brainstorm, integrate |
 | `phase.complete` | build, team | session-bridge |
 | `deploy.complete` | deploy | watchdog |
 | `bug.diagnosed` | debug | fix |
 | `docs.updated` | docs | — |
 | `audit.complete` | audit | — |
 | `db.migrated` | db | — |
-| `verification.complete` | verification | — |
-| `graft.complete" | graft | build |
-| `ideas.ready" | brainstorm | build |
-| `preflight.passed" | preflight | build |
-| `project.onboarded" | onboard | plan |
-| `incident.detected" | — | incident |
-| `output.density.set" | context-engine | *(orchestrators dynamically — build, team, rescue)* |
-| `triage.classified" | review-intake | *(observability)* |
-| `agent.brief.ready" | review-intake | *(external — issue tracker)* |
-| `outofscope.recorded" | idea, review-intake | *(observability — discovered via .out-of-scope/ file scan)* |
-| `quarantine.notice.emitted" | quarantine | sentinel, integrity-check |
-| `external.content.received" | *(external — runtime hook on `mcp__*` / WebFetch / upload-Read)* | quarantine |
+| `verification.complete` | verification | build |
+| `integrate.complete` | integrate | journal |
+| `ideas.ready` | brainstorm | build |
+| `readiness.passed` | readiness | build |
+| `readiness.blocked` | readiness | fix |
+| `project.onboarded` | onboard | plan |
+| `incident.detected` | watchdog | incident |
+| `output.density.set` | context-engine | *(orchestrators dynamically — build, team, rescue)* |
+| `triage.classified` | review-intake | *(observability)* |
+| `agent.brief.ready` | review-intake | *(external — issue tracker)* |
+| `outofscope.recorded` | idea, review-intake | *(observability — discovered via .out-of-scope/ file scan)* |
+| `quarantine.notice.emitted` | quarantine | guardian, integrity-check |
+| `external.content.received` | *(external — runtime hook on `mcp__*` / WebFetch / upload-Read)* | quarantine |
 
 ### Validation
 
@@ -248,7 +249,7 @@ Lowercase, dot-separated: `<domain>.<event>` (e.g. `code.changed`, `tests.failed
 - Unlistened emitters generate warnings (acceptable for external consumers)
 - Two whitelists for intentional exceptions:
   - `INTENTIONAL_BROADCAST_SIGNALS` — emitted but no skill listens (observability, dynamically-consumed by orchestrators).
-  - `EXTERNAL_TRIGGER_SIGNALS` — listened but no skill emits (entry points fired by users / orchestrators / hooks from outside the mesh).
+  - `EXTERNAL_TRIGGER_SIGNALS` — listened but no skill emits (entry points fired by users / orchestrators / hooks from outside the nexus).
 - Signal graph compiled into `skill-index.json` under the `signals` key
 
 ### Design Principles
@@ -258,7 +259,7 @@ Lowercase, dot-separated: `<domain>.<event>` (e.g. `code.changed`, `tests.failed
 3. **Layer-agnostic** — any skill at any layer can emit or listen
 4. **Extensible** — extension packs can declare their own signals
 
-## Cross-Hub Mesh (L2 ↔ L2)
+## Cross-Hub Nexus (L2 ↔ L2)
 
 ```
 plan ↔ brainstorm     (creative ↔ structure)

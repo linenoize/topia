@@ -1,5 +1,5 @@
 ---
-name: sentinel
+name: guardian
 description: "Automated security gatekeeper. Blocks unsafe code before commit — secret scanning, OWASP top 10, dependency audit, permission checks. A GATE, not a suggestion."
 metadata:
   author: skill-topia
@@ -12,28 +12,28 @@ metadata:
   listen: code.changed, quarantine.notice.emitted
 ---
 
-# sentinel
+# guardian
 
 ## Purpose
 
-Automated security gatekeeper that blocks unsafe code BEFORE commit. Unlike `review` which suggests improvements, sentinel is a hard gate — it BLOCKS on critical findings. Runs secret scanning, OWASP top 10 pattern detection, dependency auditing, and destructive command checks. Escalates to opus for deep security audit when critical patterns detected.
+Automated security gatekeeper that blocks unsafe code BEFORE commit. Unlike `review` which suggests improvements, guardian is a hard gate — it BLOCKS on critical findings. Runs secret scanning, OWASP top 10 pattern detection, dependency auditing, and destructive command checks. Escalates to opus for deep security audit when critical patterns detected.
 
 <HARD-GATE>
-If status is BLOCK, output the report and STOP. Do not hand off to commit. The calling skill (`build`, `preflight`, `deploy`) must halt until the developer fixes all BLOCK findings and re-runs sentinel.
+If status is BLOCK, output the report and STOP. Do not hand off to commit. The calling skill (`build`, `readiness`, `deploy`) must halt until the developer fixes all BLOCK findings and re-runs guardian.
 </HARD-GATE>
 
 ## Triggers
 
 - Called automatically by `build` before commit phase
-- Called by `preflight` as security sub-check
+- Called by `readiness` as security sub-check
 - Called by `deploy` before deployment
-- `/topia sentinel` — manual security scan
+- `/topia guardian` — manual security scan
 - Auto-trigger: when `.env`, auth files, or security-critical code is modified
 - Signal: `quarantine.notice.emitted` (from `Topia:quarantine`) — escalate when the same untrusted MCP namespace is quarantined ≥5× in a session (suggests prompt-injection attempt)
 
 ## Calls (outbound)
 
-- `scout` (L2): scan changed files to identify security-relevant code
+- `recon` (L2): scan changed files to identify security-relevant code
 - `verification` (L3): run security tools (npm audit, pip audit, cargo audit)
 - `integrity-check` (L3): agentic security validation of .topia/ state files
 - `sast` (L3): deep static analysis with Semgrep, Bandit, ESLint security rules
@@ -44,7 +44,7 @@ If status is BLOCK, output the report and STOP. Do not hand off to commit. The c
 - `build` (L1): auto-trigger before commit phase
 - `review` (L2): when security-critical code detected
 - `deploy` (L2): pre-deployment security check
-- `preflight` (L2): security sub-check in quality gate
+- `readiness` (L2): security sub-check in quality gate
 - `audit` (L2): Phase 2 full security audit
 - `incident` (L2): security dimension check during incident response
 - `review-intake` (L2): security scan on code submitted for structured review
@@ -134,7 +134,7 @@ If 3+ signals fire for a single dependency → **BLOCK** with recommendation: "C
 Scan changed files for SQL injection (string concat/interpolation in SQL) → **BLOCK**, XSS (`innerHTML`, `dangerouslySetInnerHTML` without sanitization) → **BLOCK**, CSRF (forms without token, cookies without SameSite) → **WARN**, and missing input validation (raw `req.body` → DB) → **WARN**. Load reference for code examples and precise detection signals.
 
 ### Step 3.5 — Skill Content Security Guard
-<MUST-READ path="references/skill-content-guard.md" trigger="When sentinel is invoked on any SKILL.md, PACK.md, or .topia/*.md file — load all 28 category rules before scanning"/>
+<MUST-READ path="references/skill-content-guard.md" trigger="When guardian is invoked on any SKILL.md, PACK.md, or .topia/*.md file — load all 28 category rules before scanning"/>
 
 When invoked on `SKILL.md`, `extensions/*/PACK.md`, `.topia/*.md`, or agent files, scan content for 28 compiled regex rule categories BEFORE it is written or committed. First-match-wins — report the triggering category and halt. Safe exceptions apply for documented anti-pattern examples and scripts in `scripts/` directory. Invoke from `skill-forge` Phase 7 pre-ship check and from any hook writing to skill files.
 
@@ -226,7 +226,7 @@ The injected block has this shape:
 - ...
 
 ### Governance Settings
-- sentinel: enforce mode
+- guardian: enforce mode
 - ...
 </ORG-POLICY>
 ```
@@ -245,9 +245,9 @@ The injected block has this shape:
 | `staging_required: Yes` | If deploy target is production without prior staging deploy in audit log | BLOCK |
 
 3. Honor `Governance Settings`:
-   - `sentinel: enforce mode` → all findings BLOCK; no Six-Gate downgrades for org-policy violations
-   - `sentinel: warn mode` → findings WARN
-   - `sentinel: advisory` → findings INFO
+   - `guardian: enforce mode` → all findings BLOCK; no Six-Gate downgrades for org-policy violations
+   - `guardian: warn mode` → findings WARN
+   - `guardian: advisory` → findings INFO
 
 4. Org-policy violations are NOT subject to Six-Gate downgrading when governance is `enforce`. They are organizational invariants, not security heuristics.
 
@@ -310,7 +310,7 @@ Aggregate all findings across all steps. Verdict rules:
 - Only **INFO** → overall status = **PASS**.
 
 <HARD-GATE>
-If status is BLOCK, output the report and STOP. The calling skill (build, preflight, deploy) must halt until all BLOCK findings are fixed and sentinel re-runs.
+If status is BLOCK, output the report and STOP. The calling skill (build, preflight, deploy) must halt until all BLOCK findings are fixed and guardian re-runs.
 </HARD-GATE>
 
 ### WARN Acknowledgment Protocol
@@ -320,7 +320,7 @@ WARN findings do not block but MUST be explicitly acknowledged:
 ```
 For each WARN item, developer must respond with one of:
   - "ack" — acknowledged, will fix later (logged to .topia/decisions.md)
-  - "fix" — fixing now (sentinel re-runs after fix)
+  - "fix" — fixing now (guardian re-runs after fix)
   - "wontfix [reason]" — intentional, with documented reason
 
 Silent continuation past WARN = VIOLATION.

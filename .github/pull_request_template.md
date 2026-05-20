@@ -27,10 +27,10 @@
 - [ ] L3 (utility)
 - [ ] L4 (extension pack)
 
-## Mesh impact
+## Nexus impact
 
-- [ ] Added/changed `emit:` or `listen:` signals — documented in [`docs/SIGNALS.md`](../docs/SIGNALS.md)
-- [ ] No mesh impact
+- [ ] Added/changed `emit:` or `listen:` pulses — documented in [`docs/PULSES.md`](../docs/PULSES.md)
+- [ ] No nexus impact
 
 ## Checklist
 
@@ -38,7 +38,7 @@
 - [ ] `npm run lint` passes (or `npm run lint:fix` applied)
 - [ ] `node scripts/validate-skills.js` passes
 - [ ] `node scripts/validate-signals.js` passes (if signals changed)
-- [ ] `node scripts/validate-mesh.js` passes (if connections changed)
+- [ ] `node scripts/validate-nexus.js` passes (if connections changed)
 - [ ] For new skills: `SKILL.md` follows [`docs/SKILL-TEMPLATE.md`](../docs/SKILL-TEMPLATE.md)
 - [ ] For new packs: `PACK.md` follows [`docs/EXTENSION-TEMPLATE.md`](../docs/EXTENSION-TEMPLATE.md)
 - [ ] Version bumped in `package.json` if shipping a new release

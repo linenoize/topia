@@ -1,6 +1,6 @@
 # Mode Decision Tree
 
-Auto-select the optimal graft mode when user doesn't specify explicitly.
+Auto-select the optimal integrate mode when user doesn't specify explicitly.
 
 ## Decision Flow
 
@@ -14,7 +14,7 @@ Auto-select the optimal graft mode when user doesn't specify explicitly.
    → YES: continue
 
 3. Source code has quality issues? (anti-patterns, no types, no tests)
-   → YES: improve mode (fix issues during graft)
+   → YES: improve mode (fix issues during integration)
    → NO: continue
 
 4. User wants exact replica? (says "exact", "as-is", "copy")

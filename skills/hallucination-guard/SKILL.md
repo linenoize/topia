@@ -20,7 +20,7 @@ Post-generation validation that verifies AI-generated code references actually e
 
 - Called by `build` after code generation, before commit
 - Called by `fix` after applying fixes
-- Called by `preflight` as import verification sub-check
+- Called by `readiness` as import verification sub-check
 - Called by `review` during code review
 - Auto-trigger: when new import statements are added to codebase
 
@@ -33,7 +33,7 @@ Post-generation validation that verifies AI-generated code references actually e
 
 - `build` (L1): after code generation, before commit
 - `fix` (L2): after applying fixes
-- `preflight` (L2): import verification sub-check
+- `readiness` (L2): import verification sub-check
 - `review` (L2): during code review
 - `db` (L2): verify SQL syntax and ORM method calls are real
 - `review-intake` (L2): verify imports in code submitted for review

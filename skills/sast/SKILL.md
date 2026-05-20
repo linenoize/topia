@@ -14,13 +14,13 @@ metadata:
 
 ## Purpose
 
-Unified static analysis tool runner. While `sentinel` does regex-based security pattern matching and `verification` runs lint/type/test/build, SAST goes deeper — running dedicated static analysis tools that understand data flow, taint tracking, and language-specific vulnerability patterns.
+Unified static analysis tool runner. While `guardian` does regex-based security pattern matching and `verification` runs lint/type/test/build, SAST goes deeper — running dedicated static analysis tools that understand data flow, taint tracking, and language-specific vulnerability patterns.
 
 Sentinel catches obvious patterns (hardcoded secrets, SQL string concat). SAST catches subtle ones (tainted data flowing through 3 function calls to a sink, unsafe deserialization behind a wrapper).
 
 ## Triggers
 
-- Called by `sentinel` (L2) when deep analysis needed beyond pattern matching
+- Called by `guardian` (L2) when deep analysis needed beyond pattern matching
 - Called by `audit` (L2) during security dimension assessment
 - Called by `build` (L1) on security-sensitive code (auth, crypto, payments)
 - `/topia sast` — manual static analysis scan
@@ -31,7 +31,7 @@ None — pure runner using Bash for all tools.
 
 ## Called By (inbound)
 
-- `sentinel` (L2): deep analysis beyond regex patterns
+- `guardian` (L2): deep analysis beyond regex patterns
 - `audit` (L2): security dimension in full audit
 - `build` (L1): security-sensitive code paths
 - `review` (L2): when security patterns detected in diff

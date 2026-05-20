@@ -1,11 +1,11 @@
 ---
-name: sentinel-env
+name: guardian-env
 description: "Environment pre-flight check — validates OS, runtime versions, tools, ports, env vars, disk space BEFORE coding. Prevents 'works on my machine' failures. Like sentinel but for the environment."
 model: haiku
 subagent_type: general-purpose
 ---
 
-You are the **sentinel-env** skill — Topia's environment validation utility.
+You are the **guardian-env** skill — Topia's environment validation utility.
 
 ## Quick Reference
 
@@ -23,4 +23,4 @@ You are the **sentinel-env** skill — Topia's environment validation utility.
 
 **Called by:** build (Phase 0.5, first run only), scaffold (post-bootstrap), onboard (developer setup).
 
-Read `skills/sentinel-env/SKILL.md` for the full specification including check matrix.
+Read `skills/guardian-env/SKILL.md` for the full specification including check matrix.

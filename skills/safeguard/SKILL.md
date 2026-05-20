@@ -27,7 +27,7 @@ Characterization tests MUST pass on the current (unmodified) code before any ref
 
 ## Calls (outbound)
 
-- `scout` (L2): find all entry points and public interfaces of the target module
+- `recon` (L2): find all entry points and public interfaces of the target module
 - `test` (L2): write and run characterization tests for the target module
 - `verification` (L3): verify characterization tests pass on current code
 
@@ -39,7 +39,7 @@ Characterization tests MUST pass on the current (unmodified) code before any ref
 
 ### Step 1 — Identify module boundaries
 
-Call `Topia:scout` targeting the specific module. Ask scout to return:
+Call `Topia:recon` targeting the specific module. Ask scout to return:
 - All public functions, classes, and exported symbols
 - All files that import from this module (consumers)
 - All files this module imports from (dependencies)

@@ -1,7 +1,7 @@
-// Topia Pre-Tool Guard Hook — Privacy Mesh
+// Topia Pre-Tool Guard Hook — Privacy Nexus
 // Three-tier security gate: ALLOW / WARN / BLOCK
 // Configurable via .topia/privacy.json per project
-// Skill-aware: sentinel/review can access files other skills cannot
+// Skill-aware: guardian/review can access files other skills cannot
 //
 // Upgrades over basic path matching:
 // - Per-project .topia/privacy.json config (custom patterns + overrides)
@@ -87,7 +87,7 @@ process.stdin.on('end', () => {
 
   const isBlocked = blockPatterns.some((p) => p.test(basename) || p.test(normalized));
   if (isBlocked) {
-    console.log(`\n🚫 [Topia privacy-mesh] BLOCKED: ${filePath}`);
+    console.log(`\n🚫 [Topia privacy-nexus] BLOCKED: ${filePath}`);
     console.log('  This file matches a BLOCK-tier pattern (private keys, certificates).');
     console.log('  Override: add path to .topia/privacy.json "allow" list if intentional.\n');
     process.exit(2); // Exit code 2 = BLOCK
@@ -98,7 +98,7 @@ process.stdin.on('end', () => {
     // Content-aware check: scan first 4KB for secret patterns
     const contentWarning = scanContentForSecrets(filePath);
 
-    console.log(`\n⚠ [Topia privacy-mesh] Sensitive file: ${filePath}`);
+    console.log(`\n⚠ [Topia privacy-nexus] Sensitive file: ${filePath}`);
     if (contentWarning) {
       console.log(`  Content scan: ${contentWarning}`);
     }

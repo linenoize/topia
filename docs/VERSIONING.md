@@ -11,10 +11,10 @@ The Topia plugin uses semantic versioning (`MAJOR.MINOR.PATCH`):
 | Version | When to bump | Example |
 |---------|-------------|---------|
 | **PATCH** (`1.0.N`) | Bug fixes, content corrections in SKILL.md | Fixing a wrong command in `verification`, correcting a Sharp Edge |
-| **MINOR** (`1.N.0`) | New features, new connections, new sections added | Adding a new `## Done When` condition, new mesh connection |
+| **MINOR** (`1.N.0`) | New features, new connections, new sections added | Adding a new `## Done When` condition, new nexus synapse |
 | **MAJOR** (`N.0.0`) | Breaking change to skill interface or output contract | Renaming a skill, changing output format structure, removing a section |
 
-**Current version:** `2.17.1` (Unified mesh architecture)
+**Current version:** `2.17.1` (Unified nexus architecture)
 
 ---
 
@@ -23,7 +23,7 @@ The Topia plugin uses semantic versioning (`MAJOR.MINOR.PATCH`):
 A breaking change is any modification that would cause a **calling skill to fail or produce incorrect output** without code changes on its end.
 
 ### Breaking (MAJOR bump required)
-- Renaming a skill (e.g., `sentinel` → `security-guard`)
+- Renaming a skill (e.g., `guardian` → `security-guard`)
 - Changing the structure of `## Output Format` in a way callers depend on
 - Removing a section that callers parse (e.g., removing `## Calls`)
 - Changing skill layer assignment (L2 → L3 changes invocation context)
@@ -60,7 +60,7 @@ L4 packs start at `0.1.0` (experimental). When stable:
 - Minor bumps = new skills added to pack (additive, non-breaking)
 - Major bumps = skill renamed, removed, or output format changed
 
-**L4 packs MUST NOT change their mesh connection interface (how they connect to L1-V3 core) in a patch release.** Connection changes are at minimum a minor version bump.
+**L4 packs MUST NOT change their nexus synapse interface (how they connect to L1-V3 core) in a patch release.** Connection changes are at minimum a minor version bump.
 
 ---
 

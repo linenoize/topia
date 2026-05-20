@@ -72,7 +72,7 @@ test('generateHeader produces valid markdown', () => {
 
 test('generateFooter includes Topia branding', () => {
   const footer = openclaw.generateFooter();
-  assert.ok(footer.includes('Topia Skill Mesh'));
+  assert.ok(footer.includes('Topia Nexus'));
   assert.ok(footer.includes('github.com/protopia/skill-topia'));
 });
 

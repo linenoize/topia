@@ -63,18 +63,18 @@ describe('windsurf adapter', () => {
     assert.strictEqual(result.written, true);
     const workflows = await readdir(path.join(tmpRoot, WF_DIR));
     const rules = await readdir(path.join(tmpRoot, RULES_DIR));
-    assert.ok(workflows.includes('Topia-preflight.md'));
-    assert.ok(workflows.includes('Topia-sentinel.md'));
+    assert.ok(workflows.includes('Topia-readiness.md'));
+    assert.ok(workflows.includes('Topia-guardian.md'));
     assert.ok(workflows.includes('Topia-dependency-doctor.md'));
-    assert.ok(rules.includes('Topia-preflight-rule.md'));
+    assert.ok(rules.includes('Topia-readiness-rule.md'));
   });
 
   test('idempotent re-install', async () => {
     await seedWindsurf(tmpRoot);
     await installHooks(tmpRoot, { preset: 'gentle', platform: 'windsurf' });
-    const first = await readFile(path.join(tmpRoot, WF_DIR, 'Topia-preflight.md'), 'utf-8');
+    const first = await readFile(path.join(tmpRoot, WF_DIR, 'Topia-readiness.md'), 'utf-8');
     await installHooks(tmpRoot, { preset: 'gentle', platform: 'windsurf' });
-    const second = await readFile(path.join(tmpRoot, WF_DIR, 'Topia-preflight.md'), 'utf-8');
+    const second = await readFile(path.join(tmpRoot, WF_DIR, 'Topia-readiness.md'), 'utf-8');
     assert.strictEqual(first, second);
   });
 
@@ -105,13 +105,13 @@ describe('windsurf adapter', () => {
     const r = result.results.find((x) => x.platform === 'windsurf');
     assert.strictEqual(r.installed, true);
     assert.strictEqual(r.preset, 'gentle');
-    assert.ok(r.wired.includes('preflight'));
+    assert.ok(r.wired.includes('readiness'));
   });
 
   test('status reports missing when .windsurf absent', async () => {
     const result = await hookStatus(tmpRoot, Topia_ROOT, { platform: 'windsurf' });
     const r = result.results.find((x) => x.platform === 'windsurf');
     assert.strictEqual(r.installed, false);
-    assert.ok(r.missing.includes('preflight'));
+    assert.ok(r.missing.includes('readiness'));
   });
 });

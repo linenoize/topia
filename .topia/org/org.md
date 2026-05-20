@@ -1,13 +1,13 @@
 ---
 name: skill-topia
-description: "Internal team / org configuration for the skill-topia project. Fill in the fields below; `sentinel` and `preflight` consume this at compile time and enforce its rules as runtime gates."
+description: "Internal team / org configuration for the skill-topia project. Fill in the fields below; `guardian` and `readiness` consume this at compile time and enforce its rules as runtime gates."
 version: "1.0.0"
 ---
 
 # Organization: skill-topia
 
 > **What is this file?** Your team's policies, roles, approval flows, and
-> governance level — read at compile time by `sentinel` and `preflight` and
+> governance level — read at compile time by `guardian` and `readiness` and
 > baked into their runtime hooks. See [`docs/ORG-CONFIG.md`](../../docs/ORG-CONFIG.md)
 > for what each section drives and when to edit it.
 >
@@ -31,7 +31,7 @@ version: "1.0.0"
 | Role | Permissions | Approval Authority |
 |------|-------------|--------------------|
 | admin | all | Can override any gate (preflight / sentinel / completion-gate) |
-| maintainer | write | Approves PRs, runs `/topia deploy`, cannot override `sentinel` BLOCK |
+| maintainer | write | Approves PRs, runs `/topia deploy`, cannot override `guardian` BLOCK |
 | contributor | write | Opens PRs, runs `/topia build`, cannot self-merge |
 | reviewer | read + comment | Reviews PRs; flagged on every `/topia review` finding |
 
@@ -47,7 +47,7 @@ version: "1.0.0"
 - **Dependency audit frequency**: Weekly (`/topia dependency-doctor`)
 - **Secret rotation**: Quarterly
 - **CVE response SLA**: 7 days for HIGH / CRITICAL, 30 days for MEDIUM
-- **OWASP scan on every PR**: Yes (auto via `sentinel`)
+- **OWASP scan on every PR**: Yes (auto via `guardian`)
 - **Allowed-deps registry**: see `.topia/allowed-deps.json` _(create if needed)_
 
 ### Deployment
@@ -95,8 +95,8 @@ Governance levels Topia recognises:
 - **Loose** — gates advise only; everything is opt-in. Suitable for prototypes.
 
 For this org:
-- `sentinel`: **enforce mode** — BLOCK on secrets, OWASP critical, CVE HIGH+
-- `preflight`: **enforce mode** — BLOCK on logic gaps, missing tests, regressions
+- `guardian`: **enforce mode** — BLOCK on secrets, OWASP critical, CVE HIGH+
+- `readiness`: **enforce mode** — BLOCK on logic gaps, missing tests, regressions
 - `completion-gate`: **enforce mode** — BLOCK if agent claims lack evidence
 - `quarantine`: **advisory** — print warnings, do not block
 - `scope-guard`: **advisory** — flag drift, do not block

@@ -42,7 +42,7 @@ Verify install:
 npx @protopia/skill-topia doctor
 ```
 
-You should see: `✓ 65 skills, 10 packs, mesh valid`.
+You should see: `✓ 65 skills, 10 packs, nexus valid`.
 
 ---
 
@@ -80,7 +80,7 @@ Compare vanilla AI coding vs Topia:
 |---------|-----------|
 | Claude writes code first | `scout` reads codebase first |
 | Tests written last (or skipped) | `test` writes FAILING tests first (enforced) |
-| Commit whenever | `preflight` + `sentinel` must pass |
+| Commit whenever | `readiness` + `guardian` must pass |
 | "Looks done" = done | `completion-gate` validates evidence |
 
 **The toolkit makes Claude disciplined.** Not smarter — just less sloppy.
@@ -100,22 +100,22 @@ Presets:
 - `strict` — blocks commits that fail gates
 - `off`    → uninstall
 
-Now `preflight`, `sentinel`, and `completion-gate` auto-fire on every file edit. No more "remember to invoke the skill."
+Now `readiness`, `guardian`, and `completion-gate` auto-fire on every file edit. No more "remember to invoke the skill."
 
 ---
 
-## Step 5: Explore the Mesh
+## Step 5: Explore the Nexus
 
 ```bash
 npx @protopia/skill-topia status       # project health dashboard (neofetch-style)
-npx @protopia/skill-topia visualize    # interactive mesh graph (Canvas 2D)
-npx @protopia/skill-topia doctor       # validate install + mesh integrity
+npx @protopia/skill-topia visualize    # interactive nexus graph (Canvas 2D)
+npx @protopia/skill-topia doctor       # validate install + nexus integrity
 ```
 
 Read next:
 - [`SKILLS.md`](SKILLS.md) — all 65 skills, categorized by intent
 - [`ARCHITECTURE.md`](ARCHITECTURE.md) — 5-layer architecture reference
-- [`SIGNALS.md`](SIGNALS.md) — how skills auto-trigger each other
+- [`PULSES.md`](PULSES.md) — how skills auto-trigger each other
 - [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) — stuck? common fixes here
 
 ---

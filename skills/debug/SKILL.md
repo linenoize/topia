@@ -1,6 +1,6 @@
 ---
 name: debug
-description: "Root cause analysis for bugs and unexpected behavior. Traces errors through code, uses structured reasoning, and hands off to fix when cause is found. Core of the debug↔fix mesh."
+description: "Root cause analysis for bugs and unexpected behavior. Traces errors through code, uses structured reasoning, and hands off to fix when cause is found. Core of the debug↔fix chain."
 metadata:
   author: skill-topia
   version: "1.2.0"
@@ -38,7 +38,7 @@ If root cause cannot be identified after 3 hypothesis cycles:
 
 ## Calls (outbound)
 
-- `scout` (L2): find related code, trace imports, identify affected modules
+- `recon` (L2): find related code, trace imports, identify affected modules
 - `fix` (L2): when root cause found, hand off with diagnosis for fix application
 - `brainstorm` (L2): 3-Fix Escalation when root cause is "wrong approach" — invoke with mode="rescue" for category-diverse alternatives
 - `plan` (L2): 3-Fix Escalation when root cause is "wrong module design" — invoke for redesign
@@ -108,7 +108,7 @@ Use tools to collect facts — do NOT guess yet.
 - Use `Read` to examine stack trace files, log files, or the specific file:line mentioned
 - Use `Glob` to find related files (config, types, tests) that may be involved
 - Use `Topia:browser-pilot` if the issue is UI-related (console errors, network failures, visual bugs)
-- Use `Topia:scout` to trace imports and identify all modules touched by the affected code path
+- Use `Topia:recon` to trace imports and identify all modules touched by the affected code path
 
 #### Backward Tracing (for deep stack errors)
 

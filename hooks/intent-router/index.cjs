@@ -1,10 +1,10 @@
-// Topia Intent Router Hook — Compiled Intent Mesh (CIM)
+// Topia Intent Router Hook — Compiled Intent Nexus (CIN)
 // Auto-suggests skill routing based on user prompt analysis
 // Runs as UserPromptSubmit hook — scores prompt against compiled skill-index.json
 //
 // Key difference from runtime scoring approaches:
 // - Compile-time generated index (zero runtime deps)
-// - Mesh-aware chain prediction (uses actual connection graph)
+// - Nexus-aware chain prediction (uses actual connection graph)
 // - Works on all platforms (index ships with every build)
 
 const fs = require('fs');

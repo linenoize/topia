@@ -78,7 +78,7 @@ Without this skill, each project is an island. With it, a caching pattern discov
 - `fix` (L2): after fix verified — capture fix pattern (cause → solution)
 - `review` (L2): after review complete — capture code quality insight
 - `plan` (L2): before architecture decisions — recall past decisions on similar problems
-- `sentinel` (L2): after security finding — capture vulnerability pattern
+- `guardian` (L2): after security finding — capture vulnerability pattern
 - `incident` (L2): after resolution — capture incident root cause + fix
 - `retro` (L2): during retrospective — capture retro insights and patterns
 - `session-bridge` (L3): Step 6 (cross-project extraction) — extract generalizable patterns

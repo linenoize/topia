@@ -20,7 +20,7 @@ tools:
 
 ## Purpose
 
-@Topia/security delivers manual-grade security analysis for teams that need more than an automated gate. Where `sentinel` (L2) runs fast checks on every commit, this pack runs thorough, on-demand audits: threat modeling entire auth flows, mapping real attack surfaces, designing vault strategies, auditing supply chain integrity, hardening API surfaces, enforcing multi-layer validation, and producing compliance audit trails. All seven skills share the same threat mindset — assume breach, prove safety, document evidence.
+@Topia/security delivers manual-grade security analysis for teams that need more than an automated gate. Where `guardian` (L2) runs fast checks on every commit, this pack runs thorough, on-demand audits: threat modeling entire auth flows, mapping real attack surfaces, designing vault strategies, auditing supply chain integrity, hardening API surfaces, enforcing multi-layer validation, and producing compliance audit trails. All seven skills share the same threat mindset — assume breach, prove safety, document evidence.
 
 ## Triggers
 
@@ -78,7 +78,7 @@ Called By ← deploy (L2): pre-release security gate when security scope active
 
 ## Difference from sentinel
 
-`sentinel` = lightweight automated gate (every commit, fast, cheap, blocks bad merges)
+`guardian` = lightweight automated gate (every commit, fast, cheap, blocks bad merges)
 `@Topia/security` = deep manual-grade audit (on-demand, thorough, expensive, produces audit-ready reports)
 
 sentinel catches: known CVEs in deps, hardcoded secrets, obvious injection patterns.

@@ -40,7 +40,7 @@ Team uploads existing policy doc (often already written for audit purposes) → 
      ↓
 [4. Validate] — check for conflicts, missing patterns, ambiguous scope
      ↓
-[5. Persist] — save to .topia/sentinel/policies/[policy-name].yaml
+[5. Persist] — save to .topia/guardian/policies/[policy-name].yaml
      ↓
 [6. Activate] — Sentinel loads on every check cycle
 ```
@@ -67,7 +67,7 @@ Ignore procedural text, approvals, and organizational information.
 
 **Persisted policy file location:**
 ```
-.topia/sentinel/policies/
+.topia/guardian/policies/
   security-baseline.yaml
   code-quality.yaml
   compliance-soc2.yaml
@@ -192,7 +192,7 @@ block > require > warn
 ```
 
 **Multiple policies stacking:**
-All active policy files in `.topia/sentinel/policies/` are loaded and merged. Constraints with the same `id` in a project-level policy override org-level. All `block` constraints from any policy are enforced — there is no way to un-block at a lower tier.
+All active policy files in `.topia/guardian/policies/` are loaded and merged. Constraints with the same `id` in a project-level policy override org-level. All `block` constraints from any policy are enforced — there is no way to un-block at a lower tier.
 
 **Conflict resolution:**
 If two policies disagree (one requires a pattern, another blocks it), Sentinel halts and surfaces the conflict. It does not silently pick a winner.
@@ -211,7 +211,7 @@ A policy document can disable entire Topia skills, not just code patterns.
 
 **Disabled skills config:**
 ```yaml
-# .topia/sentinel/disabled-skills.yaml
+# .topia/guardian/disabled-skills.yaml
 disabled:
   - skill: Topia:deploy
     reason: "Code freeze in effect — Security Policy v4, Section 2.3"
@@ -237,7 +237,7 @@ To re-enable: update or remove the policy, or wait for expiry (2026-04-15).
 ## 6. Policy Lifecycle
 
 **Versioning:**
-Each policy file includes a version field. Re-parsing a document creates a new version; previous versions are retained in `.topia/sentinel/policies/history/`.
+Each policy file includes a version field. Re-parsing a document creates a new version; previous versions are retained in `.topia/guardian/policies/history/`.
 
 ```yaml
 # Header of every policy file
@@ -260,7 +260,7 @@ Configurable per project in `.topia/config.yaml` via `policy_override_direction`
 Policies and individual constraints support `expires` timestamps. Sentinel checks expiry on load and deactivates expired rules automatically. Useful for temporary incident lockdowns.
 
 **Audit trail:**
-Every enforcement event is appended to `.topia/sentinel/audit.log`:
+Every enforcement event is appended to `.topia/guardian/audit.log`:
 ```
 2026-03-31T10:42:11Z | BLOCK | constraint-002 | Bash | "git push --force origin main" | security-baseline v1.2.0
 2026-03-31T10:43:05Z | WARN  | warn-001 | Edit | src/api/users.ts | TODO comment on line 47
@@ -270,7 +270,7 @@ Every enforcement event is appended to `.topia/sentinel/audit.log`:
 
 ## 7. Bootstrap Policies
 
-Ready-to-use templates. Copy to `.topia/sentinel/policies/` to activate.
+Ready-to-use templates. Copy to `.topia/guardian/policies/` to activate.
 
 **security-baseline.yaml:**
 ```yaml
@@ -387,19 +387,19 @@ version: "0.9.0"
 
 signals:
   emit:
-    - sentinel.constraint.blocked
+    - guardian.constraint.blocked
         # payload: { constraint_id, scope, matched_pattern, action_attempted, policy_source }
-    - sentinel.constraint.warned
+    - guardian.constraint.warned
         # payload: { constraint_id, scope, message, severity }
-    - sentinel.constraint.required_missing
+    - guardian.constraint.required_missing
         # payload: { constraint_id, missing_artifact, blocking_action }
-    - sentinel.policy.loaded
+    - guardian.policy.loaded
         # payload: { policy_name, version, constraint_count, active }
-    - sentinel.policy.expired
+    - guardian.policy.expired
         # payload: { policy_name, expired_at }
-    - sentinel.skill.disabled
+    - guardian.skill.disabled
         # payload: { skill, reason, policy_source, expires }
-    - sentinel.audit.logged
+    - guardian.audit.logged
         # payload: { event_type, constraint_id, tool, detail, timestamp }
 
   listen:
@@ -407,7 +407,7 @@ signals:
         # re-run constraint load in case policies changed between phases
     - skill_router.skill.requested
         # intercept before routing — check disabled-skills list
-    - preflight.check.requested
+    - readiness.check.requested
         # piggyback on preflight to surface active policy summary
     - scaffold.file.creating
         # validate new file paths against file_pattern constraints before write

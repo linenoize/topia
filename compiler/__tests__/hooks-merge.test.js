@@ -19,8 +19,8 @@ describe('isTopiaManaged', () => {
 
   test('T3: matches the exact @protopia/skill-topia hook-dispatch invocation', () => {
     const truePositives = [
-      'npx --yes @protopia/skill-topia hook-dispatch preflight',
-      'npx @protopia/skill-topia hook-dispatch sentinel',
+      'npx --yes @protopia/skill-topia hook-dispatch readiness',
+      'npx @protopia/skill-topia hook-dispatch guardian',
       'npx --yes @protopia/skill-topia hook-dispatch completion-gate --gentle',
     ];
     for (const cmd of truePositives) {
@@ -36,7 +36,7 @@ describe('buildPreset', () => {
     assert.ok(preset.hooks.PostToolUse);
     assert.ok(preset.hooks.Stop);
     const editGroup = preset.hooks.PreToolUse.find((g) => g.matcher === 'Edit|Write');
-    assert.ok(editGroup.hooks[0].command.includes('preflight'));
+    assert.ok(editGroup.hooks[0].command.includes('readiness'));
     assert.ok(editGroup.hooks[0].command.includes('--gentle'));
   });
 
@@ -72,7 +72,7 @@ describe('stripTopiaHooks', () => {
           {
             matcher: 'Edit|Write',
             hooks: [
-              { type: 'command', command: 'npx --yes @protopia/skill-topia hook-dispatch preflight --gentle' },
+              { type: 'command', command: 'npx --yes @protopia/skill-topia hook-dispatch readiness --gentle' },
               { type: 'command', command: 'my-custom-hook.sh' },
             ],
           },
@@ -141,7 +141,7 @@ describe('mergePreset', () => {
     const commands = editGroup.hooks.map((h) => h.command);
     assert.ok(commands.includes('user-lint.sh'), 'user hook preserved');
     assert.ok(
-      commands.some((c) => c.includes('preflight') && !c.includes('--gentle')),
+      commands.some((c) => c.includes('readiness') && !c.includes('--gentle')),
       'strict preflight installed',
     );
     assert.ok(!commands.some((c) => c.includes('--gentle')), 'no gentle entries remain');
@@ -163,7 +163,7 @@ describe('mergePreset', () => {
     const groups = merged.hooks.PreToolUse.filter((g) => g.matcher === 'Edit|Write');
     assert.strictEqual(groups.length, 1, 'no duplicate matcher group');
     assert.ok(groups[0].hooks.some((h) => h.command === 'user-guard.sh'));
-    assert.ok(groups[0].hooks.some((h) => h.command.includes('preflight')));
+    assert.ok(groups[0].hooks.some((h) => h.command.includes('readiness')));
   });
 });
 
@@ -172,8 +172,8 @@ describe('summarizeTopiaHooks', () => {
     const merged = mergePreset({}, buildPreset('gentle'));
     const summary = summarizeTopiaHooks(merged);
     assert.strictEqual(summary.total, 5);
-    assert.ok(summary.events.PreToolUse.includes('preflight'));
-    assert.ok(summary.events.PreToolUse.includes('sentinel'));
+    assert.ok(summary.events.PreToolUse.includes('readiness'));
+    assert.ok(summary.events.PreToolUse.includes('guardian'));
     assert.ok(summary.events.PostToolUse.includes('dependency-doctor'));
     assert.ok(summary.events.PostToolUse.includes('quarantine'));
     assert.ok(summary.events.Stop.includes('completion-gate'));
@@ -197,7 +197,7 @@ describe('detectPreset', () => {
     // manually inject a strict entry
     mixed.hooks.Stop[0].hooks.push({
       type: 'command',
-      command: 'npx --yes @protopia/skill-topia hook-dispatch sentinel',
+      command: 'npx --yes @protopia/skill-topia hook-dispatch guardian',
     });
     assert.strictEqual(detectPreset(mixed), 'mixed');
   });

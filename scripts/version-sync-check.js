@@ -99,8 +99,8 @@ if (existsSync(skillsDir2)) {
     { path: 'docs/index.html', pattern: /data-target="(\d+)"[\s\S]*?Core Skills/m },
     { path: 'docs/index.html', pattern: /(\d+) core skills \(L0/ },
     { path: 'docs/index.html', pattern: /Core dev skills \((\d+)\)/ },
-    { path: 'README.md', pattern: /^\s*(\d+) skills · \d+\+ mesh/m },
-    { path: 'README.md', pattern: /topia is a \*\*mesh\*\* — (\d+) skills/ },
+    { path: 'README.md', pattern: /^\s*(\d+) skills · \d+ synapses/m },
+    { path: 'README.md', pattern: /Topia Nexus|(\d+) skills · \d+ synapses/ },
     { path: 'CLAUDE.md', pattern: /(\d+) core skills built/ },
     { path: 'docs/VISION.md', pattern: /topia = (\d+) skills × \d+\+ bidirectional/ },
     // dashboard.html lives at workspace root, not Free root — checked separately below

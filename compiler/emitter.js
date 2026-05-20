@@ -264,7 +264,7 @@ async function loadOrgConfig(TopiaRoot) {
 }
 
 /**
- * Generate <ORG-POLICY> block from org config for injection into sentinel/preflight.
+ * Generate <ORG-POLICY> block from org config for injection into guardian/preflight.
  */
 function buildOrgPolicyBlock(orgConfig, targetSkill) {
   if (!orgConfig) return null;
@@ -273,7 +273,7 @@ function buildOrgPolicyBlock(orgConfig, targetSkill) {
   lines.push(`\n\n<!-- Topia: Organization Policy (${orgConfig.name}) -->`);
   lines.push(`<ORG-POLICY template="${orgConfig.name}" governance="${orgConfig.governanceLevel.level}">`);
 
-  if (targetSkill === 'sentinel') {
+  if (targetSkill === 'guardian' || targetSkill === 'sentinel') {
     // Inject security + code review + deployment policies
     const security = orgConfig.policies.security || [];
     const codeReview = orgConfig.policies.code_review || [];
@@ -297,7 +297,7 @@ function buildOrgPolicyBlock(orgConfig, targetSkill) {
         lines.push(`- **${rule.key}**: ${rule.value}`);
       }
     }
-  } else if (targetSkill === 'preflight') {
+  } else if (targetSkill === 'readiness' || targetSkill === 'preflight') {
     // Inject code review + deployment + approval flows
     const codeReview = orgConfig.policies.code_review || [];
     const deployment = orgConfig.policies.deployment || [];
@@ -443,8 +443,8 @@ function outputFileName(skillName, adapter) {
         stats.injectionsApplied += count;
       }
 
-      // Inject org policies into sentinel/preflight (Business feature)
-      if (orgConfig && (parsed.name === 'sentinel' || parsed.name === 'preflight')) {
+      // Inject org policies into guardian/preflight (Business feature)
+      if (orgConfig && (parsed.name === 'guardian' || parsed.name === 'readiness')) {
         const orgBlock = buildOrgPolicyBlock(orgConfig, parsed.name);
         if (orgBlock) {
           finalBody += orgBlock;
@@ -598,7 +598,7 @@ function outputFileName(skillName, adapter) {
   await writeFile(path.join(outputDir, indexFileName), indexContent, 'utf-8');
   stats.files.push(indexFileName);
 
-  // Generate skill-index.json — compiled intent mesh for auto-trigger hooks
+  // Generate skill-index.json — compiled intent graph for auto-trigger hooks
   const skillIndex = generateSkillIndex(parsedSkills);
   await writeFile(path.join(outputDir, 'skill-index.json'), `${JSON.stringify(skillIndex, null, 2)}\n`, 'utf-8');
   stats.files.push('skill-index.json');
@@ -672,7 +672,7 @@ function generateIndex(stats, adapter) {
     lines.push('## Extension Packs', '', ...extFiles.map((f) => `- ${f}`), '');
   }
 
-  lines.push('---', '> Topia Skill Mesh — https://github.com/protopia/skill-topia');
+  lines.push('---', '> Topia Nexus — https://github.com/protopia/skill-topia');
 
   return lines.join('\n');
 }
@@ -705,7 +705,7 @@ function generateAgentsMd(stats, adapter) {
     `Skills are located in: ${adapter.outputDir}/`,
     '',
     '---',
-    '> Topia Skill Mesh — https://github.com/protopia/skill-topia',
+    '> Topia Nexus — https://github.com/protopia/skill-topia',
     '',
   ];
 
@@ -728,8 +728,8 @@ const INTENT_KEYWORDS = {
   fix: ['fix', 'patch', 'hotfix', 'resolve', 'repair'],
   test: ['test', 'tdd', 'coverage', 'unit test', 'e2e', 'spec'],
   review: ['review', 'code review', 'check quality', 'audit code'],
-  sentinel: ['security', 'vulnerability', 'owasp', 'secret', 'audit security'],
-  preflight: ['pre-commit', 'quality gate', 'check before'],
+  guardian: ['security', 'vulnerability', 'owasp', 'secret', 'audit security'],
+  readiness: ['pre-commit', 'quality gate', 'check before'],
   deploy: ['deploy', 'ci/cd', 'pipeline', 'kubernetes', 'docker'],
   design: ['ui', 'ux', 'design', 'layout', 'component design', 'wireframe'],
   perf: ['performance', 'slow', 'optimize', 'n+1', 'memory leak', 'bundle size'],
@@ -750,7 +750,7 @@ const INTENT_KEYWORDS = {
 };
 
 /**
- * Generate skill-index.json — compiled intent mesh for runtime auto-trigger
+ * Generate skill-index.json — compiled intent graph for runtime auto-trigger
  *
  * Extracts from parsed skills: name, description, layer, model, group,
  * cross-references (connections), and maps intent keywords to skill chains.

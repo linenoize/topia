@@ -16,7 +16,17 @@ Topia's goal: a disciplined, resilient, cost-effective skill toolkit for AI codi
 
 ---
 
-## Now (v1.x — current release line)
+## Now (v2.x — current release line)
+
+### v2.0.0 — Nexus identity + skill renames (2026-05-19) ✅
+- [x] **Nexus terminology** — mesh→nexus, connections→synapses, signals→pulses; `topia doctor --nexus`; deprecated `--mesh`.
+- [x] **Skill renames** — sentinel→guardian, preflight→readiness, graft→integrate, scout→recon, sentinel-env→guardian-env.
+- [x] **`topia migrate-v1`** + `docs/migration/v1-to-v2.md`.
+- [x] **`docs/NEXUS-GLOSSARY.md`**, **`docs/NEXUS-RULES.md`**, `compiler/nexus-constants.js`.
+- [x] **CLI** — status memory health, nexus density, visualize→`nexus.html`, install promotes visualize.
+
+## Previous (v1.x)
+
 
 ### v1.2.0 — rune-kit migration, doctor extensions, repo move (2026-05-18) ✅
 - [x] **`topia migrate-from-rune` CLI command** — interactive copy of `.rune/` state into `.topia/`, plus optional rune-kit plugin disable.
@@ -36,7 +46,7 @@ Topia's goal: a disciplined, resilient, cost-effective skill toolkit for AI codi
 
 ### v1.0.0 — initial internal release (2026-05-15) ✅
 - [x] **65 skills** across 5 layers (L0 router · L1 orchestrators · L2 hubs · L3 utilities · L4 extension packs).
-- [x] **203 connections + 44 signals** between skills, validated by `topia doctor`.
+- [x] **203 synapses + 44 pulses** between skills, validated by `topia doctor`.
 - [x] **Multi-platform compiler** — `skills/` → Claude Code / Cursor / Antigravity / Codex / OpenCode / OpenClaw / generic.
 - [x] **Runtime hooks** — preflight / sentinel / completion-gate / quarantine wire as native hooks via `topia hooks install`.
 - [x] **Step 0 prerequisite gates** on every skill (build needs an approved plan; fix needs a diagnosis from debug; deploy needs passing verification + sentinel).
@@ -51,7 +61,7 @@ Topia's goal: a disciplined, resilient, cost-effective skill toolkit for AI codi
 - [x] CHANGELOG reset — v1.0.0 baseline + v1.1.0 agora-code entry.
 - [x] 4 extension packs removed (`@Topia/saas`, `/trading`, `/gamedev`, `/zalo`); 14 → 10 packs, swept across ~30 files; `topia doctor` + tests updated to expect ≥10 packs.
 
-**Mesh integrity (now graph-integrity in user docs)**
+**Nexus integrity (now graph-integrity in user docs)**
 - [x] Reciprocal `## Called By` entries added for `idea`'s outbound calls (scout, research, plan, brainstorm, design).
 - [x] `documentation/SKILL.md` got its missing `## Sharp Edges` section.
 - [x] Orphan skills audit closed — `constraint-check`, `sast`, `worktree` were already wired in both directions.
@@ -92,12 +102,12 @@ Tests already expect these sections:
 - `preflight handles missing org config gracefully` (preflight SKILL.md)
 - `Step 4.6 (between domain hooks 4.5 and composite score 4.8)` (preflight SKILL.md)
 
-**Action:** add Step 4.86 to `sentinel/SKILL.md` and Step 4.6 to `preflight/SKILL.md` describing the `<ORG-POLICY>` block contract.
+**Action:** add Step 4.86 to `guardian/SKILL.md` and Step 4.6 to `readiness/SKILL.md` describing the `<ORG-POLICY>` block contract.
 
 ### Systematic skill / workflow / script audit (v1.2 candidate)
 We need a repeatable check that each skill conforms to the SKILL-TEMPLATE contract (frontmatter complete, Sharp Edges present, Called By reciprocated, Triggers list valid, Cost Profile present, etc.) and that scripts haven't drifted.
 
-**Action:** `topia doctor` already covers mesh integrity + required sections. Extend it with:
+**Action:** `topia doctor` already covers nexus integrity + required sections. Extend it with:
 - Per-skill frontmatter validator (model / layer / tools / group fields populated correctly).
 - Trigger phrase validator (every `## Triggers` entry maps to a valid CLI command or hook event).
 - Script export validator (every `scripts/*.js` exports what its tests import).

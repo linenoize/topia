@@ -63,7 +63,7 @@ Infrastructure work done without patterns leads to snowflake configs: Dockerfile
 ```
 Calls → verification (L3): validate configs syntax and test infrastructure changes
 Calls → sentinel (L2): security audit on server and container configuration
-Calls → sentinel-env (L3): edge-serverless validates runtime prerequisites before deployment
+Calls → guardian-env (L3): edge-serverless validates runtime prerequisites before deployment
 Called By ← deploy (L2): deployment infrastructure setup
 Called By ← launch (L1): production environment preparation
 Called By ← build (L1): when DevOps task detected

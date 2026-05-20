@@ -201,7 +201,7 @@ None — pure runner using Bash for all checks. Does not invoke other skills.
 - `fix` (L2): validate fix doesn't break existing functionality
 - `test` (L2): validate test coverage meets threshold
 - `deploy` (L2): post-deploy health checks
-- `sentinel` (L2): run security audit tools (npm audit, etc.)
+- `guardian` (L2): run security audit tools (npm audit, etc.)
 - `safeguard` (L2): verify safety net is solid before refactoring
 - `db` (L2): run migration in test environment
 - `perf` (L2): run benchmark scripts if configured
@@ -210,7 +210,7 @@ None — pure runner using Bash for all checks. Does not invoke other skills.
 - `scaffold` (L1): verify scaffolded project builds and passes initial tests
 - `launch` (L1): pre-deploy verification gate
 - `mcp-builder` (L2): verify generated MCP server compiles and starts
-- `preflight` (L2): run verification as part of pre-commit quality gate
+- `readiness` (L2): run verification as part of pre-commit quality gate
 - `logic-guardian` (L2): verify logic invariants hold after changes
 - `dependency-doctor` (L3): verify builds pass after dependency updates
 - `sast` (L3): run verification alongside static analysis

@@ -1,6 +1,6 @@
 ---
 name: audit
-description: "Comprehensive project audit — security, dependencies, code quality, architecture, performance, infra, docs, and mesh analytics. Delegates to specialist skills and generates an 8-dimension health score."
+description: "Comprehensive project audit — security, dependencies, code quality, architecture, performance, infra, docs, and nexus analytics. Delegates to specialist skills and generates an 8-dimension health score."
 metadata:
   author: skill-topia
   version: "0.4.0"
@@ -16,7 +16,7 @@ metadata:
 
 ## Purpose
 
-Comprehensive project health audit across 8 dimensions (7 project + 1 mesh analytics). Delegates security scanning to `sentinel`, dependency analysis to `dependency-doctor`, and code complexity to `autopsy`, then directly audits architecture, performance, infrastructure, and documentation. Applies framework-specific checks (React/Next.js, Node.js, Python, Go, Rust, React Native/Flutter) based on detected stack. Produces a consolidated health score and prioritized action plan saved to `AUDIT-REPORT.md`.
+Comprehensive project health audit across 8 dimensions (7 project + 1 nexus analytics). Delegates security scanning to `guardian`, dependency analysis to `dependency-doctor`, and code complexity to `autopsy`, then directly audits architecture, performance, infrastructure, and documentation. Applies framework-specific checks (React/Next.js, Node.js, Python, Go, Rust, React Native/Flutter) based on detected stack. Produces a consolidated health score and prioritized action plan saved to `AUDIT-REPORT.md`.
 
 ## Triggers
 
@@ -27,9 +27,9 @@ Comprehensive project health audit across 8 dimensions (7 project + 1 mesh analy
 
 ## Calls (outbound)
 
-- `scout` (L2): Phase 0 — project structure and stack discovery
+- `recon` (L2): Phase 0 — project structure and stack discovery
 - `dependency-doctor` (L3): Phase 1 — vulnerability scan and outdated dependency check
-- `sentinel` (L2): Phase 2 — security audit (OWASP Top 10, secrets, config)
+- `guardian` (L2): Phase 2 — security audit (OWASP Top 10, secrets, config)
 - `autopsy` (L2): Phase 3 — code quality and complexity assessment
 - `improve-architecture` (L2): Phase 3.5 — architecture sub-score (depth / leverage / locality across top modules)
 - `perf` (L2): Phase 4 — performance regression check
@@ -50,7 +50,7 @@ Comprehensive project health audit across 8 dimensions (7 project + 1 mesh analy
 
 ### Phase 0: Project Discovery
 
-Call `Topia:scout` for a full project map. Then use `Read` on:
+Call `Topia:recon` for a full project map. Then use `Read` on:
 - `README.md`, `CLAUDE.md`, `CONTRIBUTING.md`, `.editorconfig` (if they exist)
 
 Determine:
@@ -94,14 +94,14 @@ Pass the full dependency-doctor report through to the final audit.
 
 ### Phase 2: Security Audit
 
-Delegate to `sentinel`. Request a full security scan covering:
+Delegate to `guardian`. Request a full security scan covering:
 - Hardcoded secrets, API keys, tokens, passwords in source code
 - OWASP Top 10: injection, broken auth, sensitive data exposure, XSS, CSRF, insecure deserialization, broken access control
 - Configuration security (debug mode in prod, CORS `*`, missing HTTP security headers)
 - Input validation at API boundaries
 - `.gitignore` coverage of sensitive files
 
-Pass the full sentinel report through to the final audit.
+Pass the full guardian report through to the final audit.
 
 ---
 
@@ -333,9 +333,9 @@ Apply **only** if the framework was detected in Phase 0. Skip entirely if not re
 
 ---
 
-### Phase 8: Mesh Analytics (H3 Intelligence)
+### Phase 8: Nexus Analytics (H3 Intelligence)
 
-**Goal**: Surface insights about skill usage, chain patterns, and mesh health from accumulated metrics.
+**Goal**: Surface insights about skill usage, chain patterns, and nexus health from accumulated metrics.
 
 **Data source**: `.topia/metrics/` directory (populated by hooks automatically).
 
@@ -351,23 +351,23 @@ Compute and report:
 - **Most common skill chains** (top 5 patterns from chains.jsonl)
 - **Average session stats** (duration, tool calls, skill invocations)
 - **Active routing overrides** and their application count
-- **Mesh density check**: cross-reference invocation data with declared connections — skills that are declared as "Called By" but never actually invoked may indicate broken mesh paths
+- **Nexus density check**: cross-reference invocation data with declared connections — skills that are declared as "Called By" but never actually invoked may indicate broken nexus paths
 
 **Propose routing overrides**: If patterns suggest inefficiency (e.g., debug consistently called 3+ times in a chain for the same session), propose a new routing override for user approval.
 
 Output as a section in the final audit report:
 
 ```
-### Mesh Analytics
+### Nexus Analytics
 | Skill | Invocations | Last Used | Chains Containing |
 |-------|-------------|-----------|-------------------|
 | build  | 47          | 2026-02-28| 34                |
-| scout | 89          | 2026-02-28| 42                |
+| recon | 89          | 2026-02-28| 42                |
 | ...   | ...         | ...       | ...               |
 
 **Common Chains**:
-1. build → scout → plan → test → fix → quality → verify (34x)
-2. debug → scout → fix → verification (12x)
+1. build → recon → plan → test → fix → quality → verify (34x)
+2. debug → recon → fix → verification (12x)
 
 **Session Stats**: 23 sessions, avg 35min, avg 52 tool calls
 **Unused Skills**: [list or "none"]
@@ -540,7 +540,7 @@ Overall = (Security × 0.25) + (Code Quality × 0.20) + (Architecture × 0.15)
         + (Documentation × 0.07)
 ```
 
-Mesh Analytics (Phase 8) is advisory — it contributes 0 to the weighted score but informs the verdict narrative.
+Nexus Analytics (Phase 8) is advisory — it contributes 0 to the weighted score but informs the verdict narrative.
 
 ### Grade Thresholds
 
@@ -589,7 +589,7 @@ Apply confidence filtering: only report findings with >80% confidence. Consolida
 | Dependencies   |   ?/10   | [brief note]       |
 | Infrastructure |   ?/10   | [brief note]       |
 | Documentation  |   ?/10   | [brief note]       |
-| Mesh Analytics |   ?/10   | [brief note]       |
+| Nexus Analytics |   ?/10   | [brief note]       |
 | **Overall**    | **?/10** | **[verdict]**      |
 
 ### Phase Breakdown
@@ -602,7 +602,7 @@ Apply confidence filtering: only report findings with >80% confidence. Consolida
 | Performance    | [n]    |
 | Infrastructure | [n]    |
 | Documentation  | [n]    |
-| Mesh Analytics | [n]    |
+| Nexus Analytics | [n]    |
 
 ### Composite Score
 - **Formula**: (Security×0.25) + (Code Quality×0.20) + (Architecture×0.15) + (Dependencies×0.15) + (Performance×0.10) + (Infrastructure×0.08) + (Documentation×0.07)
@@ -625,19 +625,19 @@ Report saved to: AUDIT-REPORT.md
 ## Constraints
 
 1. MUST complete all 8 phases (Phase 8 may report "no data" if .topia/metrics/ doesn't exist yet) — if any phase is skipped, state explicitly which phase and why
-2. MUST delegate Phase 1 to dependency-doctor and Phase 2 to sentinel — no manual replacements
+2. MUST delegate Phase 1 to dependency-doctor and Phase 2 to guardian — no manual replacements
 3. MUST apply confidence filter — only report findings with >80% confidence; consolidate similar issues
 4. MUST include at least 3 positive findings — an audit with no positives is incomplete
 5. MUST produce quantified health scores (1-10 per dimension) — not vague "needs work"
 6. MUST NOT fabricate findings — every finding requires a specific file:line citation
 7. MUST save AUDIT-REPORT.md before declaring completion
 
-## Mesh Gates
+## Nexus Gates
 
 | Gate | Requires | If Missing |
 |------|----------|------------|
-| Discovery Gate | Phase 0 project profile completed before Phase 1 | Run scout and read config files first |
-| Security Gate | sentinel report received before assembling final report | Invoke Topia:sentinel — do not skip |
+| Discovery Gate | Phase 0 project profile completed before Phase 1 | Run recon and read config files first |
+| Security Gate | guardian report received before assembling final report | Invoke Topia:guardian — do not skip |
 | Deps Gate | dependency-doctor report received before assembling final report | Invoke Topia:dependency-doctor — do not skip |
 | Report Gate | All 8 phases completed before writing AUDIT-REPORT.md | Complete all phases, note skipped ones |
 
@@ -648,17 +648,17 @@ Report saved to: AUDIT-REPORT.md
 | Audit report | Markdown | `AUDIT-REPORT.md` (project root) |
 | 8-dimension health score | Markdown table | `AUDIT-REPORT.md` + inline |
 | Weighted composite score + grade | Markdown | inline + `AUDIT-REPORT.md` |
-| Mesh analytics section | Markdown table | inline + `AUDIT-REPORT.md` |
+| Nexus analytics section | Markdown table | inline + `AUDIT-REPORT.md` |
 | Journal entry | Text | `.topia/adr/` (via `Topia:journal`) |
 
 ## Sharp Edges
 
 | Failure Mode | Severity | Mitigation |
 |---|---|---|
-| Generating health scores from file name patterns instead of actual reads | CRITICAL | Phase 0 scout run is mandatory — never score without reading actual code |
+| Generating health scores from file name patterns instead of actual reads | CRITICAL | Phase 0 recon run is mandatory — never score without reading actual code |
 | Skipping a phase because "there are no changes in that area" | HIGH | All 7 phases run for every audit — partial audits produce misleading scores |
 | Health score inflation — no negative findings in any dimension | MEDIUM | CONSTRAINT: minimum 3 positive AND 3 improvement areas required |
-| Dependency-doctor or sentinel sub-call times out → skipped silently | MEDIUM | Mark phase as "incomplete — tool timeout" with N/A score, do not fabricate |
+| Dependency-doctor or guardian sub-call times out → skipped silently | MEDIUM | Mark phase as "incomplete — tool timeout" with N/A score, do not fabricate |
 
 ## Done When
 
@@ -671,4 +671,4 @@ Report saved to: AUDIT-REPORT.md
 
 ## Cost Profile
 
-~8000-20000 tokens input, ~3000-6000 tokens output. Sonnet orchestrating; sentinel (sonnet/opus) and autopsy (opus) are the expensive sub-calls. Full audit runs 4 sub-skills. Most thorough L2 skill — run on demand, not on every cycle.
+~8000-20000 tokens input, ~3000-6000 tokens output. Sonnet orchestrating; guardian (sonnet/opus) and autopsy (opus) are the expensive sub-calls. Full audit runs 4 sub-skills. Most thorough L2 skill — run on demand, not on every cycle.

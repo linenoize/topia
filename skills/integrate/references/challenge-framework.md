@@ -1,6 +1,6 @@
 # Challenge Framework
 
-5-dimension evaluation gate. Score each dimension before grafting code into your project.
+5-dimension evaluation gate. Score each dimension before integrating code into your project.
 
 ## Scoring
 
@@ -8,7 +8,7 @@
 |-------|---------|--------|
 | ✅ Pass | No concerns | Proceed |
 | ⚠️ Warn | Minor concerns | Proceed with documented caveats |
-| ❌ Fail | Blocking concern | Requires user override or blocks graft |
+| ❌ Fail | Blocking concern | Requires user override or blocks integration |
 
 **Decision matrix**: 0 ❌ → PROCEED. 1 ❌ → WARN + require explicit user override. 2+ ❌ → BLOCK.
 
