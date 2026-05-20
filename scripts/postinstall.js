@@ -36,7 +36,7 @@ console.log(`    ${cyan}node compiler/bin/topia.js install${reset}`);
 console.log('');
 console.log(`  ${dim}That one command will:${reset}`);
 console.log(`    ${dim}• check for rune-kit conflicts (offer migration if found)${reset}`);
-console.log(`    ${dim}• register the plugin with Claude Code (claude plugin add .)${reset}`);
+console.log(`    ${dim}• register via Protopia marketplace (or claude plugin add . fallback)${reset}`);
 console.log(`    ${dim}• wire discipline hooks globally (preflight / sentinel / completion-gate / quarantine)${reset}`);
 console.log(`    ${dim}• install agora-code MCP for persistent memory (if Python 3.10+ is present)${reset}`);
 console.log(`    ${dim}• verify with topia doctor${reset}`);

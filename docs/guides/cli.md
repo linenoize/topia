@@ -33,8 +33,9 @@ npx @protopia/skill-topia doctor
 
 That's it. 65 skills are now active in your AI assistant.
 
-> **Pro Tip**: For Claude Code, skip the CLI entirely. Install Topia as a plugin:
-> `claude plugin add protopia/skill-topia` -- skills load natively with zero compilation.
+> **Pro Tip**: For Claude Code, use the Protopia marketplace (no compilation):
+> `/plugin marketplace add protopia/skill-topia` then `/plugin install skill-topia@protopia`.
+> See [`docs/INSTALL-CLAUDE-CODE.md`](../INSTALL-CLAUDE-CODE.md).
 
 ---
 

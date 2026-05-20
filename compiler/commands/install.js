@@ -8,7 +8,7 @@
  * Steps (in order):
  *   0. Pre-flight: rune-kit conflict check. If detected, present options
  *      (migrate / abort / skip-with-warning) and act on the choice.
- *   1. claude plugin add . — register Topia with Claude Code
+ *   1. claude plugin marketplace add + install — register via Protopia marketplace (fallback: plugin add .)
  *   2. setup --global --preset gentle — wire discipline hooks globally
  *   3. agora-code MCP — detect Python 3.10+, pip install, register in .mcp.json
  *   4. doctor — verify nexus integrity
@@ -30,6 +30,11 @@ import path from 'node:path';
 import { createInterface } from 'node:readline';
 import { migrateFromRune, planMigration as planRuneMigration } from './migrate-from-rune.js';
 import { runSetup } from './setup.js';
+
+/** Claude Code marketplace id (`.claude-plugin/marketplace.json` → `name`). */
+const MARKETPLACE_ID = 'protopia';
+/** Plugin entry id inside the marketplace catalog. */
+const MARKETPLACE_PLUGIN = 'skill-topia';
 
 function prompt(question) {
   const rl = createInterface({ input: process.stdin, output: process.stdout });
@@ -153,23 +158,53 @@ async function preflightRune({ cwd, autoYes, skipRuneCheck }) {
   return { proceeded: false, reason: 'unrecognised choice; re-run install' };
 }
 
+function hasMarketplaceCatalog(TopiaRoot) {
+  return existsSync(path.join(TopiaRoot, '.claude-plugin', 'marketplace.json'));
+}
+
 function registerPlugin({ TopiaRoot, dryRun }) {
   if (!which('claude')) {
     step('!', 'claude CLI not on PATH — skipping plugin registration.');
-    step(' ', 'Install Claude Code, then run:  claude plugin add .');
+    step(' ', `Install Claude Code, then:  /plugin marketplace add protopia/skill-topia`);
+    step(' ', `              then:  /plugin install ${MARKETPLACE_PLUGIN}@${MARKETPLACE_ID}`);
     return { ok: false, skipped: true };
   }
+
+  const useMarketplace = hasMarketplaceCatalog(TopiaRoot);
+  const installSpec = `${MARKETPLACE_PLUGIN}@${MARKETPLACE_ID}`;
+
   if (dryRun) {
-    step('·', `[dry-run] would: claude plugin add ${TopiaRoot}`);
+    if (useMarketplace) {
+      step('·', `[dry-run] would: claude plugin marketplace add ${TopiaRoot}`);
+      step('·', `[dry-run] would: claude plugin install ${installSpec}`);
+    } else {
+      step('·', `[dry-run] would: claude plugin add ${TopiaRoot}`);
+    }
     return { ok: true, dryRun: true };
   }
+
+  if (useMarketplace) {
+    try {
+      execFileSync('claude', ['plugin', 'marketplace', 'add', TopiaRoot], {
+        stdio: ['pipe', 'pipe', 'pipe'],
+      });
+      execFileSync('claude', ['plugin', 'install', installSpec], { stdio: ['pipe', 'pipe', 'pipe'] });
+      step('✓', `Plugin installed via marketplace (${installSpec}).`);
+      return { ok: true, via: 'marketplace' };
+    } catch (err) {
+      step('!', `Marketplace install failed: ${err.message.split('\n')[0]}`);
+      step(' ', 'Falling back to local plugin registration…');
+    }
+  }
+
   try {
     execFileSync('claude', ['plugin', 'add', TopiaRoot], { stdio: ['pipe', 'pipe', 'pipe'] });
-    step('✓', 'Plugin registered with Claude Code.');
-    return { ok: true };
+    step('✓', 'Plugin registered with Claude Code (local path).');
+    return { ok: true, via: 'plugin-add' };
   } catch (err) {
     step('!', `claude plugin add failed: ${err.message.split('\n')[0]}`);
-    step(' ', `Manual: cd ${TopiaRoot} && claude plugin add .`);
+    step(' ', `Manual: /plugin marketplace add protopia/skill-topia`);
+    step(' ', `        /plugin install ${installSpec}`);
     return { ok: false, error: err };
   }
 }
@@ -327,7 +362,10 @@ export async function runInstall({ TopiaRoot, projectRoot = process.cwd(), args 
   console.log('    3. Edit `.topia/org/org.md` to define your team / policy / approval flow.');
   console.log('       (guardian + readiness read this at compile time. See docs/ORG-CONFIG.md.)');
   if (!plugin.ok && plugin.skipped) {
-    console.log('    3. Install Claude Code, then run: claude plugin add .');
+    console.log('    3. Install Claude Code, then:');
+    console.log('         /plugin marketplace add protopia/skill-topia');
+    console.log(`         /plugin install ${MARKETPLACE_PLUGIN}@${MARKETPLACE_ID}`);
+    console.log('       See docs/INSTALL-CLAUDE-CODE.md');
   }
   if (!agora.ok && agora.reason === 'no-python') {
     console.log('    3. (Optional) Install Python 3.10+ then run: topia install --yes');

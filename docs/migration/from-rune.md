@@ -1,6 +1,6 @@
 # Migrating from rune-kit
 
-Topia and [rune-kit](https://github.com/runedev/rune-kit) share lineage and overlap on ~30 skill names (`build`, `plan`, `recon`, `integrate`, etc.). Running both as Claude Code plugins makes the router pick one non-deterministically — silently broken routing. After Topia v2.0, see [v1-to-v2.md](v1-to-v2.md) for renamed skills.
+Topia and [rune-kit](https://github.com/Rune-kit/rune) share lineage and overlap on ~30 skill names (`build`, `plan`, `recon`, `integrate`, etc.). Running both as Claude Code plugins makes the router pick one non-deterministically — silently broken routing. After Topia v2.0, see [v1-to-v2.md](v1-to-v2.md) for renamed skills.
 
 If you previously used rune-kit in a project, run `migrate-from-rune` once after installing Topia to:
 

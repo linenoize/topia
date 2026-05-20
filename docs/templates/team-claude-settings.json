@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "protopia": {
+      "source": {
+        "source": "github",
+        "repo": "protopia/skill-topia"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "skill-topia@protopia": true
+  }
+}

@@ -40,7 +40,7 @@
       <canvas id="nexus-canvas"></canvas>
     </div>
     <div class="hero-content">
-      <p class="hero-badge">v1.2.1 &middot; 65 skills &middot; persistent memory via agora-code · one-shot installer</p>
+      <p class="hero-badge">v2.0.1 &middot; 65 skills &middot; Protopia marketplace · agora-code memory</p>
       <h1>AI coding agents are smart.<br><span class="accent">Topia makes them disciplined.</span></h1>
       <p class="hero-sub">A workflow toolkit for Claude Code, Cursor, Codex, and other AI coding IDEs. Plan before code. Tests before commits. Decisions persist across sessions. Hooks block bad work before it lands.</p>
       <div class="hero-actions">
@@ -437,23 +437,21 @@ Fri: <span class="text-profit">get_file_symbols("auth")</span>
   <section class="section" id="install">
     <div class="container">
       <h2>Install</h2>
-      <p class="section-sub">Internal-only. Clone the repo, point your IDE at it.</p>
+      <p class="section-sub">Claude Code: Protopia marketplace. Other IDEs: compile from repo.</p>
       <div class="install-grid">
         <div class="install-card">
           <h3>Claude Code</h3>
-          <p class="install-badge">Native plugin</p>
-          <pre class="code-block"><code># 1. Clone into your Claude skills dir
-git clone &lt;internal-git-url&gt;/skill-topia \
-  ~/.claude/skills/skill-topia
+          <p class="install-badge">Native plugin + marketplace</p>
+          <pre class="code-block"><code># Plugin menu (recommended)
+/plugin marketplace add protopia/skill-topia
+/plugin install skill-topia@protopia
+npx @protopia/skill-topia setup --global --preset gentle
 
-# 2. Install deps + register plugin
-cd ~/.claude/skills/skill-topia
-npm install
-claude plugin add .
-
-# 3. Wire discipline hooks (one-shot wizard)
-node compiler/bin/topia.js setup --global --preset gentle</code></pre>
-          <p>Full toolkit: subagents, hooks (preflight / sentinel / completion-gate / quarantine), all 65 skills.</p>
+# Or clone + one-shot
+git clone https://github.com/protopia/skill-topia.git
+cd skill-topia &amp;&amp; npm install
+node compiler/bin/topia.js install</code></pre>
+          <p>See <code>docs/INSTALL-CLAUDE-CODE.md</code>. Skills: <code>/Topia:build</code> or <code>/topia build</code>.</p>
         </div>
         <div class="install-card">
           <h3>Cursor / Codex / Antigravity</h3>

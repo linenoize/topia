@@ -19,7 +19,17 @@
 
 ## Step 1: Install (30 seconds)
 
-From your project root:
+**Claude Code (plugin marketplace):**
+
+```text
+/plugin marketplace add protopia/skill-topia
+/plugin install skill-topia@protopia
+npx @protopia/skill-topia setup --global --preset gentle
+```
+
+See [`INSTALL-CLAUDE-CODE.md`](INSTALL-CLAUDE-CODE.md). Restart Claude Code after install.
+
+**Cursor / Codex / other IDEs** — from your project root:
 
 ```bash
 npx @protopia/skill-topia init

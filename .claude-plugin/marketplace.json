@@ -1,0 +1,23 @@
+{
+  "name": "protopia",
+  "description": "Topia skill toolkit — 65 interconnected skills, discipline hooks, optional agora-code memory",
+  "version": "2.0.1",
+  "owner": {
+    "name": "Protopia"
+  },
+  "plugins": [
+    {
+      "name": "skill-topia",
+      "source": "./",
+      "description": "65-skill Topia Nexus for Claude Code — TDD rails, readiness/guardian/completion-gate hooks, Maestro routing, optional agora-code neural memory",
+      "version": "2.0.1",
+      "author": {
+        "name": "skill-topia"
+      },
+      "homepage": "https://github.com/protopia/skill-topia",
+      "repository": "https://github.com/protopia/skill-topia",
+      "license": "MIT",
+      "keywords": ["skills", "nexus", "tdd", "coding-agent", "neural-memory"]
+    }
+  ]
+}

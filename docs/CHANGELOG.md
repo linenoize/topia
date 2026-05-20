@@ -4,6 +4,22 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
+## [2.0.1] — 2026-05-20
+
+### Added
+
+- **Protopia Claude Code marketplace** — restored `.claude-plugin/marketplace.json` (`protopia` catalog, `skill-topia` plugin). End users install via `/plugin marketplace add protopia/skill-topia` and `/plugin install skill-topia@protopia`.
+- **`docs/INSTALL-CLAUDE-CODE.md`** — marketplace vs clone install, hook layers, updates, troubleshooting.
+- **`docs/templates/team-claude-settings.json`** — optional `extraKnownMarketplaces` + `enabledPlugins` snippet for team repos.
+
+### Changed
+
+- **`topia install`** — registers the plugin via marketplace add + install when `marketplace.json` is present; falls back to `claude plugin add .`.
+- **`README.md`** — marketplace install documented as the recommended Claude Code path.
+- **`package.json` `files`** — includes `.claude-plugin/` for npm publishes.
+
+---
+
 ## [2.0.0] — 2026-05-19
 
 ### Breaking changes
@@ -46,7 +62,7 @@ All notable changes to Topia will be documented in this file.
 ## [1.2.0] — 2026-05-18
 
 ### Added
-- **`topia migrate-from-rune` command** — interactive migration for projects coming from [rune-kit](https://github.com/runedev/rune-kit). Pulls `.rune/` state (decisions, ADRs, conventions, learnings, features) into `.topia/`, then renames `~/.claude/plugins/cache/rune-kit/` to `.disabled` so Claude Code stops loading it. Conflict-safe (existing `.topia/` files preserved unless `--force`), idempotent (writes `.topia/migrated-from-rune.flag`), reversible (`--skip` writes a suppression flag, `mv rune-kit.disabled rune-kit` restores).
+- **`topia migrate-from-rune` command** — interactive migration for projects coming from [rune-kit](https://github.com/Rune-kit/rune). Pulls `.rune/` state (decisions, ADRs, conventions, learnings, features) into `.topia/`, then renames `~/.claude/plugins/cache/rune-kit/` to `.disabled` so Claude Code stops loading it. Conflict-safe (existing `.topia/` files preserved unless `--force`), idempotent (writes `.topia/migrated-from-rune.flag`), reversible (`--skip` writes a suppression flag, `mv rune-kit.disabled rune-kit` restores).
 - **Session-start hook detection** — `hooks/session-start/index.cjs` now detects `.rune/` and the rune-kit plugin on every session. If neither flag (`migrated-from-rune.flag` or `skip-rune-migration.flag`) is present, prints a prominent warning explaining the routing-conflict risk and pointing at the migration command. Self-suppressing once a flag is written.
 - **`docs/migration/from-rune.md`** — full migration guide (what gets copied, what gets disabled, how to revert).
 - **`commands/migrate-from-rune.md`** — slash-command definition for `/topia migrate-from-rune`.

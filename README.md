@@ -28,7 +28,26 @@ One source of truth (`skills/`) compiles to six IDE rule formats — switch IDEs
 
 ## Install
 
-One command does the whole thing:
+### Claude Code (recommended — plugin marketplace)
+
+Install like any other Claude Code plugin — no clone required for the plugin itself:
+
+```text
+/plugin marketplace add protopia/skill-topia
+/plugin install skill-topia@protopia
+```
+
+Then wire global discipline hooks (one-time per machine):
+
+```bash
+npx @protopia/skill-topia setup --global --preset gentle
+```
+
+Restart Claude Code, then use `/topia build` or `/Topia:build`. Full guide: [`docs/INSTALL-CLAUDE-CODE.md`](docs/INSTALL-CLAUDE-CODE.md). Team repos can merge [`docs/templates/team-claude-settings.json`](docs/templates/team-claude-settings.json) into `.claude/settings.json` to prompt the marketplace on folder trust.
+
+Validate the catalog before release: `claude plugin validate .`
+
+### Clone + one-shot installer (contributors / offline)
 
 ```bash
 git clone https://github.com/protopia/skill-topia.git
@@ -37,10 +56,12 @@ npm install
 node compiler/bin/topia.js install
 ```
 
+Optional stable location: `~/.claude/skills/skill-topia` (see [`docs/INSTALL-CLAUDE-CODE.md`](docs/INSTALL-CLAUDE-CODE.md)).
+
 `topia install` is a one-shot orchestrator. In order, it:
 
-1. **Pre-flights rune-kit conflicts.** If [rune-kit](https://github.com/runedev/rune-kit) is detected on your machine, the installer halts and asks: migrate `.rune/` state into `.topia/` and disable rune-kit, abort so you can remove rune-kit manually, or skip (with a warning that the two plugins will fight over skill names).
-2. **Registers the plugin** with Claude Code via `claude plugin add .`.
+1. **Pre-flights rune-kit conflicts.** If [rune-kit](https://github.com/Rune-kit/rune) is detected on your machine, the installer halts and asks: migrate `.rune/` state into `.topia/` and disable rune-kit, abort so you can remove rune-kit manually, or skip (with a warning that the two plugins will fight over skill names).
+2. **Registers the plugin** via the Protopia marketplace (`marketplace add` + `plugin install skill-topia@protopia`), falling back to `claude plugin add .` if needed.
 3. **Wires discipline hooks** globally: `readiness` (logic gates), `guardian` (secrets/OWASP), `completion-gate` (claims-vs-evidence), `quarantine` (untrusted-input advisory).
 4. **Installs the agora-code MCP** for persistent memory if Python 3.10+ is on your machine. Registers `agora-memory` in your project's `.mcp.json`. Skip with `--skip-agora`. (No Python? You get a one-line notice, install continues without persistent memory.)
 5. **Runs `topia doctor`** to verify the install.
@@ -325,6 +346,9 @@ Tests:             1,035 passing
 
 - **[agora-code](https://github.com/thebnbrkr/agora-code)** (Apache 2.0) — vendored at `mcp-servers/agora-code/` for optional persistent memory. See [`mcp-servers/agora-code/NOTICE-TOPIA.md`](mcp-servers/agora-code/NOTICE-TOPIA.md) for attribution + refresh procedure.
 - **[UI/UX Pro Max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)** (MIT) — design-intelligence DB powering `design` + `@Topia/ui`.
+- **[biome](https://github.com/biomejs/biome)** (MIT) (Apache 2.0) - Installed for app use.
+- **[rune-kit](https://github.com/Rune-kit/rune)** (MIT) — Workflow, hooks, skill, methodology process grafted (integrated) into the topia operation. 
+
 
 ---
 
