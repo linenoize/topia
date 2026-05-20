@@ -57,9 +57,10 @@ export function resolveTopiaRoot(explicit, opts = {}) {
 
   const home = os.homedir();
   const cacheCandidates = [
+    path.join(home, '.claude', 'plugins', 'cache', 'protopia', 'Topia'),
     path.join(home, '.claude', 'plugins', 'cache', 'protopia', 'skill-topia'),
-    path.join(home, '.claude', 'plugins', 'cache', 'skill-topia'),
     path.join(home, '.claude', 'plugins', 'cache', 'Topia'),
+    path.join(home, '.claude', 'plugins', 'cache', 'skill-topia'),
   ];
 
   for (const base of cacheCandidates) {

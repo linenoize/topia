@@ -12,7 +12,7 @@ Works for any machine with Claude Code — no manual clone required for the plug
 
 ```text
 /plugin marketplace add protopia/skill-topia
-/plugin install skill-topia@protopia
+/plugin install Topia@protopia
 /reload-plugins
 ```
 
@@ -21,7 +21,7 @@ Then wire global discipline hooks (one-time per machine). **Do not use `npx @pro
 **After marketplace install** (auto-finds the plugin cache):
 
 ```bash
-node ~/.claude/plugins/cache/protopia/skill-topia/*/compiler/bin/topia.js setup --global --preset gentle
+node ~/.claude/plugins/cache/protopia/Topia/*/compiler/bin/topia.js setup --global --preset gentle
 ```
 
 On Windows PowerShell, use the version folder name instead of `*` (e.g. `2.0.1`), or run from a clone:
@@ -109,7 +109,7 @@ Most teams want **plugin install + `setup --global`**.
 
 ```text
 /plugin marketplace update protopia
-/plugin update skill-topia@protopia
+/plugin update Topia@protopia
 ```
 
 Or, for a local clone: `git pull` in the skill-topia directory, then `/reload-plugins`.
@@ -135,5 +135,6 @@ claude plugin validate .
 | Hooks not firing | Re-run `node …/topia.js setup --global`; `node …/topia.js doctor --hooks` |
 | `npm 404` on `@protopia/skill-topia` | Expected if unpublished — use `node …/topia.js` from clone or plugin cache, not `npx` |
 | Relative path install fails | Add marketplace via **git** (`protopia/skill-topia`), not a raw URL to `marketplace.json` only |
+| Update: Plugin "Topia" not found | Marketplace id must match `plugin.json` → use `Topia@protopia`, not `skill-topia@protopia`. Run `/plugin marketplace update protopia` then `/plugin update Topia@protopia`. If you installed under the old id: `/plugin uninstall skill-topia@protopia` then `/plugin install Topia@protopia` |
 
 See [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md).

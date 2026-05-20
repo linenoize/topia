@@ -35,7 +35,8 @@ import { runSetup } from './setup.js';
 /** Claude Code marketplace id (`.claude-plugin/marketplace.json` → `name`). */
 const MARKETPLACE_ID = 'protopia';
 /** Plugin entry id inside the marketplace catalog. */
-const MARKETPLACE_PLUGIN = 'skill-topia';
+/** Must match `.claude-plugin/plugin.json` → `name` (UI update uses this id). */
+const MARKETPLACE_PLUGIN = 'Topia';
 
 function prompt(question) {
   const rl = createInterface({ input: process.stdin, output: process.stdout });

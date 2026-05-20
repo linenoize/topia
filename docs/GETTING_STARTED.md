@@ -23,7 +23,7 @@
 
 ```text
 /plugin marketplace add protopia/skill-topia
-/plugin install skill-topia@protopia
+/plugin install Topia@protopia
 npx @protopia/skill-topia setup --global --preset gentle
 ```
 

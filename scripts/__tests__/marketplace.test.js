@@ -11,8 +11,8 @@ describe('marketplace.json', () => {
     const marketplace = JSON.parse(raw);
     assert.equal(marketplace.name, 'protopia');
     assert.ok(Array.isArray(marketplace.plugins));
-    const entry = marketplace.plugins.find((p) => p.name === 'skill-topia');
-    assert.ok(entry, 'skill-topia plugin entry required');
+    const entry = marketplace.plugins.find((p) => p.name === 'Topia');
+    assert.ok(entry, 'Topia plugin entry required (must match plugin.json name)');
     assert.equal(entry.source, './');
   });
 
@@ -26,7 +26,7 @@ describe('marketplace.json', () => {
     );
     assert.equal(marketplace.version, pkg.version);
     assert.equal(plugin.version, pkg.version);
-    const entry = marketplace.plugins.find((p) => p.name === 'skill-topia');
+    const entry = marketplace.plugins.find((p) => p.name === 'Topia');
     assert.equal(entry.version, pkg.version);
   });
 });
