@@ -373,9 +373,11 @@ When routing a request through L1/L2 skills, skill-router SHOULD detect domain s
 
 **Auto-suggest rules:**
 1. Only suggest if the pack's PACK.md **exists on disk** — `Glob` for the pack path first. If not installed, skip silently.
-2. Suggest ONCE per session per pack — do not repeat after user has seen the suggestion.
-3. Format: brief inline note, not a blocking prompt. User can ignore and continue.
-4. If user is already inside the pack's workflow, do not re-suggest.
+2. Read `.topia/active-packs.json` if present — **do not** re-suggest packs already listed in `enabled` (onboard activated them).
+3. Suggest ONCE per session per pack — do not repeat after user has seen the suggestion.
+4. Format: brief inline note, not a blocking prompt. User can ignore and continue.
+5. If user is already inside the pack's workflow, do not re-suggest.
+6. When `chain_metadata.domain` matches an **active** pack, prefer loading that pack's patterns over generic suggestions.
 
 **Rules:**
 - Hard limit: 1 hop. NEVER chain recommendations (fix→test→readiness→...). Suggest ONE, let the user decide.

@@ -16,10 +16,10 @@ You are the **onboard** skill — Topia's project context generator.
 4. **Generate CLAUDE.md** — project config: overview, tech stack, structure, conventions, commands
 5. **Initialize .topia/** — conventions.md, decisions.md, progress.md, session-log.md, instincts.md, contract.md
 6. **Generate DEVELOPER-GUIDE.md** — human-readable onboarding: setup, key files, contributing
-7. **Suggest L4 Packs** — recommend extension packs based on detected stack
-8. **Context Budget Check** — audit baseline context cost
+7. **Activate L4 Packs** — write .topia/active-packs.json from detect-l4-packs.js
+8. **Context Budget** — audit; AskQuestion "Which would you like to do?" with **All** option; apply choices
 9. **AI-Driven Interview** (optional) — if auto-detect insufficient, ask 5-8 questions
-10. **Commit** — `git add CLAUDE.md .topia/ && git commit`
+10. **Commit** — `git add CLAUDE.md .topia/active-packs.json .topia/org/` only
 
 **Critical Rules:**
 - Never overwrite existing CLAUDE.md — update/merge instead

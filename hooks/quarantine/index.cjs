@@ -22,6 +22,7 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const { isCursorRuntime, writeHookResponse } = require('../lib/cursor-io.cjs');
 
 const HOOK_TIMEOUT_MS = 5000;
 
@@ -97,15 +98,18 @@ function main(raw) {
     process.exit(0);
   }
 
-  // Emit advisory as PostToolUse hookSpecificOutput.additionalContext
   const notice = buildNotice(toolName, decision.source);
-  const output = {
-    hookSpecificOutput: {
-      hookEventName: 'PostToolUse',
-      additionalContext: notice,
-    },
-  };
-  process.stdout.write(`${JSON.stringify(output)}\n`);
+  if (isCursorRuntime(event)) {
+    writeHookResponse({ additional_context: notice });
+  } else {
+    const output = {
+      hookSpecificOutput: {
+        hookEventName: 'PostToolUse',
+        additionalContext: notice,
+      },
+    };
+    process.stdout.write(`${JSON.stringify(output)}\n`);
+  }
 
   writeTelemetry({ tool: toolName, decision: 'emit', source: decision.source, session_id: sessionId });
   clearTimeout(timeoutHandle);

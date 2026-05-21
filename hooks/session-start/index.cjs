@@ -4,9 +4,16 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const { isCursorRuntime, writeHookResponse } = require('../lib/cursor-io.cjs');
+
+const hookLines = [];
+const origLog = console.log.bind(console);
+console.log = (...args) => {
+  hookLines.push(args.map((a) => (typeof a === 'string' ? a : String(a))).join(' '));
+};
 
 const cwd = process.cwd();
-const TopiaDir = path.join(cwd, '.Topia');
+const TopiaDir = path.join(cwd, '.topia');
 
 // Initialize fresh session state (shared between context-watch and metrics-collector)
 const hash = Buffer.from(cwd).toString('base64url').slice(0, 16);
@@ -114,6 +121,16 @@ if (fs.existsSync(TopiaDir)) {
     }
   }
 
+  const activePacksPath = path.join(TopiaDir, 'active-packs.json');
+  if (fs.existsSync(activePacksPath)) {
+    try {
+      const ap = JSON.parse(fs.readFileSync(activePacksPath, 'utf-8'));
+      if (Array.isArray(ap.enabled) && ap.enabled.length > 0) {
+        console.log(`[Topia: active L4 packs: ${ap.enabled.join(', ')}]`);
+      }
+    } catch { /* non-critical */ }
+  }
+
   if (loaded.length > 0) {
     console.log(`\n[Topia: injected project state from ${loaded.join(', ')}]`);
   } else {
@@ -213,4 +230,11 @@ function readManifestVersion(manifestPath) {
   } catch {
     return 'unknown';
   }
+}
+
+const sessionText = hookLines.join('\n').trim();
+if (isCursorRuntime()) {
+  writeHookResponse(sessionText ? { additional_context: sessionText } : {});
+} else {
+  for (const line of hookLines) origLog(line);
 }

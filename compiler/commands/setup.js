@@ -17,6 +17,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { createInterface } from 'node:readline';
 import { installHooks } from './hooks/install.js';
+import { ensureTopiaGitignore } from '../lib/ensure-gitignore.js';
 
 /**
  * @param {{ projectRoot: string, TopiaRoot: string, args: object }} opts
@@ -46,6 +47,15 @@ export async function runSetup({ projectRoot, TopiaRoot, args = {} }) {
     dry: args.dry,
     topiaRoot: TopiaRoot,
   });
+
+  if (scope === 'current') {
+    await ensureTopiaGitignore({
+      projectRoot,
+      autoYes: Boolean(args.yes),
+      interactive: !args.yes && !args.dry,
+      dryRun: Boolean(args.dry),
+    });
+  }
 
   return {
     scope,

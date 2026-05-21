@@ -11,8 +11,9 @@
  *   1. claude plugin marketplace add + install — register via Protopia marketplace (fallback: plugin add .)
  *   2. setup --global --preset gentle — wire discipline hooks globally
  *   3. agora-code MCP — detect Python 3.10+, pip install, register in .mcp.json
- *   4. doctor — verify nexus integrity
- *   5. Print "restart Claude Code" + edit `.topia/org/org.md` hints
+ *   4. project .gitignore — prompt once for Topia ignore rules
+ *   5. doctor — verify nexus integrity
+ *   6. Print "restart Claude Code" + edit `.topia/org/org.md` hints
  *
  * Flags:
  *   --yes              non-interactive (auto-accept defaults, skip rune-kit migration)
@@ -31,6 +32,7 @@ import { createInterface } from 'node:readline';
 import { migrateFromRune, planMigration as planRuneMigration } from './migrate-from-rune.js';
 import { resolveTopiaRoot } from './hooks/resolve-topia-root.js';
 import { runSetup } from './setup.js';
+import { ensureTopiaGitignore } from '../lib/ensure-gitignore.js';
 
 /** Claude Code marketplace id (`.claude-plugin/marketplace.json` → `name`). */
 const MARKETPLACE_ID = 'protopia';
@@ -342,7 +344,15 @@ export async function runInstall({ TopiaRoot, projectRoot = process.cwd(), args 
     step('—', 'agora-code skipped (--skip-agora).');
   }
 
-  header('Step 4 — Verify install');
+  header('Step 4 — Project .gitignore');
+  await ensureTopiaGitignore({
+    projectRoot,
+    autoYes,
+    dryRun,
+    log: (icon, msg) => step(icon === 'ok' ? '✓' : icon === '.' ? '·' : icon === '-' ? '—' : '!', msg),
+  });
+
+  header('Step 5 — Verify install');
   const doctor = runDoctorBriefly({ TopiaRoot, dryRun });
 
   // ─── Final summary ───

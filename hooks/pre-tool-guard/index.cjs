@@ -10,6 +10,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { isCursorRuntime, writeHookResponse } = require('../lib/cursor-io.cjs');
 
 // Read tool_input from Claude Code hook stdin
 let input = '';
@@ -18,8 +19,10 @@ process.stdin.on('data', (chunk) => { input += chunk; });
 process.stdin.on('end', () => {
   let toolInput = {};
   let toolName = '';
+  let event = {};
   try {
     const parsed = JSON.parse(input);
+    event = parsed;
     toolInput = parsed.tool_input || parsed;
     toolName = parsed.tool_name || '';
   } catch {
@@ -87,9 +90,17 @@ process.stdin.on('end', () => {
 
   const isBlocked = blockPatterns.some((p) => p.test(basename) || p.test(normalized));
   if (isBlocked) {
-    console.log(`\n🚫 [Topia privacy-nexus] BLOCKED: ${filePath}`);
-    console.log('  This file matches a BLOCK-tier pattern (private keys, certificates).');
-    console.log('  Override: add path to .topia/privacy.json "allow" list if intentional.\n');
+    const blockMsg = `[Topia privacy-nexus] BLOCKED: ${filePath} — BLOCK-tier pattern (private keys, certificates).`;
+    if (isCursorRuntime(event)) {
+      writeHookResponse({
+        permission: 'deny',
+        user_message: `Blocked read of sensitive file: ${filePath}`,
+        agent_message: blockMsg,
+      });
+    } else {
+      console.log(`\n🚫 ${blockMsg}`);
+      console.log('  Override: add path to .topia/privacy.json "allow" list if intentional.\n');
+    }
     process.exit(2); // Exit code 2 = BLOCK
   }
 

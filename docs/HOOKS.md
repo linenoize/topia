@@ -190,10 +190,24 @@ Experimental — mirrors Cursor's rule-injection pattern because Antigravity doe
 - Switch to `strict` once you trust the signal. BLOCK mode refuses the tool call until you address the finding.
 - Use `--platform all --preset strict` for team/shared machines where you want maximum discipline everywhere.
 
+## Cursor and third-party hooks
+
+When **Third-party skills** is enabled in Cursor, Claude Code hook entries (plugin `hooks/hooks.json` and `.claude/settings.json` `hook-dispatch` commands) are mapped to Cursor events (`sessionStart`, `preToolUse`, `postToolUse`, `stop`, etc.). Cursor requires **JSON on stdout** for command hooks — plain-text lines cause parse errors.
+
+Topia handles this via [`hooks/lib/cursor-io.cjs`](../hooks/lib/cursor-io.cjs):
+
+- Detects Cursor using `CURSOR_VERSION`, `CURSOR_PROJECT_DIR`, or stdin `cursor_version` / `hook_event_name`.
+- Plugin hooks (`session-start`, `quarantine`, `post-session-reflect`, `pre-tool-guard`) emit `{ additional_context }`, `{ permission }`, or `{}` as appropriate.
+- `hook-dispatch` emits event-shaped JSON (`permission` for `preToolUse`, `additional_context` for `postToolUse`).
+
+**Not Topia:** a `stop` hook that runs `bun run …` comes from a user or team `~/.cursor/hooks.json` template, not from this repository. Remove it or install Bun.
+
+**Debugging:** Cursor Settings → Hooks tab + Hooks output channel. See [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) §6.
+
 ## Limitations
 
-- Only Claude Code gets `Stop` (completion-gate) auto-fire. Every other platform requires manual `/topia completion-gate` invocation.
-- Cursor/Windsurf/Antigravity rule-injection is best-effort — the underlying LLM still decides whether to read and apply the rule. `strict` mode on these platforms is advisory, not enforced.
+- Only Claude Code gets native `Stop` (completion-gate) via settings presets without third-party mapping quirks. Cursor maps `Stop` → `stop` when third-party hooks are enabled.
+- Cursor/Windsurf/Antigravity **rule** install (`Topia hooks install --platform cursor`) is best-effort — the LLM still decides whether to read rules. Native Cursor `hooks.json` is separate from `.mdc` rules.
 - `Topia hooks status --platform all` is the single source of truth for "what am I actually getting on this machine." Check it after install.
 
 See also: `docs/MULTI-PLATFORM.md` (skill compilation matrix).

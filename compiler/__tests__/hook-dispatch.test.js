@@ -63,6 +63,39 @@ describe('dispatchHook', () => {
     assert.match(io.getOut(), /enforcing/);
   });
 
+  test('cursor hook emits JSON permission allow', async () => {
+    const prevHook = process.env.CURSOR_HOOK;
+    const prevVer = process.env.CURSOR_VERSION;
+    process.env.CURSOR_HOOK = '1';
+    delete process.env.CURSOR_VERSION;
+    const io = makeIO({ stdinData: '{}' });
+    const code = await dispatchHook(['readiness', '--gentle'], io);
+    process.env.CURSOR_HOOK = prevHook;
+    if (prevVer !== undefined) process.env.CURSOR_VERSION = prevVer;
+    assert.strictEqual(code, 0);
+    const out = JSON.parse(io.getOut().trim());
+    assert.strictEqual(out.permission, 'allow');
+  });
+
+  test('CURSOR_VERSION env emits JSON without CURSOR_HOOK', async () => {
+    const prevHook = process.env.CURSOR_HOOK;
+    const prevVer = process.env.CURSOR_VERSION;
+    delete process.env.CURSOR_HOOK;
+    process.env.CURSOR_VERSION = '2.6.20';
+    const io = makeIO({
+      stdinData: JSON.stringify({ hook_event_name: 'postToolUse', tool_name: 'Edit' }),
+    });
+    const code = await dispatchHook(['dependency-doctor', '--gentle'], io);
+    if (prevHook !== undefined) process.env.CURSOR_HOOK = prevHook;
+    else delete process.env.CURSOR_HOOK;
+    if (prevVer !== undefined) process.env.CURSOR_VERSION = prevVer;
+    else delete process.env.CURSOR_VERSION;
+    assert.strictEqual(code, 0);
+    const out = JSON.parse(io.getOut().trim());
+    assert.ok(out.additional_context);
+    assert.match(out.additional_context, /dependency-doctor/);
+  });
+
   test('malformed stdin does not crash', async () => {
     const io = makeIO({ stdinData: 'not json at all' });
     const code = await dispatchHook(['completion-gate', '--gentle'], io);

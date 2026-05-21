@@ -5,6 +5,13 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const { isCursorRuntime, writeHookResponse } = require('../lib/cursor-io.cjs');
+
+const hookLines = [];
+const origLog = console.log.bind(console);
+console.log = (...args) => {
+  hookLines.push(args.map((a) => (typeof a === 'string' ? a : String(a))).join(' '));
+};
 
 const cwd = process.cwd();
 const hash = Buffer.from(cwd).toString('base64url').slice(0, 16);
@@ -187,3 +194,10 @@ console.log(`
 │  If any item is unclear → address it now.           │
 └─────────────────────────────────────────────────────┘
 `);
+
+const stopText = hookLines.join('\n').trim();
+if (isCursorRuntime()) {
+  writeHookResponse(stopText ? { additional_context: stopText } : {});
+} else {
+  for (const line of hookLines) origLog(line);
+}
