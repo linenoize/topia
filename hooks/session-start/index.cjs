@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const { isCursorRuntime, writeHookResponse } = require('../lib/cursor-io.cjs');
+const { resolveTopiaDir, topiaDirForWrite } = require('../lib/topia-paths.cjs');
 
 const hookLines = [];
 const origLog = console.log.bind(console);
@@ -13,7 +14,8 @@ console.log = (...args) => {
 };
 
 const cwd = process.cwd();
-const TopiaDir = path.join(cwd, '.topia');
+const TopiaDirRead = resolveTopiaDir(cwd);
+const TopiaDirWrite = topiaDirForWrite(cwd);
 
 // Initialize fresh session state (shared between context-watch and metrics-collector)
 const hash = Buffer.from(cwd).toString('base64url').slice(0, 16);
@@ -45,10 +47,13 @@ function detectRuneMigration() {
   const hasRuneDir = fs.existsSync(runeDir) && fs.statSync(runeDir).isDirectory();
   if (!hasRuneDir && !runeKitPath) return;
 
-  // Suppress if already migrated or explicitly skipped
-  const migratedFlag = path.join(TopiaDir, 'migrated-from-rune.flag');
-  const skipFlag = path.join(TopiaDir, 'skip-rune-migration.flag');
-  if (fs.existsSync(migratedFlag) || fs.existsSync(skipFlag)) return;
+  function topiaFlagExists(name) {
+    return (
+      fs.existsSync(path.join(TopiaDirRead, name)) ||
+      fs.existsSync(path.join(TopiaDirWrite, name))
+    );
+  }
+  if (topiaFlagExists('migrated-from-rune.flag') || topiaFlagExists('skip-rune-migration.flag')) return;
 
   console.log('\n=== Topia: Rune migration recommended ===');
   if (hasRuneDir) {
@@ -79,7 +84,9 @@ function detectRuneMigration() {
   console.log('');
 }
 
-if (fs.existsSync(TopiaDir)) {
+const hasTopiaState = fs.existsSync(TopiaDirRead) || fs.existsSync(TopiaDirWrite);
+if (hasTopiaState) {
+  const TopiaDir = TopiaDirRead;
   const stateFiles = [
     'progress.md',
     'decisions.md',

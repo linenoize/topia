@@ -143,12 +143,15 @@ What it produces:
   - **Critical Invariants** — shared constants exported and imported in ≥3 places
   - **State Machine Rules** — reducer/switch shapes with state literal pairs
   - **Cross-File Consistency** — literal tuples mirrored across ≥3 files
-- `CLAUDE.md` — adds a pointer block between `<!-- @Topia-invariants-pointer:start -->` and `<!-- @Topia-invariants-pointer:end -->` listing top danger-zone globs so every session sees them.
+- `CLAUDE.md` — adds two auto-generated pointer blocks:
+  - **Invariants** (`<!-- @Topia-invariants-pointer:start -->` … `end`) — top danger-zone globs; links to `.topia/INVARIANTS.md`.
+  - **Context** (`<!-- @Topia-context-pointer:start -->` … `end`) — inventory of `.topia/` session files (`decisions.md`, `plan-*.md`, `adr/`, etc.) so agents know persisted state exists beyond invariants.
+- Skip directives: `<!-- @Topia-invariants-pointer:skip -->` or `<!-- @Topia-context-pointer:skip -->` in `CLAUDE.md` prevents re-injection of that block.
 
 Merge rules (safe re-runs):
 - If `.topia/INVARIANTS.md` exists, user edits above `## Auto-detected (new)` are **never** overwritten.
 - New detections replace **only** the content under `## Auto-detected (new)`.
-- If a user sets `<!-- @Topia-invariants-pointer:skip -->` anywhere in `CLAUDE.md`, the pointer block is not re-injected.
+- If a user sets a skip directive for either pointer block in `CLAUDE.md`, that block is not re-injected.
 
 Emit signal `invariants.seeded` with `{danger_count, critical_count, state_count, cross_count}` when done. `session-bridge` listens in Phase 3 to surface the loudest rules at session start.
 

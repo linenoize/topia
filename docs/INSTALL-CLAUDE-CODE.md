@@ -37,7 +37,7 @@ Restart Claude Code if `/Topia:build` or `/topia build` does not appear.
 
 ```bash
 claude plugin marketplace add protopia/skill-topia
-claude plugin install skill-topia@protopia
+claude plugin install Topia@protopia
 # Then wire hooks from the installed plugin (see "node … setup" above), or from a clone.
 ```
 
@@ -107,12 +107,60 @@ Most teams want **plugin install + `setup --global`**.
 
 ## Updates
 
+Claude Code only offers an update when the **published catalog version** is newer than your cached plugin. That version comes from `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json` (both must match `package.json` — use `node scripts/bump-version.js X.Y.Z` before you push a release).
+
+### Pull a new release (users)
+
 ```text
 /plugin marketplace update protopia
 /plugin update Topia@protopia
+/reload-plugins
 ```
 
-Or, for a local clone: `git pull` in the skill-topia directory, then `/reload-plugins`.
+Restart Claude Code if skills or hooks still look stale after `/reload-plugins`.
+
+**Local clone instead of marketplace:** `git pull` in the skill-topia directory, then `/reload-plugins`.
+
+### After updating
+
+| What | Needed after update? |
+|------|----------------------|
+| Skills (`/Topia:*`, `/topia …`) | No — picked up from the new plugin tree after reload/restart. |
+| Plugin hooks (session-start, secrets-scan, quarantine, …) | No — they use `${CLAUDE_PLUGIN_ROOT}` and follow the installed plugin automatically. |
+| Dispatch hooks (`readiness`, `guardian`, `completion-gate`, `dependency-doctor` from `topia setup --global`) | **Re-run setup once** — `~/.claude/settings.json` stores a fixed path to `topia.js` in the plugin cache; a new version folder may leave dispatch hooks pointing at the old copy. |
+
+**Re-wire dispatch hooks** (recommended after every plugin update if you use `setup --global`; always safe):
+
+```bash
+node ~/.claude/plugins/cache/protopia/Topia/*/compiler/bin/topia.js setup --global --preset gentle
+```
+
+On Windows, replace `*` with the version folder (e.g. `2.0.2`), or run from your clone:
+
+```powershell
+cd path\to\skill-topia
+node compiler\bin\topia.js setup --global --preset gentle
+```
+
+**Optional checks:**
+
+```bash
+node <path-to-topia>/compiler/bin/topia.js doctor --hooks
+```
+
+**Per application repo** (only when release notes call for it — e.g. `.topia/` path normalization): `/topia onboard` or `node …/skills/onboard/scripts/onboard-invariants.js --root .` in that project. Routine skill updates do not require re-onboard.
+
+### Publish a release (maintainers)
+
+```bash
+node scripts/bump-version.js X.Y.Z    # package.json, plugin.json, marketplace.json, docs/index.html
+# Edit CHANGELOG.md and README "What's New" manually
+node scripts/version-sync-check.js
+claude plugin validate .
+git commit && git push
+```
+
+Users can then run the **Pull a new release** steps above.
 
 ---
 

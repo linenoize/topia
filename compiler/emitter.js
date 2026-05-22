@@ -245,14 +245,14 @@ async function applyInjections(body, rules) {
 }
 
 /**
- * Load org config from .Topia/org/org.md if it exists.
+ * Load org config from .topia/org/org.md if it exists.
  * Returns parsed org config or null if not present.
  *
  * @param {string} TopiaRoot - path to Topia source root
  * @returns {Promise<object|null>} parsed org config
  */
 async function loadOrgConfig(TopiaRoot) {
-  const orgPath = path.join(TopiaRoot, '.Topia', 'org', 'org.md');
+  const orgPath = path.join(TopiaRoot, '.topia', 'org', 'org.md');
   if (!existsSync(orgPath)) return null;
 
   try {
@@ -399,7 +399,7 @@ function outputFileName(skillName, adapter) {
   // Load reference injection rules from packs
   const injectionRules = await loadInjectionRules(extensionsDir);
 
-  // Load org config from .Topia/org/org.md
+  // Load org config from .topia/org/org.md
   const orgConfig = await loadOrgConfig(TopiaRoot);
 
   // Build skills — collect parsed data for skill-index + openclaw reuse

@@ -167,13 +167,15 @@ describe('runOnboardInvariants — end-to-end', () => {
       const result = await runOnboardInvariants({ root });
 
       assert.strictEqual(result.invariants.action, 'seeded');
-      assert.ok(['created', 'updated'].includes(result.claudeMd.action));
+      assert.ok(['created', 'updated'].includes(result.claudeMd.invariants.action));
+      assert.ok(['created', 'updated'].includes(result.claudeMd.context.action));
 
-      const invariants = await readFile(path.join(root, '.Topia', 'INVARIANTS.md'), 'utf8');
+      const invariants = await readFile(path.join(root, '.topia', 'INVARIANTS.md'), 'utf8');
       assert.ok(invariants.includes('Project Invariants'));
 
       const claudeMd = await readFile(path.join(root, 'CLAUDE.md'), 'utf8');
       assert.ok(claudeMd.includes('@Topia-invariants-pointer:start'));
+      assert.ok(claudeMd.includes('@Topia-context-pointer:start'));
       assert.ok(claudeMd.includes('.topia/INVARIANTS.md'));
     } finally {
       await rm(root, { recursive: true, force: true });
@@ -196,7 +198,7 @@ describe('runOnboardInvariants — end-to-end', () => {
       const result = await runOnboardInvariants({ root });
       assert.strictEqual(result.invariants.action, 'seeded');
 
-      const invariants = await readFile(path.join(root, '.Topia', 'INVARIANTS.md'), 'utf8');
+      const invariants = await readFile(path.join(root, '.topia', 'INVARIANTS.md'), 'utf8');
       const hasSkillRouter = invariants.includes('skills/skill-router');
       const hasCook = invariants.includes('skills/build');
       const hasUiPack = invariants.includes('extensions/ui');
@@ -221,7 +223,7 @@ describe('runOnboardInvariants — end-to-end', () => {
 
       await runOnboardInvariants({ root });
 
-      const invariantsPath = path.join(root, '.Topia', 'INVARIANTS.md');
+      const invariantsPath = path.join(root, '.topia', 'INVARIANTS.md');
       const original = await readFile(invariantsPath, 'utf8');
       const edited = original.replace(
         '## Auto-detected (new)',

@@ -49,6 +49,7 @@ import { formatSetupResult, runSetup } from '../commands/setup.js';
 import { generateDashboardHTML } from '../dashboard.js';
 import { checkNexusIntegrity, formatDoctorResults, formatNexusResults, runDoctor } from '../doctor.js';
 import { appendGitignoreChecks } from '../lib/ensure-gitignore.js';
+import { appendTopiaPathChecks } from '../lib/topia-paths.js';
 import { buildAll } from '../emitter.js';
 import { collectStats, detectMemoryHealth, renderStatus, renderStatusJson } from '../status.js';
 import { collectGraphData, generateNexusHTML } from '../visualizer.js';
@@ -291,6 +292,7 @@ async function cmdDoctor(projectRoot, args) {
       topiaRoot: TOPIA_ROOT,
     });
     await appendGitignoreChecks(results, projectRoot);
+    appendTopiaPathChecks(results, projectRoot);
     log(formatDoctorResults(results));
 
     // Also run nexus check in source-only mode
@@ -314,6 +316,7 @@ async function cmdDoctor(projectRoot, args) {
   });
 
   await appendGitignoreChecks(results, projectRoot);
+  appendTopiaPathChecks(results, projectRoot);
   log(formatDoctorResults(results));
 
   // Also run nexus check

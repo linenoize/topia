@@ -18,13 +18,13 @@ describe('context-budget', () => {
     assert.ok(a.askQuestionSpec.choices.some((c) => c.id === 'all'));
   });
 
-  test('apply all writes context-budget.json', () => {
+  test('apply all writes context-budget.json', async () => {
     root = mkdtempSync(join(tmpdir(), 'topia-cb-'));
     mkdirSync(join(root, '.topia'), { recursive: true });
     const long = '# Test\n' + 'line\n'.repeat(160);
     writeFileSync(join(root, 'CLAUDE.md'), long, 'utf-8');
     const audit = auditContextBudget(root);
-    const r = applyRemediations(root, ['all'], audit.metrics);
+    const r = await applyRemediations(root, ['all'], audit.metrics);
     assert.ok(r.applied.length >= 1);
     const saved = JSON.parse(readFileSync(join(root, '.topia', 'context-budget.json'), 'utf-8'));
     assert.ok(saved.chosen.includes('slim-claude-md') || saved.chosen.includes('all'));

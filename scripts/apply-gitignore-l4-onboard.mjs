@@ -845,7 +845,7 @@ patch(
 
 patch(
   'hooks/session-start/index.cjs',
-  `const TopiaDir = path.join(cwd, '.Topia');`,
+  `const TopiaDir = path.join(cwd, '.topia');`,
   `const TopiaDir = path.join(cwd, '.topia');`,
 );
 

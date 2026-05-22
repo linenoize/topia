@@ -40,7 +40,7 @@ const IGNORED_DIRS = new Set([
   '.venv',
   'venv',
   'target',
-  '.Topia',
+  '.topia',
 ]);
 
 const SOURCE_EXTS = new Set(['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.py', '.go', '.rs']);

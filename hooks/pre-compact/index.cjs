@@ -8,9 +8,11 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const { resolveTopiaDir, topiaDirForWrite } = require('../lib/topia-paths.cjs');
 
 const cwd = process.cwd();
-const TopiaDir = path.join(cwd, '.Topia');
+const TopiaDirRead = resolveTopiaDir(cwd);
+const TopiaDirWrite = topiaDirForWrite(cwd);
 
 // Read context-watch state (tool counts, session timing)
 const hash = Buffer.from(cwd).toString('base64url').slice(0, 16);
@@ -28,9 +30,9 @@ try {
 const stateFiles = ['progress.md', 'decisions.md', 'conventions.md'];
 const summaries = [];
 
-if (fs.existsSync(TopiaDir)) {
+if (fs.existsSync(TopiaDirRead)) {
   for (const file of stateFiles) {
-    const filePath = path.join(TopiaDir, file);
+    const filePath = path.join(TopiaDirRead, file);
     if (fs.existsSync(filePath)) {
       try {
         const content = fs.readFileSync(filePath, 'utf-8').trim();
@@ -77,11 +79,11 @@ if (summaries.length > 0) {
 // Write snapshot if we have anything worth saving
 if (watchState || summaries.length > 0) {
   try {
-    if (!fs.existsSync(TopiaDir)) {
-      fs.mkdirSync(TopiaDir, { recursive: true });
+    if (!fs.existsSync(TopiaDirWrite)) {
+      fs.mkdirSync(TopiaDirWrite, { recursive: true });
     }
     fs.writeFileSync(
-      path.join(TopiaDir, 'pre-compact-snapshot.md'),
+      path.join(TopiaDirWrite, 'pre-compact-snapshot.md'),
       snapshot.join('\n')
     );
     console.log(`[Topia pre-compact] State snapshot saved (${watchState ? watchState.count : 0} tool calls, ${summaries.length} state files).`);

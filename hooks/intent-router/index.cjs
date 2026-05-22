@@ -36,7 +36,7 @@ process.stdin.on('end', () => {
     path.join(pluginRoot, 'dist', 'cursor', 'skill-index.json'),
     path.join(pluginRoot, 'dist', 'generic', 'skill-index.json'),
     // Also check .topia/ for locally cached index
-    path.join(process.cwd(), '.Topia', 'skill-index.json'),
+    path.join(require('../lib/topia-paths.cjs').resolveTopiaDir(process.cwd()), 'skill-index.json'),
   ];
 
   let index = null;

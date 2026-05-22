@@ -128,7 +128,7 @@ function loadPrivacyConfig() {
   const defaults = { block: [], warn: [], allow: [], elevatedSkills: [] };
 
   const candidates = [
-    path.join(process.cwd(), '.Topia', 'privacy.json'),
+    path.join(process.cwd(), '.topia', 'privacy.json'),
     path.join(process.cwd(), 'privacy.json'),
   ];
 

@@ -46,7 +46,7 @@ function chainEntry(chain, session = 'test-session') {
 }
 
 async function setupMetrics(tmpDir, sessions = [], chains = [], skillTotals = null) {
-  const metricsDir = path.join(tmpDir, '.Topia', 'metrics');
+  const metricsDir = path.join(tmpDir, '.topia', 'metrics');
   await mkdir(metricsDir, { recursive: true });
 
   if (sessions.length > 0) {
@@ -244,7 +244,7 @@ describe('analytics — edge cases', () => {
   });
 
   it('handles malformed JSONL lines gracefully', async () => {
-    const metricsDir = path.join(tmpDir, '.Topia', 'metrics');
+    const metricsDir = path.join(tmpDir, '.topia', 'metrics');
     await mkdir(metricsDir, { recursive: true });
     await writeFile(
       path.join(metricsDir, 'sessions.jsonl'),
@@ -255,7 +255,7 @@ describe('analytics — edge cases', () => {
   });
 
   it('handles empty JSONL files', async () => {
-    const metricsDir = path.join(tmpDir, '.Topia', 'metrics');
+    const metricsDir = path.join(tmpDir, '.topia', 'metrics');
     await mkdir(metricsDir, { recursive: true });
     await writeFile(path.join(metricsDir, 'sessions.jsonl'), '');
     const overview = await getSessionOverview(tmpDir, 30);
@@ -289,7 +289,7 @@ describe('analytics — edge cases', () => {
   });
 
   it('handles corrupted skills.json', async () => {
-    const metricsDir = path.join(tmpDir, '.Topia', 'metrics');
+    const metricsDir = path.join(tmpDir, '.topia', 'metrics');
     await mkdir(metricsDir, { recursive: true });
     await writeFile(path.join(metricsDir, 'skills.json'), 'NOT JSON');
     // Should not throw

@@ -39,10 +39,10 @@
  *   node load-invariants.js --root <project-root> [--json]
  */
 
-import { existsSync } from 'node:fs';
 import { readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
+import { INVARIANTS_REL_PATH, resolveInvariantsFile } from '../../../compiler/lib/topia-paths.js';
 
 const DEFAULT_BUDGET_TOKENS = 500;
 const STALE_AGE_DAYS = 30;
@@ -309,22 +309,24 @@ export function renderPreview(rules, { budgetTokens = DEFAULT_BUDGET_TOKENS } = 
 export async function loadInvariants({ root, budgetTokens = DEFAULT_BUDGET_TOKENS } = {}) {
   if (!root) throw new Error('loadInvariants: root is required');
 
-  const invariantsPath = path.join(root, '.Topia', 'INVARIANTS.md');
+  const resolved = resolveInvariantsFile(root);
+  const canonicalPath = path.join(root, INVARIANTS_REL_PATH);
   const empty = {
     loaded: false,
     count: 0,
-    path: invariantsPath,
+    path: canonicalPath,
     stale: false,
+    legacyFilename: false,
     stats: { danger: 0, critical: 0, state: 0, cross: 0, total: 0, archivedSkipped: false },
     rules: [],
     preview: '',
     overflow: 0,
   };
-  if (!existsSync(invariantsPath)) return empty;
+  if (!resolved.found) return empty;
 
   let raw;
   try {
-    raw = await readFile(invariantsPath, 'utf8');
+    raw = await readFile(resolved.path, 'utf8');
   } catch {
     return empty;
   }
@@ -344,7 +346,7 @@ export async function loadInvariants({ root, budgetTokens = DEFAULT_BUDGET_TOKEN
 
   let stale = false;
   try {
-    const st = await stat(invariantsPath);
+    const st = await stat(resolved.path);
     const ageDays = (Date.now() - st.mtimeMs) / (1000 * 60 * 60 * 24);
     stale = ageDays > STALE_AGE_DAYS;
   } catch {
@@ -356,8 +358,9 @@ export async function loadInvariants({ root, budgetTokens = DEFAULT_BUDGET_TOKEN
   return {
     loaded: rules.length > 0,
     count: rules.length,
-    path: invariantsPath,
+    path: canonicalPath,
     stale,
+    legacyFilename: resolved.legacy,
     stats,
     rules,
     preview,

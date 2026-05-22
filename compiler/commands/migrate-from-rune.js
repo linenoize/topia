@@ -23,6 +23,7 @@ import { copyFileSync, existsSync, mkdirSync, readdirSync, renameSync, statSync,
 import os from 'node:os';
 import path from 'node:path';
 import { createInterface } from 'node:readline';
+import { normalizeTopiaDir, planRuneFileCopies, topiaDirForWrite } from '../lib/topia-paths.js';
 
 const RUNE_STATE_FILES = [
   'decisions.md',
@@ -125,9 +126,10 @@ function checkExistingFlags(topiaDir) {
 function planMigration(cwd, homeDir) {
   const runeState = detectRuneState(cwd);
   const runeKit = detectRuneKit(homeDir);
-  const topiaDir = path.join(cwd, '.topia');
+  const topiaDir = topiaDirForWrite(cwd);
   const flags = checkExistingFlags(topiaDir);
-  return { cwd, topiaDir, runeState, runeKit, flags };
+  const fileCopies = runeState.present ? planRuneFileCopies(runeState.files) : [];
+  return { cwd, topiaDir, runeState, runeKit, flags, fileCopies };
 }
 
 function printPlan(plan, opts) {
@@ -147,7 +149,12 @@ function printPlan(plan, opts) {
   lines.push('');
   if (runeState.present) {
     lines.push(`  .rune/ detected at ${runeState.dir}`);
-    if (runeState.files.length) {
+    if (plan.fileCopies?.length) {
+      const copyDesc = plan.fileCopies.map(({ src, dest }) =>
+        src === dest ? src : `${src} → ${dest}`,
+      );
+      lines.push(`    files to copy: ${copyDesc.join(', ')}`);
+    } else if (runeState.files.length) {
       lines.push(`    files to copy: ${runeState.files.join(', ')}`);
     }
     if (runeState.dirs.length) {
@@ -189,8 +196,15 @@ export async function migrateFromRune({
   autoYes = false,
   homeDir,
 } = {}) {
+  if (!dryRun) {
+    const pathNorm = normalizeTopiaDir(cwd);
+    if (pathNorm.changed && pathNorm.actions.length > 0) {
+      console.log(`  ℹ Normalized Topia paths: ${pathNorm.actions.join('; ')}`);
+    }
+  }
+
   const plan = planMigration(cwd, homeDir);
-  const { topiaDir, runeState, runeKit } = plan;
+  const { topiaDir, runeState, runeKit, fileCopies } = plan;
 
   // --skip path: write flag and exit
   if (skip) {
@@ -233,16 +247,20 @@ export async function migrateFromRune({
   if (runeState.present) {
     if (!existsSync(topiaDir)) mkdirSync(topiaDir, { recursive: true });
 
-    for (const file of runeState.files) {
-      const src = path.join(runeState.dir, file);
-      const dest = path.join(topiaDir, file);
+    for (const { src: srcName, dest: destName } of fileCopies) {
+      const src = path.join(runeState.dir, srcName);
+      const dest = path.join(topiaDir, destName);
       if (existsSync(dest) && !force) {
         result.stateCopied.skipped.push(dest);
-        console.log(`  ⚠ skip (exists): .topia/${file}`);
+        console.log(`  ⚠ skip (exists): .topia/${destName}`);
       } else {
         copyFileSync(src, dest);
         result.stateCopied.copied.push(dest);
-        console.log(`  ✓ copied .rune/${file} → .topia/${file}`);
+        const label =
+          srcName === destName
+            ? `.rune/${srcName} → .topia/${destName}`
+            : `.rune/${srcName} → .topia/${destName}`;
+        console.log(`  ✓ copied ${label}`);
       }
     }
 
@@ -301,4 +319,13 @@ export async function migrateFromRune({
 }
 
 // Export for tests
-export { detectRuneKit, detectRuneState, MIGRATED_FLAG, planMigration, RUNE_STATE_DIRS, RUNE_STATE_FILES, SKIP_FLAG };
+export {
+  detectRuneKit,
+  detectRuneState,
+  MIGRATED_FLAG,
+  planMigration,
+  planRuneFileCopies,
+  RUNE_STATE_DIRS,
+  RUNE_STATE_FILES,
+  SKIP_FLAG,
+};

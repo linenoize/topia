@@ -4,8 +4,13 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { describe, test } from 'node:test';
 import {
+  applyContextPointer,
   applyInvariantsPointer,
+  buildContextPointerBlock,
   buildPointerBlock,
+  CONTEXT_MARKER_END,
+  CONTEXT_MARKER_START,
+  injectContextPointer,
   injectInvariantsPointer,
   MARKER_END,
   MARKER_START,
@@ -93,6 +98,40 @@ describe('injectInvariantsPointer — idempotency', () => {
     const result = injectInvariantsPointer({ claudeMd: input, globs: ['x/**'] });
     assert.strictEqual(result.action, 'error');
     assert.strictEqual(result.reason, 'marker-mismatch');
+  });
+});
+
+describe('injectContextPointer', () => {
+  test('creates context pointer block', () => {
+    const { action, content } = injectContextPointer({ claudeMd: '# App\n' });
+    assert.strictEqual(action, 'created');
+    assert.ok(content.includes(CONTEXT_MARKER_START));
+    assert.ok(content.includes(CONTEXT_MARKER_END));
+    assert.ok(content.includes('decisions.md'));
+    assert.ok(content.includes('plan-*.md'));
+  });
+
+  test('idempotent when block exists', () => {
+    const block = buildContextPointerBlock();
+    const first = injectContextPointer({ claudeMd: `# App\n\n${block}\n` });
+    const second = injectContextPointer({ claudeMd: first.content });
+    assert.strictEqual(second.action, 'unchanged');
+  });
+});
+
+describe('applyContextPointer — filesystem', () => {
+  test('writes context block to CLAUDE.md', async () => {
+    const root = await mkdtemp(path.join(tmpdir(), 'Topia-inject-ctx-'));
+    try {
+      const claudeMdPath = path.join(root, 'CLAUDE.md');
+      await writeFile(claudeMdPath, '# Proj\n', 'utf8');
+      const result = await applyContextPointer({ claudeMdPath });
+      assert.strictEqual(result.action, 'created');
+      const onDisk = await readFile(claudeMdPath, 'utf8');
+      assert.ok(onDisk.includes(CONTEXT_MARKER_START));
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
   });
 });
 

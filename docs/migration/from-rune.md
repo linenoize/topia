@@ -49,7 +49,7 @@ Files at the top of `.rune/` (the ones Topia recognises):
 | `cumulative-notes.md` | → | `cumulative-notes.md` |
 | `learnings.jsonl` | → | `learnings.jsonl` |
 | `task-notes.md` | → | `task-notes.md` |
-| `invariants.md` / `INVARIANTS.md` | → | same |
+| `invariants.md` / `INVARIANTS.md` | → | `INVARIANTS.md` (canonical; lowercase source normalized) |
 
 And directories:
 

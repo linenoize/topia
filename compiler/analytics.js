@@ -11,6 +11,7 @@
 import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
+import { resolveTopiaDir } from './lib/topia-paths.js';
 
 // ─── File Readers ───
 
@@ -30,7 +31,7 @@ function readJsonl(content) {
 }
 
 async function loadMetrics(TopiaRoot) {
-  const dir = path.join(TopiaRoot, '.Topia', 'metrics');
+  const dir = path.join(resolveTopiaDir(TopiaRoot), 'metrics');
   const files = {
     sessions: path.join(dir, 'sessions.jsonl'),
     chains: path.join(dir, 'chains.jsonl'),

@@ -6,6 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const { isCursorRuntime, writeHookResponse } = require('../lib/cursor-io.cjs');
+const { topiaDirForWrite } = require('../lib/topia-paths.cjs');
 
 const hookLines = [];
 const origLog = console.log.bind(console);
@@ -20,7 +21,7 @@ const hash = Buffer.from(cwd).toString('base64url').slice(0, 16);
 
 const metricsJsonl = path.join(os.tmpdir(), `Topia-metrics-${hash}.jsonl`);
 const counterFile = path.join(os.tmpdir(), `Topia-context-watch-${hash}.json`);
-const TopiaMetricsDir = path.join(cwd, '.Topia', 'metrics');
+const TopiaMetricsDir = path.join(topiaDirForWrite(cwd), 'metrics');
 
 // Resolve skill names → expected model from agent frontmatter
 // Reads agents/*.md at flush time — no runtime model detection needed
