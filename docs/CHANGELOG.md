@@ -4,6 +4,22 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
+## [2.0.3] — 2026-05-22
+
+### Fixed
+
+- **`.gitignore`** — `build/` → `/build/` so `skills/build/` (L1 orchestrator) is no longer ignored; skill is tracked in git for all clones.
+- **Nexus visualizer** — renders `## Calls` synapse edges (cyan) with Cross-refs / Synapses / Signals toggles; stats show synapse count.
+
+### Changed
+
+- **Memory pipeline** — `journal` calls `neural-memory` after ADRs; Journal Update includes a memory digest; `plan` / `recon` / `research` / `build` use `Topia:neural-memory`; session-start hook prints a memory checklist.
+- **`topia status`** — reports agora-memory and neural-memory MCP registration separately.
+- **`validate-nexus.js`** — parses table-row Calls entries via `compiler/lib/synapse-tables.js`.
+- **Docs** — `NEXUS-GLOSSARY` and agora integration doc clarify journal vs neural-memory vs agora backends.
+
+---
+
 ## [2.0.1] — 2026-05-20
 
 ### Added
