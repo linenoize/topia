@@ -1,8 +1,8 @@
-# Jira CSV Generation Instructions (Protopia Board – Feature/Task/Bug Only)
+# Jira CSV Generation Instructions (Feature/Task/Bug Only)
 
 ## 1. Goal
 
-Generate a **CSV file** of Jira issues for the **Protopia Development** project that can be imported into Jira.
+Generate a **CSV file** of Jira issues for your target Jira project that can be imported into Jira.
 Each row is a single Jira issue (`Feature`, `Task`, or `Bug`), sized to fit within a sprint and written so that:
 
 - stakeholders can quickly recognize what request the issue is addressing,
