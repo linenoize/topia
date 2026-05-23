@@ -1,6 +1,6 @@
 ---
 name: fix
-description: "Apply code changes and fixes. Writes implementation code, applies bug fixes, and verifies changes with tests. Core action hub in the development mesh."
+description: "Apply code changes and fixes. Writes implementation code, applies bug fixes, and verifies changes with tests. Core action hub in the Topia nexus."
 metadata:
   author: skill-topia
   version: "1.0.0"
@@ -9,7 +9,7 @@ metadata:
   group: development
   tools: "Read, Write, Edit, Bash, Glob, Grep"
   emit: code.changed, agent.stuck
-  listen: bug.diagnosed, review.issues, preflight.blocked, security.blocked, oracle.response
+  listen: bug.diagnosed, review.issues, readiness.blocked, security.blocked, oracle.response
 ---
 
 # fix
@@ -39,7 +39,7 @@ If unsure whether the test is wrong or the implementation is wrong → call `Top
 - `verification` (L3): validate fix doesn't break existing functionality
 - `docs-seeker` (L3): check correct API usage before applying changes
 - `hallucination-guard` (L3): verify imports after code changes
-- `scout` (L2): find related code before applying changes
+- `recon` (L2): find related code before applying changes
 - `neural-memory` (L3): after fix verified — capture fix pattern (cause → solution)
 - `adversary` (L2): on `agent.stuck` after 2+ failed attempts — oracle-mode dispatches stateless second-model pass to break confirmation-bias loop
 
@@ -50,7 +50,7 @@ If unsure whether the test is wrong or the implementation is wrong → call `Top
 - `review` (L2): bug found during review, needs fixing
 - `surgeon` (L2): apply refactoring changes
 - `review-intake` (L2): apply fixes identified during structured review intake
-- `graft` (L2): apply integration fixes for grafted code
+- `integrate` (L2): apply integration fixes for integrated code
 - `scaffold` (L1): apply fixes during project scaffolding
 
 ## Cross-Hub Connections
@@ -98,7 +98,7 @@ Before locating code, classify the incoming error/task into a recovery category 
 
 Find the exact files and lines to change.
 
-- Use `Topia:scout` to locate the relevant files, functions, and surrounding code
+- Use `Topia:recon` to locate the relevant files, functions, and surrounding code
 - Use `Read` to examine the specific file:line identified in the debug report or plan
 - Use `Glob` to find related files: types, tests, config that may also need updating
 - Map all touch points before writing a single line of code
@@ -220,7 +220,7 @@ Produce a structured summary of all changes made.
 
 If fix requires touching >3 files not in the diagnosis → re-diagnose. You're probably fixing a symptom.
 
-## Mesh Gates
+## Nexus Gates
 
 | Gate | Requires | If Missing |
 |------|----------|------------|

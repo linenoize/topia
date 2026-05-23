@@ -1,5 +1,5 @@
 // Topia Metrics Collector Hook
-// PostToolUse on Skill — captures skill invocations for H3 mesh analytics
+// PostToolUse on Skill — captures skill invocations for H3 nexus analytics
 // Append-only JSONL to tmpdir. Flushed to .topia/metrics/ at session end.
 // Async: true — never blocks skill execution.
 //

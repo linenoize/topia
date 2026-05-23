@@ -1,6 +1,6 @@
 # Topia CLI
 
-The Topia CLI compiles 61 AI coding skills into any IDE platform. One skill toolkit, every editor.
+The Topia CLI compiles 65 AI coding skills into any IDE platform. One skill toolkit, every editor.
 
 ---
 
@@ -31,10 +31,11 @@ claude
 npx @linenoize/topia doctor
 ```
 
-That's it. 62 skills are now active in your AI assistant.
+That's it. 65 skills are now active in your AI assistant.
 
-> **Pro Tip**: For Claude Code, skip the CLI entirely. Install Topia as a plugin:
-> `claude plugin add linenoize/topia` -- skills load natively with zero compilation.
+> **Pro Tip**: For Claude Code, use the linenoize marketplace (no compilation):
+> `/plugin marketplace add linenoize/topia` then `/plugin install Topia@linenoize`.
+> See [`docs/INSTALL-CLAUDE-CODE.md`](../INSTALL-CLAUDE-CODE.md).
 
 ---
 
@@ -49,13 +50,13 @@ npx @linenoize/topia init
 ```
 
 ```
-  +----------------------------------------------+
-  |  Topia -- Less skills. Deeper connections.      |
-  +----------------------------------------------+
+  +---------+
+  |  Topia  |
+  +---------+
 
   -> Detected: cursor
   -> Created topia.config.json
-  -> Built 62 skills + 14 extensions to .cursor/rules/
+  -> Built 65 skills + 10 extensions to .cursor/rules/
 ```
 
 **Flags**:
@@ -83,7 +84,7 @@ npx @linenoize/topia build
   [transform] Platform: cursor
   [transform] Resolved 142 cross-references
   [transform] Resolved 87 tool-name references
-  [emit]      62 skills + 14 extensions
+  [emit]      65 skills + 10 extensions
 
   -> Built 67 files to .cursor/rules/
 ```

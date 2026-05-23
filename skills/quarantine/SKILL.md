@@ -36,7 +36,7 @@ None. Pure advisory hook — no skill fanout. Privacy invariant: telemetry persi
 
 ## Called By (inbound)
 
-- `sentinel` (L2): listens `quarantine.notice.emitted` to escalate when the same session quarantines the same untrusted MCP namespace ≥ 5× (suggests prompt-injection attempt)
+- `guardian` (L2): listens `quarantine.notice.emitted` to escalate when the same session quarantines the same untrusted MCP namespace ≥ 5× (suggests prompt-injection attempt)
 - `integrity-check` (L3): listens `quarantine.notice.emitted` to bias toward stricter scanning of any state file that incorporated quarantined content
 - Auto-installed via `hooks/hooks.json` (Claude Code native plugin path) and `compiler/commands/hooks/presets.js` (cross-platform `Topia hooks install` path)
 

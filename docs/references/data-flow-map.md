@@ -1,10 +1,8 @@
 # Data Flow Map — Skill-to-Skill Data Dependencies
 
-Version: 1.0.0 | Since: v2.9.0
-
 ## Purpose
 
-The mesh has three communication layers:
+The nexus has three communication layers:
 1. **Invocation** — skill A calls skill B (`build` → `test`, `team` → `build`)
 2. **Signals** — event-driven notifications (`emit: phase.complete` → `listen: phase.complete`)
 3. **Data flow** — structured data passes from skill A's output to skill B's input via `chain_metadata.exports`
@@ -46,7 +44,7 @@ plan --[plan_file]--> adversary    # adversary stress-tests the plan
 ### Cook → Review/Test Chain (implementation → quality)
 ```
 build --[test_results]--> review    # review knows test coverage
-build --[quality_gates]--> sentinel # sentinel deepens on WARN areas
+build --[quality_gates]--> guardian # guardian deepens on WARN areas
 build --[commit_hash]--> review     # review scopes to commit
 build --[files_changed]--> test     # test adds coverage for changed files
 ```
@@ -60,18 +58,18 @@ review --[quality_score]--> build   # build decides if more review needed
 
 ### Test → Preflight Chain (results → completeness)
 ```
-test --[test_results]--> preflight   # preflight checks edge cases (GREEN only)
-test --[test_files]--> preflight     # preflight scopes review to test files
+test --[test_results]--> readiness   # readiness checks edge cases (GREEN only)
+test --[test_files]--> readiness     # readiness scopes review to test files
 test --[test_results]--> fix         # fix implements to pass (RED → GREEN)
 ```
 
-### Sentinel → Fix Chain (security → remediation)
+### Guardian → Fix Chain (security → remediation)
 ```
-sentinel --[findings]--> fix       # fix applies security patches
-sentinel --[verdict]--> build       # build blocks on FAIL
+guardian --[findings]--> fix       # fix applies security patches
+guardian --[verdict]--> build       # build blocks on FAIL
 ```
 
-## Data Flow Diagram (Full Mesh)
+## Data Flow Diagram (Full Nexus)
 
 ```
                     ┌──────────┐
@@ -151,7 +149,7 @@ plan → adversary → plan (revised) → build → review → retro → plan (n
 
 ## Export Key Registry
 
-Complete list of export keys in the mesh, with producers and consumers:
+Complete list of export keys in the nexus, with producers and consumers:
 
 | Export Key | Type | Produced By | Consumed By |
 |------------|------|-------------|-------------|

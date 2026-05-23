@@ -47,6 +47,36 @@ if (pkg.version === plugin.version) {
   fail(`Version mismatch: package.json=${pkg.version} vs plugin.json=${plugin.version}`);
 }
 
+// 1a. marketplace.json version + plugin entry version
+const marketplacePath = join(ROOT, '.claude-plugin', 'marketplace.json');
+if (existsSync(marketplacePath)) {
+  const marketplace = JSON.parse(readFileSync(marketplacePath, 'utf8'));
+  if (marketplace.version === pkg.version) {
+    pass(`marketplace.json version: ${marketplace.version}`);
+  } else if (marketplace.version) {
+    fail(
+      `marketplace.json version=${marketplace.version} vs package.json=${pkg.version}`,
+    );
+  }
+  const entry = marketplace.plugins?.find((p) => p.name === 'Topia');
+  if (!entry) {
+    fail('marketplace.json: missing plugins[] entry "Topia"');
+  } else if (entry.version && entry.version !== pkg.version) {
+    fail(`marketplace plugins[Topia].version=${entry.version} vs package.json=${pkg.version}`);
+  } else if (entry.version === pkg.version) {
+    pass('marketplace plugin entry version matches package.json');
+  }
+  if (entry?.name !== plugin.name) {
+    fail(
+      `marketplace plugin name "${entry?.name}" must match plugin.json name "${plugin.name}"`,
+    );
+  } else {
+    pass('marketplace plugin name matches plugin.json');
+  }
+} else {
+  fail('Missing .claude-plugin/marketplace.json');
+}
+
 // 1b. Version in docs/content files
 const versionFiles = [
   { path: 'docs/index.html', pattern: /v(\d+\.\d+\.\d+)\s*&middot;/ },
@@ -99,8 +129,8 @@ if (existsSync(skillsDir2)) {
     { path: 'docs/index.html', pattern: /data-target="(\d+)"[\s\S]*?Core Skills/m },
     { path: 'docs/index.html', pattern: /(\d+) core skills \(L0/ },
     { path: 'docs/index.html', pattern: /Core dev skills \((\d+)\)/ },
-    { path: 'README.md', pattern: /^\s*(\d+) skills · \d+\+ mesh/m },
-    { path: 'README.md', pattern: /topia is a \*\*mesh\*\* — (\d+) skills/ },
+    { path: 'README.md', pattern: /^\s*(\d+) skills · \d+ synapses/m },
+    { path: 'README.md', pattern: /Topia Nexus|(\d+) skills · \d+ synapses/ },
     { path: 'CLAUDE.md', pattern: /(\d+) core skills built/ },
     { path: 'docs/VISION.md', pattern: /topia = (\d+) skills × \d+\+ bidirectional/ },
     // dashboard.html lives at workspace root, not Free root — checked separately below

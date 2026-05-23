@@ -38,12 +38,12 @@ export async function emit({ preset, projectRoot }) {
   const mode = preset === 'strict' ? 'BLOCK' : 'WARN';
   const skills = [
     {
-      name: 'preflight',
+      name: 'readiness',
       trigger: 'editing source files',
       globs: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.py', '**/*.go', '**/*.rs'],
     },
     {
-      name: 'sentinel',
+      name: 'guardian',
       trigger: 'editing infra / running shell',
       globs: ['**/*.sh', 'Dockerfile', '.github/workflows/*.yml', '.env*'],
     },
@@ -107,14 +107,14 @@ export async function status(projectRoot) {
       installed: false,
       preset: null,
       wired: [],
-      missing: ['preflight', 'sentinel', 'dependency-doctor'],
+      missing: ['readiness', 'guardian', 'dependency-doctor'],
       notes: ['no .windsurf/workflows directory'],
     };
   }
   const entries = await readdir(dir, { withFileTypes: true });
   const TopiaFiles = entries.filter((e) => e.isFile() && e.name.startsWith(Topia_PREFIX) && e.name.endsWith('.md'));
   const wired = TopiaFiles.map((f) => f.name.replace(Topia_PREFIX, '').replace('.md', ''));
-  const expected = ['preflight', 'sentinel', 'dependency-doctor'];
+  const expected = ['readiness', 'guardian', 'dependency-doctor'];
   const missing = expected.filter((s) => !wired.includes(s));
 
   let preset = null;

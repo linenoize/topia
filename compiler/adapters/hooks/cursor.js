@@ -7,8 +7,8 @@
  * matching files. This adapter emits Topia skill invocation reminders as rules.
  *
  * Fidelity vs Claude:
- *   - preflight → rule (alwaysApply, agent sees it before every Edit)
- *   - sentinel  → rule scoped to commit-related files
+ *   - readiness → rule (alwaysApply, agent sees it before every Edit)
+ *   - guardian  → rule scoped to commit-related files
  *   - dependency-doctor → rule scoped to package.json / lockfiles
  *   - completion-gate → no analog (Cursor has no Stop hook) — documented in notes
  *
@@ -41,18 +41,18 @@ export async function emit({ preset, projectRoot }) {
 
   const rules = [
     {
-      name: 'Topia-preflight',
+      name: 'Topia-readiness',
       globs: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx', '**/*.py', '**/*.go', '**/*.rs'],
       alwaysApply: true,
-      skill: 'preflight',
-      description: 'Run Topia preflight before editing source files.',
-      detail: `Before editing any source file, mentally run through Topia's preflight checklist: logic preserved, error handling present, no regressions introduced. ${mode} if any concern surfaces.`,
+      skill: 'readiness',
+      description: 'Run Topia readiness check before editing source files.',
+      detail: `Before editing any source file, mentally run through Topia's readiness checklist: logic preserved, error handling present, no regressions introduced. ${mode} if any concern surfaces.`,
     },
     {
-      name: 'Topia-sentinel',
+      name: 'Topia-guardian',
       globs: ['**/*.sh', '**/*.Dockerfile', 'Dockerfile', '.github/workflows/*.yml', '.env*'],
       alwaysApply: false,
-      skill: 'sentinel',
+      skill: 'guardian',
       description: 'Security review before shell / infra / secret edits.',
       detail: `Before running any Bash or editing infrastructure/env files, audit for secrets, destructive commands, and command injection. ${mode} on any finding.`,
     },
@@ -120,14 +120,14 @@ export async function status(projectRoot) {
       installed: false,
       preset: null,
       wired: [],
-      missing: ['preflight', 'sentinel', 'dependency-doctor'],
+      missing: ['readiness', 'guardian', 'dependency-doctor'],
       notes: ['no .cursor/rules directory'],
     };
   }
   const entries = await readdir(rulesDir, { withFileTypes: true });
   const TopiaFiles = entries.filter((e) => e.isFile() && e.name.startsWith(Topia_PREFIX) && e.name.endsWith('.mdc'));
   const wired = TopiaFiles.map((f) => f.name.replace(Topia_PREFIX, '').replace('.mdc', ''));
-  const expected = ['preflight', 'sentinel', 'dependency-doctor'];
+  const expected = ['readiness', 'guardian', 'dependency-doctor'];
   const missing = expected.filter((s) => !wired.includes(s));
 
   let preset = null;

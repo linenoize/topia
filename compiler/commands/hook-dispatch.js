@@ -17,7 +17,45 @@
 
 import { WIRED_SKILLS } from './hooks/presets.js';
 
-const ALLOWLIST = new Set(WIRED_SKILLS);
+/** v1 skill IDs accepted with deprecation warning (one release cycle). */
+const V1_SKILL_ALIASES = {
+  preflight: 'readiness',
+  sentinel: 'guardian',
+};
+
+const ALLOWLIST = new Set([...WIRED_SKILLS, ...Object.keys(V1_SKILL_ALIASES)]);
+
+function isCursorRuntime(event = {}) {
+  if (process.env.CURSOR_HOOK === '1' || process.env.CURSOR_AGENT === '1') return true;
+  if (process.env.CURSOR_VERSION || process.env.CURSOR_PROJECT_DIR) return true;
+  if (event?.cursor_version || event?.hook_event_name) return true;
+  return false;
+}
+
+function cursorPayloadForEvent(hookEventName, message) {
+  const name = (hookEventName || '').toLowerCase();
+  if (
+    name === 'pretooluse' ||
+    name === 'beforeshellexecution' ||
+    name === 'beforemcpexecution' ||
+    name === 'beforereadfile'
+  ) {
+    return { permission: 'allow', agent_message: message };
+  }
+  if (name === 'posttooluse' || name === 'sessionstart' || name === 'precompact') {
+    return message ? { additional_context: message } : {};
+  }
+  if (name === 'stop' || name === 'subagentstop' || name === 'sessionend') {
+    return {};
+  }
+  if (!name) {
+    return message
+      ? { permission: 'allow', agent_message: message }
+      : { permission: 'allow' };
+  }
+  if (message) return { additional_context: message };
+  return {};
+}
 
 /**
  * @param {string[]} argv — positional args after `hook-dispatch`
@@ -44,27 +82,36 @@ export async function dispatchHook(argv, io = {}) {
     return gentle ? 0 : 1;
   }
 
-  // Read event JSON from stdin (best-effort; hooks may pass empty stdin)
+  const resolvedSkill = V1_SKILL_ALIASES[skill] || skill;
+  if (V1_SKILL_ALIASES[skill]) {
+    stderr.write(`Topia hook-dispatch: "${skill}" is deprecated — use "${resolvedSkill}" (v2.0)\n`);
+  }
+
+  const cursor = isCursorRuntime();
   let eventJson = {};
   try {
-    const raw = await readStdin(stdin);
+    const raw = await readStdin(stdin, cursor);
     if (raw.trim()) eventJson = JSON.parse(raw);
   } catch {
     // Non-JSON stdin is tolerable — skills may not need the payload
   }
 
-  // Skill invocation placeholder — skills don't yet expose a headless API.
-  // For v1: emit advisory line, pass through. This unblocks hook installation
-  // while skill-forge adds `--hook-mode` to preflight/sentinel/etc.
   const mode = gentle ? 'advisory' : 'enforcing';
-  stdout.write(`Topia-hook: ${skill} [${mode}] — tool=${eventJson?.tool_name || 'unknown'}\n`);
+  const toolName = eventJson?.tool_name || eventJson?.toolName || 'unknown';
+  const advisoryLine = `Topia-hook: ${resolvedSkill} [${mode}] — tool=${toolName}`;
 
-  // Until skills expose headless verdicts, dispatcher returns neutral success.
-  // When skills add `--hook-mode`, extend this to run them and propagate exit codes.
+  if (isCursorRuntime(eventJson)) {
+    const payload = cursorPayloadForEvent(eventJson.hook_event_name, advisoryLine);
+    stdout.write(`${JSON.stringify(payload)}\n`);
+  } else {
+    stdout.write(`${advisoryLine}\n`);
+  }
+
   return 0;
 }
 
-function readStdin(stream) {
+function readStdin(stream, cursor = false) {
+  const timeoutMs = cursor ? 30_000 : 500;
   return new Promise((resolve, reject) => {
     if (stream.isTTY) {
       resolve('');
@@ -81,7 +128,8 @@ function readStdin(stream) {
     });
     stream.on('end', () => resolve(buf));
     stream.on('error', reject);
-    // Safety timeout — don't block Claude Code indefinitely
-    setTimeout(() => resolve(buf), 500);
+    if (timeoutMs > 0) {
+      setTimeout(() => resolve(buf), timeoutMs);
+    }
   });
 }

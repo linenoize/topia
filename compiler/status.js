@@ -4,12 +4,12 @@
  * Shows a rich boxed dashboard of the current Topia project.
  */
 
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { readdir, readFile } from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
+import { LAYER_EMOJI, NEXUS_STATS } from './nexus-constants.js';
 import { parseSkill } from './parser.js';
-
-// ─── Constants ───
 
 // ─── Box Drawing ───
 
@@ -35,7 +35,6 @@ function displayWidth(str) {
   let w = 0;
   for (const ch of str) {
     const code = ch.codePointAt(0);
-    // Emoji and wide chars take 2 columns
     if (
       code > 0x1f600 ||
       (code >= 0x2600 && code <= 0x27bf) ||
@@ -46,9 +45,9 @@ function displayWidth(str) {
       code === 0x2593 ||
       code === 0x2591
     ) {
-      w += 1; // These specific Unicode symbols are single-width in most terminals
+      w += 1;
     } else if (code > 0xffff) {
-      w += 2; // Emoji (surrogate pairs) are double-width
+      w += 2;
     } else {
       w += 1;
     }
@@ -62,17 +61,40 @@ function progressBar(pct, width = 20) {
   return '▓'.repeat(filled) + '░'.repeat(empty);
 }
 
+// ─── Memory health (agora-code MCP) ───
+
+export function detectMemoryHealth(projectRoot) {
+  const candidates = [
+    path.join(projectRoot, '.cursor', 'mcp.json'),
+    path.join(projectRoot, '.mcp.json'),
+    path.join(os.homedir(), '.cursor', 'mcp.json'),
+  ];
+
+  for (const configPath of candidates) {
+    if (!existsSync(configPath)) continue;
+    try {
+      const raw = readFileSync(configPath, 'utf-8');
+      if (/agora[-_]?code/i.test(raw)) {
+        return { status: 'active', detail: 'agora-code registered' };
+      }
+    } catch {
+      /* ignore */
+    }
+  }
+
+  return { status: 'inactive', detail: 'agora-code not configured (file-based .topia/ only)' };
+}
+
 // ─── Data Collection ───
 
 export async function collectStats(TopiaRoot) {
   const skillsDir = path.join(TopiaRoot, 'skills');
   const extDir = path.join(TopiaRoot, 'extensions');
 
-  // Count core skills by layer
   const layers = { L0: 0, L1: 0, L2: 0, L3: 0 };
   const skillNames = [];
-  let signalCount = 0;
-  const signalMap = { emitters: {}, listeners: {} };
+  let pulseCount = 0;
+  const pulseMap = { emitters: {}, listeners: {} };
   const parsedSkills = [];
 
   if (existsSync(skillsDir)) {
@@ -92,27 +114,26 @@ export async function collectStats(TopiaRoot) {
 
       if (parsed.signals?.emit && parsed.signals?.listen) {
         for (const sig of parsed.signals.emit) {
-          if (!signalMap.emitters[sig]) signalMap.emitters[sig] = [];
-          signalMap.emitters[sig].push(parsed.name);
+          if (!pulseMap.emitters[sig]) pulseMap.emitters[sig] = [];
+          pulseMap.emitters[sig].push(parsed.name);
         }
         for (const sig of parsed.signals.listen) {
-          if (!signalMap.listeners[sig]) signalMap.listeners[sig] = [];
-          signalMap.listeners[sig].push(parsed.name);
+          if (!pulseMap.listeners[sig]) pulseMap.listeners[sig] = [];
+          pulseMap.listeners[sig].push(parsed.name);
         }
       }
     }
-    const allSignals = new Set([...Object.keys(signalMap.emitters), ...Object.keys(signalMap.listeners)]);
-    signalCount = allSignals.size;
+    const allPulses = new Set([...Object.keys(pulseMap.emitters), ...Object.keys(pulseMap.listeners)]);
+    pulseCount = allPulses.size;
   }
 
-  // Count connections
-  let totalConnections = 0;
+  let totalSynapses = 0;
   for (const skill of parsedSkills) {
-    totalConnections += new Set((skill.crossRefs ?? []).map((r) => r.skillName)).size;
+    totalSynapses += new Set((skill.crossRefs ?? []).map((r) => r.skillName)).size;
   }
-  const avgConnections = parsedSkills.length > 0 ? (totalConnections / parsedSkills.length).toFixed(1) : '0';
+  const avgSynapses = parsedSkills.length > 0 ? (totalSynapses / parsedSkills.length).toFixed(1) : '0';
+  const nexusDensity = parsedSkills.length > 0 ? (totalSynapses / parsedSkills.length).toFixed(2) : '0';
 
-  // Count packs
   const packs = [];
   if (existsSync(extDir)) {
     const entries = await readdir(extDir, { withFileTypes: true });
@@ -121,7 +142,6 @@ export async function collectStats(TopiaRoot) {
       const packFile = path.join(extDir, entry.name, 'PACK.md');
       if (!existsSync(packFile)) continue;
 
-      // Count total lines in pack
       const packDir = path.join(extDir, entry.name);
       let lines = 0;
       const subEntries = await readdir(packDir, { withFileTypes: true });
@@ -138,12 +158,18 @@ export async function collectStats(TopiaRoot) {
   return {
     skillCount: parsedSkills.length,
     layers,
-    signalCount,
-    signalMap,
-    totalConnections,
-    avgConnections,
+    pulseCount,
+    pulseMap,
+    totalSynapses,
+    avgSynapses,
+    nexusDensity,
     packs,
     parsedSkills,
+    // deprecated v1 aliases
+    signalCount: pulseCount,
+    signalMap: pulseMap,
+    totalConnections: totalSynapses,
+    avgConnections: avgSynapses,
   };
 }
 
@@ -153,37 +179,42 @@ function fmtNum(n) {
   return n.toLocaleString('en-US');
 }
 
-export function renderStatus(stats, { version = '', platform = '', projectName = '' } = {}) {
+export function renderStatus(stats, { version = '', platform = '', projectName = '', memoryHealth = null } = {}) {
   const lines = [];
 
-  // Header
   lines.push('');
 
-  // Project info
   if (projectName) lines.push(`Project     ${projectName}`);
   if (platform) lines.push(`Platform    ${platform}`);
   if (version) lines.push(`Version     ${version}`);
   if (projectName || platform || version) lines.push('');
 
-  // Core stats
   const layerStr = Object.entries(stats.layers)
     .filter(([, v]) => v > 0)
-    .map(([k, v]) => `${k}:${v}`)
-    .join(' ');
-  lines.push(`Skills      ${stats.skillCount} core (${layerStr})`);
+    .map(([k, v]) => `${LAYER_EMOJI[k] || ''} ${k}:${v}`.trim())
+    .join('  ');
+  lines.push(`Skills      ${stats.skillCount} core`);
+  if (layerStr) lines.push(`  ${layerStr}`);
+  lines.push('');
 
   lines.push(`Packs       ${stats.packs.length} installed`);
-
-  lines.push(`Signals     ${stats.signalCount} defined`);
-  lines.push(`Mesh        ${stats.totalConnections}+ connections (${stats.avgConnections} avg/skill)`);
+  lines.push(`Pulses      ${stats.pulseCount} defined`);
+  lines.push(
+    `Nexus       ${stats.totalSynapses}+ synapses (${stats.avgSynapses} avg/skill, density ${stats.nexusDensity})`,
+  );
+  lines.push(`            target: ${NEXUS_STATS.synapses} synapses · ${NEXUS_STATS.pulses} pulses`);
   lines.push('');
 
-  // Health bar (based on signals + connections + pack count as simple heuristic)
+  if (memoryHealth) {
+    const memIcon = memoryHealth.status === 'active' ? '✓' : '–';
+    lines.push(`Memory      [${memIcon}] ${memoryHealth.detail}`);
+    lines.push('');
+  }
+
   const healthScore = computeHealth(stats);
-  lines.push(`${progressBar(healthScore)} ${healthScore}% mesh health`);
+  lines.push(`${progressBar(healthScore)} ${healthScore}% nexus health`);
   lines.push('');
 
-  // Extension Packs section
   if (stats.packs.length > 0) {
     lines.push('Extension Packs');
     for (const pack of stats.packs) {
@@ -192,11 +223,10 @@ export function renderStatus(stats, { version = '', platform = '', projectName =
     lines.push('');
   }
 
-  // Top signals (show signal flow)
-  const topSignals = getTopSignals(stats.signalMap, 3);
-  if (topSignals.length > 0) {
-    lines.push('Active Signals');
-    for (const sig of topSignals) {
+  const topPulses = getTopPulses(stats.pulseMap, 3);
+  if (topPulses.length > 0) {
+    lines.push('Active Pulses');
+    for (const sig of topPulses) {
       const emitters = sig.emitters.slice(0, 2).join(', ');
       const listeners = sig.listeners.slice(0, 3).join(', ');
       let sigLine = `  → ${sig.name} (${emitters} → ${listeners})`;
@@ -213,7 +243,7 @@ export function renderStatus(stats, { version = '', platform = '', projectName =
   return box(lines, { title, width: boxWidth });
 }
 
-export function renderStatusJson(stats, { version = '', platform = '', projectName = '' } = {}) {
+export function renderStatusJson(stats, { version = '', platform = '', projectName = '', memoryHealth = null } = {}) {
   return JSON.stringify(
     {
       project: projectName || undefined,
@@ -224,19 +254,34 @@ export function renderStatusJson(stats, { version = '', platform = '', projectNa
         layers: stats.layers,
       },
       packs: stats.packs.map((p) => ({ name: p.name, lines: p.lines })),
+      pulses: {
+        count: stats.pulseCount,
+        top: getTopPulses(stats.pulseMap, 5).map((s) => ({
+          name: s.name,
+          emitters: s.emitters,
+          listeners: s.listeners,
+        })),
+      },
+      nexus: {
+        synapses: stats.totalSynapses,
+        avgPerSkill: parseFloat(stats.avgSynapses),
+        density: parseFloat(stats.nexusDensity),
+      },
+      memory: memoryHealth || undefined,
+      health: computeHealth(stats),
+      // deprecated v1 keys (one release)
       signals: {
-        count: stats.signalCount,
-        top: getTopSignals(stats.signalMap, 5).map((s) => ({
+        count: stats.pulseCount,
+        top: getTopPulses(stats.pulseMap, 5).map((s) => ({
           name: s.name,
           emitters: s.emitters,
           listeners: s.listeners,
         })),
       },
       mesh: {
-        connections: stats.totalConnections,
-        avgPerSkill: parseFloat(stats.avgConnections),
+        connections: stats.totalSynapses,
+        avgPerSkill: parseFloat(stats.avgSynapses),
       },
-      health: computeHealth(stats),
     },
     null,
     2,
@@ -247,14 +292,14 @@ function formatPackName(dirName) {
   return `@Topia/${dirName}`.padEnd(26);
 }
 
-function getTopSignals(signalMap, limit) {
-  const signals = new Set([...Object.keys(signalMap.emitters), ...Object.keys(signalMap.listeners)]);
+function getTopPulses(pulseMap, limit) {
+  const pulses = new Set([...Object.keys(pulseMap.emitters), ...Object.keys(pulseMap.listeners)]);
 
-  const scored = [...signals].map((name) => ({
+  const scored = [...pulses].map((name) => ({
     name,
-    emitters: signalMap.emitters[name] || [],
-    listeners: signalMap.listeners[name] || [],
-    score: (signalMap.emitters[name]?.length || 0) + (signalMap.listeners[name]?.length || 0),
+    emitters: pulseMap.emitters[name] || [],
+    listeners: pulseMap.listeners[name] || [],
+    score: (pulseMap.emitters[name]?.length || 0) + (pulseMap.listeners[name]?.length || 0),
   }));
 
   scored.sort((a, b) => b.score - a.score);
@@ -264,17 +309,12 @@ function getTopSignals(signalMap, limit) {
 function computeHealth(stats) {
   let score = 0;
 
-  // Skills (max 25)
   score += Math.min(stats.skillCount / 60, 1) * 25;
+  score += Math.min(stats.pulseCount / 15, 1) * 25;
 
-  // Signals (max 25)
-  score += Math.min(stats.signalCount / 15, 1) * 25;
+  const avgSyn = parseFloat(stats.avgSynapses);
+  score += Math.min(avgSyn / 3.5, 1) * 25;
 
-  // Connections density (max 25)
-  const avgConn = parseFloat(stats.avgConnections);
-  score += Math.min(avgConn / 3.5, 1) * 25;
-
-  // Pack coverage (max 25)
   const totalPacks = stats.packs.length;
   score += Math.min(totalPacks / 14, 1) * 25;
 

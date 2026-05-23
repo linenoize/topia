@@ -92,7 +92,7 @@ if (isMain) {
     packDirs = [resolve(targetPath)];
   } else {
     // Validate all community packs
-    const communityDir = join(process.cwd(), '.Topia', 'community-packs');
+    const communityDir = join(process.cwd(), '.topia', 'community-packs');
     if (existsSync(communityDir)) {
       const entries = readdirSync(communityDir, { withFileTypes: true });
       packDirs = entries

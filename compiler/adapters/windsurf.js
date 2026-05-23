@@ -2,7 +2,7 @@
  * Windsurf Adapter
  *
  * Emits .md rule files for .windsurf/rules/ directory.
- * Uses prose references for cross-skill mesh (no @file support).
+ * Uses prose references for cross-Topia Nexus (no @file support).
  *
  * MODEL TIER MAPPING (v2.15+):
  * No-op. Windsurf's Anthropic API integration understands `model: opus|sonnet|haiku`

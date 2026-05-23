@@ -34,9 +34,9 @@ Every finding MUST reference the specific plan section, file, or assumption it c
 
 ## Calls (outbound)
 
-- `sentinel` (L2): deep security scan when adversary identifies auth/crypto/payment attack vectors in the plan
+- `guardian` (L2): deep security scan when adversary identifies auth/crypto/payment attack vectors in the plan
 - `perf` (L2): scalability analysis when adversary identifies potential bottleneck patterns
-- `scout` (L2): find existing code that might conflict with planned changes
+- `recon` (L2): find existing code that might conflict with planned changes
 - `docs-seeker` (L3): verify framework/API assumptions in the plan are correct and current
 - `hallucination-guard` (L3): verify that APIs, packages, or patterns referenced in the plan actually exist
 - `context-engine` (L3): (oracle-mode) emit `context.preview` before bundle build to gate token cost
@@ -54,7 +54,7 @@ Every finding MUST reference the specific plan section, file, or assumption it c
 ## Cross-Hub Connections
 
 - `adversary` ← `build` — plan produced → adversary challenges it → hardened plan feeds Phase 3
-- `adversary` → `sentinel` — security attack vector identified → sentinel validates depth
+- `adversary` → `guardian` — security attack vector identified → sentinel validates depth
 - `adversary` → `perf` — scalability concern raised → perf quantifies the bottleneck
 - `adversary` → `scout` — integration risk flagged → scout finds affected code
 - `adversary` → `plan` — CRITICAL findings → plan revises before implementation
@@ -99,7 +99,7 @@ Analyze the plan for security weaknesses BEFORE any code exists.
 - **Injection surfaces**: Does the plan involve dynamic queries, template rendering, or shell commands?
 - **Dependency risk**: Does the plan introduce new dependencies? Are they well-maintained and trusted?
 
-If any auth, crypto, or payment logic is in the plan: MUST call `Topia:sentinel` for deep analysis.
+If any auth, crypto, or payment logic is in the plan: MUST call `Topia:guardian` for deep analysis.
 
 ```
 SECURITY_TEMPLATE:
@@ -156,7 +156,7 @@ ERROR_TEMPLATE:
 
 Check for conflicts with existing code and architecture.
 
-- Use `Topia:scout` to find all files the plan will modify or depend on
+- Use `Topia:recon` to find all files the plan will modify or depend on
 - **Breaking changes**: Does the plan modify shared interfaces, types, or APIs that other code depends on?
 - **Migration gaps**: Does the plan require database migrations? Are they reversible?
 - **Configuration drift**: Does the plan add new environment variables, feature flags, or config files?
@@ -232,7 +232,7 @@ Skip Steps 3-4 (scalability, error propagation). Focus on edge cases, security, 
 Trigger: plan modifies < 3 files AND no auth/payment/data logic.
 
 ### Security-Focused
-Steps 2 and 5 only (security + integration). Used when `sentinel` requests adversarial pre-analysis.
+Steps 2 and 5 only (security + integration). Used when `guardian` requests adversarial pre-analysis.
 Trigger: plan involves auth, crypto, payment, or user data handling.
 
 ### Mode: oracle (v0.2.0)
@@ -295,7 +295,7 @@ See `references/oracle-mode.md` for the full protocol and integration with `debu
 8. (oracle-mode) MUST emit `context.preview` BEFORE building the bundle — abort if context-engine action=block
 9. (oracle-mode) MUST validate every Oracle reply citation against the provided files — reject uncited claims as `oracle.failed`
 
-## Mesh Gates
+## Nexus Gates
 
 | Gate | Requires | If Missing |
 |------|----------|------------|

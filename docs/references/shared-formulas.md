@@ -1,7 +1,5 @@
 # Shared Formulas — Cross-Skill Computation Standards
 
-Version: 1.0.0 | Since: v2.9.0
-
 ## Purpose
 
 When multiple skills compute the same metric, they MUST use the same formula. Inconsistent scoring across skills produces conflicting recommendations — "review says quality is 72/100 but audit says 85/100" erodes trust.
@@ -42,7 +40,7 @@ Each component is scored 0.0-1.0:
 
 ### 2. Finding Priority Score
 
-Used by: `review`, `sentinel`, `preflight`, `audit`, `content-decay-detector` (adapted)
+Used by: `review`, `guardian`, `readiness`, `audit`, `content-decay-detector` (adapted)
 
 ```
 priority = severity_weight × confidence × blast_radius

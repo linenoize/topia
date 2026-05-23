@@ -79,7 +79,7 @@ High-level multi-feature planning — organize features into milestones.
 
 ## Calls (outbound)
 
-- `scout` (L2): scan codebase for existing patterns, conventions, and structure
+- `recon` (L2): scan codebase for existing patterns, conventions, and structure
 - `brainstorm` (L2): when multiple valid approaches exist
 - `adversary` (L2): optional red-team gate on critical plan output (features touching auth, payments, or data integrity)
 - `research` (L3): external knowledge lookup
@@ -112,9 +112,9 @@ High-level multi-feature planning — organize features into milestones.
 ### Fed By ←
 
 - `idea` (L2): Requirements Document → plan's primary input (locked decisions, user stories)
-- `scout` (L2): codebase analysis → plan's convention/pattern awareness
+- `recon` (L2): codebase analysis → plan's convention/pattern awareness
 - `neural-memory` (external): past architectural decisions → plan's precedent context
-- `sentinel` (L2): repeated security blocks → plan's constraint awareness for future features
+- `guardian` (L2): repeated security blocks → plan's constraint awareness for future features
 
 ### Feedback Loops ↻
 
@@ -129,7 +129,7 @@ Check for `.topia/features/*/requirements.md` via `Glob`. If a Requirements Docu
 
 If `project.onboarded` signal was received, scout output is already available in session context — skip re-invoking scout.
 
-Invoke `Topia:scout` if not already done — plans without context produce wrong file paths. Call `neural-memory` (Recall Mode) to surface past architecture decisions before making new ones.
+Invoke `Topia:recon` if not already done — plans without context produce wrong file paths. Call `neural-memory` (Recall Mode) to surface past architecture decisions before making new ones.
 
 **Feature Map**: Check for `.topia/features.md` via `Glob`. If it exists, read it — understand the existing feature landscape, dependencies, and known gaps BEFORE planning. Cross-reference: does the new feature overlap, conflict with, or depend on existing features? If `.topia/features.md` does not exist, note this — Step 6.5 will create it.
 

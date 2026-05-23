@@ -4,15 +4,15 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterEach, beforeEach, describe, test } from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { parseSkillMd, validateMesh } from '../validate-mesh.js';
+import { parseSkillMd, validateMesh } from '../validate-nexus.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-describe('validate-mesh', () => {
+describe('validate-nexus', () => {
   let tempDir;
 
   beforeEach(() => {
-    tempDir = mkdtempSync(join(tmpdir(), 'Topia-mesh-'));
+    tempDir = mkdtempSync(join(tmpdir(), 'Topia-nexus-'));
   });
 
   afterEach(() => {
@@ -74,8 +74,8 @@ None
     });
   });
 
-  describe('validateMesh', () => {
-    test('passes when mesh is bidirectionally consistent', () => {
+  describe('validateNexus (validateMesh alias)', () => {
+    test('passes when nexus is bidirectionally consistent', () => {
       // build calls fix, fix lists build in calledBy
       mkdirSync(join(tempDir, 'build'));
       writeFileSync(
@@ -238,9 +238,9 @@ None
     test('validates actual Topia skills directory', () => {
       const { skillCount, issues } = validateMesh(join(__dirname, '../../skills'));
       assert.ok(skillCount >= 50, `Expected 50+ skills, got ${skillCount}`);
-      // Log but don't fail — mesh may have known issues
+      // Log but don't fail — nexus may have known issues
       if (issues.length > 0) {
-        console.log(`  Mesh has ${issues.length} connection issues (known)`);
+        console.log(`  Nexus has ${issues.length} connection issues (known)`);
       }
     });
   });

@@ -2,7 +2,7 @@
  * Skill Validation Tests
  *
  * Verifies ALL 58 SKILL.md files parse correctly and meet structural requirements.
- * This is the "mesh integrity" test — if any skill breaks parsing, mesh connections fail.
+ * This is the "nexus integrity" test — if any skill breaks parsing, nexus synapses fail.
  */
 
 import assert from 'node:assert';
@@ -80,9 +80,9 @@ describe('skill parsing', () => {
   }
 });
 
-// --- Mesh integrity ---
+// --- Nexus integrity ---
 
-describe('mesh integrity', () => {
+describe('nexus integrity', () => {
   const allParsed = skillDirs.map((name) => {
     const content = readFileSync(path.join(SKILLS_DIR, name, 'SKILL.md'), 'utf-8');
     return parseSkill(content, `${name}/SKILL.md`);
@@ -117,7 +117,7 @@ describe('mesh integrity', () => {
     }
   });
 
-  test('mesh has 200+ total cross-references', () => {
+  test('nexus has 200+ total cross-references', () => {
     const totalRefs = allParsed.reduce((sum, s) => sum + s.crossRefs.length, 0);
     assert.ok(totalRefs >= 200, `expected >=200 cross-refs, found ${totalRefs}`);
   });

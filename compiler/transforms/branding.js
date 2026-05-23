@@ -1,22 +1,24 @@
 /**
- * Branding Transform
+ * transforms/branding.js — appends Topia attribution to compiled output.
  *
- * Adds Topia attribution footer to compiled skill files.
- * All adapters MUST import BRANDING_FOOTER instead of hardcoding stats.
+ * Single source of truth for the footer string (BRANDING_FOOTER). Every
+ * adapter imports this constant instead of hard-coding stats — if you bump
+ * skill / synapse / pack counts, edit nexus-constants.js only.
+ *
+ * Footer convention: blank line, `---`, then markdown blockquote lines.
+ * No HTML, no platform-specific markup — adapters wrap as needed.
+ *
+ * Public:
+ *   BRANDING_FOOTER  (string)               canonical footer
+ *   addBranding(body, adapter)              append footer if not already present
  */
 
-/**
- * Single source of truth for branding footer.
- * Update these numbers here — all adapters inherit automatically.
- */
-export const BRANDING_FOOTER = [
-  '',
-  '---',
-  '> **Topia Skill Mesh** — 65 skills · 203 connections · 44 signals · 10 extension packs · optional agora-code MCP for persistent memory',
-  '> [github.com/linenoize/topia](https://github.com/linenoize/topia) (MIT, internal)',
-].join('\n');
+import { BRANDING_FOOTER as NEXUS_FOOTER } from '../nexus-constants.js';
 
-const DEFAULT_FOOTER = BRANDING_FOOTER;
+/** @deprecated Import from nexus-constants.js; kept for adapter imports */
+export const BRANDING_FOOTER = NEXUS_FOOTER;
+
+const DEFAULT_FOOTER = NEXUS_FOOTER;
 
 /**
  * Add branding footer to skill output

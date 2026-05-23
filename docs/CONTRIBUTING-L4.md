@@ -8,7 +8,7 @@
 
 L4 packs add domain-specific skills on top of Topia's language-agnostic L1-L3 core. A pack is a directory containing a `PACK.md` file that defines 3-6 skills for a specific domain (React patterns, trading algorithms, mobile development, etc.).
 
-**The core mesh (L1-L3) is complete with 66 skills.** Further growth in Topia happens primarily through L4.
+**The core toolkit (L1-L3) is complete with 65 skills.** Further growth in Topia happens primarily through L4.
 
 ---
 
@@ -24,16 +24,16 @@ The pack's skills must form a coherent unit. A pack mixing React patterns with m
 ❌ **Fail:** Pack with `react-hooks`, `django-models`, `kubernetes-deploy` — no coherent domain
 ✅ **Pass:** Pack with `react-hooks`, `component-patterns`, `performance-audit`, `a11y-audit` — frontend domain
 
-### Gate 2 — Core Mesh Integration
+### Gate 2 — Core Nexus Integration
 > Does the pack connect to at least 2 existing L1-L3 skills?
 
-L4 packs must integrate with the existing mesh — not operate as isolated utilities. Connections must be meaningful (actual data flow, not ceremonial mentions).
+L4 packs must integrate with the existing nexus — not operate as isolated utilities. Connections must be meaningful (actual data flow, not ceremonial mentions).
 
 Typical connection patterns:
 - Pack skill is called by `build` (L1) when domain detected
 - Pack skill calls `scout` (L2) for codebase scan
 - Pack skill calls `verification` (L3) after changes
-- Pack skill calls `sentinel` (L2) for domain-specific security
+- Pack skill calls `guardian` (L2) for domain-specific security
 
 ❌ **Fail:** Pack with 0 inbound connections from L1-L3 (no orchestrator calls it)
 ✅ **Pass:** Pack called by `build` on stack detection, calls `scout` + `verification`
@@ -139,7 +139,7 @@ pack skill → sentinel (L2): infrastructure security scan
 ### Gate 1 — Domain Coherence
 [Explain: what domain does this serve? Why are these skills cohesive?]
 
-### Gate 2 — Core Mesh Integration
+### Gate 2 — Core Nexus Integration
 Inbound: [which L1-L3 skills call this pack, and when?]
 Outbound: [which L1-L3 skills does this pack call?]
 
@@ -160,7 +160,7 @@ Pack PRs are reviewed against these criteria:
 | Criterion | Pass | Fail |
 |-----------|------|------|
 | Gate 1: Domain coherence | All skills serve same domain | Mixed domains or generic skills |
-| Gate 2: Mesh integration | ≥2 connections to L1-L3 | 0 or 1 connections |
+| Gate 2: Nexus integration | ≥2 synapses to L1-L3 | 0 or 1 synapses |
 | PACK.md completeness | All required sections present | Missing Skills, Connections, or metadata |
 | Connection accuracy | Stated connections verified in L1-L3 SKILL.md files | Claimed connections not in L1-L3 files |
 | Skill count | 3-6 skills | <3 (too thin) or >6 (too broad) |
@@ -173,13 +173,13 @@ Pack PRs are reviewed against these criteria:
 
 **Good L4 skill:**
 - Domain-specific knowledge that belongs in L4 (not generic enough for L1-L3)
-- Clear integration points with the core mesh
+- Clear integration points with the core nexus
 - Would be used together with other skills in the same pack
 
 **Bad L4 skill:**
 - Wraps an existing L1-L3 skill with minor variation (The Bloat)
-- Generic enough to belong in the core mesh (should be a core PR instead)
-- 0 mesh connections (dead node)
+- Generic enough to belong in the core nexus (should be a core PR instead)
+- 0 nexus synapses (dead node)
 
 ---
 
@@ -190,15 +190,15 @@ Pack PRs are reviewed against these criteria:
 
 Skills: market-data-validator, risk-calculator, backtest-runner, portfolio-analyzer
 Domain: Algorithmic trading — financial data validation, risk management, backtesting
-Connections: called by build (L1), calls scout (L2) + sentinel (L2) + perf (L2)
+Synapses: called by build (L1), calls scout (L2) + sentinel (L2) + perf (L2)
 Why L4 not L3: Trading domain knowledge is not language-agnostic — belongs in L4
 
 # BAD: @Topia/code-helpers
 
 Skills: code-formatter, variable-renamer, comment-generator, snippet-library
 Domain: Generic utilities with no domain coherence
-Connections: 0 inbound, 0 outbound
-Why rejected: These are Claude's base capabilities wrapped in skills. Zero mesh value.
+Synapses: 0 inbound, 0 outbound
+Why rejected: These are Claude's base capabilities wrapped in skills. Zero nexus value.
 ```
 
 ---

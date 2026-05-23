@@ -1,9 +1,23 @@
 /**
- * Dashboard — Analytics HTML Generator (Hybrid Mesh+Rhythm)
+ * dashboard.js — analytics HTML generator. Pure function, no I/O.
  *
- * Generates a self-contained HTML dashboard from analytics data.
- * Layout: Interactive skill mesh + heatmap + session timeline.
- * Same pattern as visualizer.js — single file, no CDN, all inline.
+ * Public: `generateDashboardHTML(data)` → single self-contained HTML string
+ * (inline CSS + JS; no CDN, no external assets). Consumer writes to disk
+ * and opens in a browser.
+ *
+ * Input shape (from `analytics.getAllAnalytics`):
+ *   { sessions: [{ id, start, end, skills: [...] }],
+ *     skillStats: { <skillName>: { invocations, avgTokens, avgMs } },
+ *     signalEdges: [{ from, to, count }],
+ *     hourly: number[24],
+ *     generated: ISO timestamp,
+ *     ... }
+ *
+ * Security: JSON payload is escaped against `</script>` injection on line 1
+ * of the body. No other user-controlled content is interpolated.
+ *
+ * Co-located pattern with `visualizer.js` — same single-file HTML strategy
+ * so the output can be opened directly without a webserver.
  */
 
 export function generateDashboardHTML(data) {
@@ -66,13 +80,13 @@ body {
   overflow-x: hidden;
 }
 
-#voronoi-bg, #mesh-overlay {
+#voronoi-bg, #nexus-overlay {
   position: fixed; top: 0; left: 0; width: 100%; height: 100%;
   z-index: 0; pointer-events: none;
 }
-#mesh-overlay { z-index: 0; }
+#nexus-overlay { z-index: 0; }
 .light #voronoi-bg { opacity: 0.35; }
-.light #mesh-overlay { opacity: 0.15; }
+.light #nexus-overlay { opacity: 0.15; }
 
 .container { max-width: 1280px; margin: 0 auto; padding: 24px 20px; position: relative; z-index: 1; }
 
@@ -124,30 +138,30 @@ body {
 .legend-label { color: var(--text-secondary); }
 .legend-value { font-family: var(--font-mono); font-weight: 600; color: var(--text-primary); margin-left: auto; }
 
-/* ─── Skill Mesh (Interactive Canvas) ─── */
-.mesh-panel {
+/* ─── Topia Nexus (Interactive Canvas) ─── */
+.nexus-panel {
   background: var(--bg-card); border: 1px solid var(--border);
   border-radius: var(--radius); padding: 0; margin-bottom: 20px;
   box-shadow: var(--shadow); position: relative; overflow: hidden;
 }
-.mesh-panel-header {
+.nexus-panel-header {
   padding: 14px 18px; display: flex; align-items: center; justify-content: space-between;
   border-bottom: 1px solid var(--border);
 }
-.mesh-panel-title {
+.nexus-panel-title {
   font-family: var(--font-display); font-size: 14px; font-weight: 600;
   color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.04em;
 }
-.mesh-hint { font-size: 11px; color: var(--text-muted); }
-#skill-mesh-canvas { width: 100%; height: 340px; display: block; cursor: crosshair; }
-.mesh-tooltip {
+.nexus-hint { font-size: 11px; color: var(--text-muted); }
+#skill-nexus-canvas { width: 100%; height: 340px; display: block; cursor: crosshair; }
+.nexus-tooltip {
   position: absolute; pointer-events: none; z-index: 10;
   background: var(--bg-elevated); border: 1px solid var(--border);
   border-radius: 8px; padding: 8px 12px; font-size: 12px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.4); display: none;
 }
-.mesh-tooltip-name { font-family: var(--font-mono); font-weight: 700; color: var(--accent); }
-.mesh-tooltip-stat { color: var(--text-secondary); }
+.nexus-tooltip-name { font-family: var(--font-mono); font-weight: 700; color: var(--accent); }
+.nexus-tooltip-stat { color: var(--text-secondary); }
 
 /* ─── Heatmap ─── */
 .heatmap-panel {
@@ -258,7 +272,7 @@ body {
   .top-row { grid-template-columns: 1fr; }
   .kpi-strip { grid-template-columns: repeat(2, 1fr); }
   .bottom-row { grid-template-columns: 1fr; }
-  #skill-mesh-canvas { height: 260px; }
+  #skill-nexus-canvas { height: 260px; }
 }
 @media (max-width: 480px) {
   .kpi-strip { grid-template-columns: 1fr; }
@@ -328,8 +342,8 @@ function donutSVG(items, size = 120) {
     '</svg>';
 }
 
-// ─── Force-Directed Skill Mesh ───
-function renderSkillMesh(canvasEl, meshData, tooltip) {
+// ─── Force-Directed Topia Nexus ───
+function renderSkillNexus(canvasEl, meshData, tooltip) {
   if (!meshData || !meshData.nodes || meshData.nodes.length === 0) return;
 
   const nodes = meshData.nodes.map(n => ({
@@ -497,9 +511,9 @@ function renderSkillMesh(canvasEl, meshData, tooltip) {
       tooltip.style.top = (n.y - 10 + canvasEl.offsetTop) + 'px';
       const connected = edges.filter(e => e.si === hoveredNode || e.ti === hoveredNode)
         .map(e => e.si === hoveredNode ? nodes[e.ti].id : nodes[e.si].id);
-      tooltip.innerHTML = '<div class="mesh-tooltip-name">' + n.id + '</div>' +
-        '<div class="mesh-tooltip-stat">' + n.count + ' sessions</div>' +
-        (connected.length > 0 ? '<div class="mesh-tooltip-stat" style="margin-top:4px;font-size:10px;color:var(--text-muted)">\\u2194 ' + connected.join(', ') + '</div>' : '');
+      tooltip.innerHTML = '<div class="nexus-tooltip-name">' + n.id + '</div>' +
+        '<div class="nexus-tooltip-stat">' + n.count + ' sessions</div>' +
+        (connected.length > 0 ? '<div class="nexus-tooltip-stat" style="margin-top:4px;font-size:10px;color:var(--text-muted)">\\u2194 ' + connected.join(', ') + '</div>' : '');
     } else {
       tooltip.style.display = 'none';
     }
@@ -520,7 +534,7 @@ function render() {
     skillFrequency: [], modelDistribution: [], sessionTrend: [], skillChains: [], toolDistribution: [],
     skillHeatmap: { heatmap: [], dates: [], maxCount: 1 },
     sessionTimeline: [],
-    skillMesh: { nodes: [], edges: [], maxCount: 1 },
+    skillNexus: { nodes: [], edges: [], maxCount: 1 },
     generated: new Date().toISOString(), days: 30
   }, DATA);
 
@@ -594,19 +608,19 @@ function render() {
   }
   app.appendChild(topRow);
 
-  // ── Skill Mesh ──
-  const meshPanel = el('div', { className: 'mesh-panel' });
-  meshPanel.appendChild(el('div', { className: 'mesh-panel-header' },
-    el('div', { className: 'mesh-panel-title' }, 'Skill Mesh'),
-    el('div', { className: 'mesh-hint' }, 'Hover to explore connections')
+  // ── Topia Nexus ──
+  const meshPanel = el('div', { className: 'nexus-panel' });
+  meshPanel.appendChild(el('div', { className: 'nexus-panel-header' },
+    el('div', { className: 'nexus-panel-title' }, 'Topia Nexus'),
+    el('div', { className: 'nexus-hint' }, 'Hover to explore connections')
   ));
-  const meshCanvas = el('canvas', { id: 'skill-mesh-canvas' });
-  const meshTooltip = el('div', { className: 'mesh-tooltip' });
+  const meshCanvas = el('canvas', { id: 'skill-nexus-canvas' });
+  const meshTooltip = el('div', { className: 'nexus-tooltip' });
   meshPanel.appendChild(meshCanvas);
   meshPanel.appendChild(meshTooltip);
   app.appendChild(meshPanel);
 
-  requestAnimationFrame(() => renderSkillMesh(meshCanvas, d.skillMesh, meshTooltip));
+  requestAnimationFrame(() => renderSkillNexus(meshCanvas, d.skillNexus ?? d.skillMesh, meshTooltip));
 
   // ── Heatmap ──
   const hm = d.skillHeatmap;
@@ -740,7 +754,7 @@ function render() {
 
   // Footer
   app.appendChild(el('div', { className: 'footer' },
-    'Generated ' + new Date(d.generated).toLocaleString() + ' \\u2022 Topia Business \\u2022 100% local data'
+    'Generated ' + new Date(d.generated).toLocaleString() + ' \\u2022 Topia \\u2022 100% local data'
   ));
 }
 
@@ -749,7 +763,7 @@ function toggleTheme() {
   drawVoronoiMesh();
 }
 
-// ─── Voronoi Mesh Background ───
+// ─── Voronoi Nexus Background ───
 function mulberry32(seed) {
   return function() {
     seed |= 0; seed = seed + 0x6D2B79F5 | 0;
@@ -831,8 +845,8 @@ function drawVoronoiCells() {
 
 let meshAnimFrame = null;
 function initMeshOverlay() {
-  let canvas = document.getElementById('mesh-overlay');
-  if (!canvas) { canvas = document.createElement('canvas'); canvas.id = 'mesh-overlay'; const bg = document.getElementById('voronoi-bg'); if (bg) bg.after(canvas); else document.body.prepend(canvas); }
+  let canvas = document.getElementById('nexus-overlay');
+  if (!canvas) { canvas = document.createElement('canvas'); canvas.id = 'nexus-overlay'; const bg = document.getElementById('voronoi-bg'); if (bg) bg.after(canvas); else document.body.prepend(canvas); }
   canvas.width = meshW; canvas.height = meshH;
   canvas.style.width = meshW + 'px'; canvas.style.height = meshH + 'px';
   const edges = [];

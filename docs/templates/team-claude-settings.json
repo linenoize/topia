@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "linenoize": {
+      "source": {
+        "source": "github",
+        "repo": "linenoize/topia"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "Topia@linenoize": true
+  }
+}

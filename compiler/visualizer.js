@@ -1,5 +1,5 @@
 /**
- * Visualizer — Interactive Mesh Graph
+ * Visualizer — Interactive Nexus Graph
  *
  * Generates a self-contained HTML file with a force-directed graph
  * of all skills, connections, and signals. No CDN dependencies.
@@ -113,7 +113,7 @@ export async function collectGraphData(TopiaRoot) {
 
 // ─── HTML Generation ───
 
-export function generateMeshHTML(graphData) {
+export function generateNexusHTML(graphData) {
   const dataJson = JSON.stringify(graphData);
 
   return `<!DOCTYPE html>
@@ -121,7 +121,7 @@ export function generateMeshHTML(graphData) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Topia Mesh Visualizer</title>
+<title>Topia Nexus Visualizer</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
@@ -212,7 +212,7 @@ body {
 <body>
 
 <div class="topbar">
-  <h1>Topia Mesh</h1>
+  <h1>Topia Nexus</h1>
   <span class="stats" id="stats"></span>
   <input class="search-box" id="search" placeholder="Search skills..." autocomplete="off">
   <div class="filter-group" id="filters"></div>
@@ -599,3 +599,6 @@ resize();
 </body>
 </html>`;
 }
+
+/** @deprecated Use generateNexusHTML */
+export const generateMeshHTML = generateNexusHTML;

@@ -91,7 +91,7 @@ Before decomposing, classify the task into a complexity tier. Each tier defines 
 ## Calls (outbound)
 
 - `plan` (L2): high-level task decomposition into independent workstreams
-- `scout` (L2): understand full project scope and module boundaries
+- `recon` (L2): understand full project scope and module boundaries
 # Exception: L1→L1 meta-orchestration (team is the only L1 that calls other L1s)
 - `build` (L1): delegate feature tasks to parallel instances (worktree isolation)
 - `launch` (L1): delegate deployment/marketing when build is complete
@@ -134,8 +134,8 @@ Mark todo[0] `in_progress`.
 **1a. Map module boundaries.**
 
 ```
-REQUIRED SUB-SKILL: Topia:scout
-→ Invoke `scout` with the full task description.
+REQUIRED SUB-SKILL: Topia:recon
+→ Invoke `recon` with the full task description.
 → Scout returns: module list, file ownership map, dependency graph.
 → Capture: which modules are independent vs. coupled.
 ```
@@ -144,7 +144,7 @@ REQUIRED SUB-SKILL: Topia:scout
 
 ```
 REQUIRED SUB-SKILL: Topia:plan
-→ Invoke `plan` with scout output + task description.
+→ Invoke `plan` with recon output + task description.
 → Plan returns: ordered list of workstreams, each with:
     - stream_id: "A" | "B" | "C" (max 3)
     - task: specific sub-task description
@@ -220,7 +220,7 @@ For each stream where depends_on == []:
 - Project: [project name and type]
 - Overall goal: [1-line feature description]
 - This stream's goal: [specific sub-task]
-- Conventions: [key patterns from scout — naming, file structure, test framework]
+- Conventions: [key patterns from recon — naming, file structure, test framework]
 
 ### Deliverable
 - [ ] [specific outcome 1 — e.g., "AuthService with login/register/reset methods"]
@@ -231,7 +231,7 @@ For each stream where depends_on == []:
 - Tests: must pass with evidence (stdout captured)
 - Types: no `any`, strict mode
 - Security: no hardcoded secrets, parameterized queries
-- Conventions: [project-specific — from scout output]
+- Conventions: [project-specific — from recon output]
 
 ### Evidence Required
 Return a Cook Report with:
@@ -317,11 +317,11 @@ REQUIRED SUB-SKILL: Topia:integrity-check
 For each completed stream, verify build report contains:
 - Files modified
 - Tests passing
-- No unresolved TODOs or sentinel CRITICAL flags
+- No unresolved TODOs or guardian CRITICAL flags
 
 ```
 Error recovery:
-  If build report contains sentinel CRITICAL:
+  If build report contains guardian CRITICAL:
     → BLOCK this stream from merge
     → Report: "Stream [id] blocked: CRITICAL issue in [file] — [details]"
     → Present to user for decision before continuing
@@ -427,7 +427,7 @@ Mark todo[4] `completed`.
 5. MUST collect and review all agent outputs before merging — no blind merge
 6. MUST NOT skip the integration verification after merge
 
-## Mesh Gates
+## Nexus Gates
 
 | Gate | Requires | If Missing |
 |------|----------|------------|
@@ -535,7 +535,7 @@ Known failure modes for this skill. Check these before declaring done.
 | Using full mode with worktrees for ≤2 streams, ≤5 files | MEDIUM | Auto-detect triggers lite mode — saves opus cost and worktree overhead |
 | Agents with overlapping file ownership | HIGH | Scope Gate: define disjoint file sets before dispatch — never leave overlap unresolved |
 | Merging without running integration tests | HIGH | Verification Gate: integration tests on merged result are mandatory |
-| Ignoring sentinel CRITICAL flag in agent build report | HIGH | Stream blocked from merge — present to user before any merge action |
+| Ignoring guardian CRITICAL flag in agent build report | HIGH | Stream blocked from merge — present to user before any merge action |
 | Launching dependent streams before their dependencies complete | MEDIUM | Respect depends_on ordering — sequential after parallel, not parallel throughout |
 | Coupled modules split across streams | HIGH | Dependency graph check in Phase 1c — move coupled files to same stream or add depends_on |
 | Agent modified files outside declared scope | HIGH | Pre-merge scope verification in Phase 2b.5 — flag before merge, not after |

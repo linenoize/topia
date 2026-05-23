@@ -1,8 +1,29 @@
 /**
- * Emitter
+ * emitter.js — IR → platform-specific files on disk.
  *
- * Writes transformed skill files to the platform's output directory.
- * Handles file naming, directory creation, index generation, and AGENTS.md creation.
+ * Public entry: `buildAll({ TopiaRoot, outputRoot, adapter, disabledSkills, enabledPacks })`.
+ * Side effects: writes to `<outputRoot>/<adapter.outputDir>/Topia-*.<ext>`,
+ *               `<outputRoot>/CLAUDE.md` (when applicable), `<outputRoot>/AGENTS.md`.
+ *
+ * Pipeline (per skill):
+ *   discoverSkills()        scan skills/ for SKILL.md
+ *   parseSkill()            → IR (see parser.js)
+ *   transformSkill()        → platform-rewritten IR (cross-refs, tool names, etc.)
+ *   adapter.generateHeader / Footer
+ *   writeFile(adapter path)
+ *
+ * Extension packs:
+ *   - Monolith packs: PACK.md compiled as a single file like any skill.
+ *   - Split packs:    PACK.md is the index; each `skillManifest[i].file` is its
+ *                     own SKILL.md compiled into the same output dir.
+ *
+ * Org policy injection:
+ *   If `.topia/org/org.md` exists, parseOrgConfig() + buildOrgPolicyBlock()
+ *   inject an `<ORG-POLICY>` block into sentinel + preflight outputs.
+ *
+ * Failures are collected into `stats.errors` per file; the build does not abort
+ * mid-pipeline. Adapter is the only platform-aware seam — keep all platform
+ * differences inside adapters/, never branch on adapter.name here.
  */
 
 import { existsSync } from 'node:fs';
@@ -13,10 +34,13 @@ import { transformSkill } from './transformer.js';
 import { resolveScriptsPath } from './transforms/scripts-path.js';
 
 /**
- * Discover all SKILL.md files in the skills directory
+ * discoverSkills — list every `skills/<name>/SKILL.md` path on disk.
  *
- * @param {string} skillsDir - path to skills/ directory
- * @returns {Promise<string[]>} array of SKILL.md file paths
+ * Read-only. Caller decides which skills to include/skip (see disabledSkills
+ * in buildAll). Returns paths only — caller calls parseSkill() to load.
+ *
+ * @param {string} skillsDir - absolute path to <TopiaRoot>/skills
+ * @returns {Promise<string[]>}
  */
 async function discoverSkills(skillsDir) {
   const entries = await readdir(skillsDir, { withFileTypes: true });
@@ -221,14 +245,14 @@ async function applyInjections(body, rules) {
 }
 
 /**
- * Load org config from .Topia/org/org.md if it exists.
+ * Load org config from .topia/org/org.md if it exists.
  * Returns parsed org config or null if not present.
  *
  * @param {string} TopiaRoot - path to Topia source root
  * @returns {Promise<object|null>} parsed org config
  */
 async function loadOrgConfig(TopiaRoot) {
-  const orgPath = path.join(TopiaRoot, '.Topia', 'org', 'org.md');
+  const orgPath = path.join(TopiaRoot, '.topia', 'org', 'org.md');
   if (!existsSync(orgPath)) return null;
 
   try {
@@ -240,7 +264,7 @@ async function loadOrgConfig(TopiaRoot) {
 }
 
 /**
- * Generate <ORG-POLICY> block from org config for injection into sentinel/preflight.
+ * Generate <ORG-POLICY> block from org config for injection into guardian/preflight.
  */
 function buildOrgPolicyBlock(orgConfig, targetSkill) {
   if (!orgConfig) return null;
@@ -249,7 +273,7 @@ function buildOrgPolicyBlock(orgConfig, targetSkill) {
   lines.push(`\n\n<!-- Topia: Organization Policy (${orgConfig.name}) -->`);
   lines.push(`<ORG-POLICY template="${orgConfig.name}" governance="${orgConfig.governanceLevel.level}">`);
 
-  if (targetSkill === 'sentinel') {
+  if (targetSkill === 'guardian' || targetSkill === 'sentinel') {
     // Inject security + code review + deployment policies
     const security = orgConfig.policies.security || [];
     const codeReview = orgConfig.policies.code_review || [];
@@ -273,7 +297,7 @@ function buildOrgPolicyBlock(orgConfig, targetSkill) {
         lines.push(`- **${rule.key}**: ${rule.value}`);
       }
     }
-  } else if (targetSkill === 'preflight') {
+  } else if (targetSkill === 'readiness' || targetSkill === 'preflight') {
     // Inject code review + deployment + approval flows
     const codeReview = orgConfig.policies.code_review || [];
     const deployment = orgConfig.policies.deployment || [];
@@ -375,7 +399,7 @@ function outputFileName(skillName, adapter) {
   // Load reference injection rules from packs
   const injectionRules = await loadInjectionRules(extensionsDir);
 
-  // Load org config from .Topia/org/org.md
+  // Load org config from .topia/org/org.md
   const orgConfig = await loadOrgConfig(TopiaRoot);
 
   // Build skills — collect parsed data for skill-index + openclaw reuse
@@ -419,8 +443,8 @@ function outputFileName(skillName, adapter) {
         stats.injectionsApplied += count;
       }
 
-      // Inject org policies into sentinel/preflight (Business feature)
-      if (orgConfig && (parsed.name === 'sentinel' || parsed.name === 'preflight')) {
+      // Inject org policies into guardian/preflight (Business feature)
+      if (orgConfig && (parsed.name === 'guardian' || parsed.name === 'readiness')) {
         const orgBlock = buildOrgPolicyBlock(orgConfig, parsed.name);
         if (orgBlock) {
           finalBody += orgBlock;
@@ -574,7 +598,7 @@ function outputFileName(skillName, adapter) {
   await writeFile(path.join(outputDir, indexFileName), indexContent, 'utf-8');
   stats.files.push(indexFileName);
 
-  // Generate skill-index.json — compiled intent mesh for auto-trigger hooks
+  // Generate skill-index.json — compiled intent graph for auto-trigger hooks
   const skillIndex = generateSkillIndex(parsedSkills);
   await writeFile(path.join(outputDir, 'skill-index.json'), `${JSON.stringify(skillIndex, null, 2)}\n`, 'utf-8');
   stats.files.push('skill-index.json');
@@ -648,7 +672,7 @@ function generateIndex(stats, adapter) {
     lines.push('## Extension Packs', '', ...extFiles.map((f) => `- ${f}`), '');
   }
 
-  lines.push('---', '> Topia Skill Mesh — https://github.com/linenoize/topia');
+  lines.push('---', '> Topia Nexus — https://github.com/linenoize/topia');
 
   return lines.join('\n');
 }
@@ -664,8 +688,7 @@ function generateAgentsMd(stats, adapter) {
     '## Overview',
     '',
     'Topia is an interconnected skill ecosystem for AI coding assistants.',
-    `${stats.skillCount} core skills | 5-layer mesh architecture | ${stats.crossRefsResolved} connections | Multi-platform.`,
-    'Philosophy: "Less skills. Deeper connections."',
+    `${stats.skillCount} core skills | 5-layer architecture | ${stats.crossRefsResolved} connections | Multi-platform.`,
     '',
     `Platform: ${adapter.name}`,
     '',
@@ -682,7 +705,7 @@ function generateAgentsMd(stats, adapter) {
     `Skills are located in: ${adapter.outputDir}/`,
     '',
     '---',
-    '> Topia Skill Mesh — https://github.com/linenoize/topia',
+    '> Topia Nexus — https://github.com/linenoize/topia',
     '',
   ];
 
@@ -705,8 +728,8 @@ const INTENT_KEYWORDS = {
   fix: ['fix', 'patch', 'hotfix', 'resolve', 'repair'],
   test: ['test', 'tdd', 'coverage', 'unit test', 'e2e', 'spec'],
   review: ['review', 'code review', 'check quality', 'audit code'],
-  sentinel: ['security', 'vulnerability', 'owasp', 'secret', 'audit security'],
-  preflight: ['pre-commit', 'quality gate', 'check before'],
+  guardian: ['security', 'vulnerability', 'owasp', 'secret', 'audit security'],
+  readiness: ['pre-commit', 'quality gate', 'check before'],
   deploy: ['deploy', 'ci/cd', 'pipeline', 'kubernetes', 'docker'],
   design: ['ui', 'ux', 'design', 'layout', 'component design', 'wireframe'],
   perf: ['performance', 'slow', 'optimize', 'n+1', 'memory leak', 'bundle size'],
@@ -727,7 +750,7 @@ const INTENT_KEYWORDS = {
 };
 
 /**
- * Generate skill-index.json — compiled intent mesh for runtime auto-trigger
+ * Generate skill-index.json — compiled intent graph for runtime auto-trigger
  *
  * Extracts from parsed skills: name, description, layer, model, group,
  * cross-references (connections), and maps intent keywords to skill chains.

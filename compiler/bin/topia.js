@@ -1,14 +1,32 @@
 #!/usr/bin/env node
 
 /**
- * Topia CLI
+ * bin/topia.js — Topia CLI entry point.
  *
- * Commands:
- *   Topia init    — Interactive setup for a new project
- *   Topia build   — Compile skills for the configured platform
- *   Topia doctor  — Validate compiled output + mesh integrity (--mesh for mesh only)
- *   Topia status  — Project dashboard (neofetch-style)
- *   Topia visualize — Interactive mesh graph
+ * Dispatch table (top-level `topia <cmd>`):
+ *   install            one-shot setup: rune-check → plugin add → hooks → agora-code → doctor
+ *   setup              hooks-only wizard (scope + preset)
+ *   init               compile skills for non-Claude IDE
+ *   build              recompile using existing topia.config.json
+ *   doctor             validate output + nexus integrity (--nexus, --hooks, --strict)
+ *   status             neofetch-style dashboard
+ *   visualize          open skill-graph in browser
+ *   analytics          usage analytics
+ *   hooks <sub>        install / uninstall / status — runtime hook lifecycle
+ *   migrate-from-rune  pull .rune/ → .topia/, disable rune-kit plugin
+ *   migrate-v1         rewrite v1 skill names in .topia/ state files
+ *
+ * Argument parsing: `parseArgs(argv)` splits flags. All commands accept
+ * `--platform`, `--output`, `--disable`. Command-specific flags live in the
+ * `case` block.
+ *
+ * Side effects: writes to disk per the chosen command. Read-only commands:
+ * doctor, status, visualize, analytics. All others mutate.
+ *
+ * Exit codes: 0 success, 1 fatal error caught in main().catch().
+ *
+ * TOPIA_ROOT is computed once from __dirname; downstream code receives it
+ * as an explicit argument — never re-derived deeper in the call stack.
  */
 
 import { existsSync } from 'node:fs';
@@ -26,12 +44,15 @@ import { hookStatus } from '../commands/hooks/status.js';
 import { uninstallHooks } from '../commands/hooks/uninstall.js';
 import { runInstall } from '../commands/install.js';
 import { migrateFromRune } from '../commands/migrate-from-rune.js';
+import { migrateFromV1 } from '../commands/migrate-v1.js';
 import { formatSetupResult, runSetup } from '../commands/setup.js';
 import { generateDashboardHTML } from '../dashboard.js';
-import { checkMeshIntegrity, formatDoctorResults, formatMeshResults, runDoctor } from '../doctor.js';
+import { checkNexusIntegrity, formatDoctorResults, formatNexusResults, runDoctor } from '../doctor.js';
+import { appendGitignoreChecks } from '../lib/ensure-gitignore.js';
+import { appendTopiaPathChecks } from '../lib/topia-paths.js';
 import { buildAll } from '../emitter.js';
-import { collectStats, renderStatus, renderStatusJson } from '../status.js';
-import { collectGraphData, generateMeshHTML } from '../visualizer.js';
+import { collectStats, detectMemoryHealth, renderStatus, renderStatusJson } from '../status.js';
+import { collectGraphData, generateNexusHTML } from '../visualizer.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -80,13 +101,24 @@ async function prompt(question) {
   });
 }
 
-// ─── Commands ───
+// ─── Command handlers ───
+// Each cmd<X> is a top-level CLI subcommand. Contract:
+//   - Side effects allowed; document them in the handler's header comment.
+//   - Print user-visible status via log() / logStep(). Throw to exit non-zero.
+//   - Receive (projectRoot, args). projectRoot = process.cwd(). args = parsed flags.
+//   - Do not re-derive TOPIA_ROOT; pass the module-level constant down.
 
+/**
+ * cmdInit — for non-Claude IDEs: detect platform → write topia.config.json
+ * → compile all skills into the platform's rule directory.
+ * No-op for Claude (native plugin loads source directly).
+ * Side effects: writes topia.config.json + <outputDir>/*
+ */
 async function cmdInit(projectRoot, args) {
   log('');
-  log('  ╭──────────────────────────────────────────╮');
-  log('  │  Topia — Less skills. Deeper connections.  │');
-  log('  ╰──────────────────────────────────────────╯');
+  log('  ╭─────────╮');
+  log('  │  Topia  │');
+  log('  ╰─────────╯');
   log('');
 
   // Platform detection / selection
@@ -159,6 +191,11 @@ async function cmdInit(projectRoot, args) {
   log('');
 }
 
+/**
+ * cmdBuild — recompile skills using the existing topia.config.json.
+ * Requires `topia init` to have run first (or `--platform <name>`).
+ * No-op for Claude. Side effects: overwrites <adapter.outputDir>/*.
+ */
 async function cmdBuild(projectRoot, args) {
   const config = await readConfig(projectRoot);
 
@@ -210,6 +247,16 @@ async function cmdBuild(projectRoot, args) {
   log('');
 }
 
+/**
+ * cmdDoctor — validate install + nexus integrity. Read-only.
+ *
+ * Mode flags (mutually exclusive, checked in order):
+ *   --hooks   hook drift report only (always exit 0; reporter)
+ *   --nexus    nexus integrity check only (exit 1 on errors)
+ *   (default) full: runDoctor() + nexus check + version-sync-check
+ *
+ * --strict   treat warnings as errors (CI mode).
+ */
 async function cmdDoctor(projectRoot, args) {
   const config = await readConfig(projectRoot);
 
@@ -221,14 +268,16 @@ async function cmdDoctor(projectRoot, args) {
     return;
   }
 
-  // --mesh flag: run mesh integrity check only
-  if (args.mesh) {
+  const runNexusOnly = args.nexus || args.mesh;
+  if (args.mesh && !args.nexus) {
+    log('  ⚠ --mesh is deprecated; use --nexus');
+  }
+  if (runNexusOnly) {
     log('');
-    const meshResults = await checkMeshIntegrity(TOPIA_ROOT);
-    log(formatMeshResults(meshResults));
-    if (meshResults.errors.length > 0) process.exit(1);
-    // Exit with warning code if there are warnings (for CI awareness)
-    if (args.strict && meshResults.warnings.length > 0) process.exit(1);
+    const nexusResults = await checkNexusIntegrity(TOPIA_ROOT);
+    log(formatNexusResults(nexusResults));
+    if (nexusResults.errors.length > 0) process.exit(1);
+    if (args.strict && nexusResults.warnings.length > 0) process.exit(1);
     return;
   }
 
@@ -242,12 +291,14 @@ async function cmdDoctor(projectRoot, args) {
       config: {},
       topiaRoot: TOPIA_ROOT,
     });
+    await appendGitignoreChecks(results, projectRoot);
+    appendTopiaPathChecks(results, projectRoot);
     log(formatDoctorResults(results));
 
-    // Also run mesh check in source-only mode
+    // Also run nexus check in source-only mode
     log('');
-    const meshResults = await checkMeshIntegrity(TOPIA_ROOT);
-    log(formatMeshResults(meshResults));
+    const meshResults = await checkNexusIntegrity(TOPIA_ROOT);
+    log(formatNexusResults(meshResults));
 
     if (!results.healthy) process.exit(1);
     return;
@@ -264,16 +315,24 @@ async function cmdDoctor(projectRoot, args) {
     topiaRoot,
   });
 
+  await appendGitignoreChecks(results, projectRoot);
+  appendTopiaPathChecks(results, projectRoot);
   log(formatDoctorResults(results));
 
-  // Also run mesh check
+  // Also run nexus check
   log('');
-  const meshResults = await checkMeshIntegrity(topiaRoot);
-  log(formatMeshResults(meshResults));
+  const meshResults = await checkNexusIntegrity(topiaRoot);
+  log(formatNexusResults(meshResults));
 
   if (!results.healthy) process.exit(1);
 }
 
+/**
+ * cmdSetup — hooks-only wizard. Asks scope (current/global) + preset
+ * (gentle/strict/off). Non-interactive when --here/--global + --preset given.
+ * Side effects: writes <scope-root>/.claude/settings.json (and equivalents).
+ * Called transitively by `topia install`.
+ */
 async function cmdSetup(projectRoot, args) {
   log('');
   log('  Topia Setup Wizard');
@@ -299,6 +358,10 @@ async function readVersion() {
   }
 }
 
+/**
+ * cmdStatus — neofetch-style dashboard. Read-only.
+ * --json emits machine-readable; default is ANSI box.
+ */
 async function cmdStatus(projectRoot, args) {
   const config = await readConfig(projectRoot);
   const topiaRoot =
@@ -313,16 +376,22 @@ async function cmdStatus(projectRoot, args) {
   const projectName = path.basename(projectRoot);
 
   const stats = await collectStats(topiaRoot);
+  const memoryHealth = detectMemoryHealth(projectRoot);
+  const opts = { version: pkg.version, platform, projectName, memoryHealth };
 
   if (args.json) {
-    log(renderStatusJson(stats, { version: pkg.version, platform, projectName }));
+    log(renderStatusJson(stats, opts));
   } else {
     log('');
-    log(renderStatus(stats, { version: pkg.version, platform, projectName }));
+    log(renderStatus(stats, opts));
     log('');
   }
 }
 
+/**
+ * cmdVisualize — generate HTML skill-graph and open in browser.
+ * Side effect: writes <projectRoot>/.topia/nexus.html (or temp file) and opens it.
+ */
 async function cmdVisualize(projectRoot, args) {
   const config = await readConfig(projectRoot);
   const topiaRoot =
@@ -332,15 +401,15 @@ async function cmdVisualize(projectRoot, args) {
         ? path.resolve(projectRoot, config.source)
         : TOPIA_ROOT;
 
-  logStep('◎', 'Collecting mesh data...');
+  logStep('◎', 'Collecting nexus data...');
   const graphData = await collectGraphData(topiaRoot);
 
   logStep(
     '◎',
-    `Found ${graphData.stats.nodeCount} nodes, ${graphData.stats.edgeCount} edges, ${graphData.stats.signalCount} signals`,
+    `Found ${graphData.stats.nodeCount} nodes, ${graphData.stats.edgeCount} synapses, ${graphData.stats.signalCount} pulses`,
   );
 
-  const html = generateMeshHTML(graphData);
+  const html = generateNexusHTML(graphData);
 
   const topiaDir = path.join(projectRoot, '.topia');
   if (!existsSync(topiaDir)) {
@@ -348,11 +417,11 @@ async function cmdVisualize(projectRoot, args) {
     await mkdirFs(topiaDir, { recursive: true });
   }
 
-  const outputPath = args.output ? path.resolve(projectRoot, args.output) : path.join(topiaDir, 'mesh.html');
+  const outputPath = args.output ? path.resolve(projectRoot, args.output) : path.join(topiaDir, 'nexus.html');
 
   const { writeFile: writeFileFs } = await import('node:fs/promises');
   await writeFileFs(outputPath, html, 'utf-8');
-  logStep('✓', `Mesh visualization written to ${path.relative(projectRoot, outputPath)}`);
+  logStep('✓', `Nexus visualization written to ${path.relative(projectRoot, outputPath)}`);
 
   if (args.json) {
     log(JSON.stringify(graphData, null, 2));
@@ -373,6 +442,11 @@ async function cmdVisualize(projectRoot, args) {
   }
 }
 
+/**
+ * cmdAnalytics — usage analytics over the last N days (default 30).
+ * Reads `.topia/metrics/*.jsonl`. --json emits raw; default writes
+ * a self-contained HTML dashboard via generateDashboardHTML().
+ */
 async function cmdAnalytics(projectRoot, args) {
   const days = args.days ? parseInt(args.days, 10) : 30;
 
@@ -416,6 +490,14 @@ async function cmdAnalytics(projectRoot, args) {
 }
 
 // ─── Hook Commands ───
+// `topia hooks <sub>` — runtime hook lifecycle.
+//   install     write Topia hooks to .claude/settings.json (and equivalents)
+//   uninstall   remove only Topia-managed entries (signature-matched)
+//   status      report which hooks are wired
+//
+// Hooks are platform-aware: each adapter knows how to translate the canonical
+// preset into its native settings format (Claude JSON, Cursor mdc, etc.).
+// `--global` operates on ~/.claude/settings.json across all projects.
 
 async function cmdHooks(projectRoot, args, subcommand) {
   if (!subcommand) {
@@ -447,6 +529,7 @@ async function cmdHooks(projectRoot, args, subcommand) {
         preset: args.preset,
         dry: args.dry,
         platform,
+        topiaRoot: TOPIA_ROOT,
       });
       log('');
       if (result.platforms.length === 0) {
@@ -618,6 +701,14 @@ async function main() {
         autoYes: Boolean(args.yes),
       });
       break;
+    case 'migrate-v1':
+      await migrateFromV1({
+        cwd: projectRoot,
+        dryRun: Boolean(args['dry-run']),
+        force: Boolean(args.force),
+        autoYes: Boolean(args.yes),
+      });
+      break;
     case 'install':
       await runInstall({ TopiaRoot: TOPIA_ROOT, projectRoot, args });
       break;
@@ -632,19 +723,22 @@ async function main() {
     case '--help':
     case undefined:
       log('');
-      log('  Topia CLI — Skill mesh for AI coding assistants');
+      log('  Topia CLI — Topia Nexus for AI coding assistants');
       log('');
       log('  Commands:');
       log('    setup    Interactive wizard — pick scope, install hooks (recommended for first-time)');
       log('             [--here|--global] [--preset gentle|strict] [--dry]');
       log('    init     Interactive setup for build pipeline (auto-detects platform)');
       log('    build    Compile skills for configured platform');
-      log('    doctor   Validate compiled output + mesh integrity');
-      log('             --mesh   Mesh integrity only (reciprocals, versions, sections)');
+      log('    doctor   Validate compiled output + nexus integrity');
+      log('             --nexus   Nexus integrity only (reciprocals, versions, sections)');
+      log('             --mesh    Deprecated alias for --nexus');
       log('             --hooks  Hook drift report — compare installed vs canonical preset (reporter, exit 0)');
       log('             --strict Fail on warnings (for CI)');
-      log('    status   Project dashboard (skills, signals, packs, health)');
-      log('    visualize  Interactive mesh graph (opens in browser)');
+      log('    status   Project dashboard (skills, pulses, nexus health, memory)');
+      log('    visualize  Interactive nexus graph (opens in browser)');
+      log('    migrate-v1   Rewrite v1 skill names in .topia/ state');
+      log('               [--dry-run] [--force] [--yes]');
       log('    analytics  Usage analytics dashboard');
       log('    hooks      Install/uninstall/status for multi-platform auto-discipline');
       log(

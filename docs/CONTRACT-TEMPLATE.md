@@ -1,6 +1,6 @@
 # Project Contract
 
-> Project-level invariants enforced by `Topia:build` and `Topia:sentinel`.
+> Project-level invariants enforced by `Topia:build` and `Topia:guardian`.
 > Violations are **hard gates** — skills refuse to proceed until resolved.
 >
 > Copy this template to `.topia/contract.md` in your project and customize.

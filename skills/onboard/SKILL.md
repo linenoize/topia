@@ -25,8 +25,8 @@ Auto-generate project context for AI sessions. Scans the codebase and creates a 
 
 ## Calls (outbound)
 
-- `scout` (L2): deep codebase scan — structure, frameworks, patterns, dependencies
-- `sentinel-env` (L3): validate developer environment (runtime versions, required tools, env vars) so the onboarded project is actually runnable
+- `recon` (L2): deep codebase scan — structure, frameworks, patterns, dependencies
+- `guardian-env` (L3): validate developer environment (runtime versions, required tools, env vars) so the onboarded project is actually runnable
 - `autopsy` (L2): when project appears messy or undocumented — health assessment
 
 ## Called By (inbound)
@@ -54,7 +54,7 @@ project/
 ## Executable Steps
 
 ### Step 1 — Full Scan
-Invoke `Topia:scout` on the project root. Collect:
+Invoke `Topia:recon` on the project root. Collect:
 - Top-level directory structure (depth 2)
 - All config files: `package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod`, `composer.json`, `.nvmrc`, `.python-version`, `Pipfile.lock`, `poetry.lock`, `uv.lock`
 - Python environment markers: `.venv/`, `venv/`, `conda-meta/`, `.python-version`
@@ -100,8 +100,20 @@ Use `Write` to create `CLAUDE.md` at the project root. Populate every section us
 
 If a `CLAUDE.md` already exists, use `Read` to load it first, then merge — preserve any human-written sections (comments starting with `<!-- manual -->`) and update auto-detected sections only.
 
+### Step 5.6 — Ensure .gitignore (before writing .topia/)
+
+Run **before** Step 5 creates session files:
+
+```bash
+node skills/onboard/scripts/ensure-gitignore.js --root <project-root>
+```
+
+- Interactive: prompts once `Add standard ignore rules to .gitignore? [Y/n]`
+- Non-interactive: `--yes` auto-appends; decline writes `.topia/skip-gitignore.flag`
+- Record outcome in the Onboard Report under `### Gitignore`
+
 ### Step 5 — Initialize .topia/ Directory
-Use `Bash` to create the directory: `mkdir -p .Topia`
+Use `Bash` to create the directory: `mkdir -p .topia`
 
 Use `Write` to create each file:
 - `.topia/conventions.md` — paste the extracted conventions from Step 3 in full detail
@@ -131,12 +143,15 @@ What it produces:
   - **Critical Invariants** — shared constants exported and imported in ≥3 places
   - **State Machine Rules** — reducer/switch shapes with state literal pairs
   - **Cross-File Consistency** — literal tuples mirrored across ≥3 files
-- `CLAUDE.md` — adds a pointer block between `<!-- @Topia-invariants-pointer:start -->` and `<!-- @Topia-invariants-pointer:end -->` listing top danger-zone globs so every session sees them.
+- `CLAUDE.md` — adds two auto-generated pointer blocks:
+  - **Invariants** (`<!-- @Topia-invariants-pointer:start -->` … `end`) — top danger-zone globs; links to `.topia/INVARIANTS.md`.
+  - **Context** (`<!-- @Topia-context-pointer:start -->` … `end`) — inventory of `.topia/` session files (`decisions.md`, `plan-*.md`, `adr/`, etc.) so agents know persisted state exists beyond invariants.
+- Skip directives: `<!-- @Topia-invariants-pointer:skip -->` or `<!-- @Topia-context-pointer:skip -->` in `CLAUDE.md` prevents re-injection of that block.
 
 Merge rules (safe re-runs):
 - If `.topia/INVARIANTS.md` exists, user edits above `## Auto-detected (new)` are **never** overwritten.
 - New detections replace **only** the content under `## Auto-detected (new)`.
-- If a user sets `<!-- @Topia-invariants-pointer:skip -->` anywhere in `CLAUDE.md`, the pointer block is not re-injected.
+- If a user sets a skip directive for either pointer block in `CLAUDE.md`, that block is not re-injected.
 
 Emit signal `invariants.seeded` with `{danger_count, critical_count, state_count, cross_count}` when done. `session-bridge` listens in Phase 3 to surface the loudest rules at session start.
 
@@ -205,9 +220,9 @@ Use `Write` to create `.topia/DEVELOPER-GUIDE.md` with this template:
 
 If `.topia/DEVELOPER-GUIDE.md` already exists, skip and log **INFO**: "Skipped existing .topia/DEVELOPER-GUIDE.md — manual content preserved."
 
-### Step 6c — Suggest L4 Extension Packs
+### Step 6c — Activate L4 Extension Packs
 
-Based on the detected tech stack from Step 2, recommend relevant L4 extension packs. Use the mapping table below to find applicable packs. Only suggest packs that match the detected stack — do not suggest all packs.
+Based on the detected tech stack from Step 2, **activate** (not merely suggest) matching L4 packs. Packs are already shipped with the Topia plugin — this step records project preferences for routing.
 
 | Detected Stack | Suggest Pack | Why |
 |----------------|-------------|-----|
@@ -228,33 +243,38 @@ If 0 packs match: omit this section from the report (no suggestions is correct f
 
 **Community pack discovery**: Also check if `.topia/community-packs/registry.json` exists. If it does, list installed community packs alongside core pack suggestions. If community packs are installed, include them under a `### Installed Community Packs` subsection.
 
-If ≥1 packs match: include in the Onboard Report under a `### Suggested L4 Packs` section:
+If ≥1 packs match:
 
+1. Run:
+```bash
+node skills/onboard/scripts/detect-l4-packs.js --root <project-root> --framework "<framework>" --language "<language>" --signals "<extra signals>"
 ```
-### Suggested L4 Packs
-Based on your detected stack ([detected frameworks]), these extension packs may be useful:
+2. Merge `claudeSection` from JSON output into `CLAUDE.md` under `## Topia — Active L4 packs`
+3. If `topia.config.json` exists, script updates `extensions.enabled` — tell user to run `topia build`
+4. Report under `### Active L4 Packs` (not "Suggested") — list packs written to `.topia/active-packs.json`
 
-- **@Topia/[pack]** — [one-line reason based on detected stack]
-  Install: [link or command when available]
+### Step 6d — Context Budget Check (interactive)
+
+Audit baseline context cost. When high, **ask the user which remediations to apply** (including **All**).
+
+1. Run audit:
+```bash
+node skills/onboard/scripts/context-budget.js --root <project-root> --audit --mcp-tools <count> --claude-lines <n>
 ```
-
-### Step 6d — Context Budget Check
-
-Audit the project's baseline context cost from MCP servers and agent configurations. This helps developers understand why their context window fills up faster than expected.
-
-1. Count MCP tools available (from session start messages or `settings.json`)
-2. Check CLAUDE.md line count
-3. If total MCP tools >80 or CLAUDE.md >150 lines, include a **Context Budget Advisory** in the Onboard Report:
-
+2. If JSON `advisory: true`, use the **AskQuestion** tool:
+   - Title: `Context budget`
+   - Prompt: **"Context budget is high. Which would you like to do?"**
+   - `allow_multiple: true`
+   - Options: each entry in `askQuestionSpec.choices` (includes `all` → **All of the above**)
+3. Map answers to apply:
+   - If user selected `all` (alone or with others): `--apply all`
+   - Else: `--apply slim-claude-md,pointer-block` (comma-separated ids)
+```bash
+node skills/onboard/scripts/context-budget.js --root <project-root> --apply <ids>
 ```
-### Context Budget Advisory
-- **MCP tools loaded**: [count] across [N] servers
-- **CLAUDE.md size**: [N] lines
-- **Estimated baseline**: ~[N]k tokens before any work begins
-- **Recommendation**: [specific advice — disable unused MCP servers, move CLAUDE.md details to .topia/]
-```
+4. Report `### Context Budget` with metrics + `chosen` / `applied` from `.topia/context-budget.json`
 
-**Skip if**: Total MCP tools ≤80 AND CLAUDE.md ≤150 lines (healthy baseline).
+**Skip AskQuestion if**: `advisory: false` (MCP ≤80 and CLAUDE.md ≤150 lines).
 
 ### Step 6e — AI-Driven Interview (Optional, User-Initiated)
 
@@ -307,9 +327,12 @@ Suggest switching to interview mode (but don't force it) when:
 Output: `"ℹ️ This project is hard to auto-detect. Run /topia onboard --interview for guided setup."`
 
 ### Step 7 — Commit
-Use `Bash` to stage and commit the generated files:
+Use `Bash` to stage and commit only committable Topia files (not all of `.topia/`):
 ```bash
-git add CLAUDE.md .topia/ && git commit -m "chore: initialize Topia project context"
+git add CLAUDE.md
+git add -f .topia/active-packs.json 2>/dev/null || true
+git add .topia/org/ 2>/dev/null || true
+git commit -m "chore: initialize Topia project context"
 ```
 
 If `git` is not available or the directory is not a git repo, skip this step and add an INFO note to the report: "Not a git repository — files written but not committed."
@@ -383,8 +406,14 @@ If any of the `.topia/` files already exist, do not overwrite them (they may con
 - [potential issues detected]
 - [recommendations for the developer]
 
-### Suggested L4 Packs
-- **@Topia/[pack]** — [reason] (only shown if applicable packs detected)
+### Gitignore
+- [outcome from Step 5.6]
+
+### Active L4 Packs
+- **@Topia/[pack]** — [reason] (written to .topia/active-packs.json)
+
+### Context Budget
+- [metrics + applied remediations, or "healthy baseline"]
 ```
 
 ## Constraints

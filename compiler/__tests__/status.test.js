@@ -94,26 +94,26 @@ describe('renderStatus', () => {
   test('shows signal count', async () => {
     const stats = await collectStats(Topia_ROOT);
     const output = renderStatus(stats);
-    assert.match(output, /Signals\s+\d+ defined/);
+    assert.match(output, /Pulses\s+\d+ defined/);
   });
 
-  test('shows mesh connections', async () => {
+  test('shows nexus synapses', async () => {
     const stats = await collectStats(Topia_ROOT);
     const output = renderStatus(stats);
-    assert.match(output, /Mesh\s+\d+\+ connections/);
+    assert.match(output, /Nexus\s+\d+\+ synapses/);
   });
 
   test('shows health progress bar', async () => {
     const stats = await collectStats(Topia_ROOT);
     const output = renderStatus(stats);
     assert.ok(output.includes('▓'));
-    assert.ok(output.includes('mesh health'));
+    assert.ok(output.includes('nexus health'));
   });
 
   test('shows active signals section', async () => {
     const stats = await collectStats(Topia_ROOT);
     const output = renderStatus(stats);
-    assert.ok(output.includes('Active Signals'));
+    assert.ok(output.includes('Active Pulses'));
     assert.ok(output.includes('→'));
   });
 
@@ -176,11 +176,12 @@ describe('renderStatusJson', () => {
     }
   });
 
-  test('includes mesh stats', async () => {
+  test('includes nexus stats', async () => {
     const stats = await collectStats(Topia_ROOT);
     const parsed = JSON.parse(renderStatusJson(stats));
-    assert.ok(parsed.mesh.connections > 100);
-    assert.ok(parsed.mesh.avgPerSkill > 1);
+    assert.ok(parsed.nexus.synapses > 100);
+    assert.ok(parsed.nexus.avgPerSkill > 1);
+    assert.strictEqual(parsed.mesh.connections, parsed.nexus.synapses);
   });
 
   test('includes health score 0-100', async () => {
@@ -202,7 +203,7 @@ describe('renderStatusJson', () => {
 // ─── Health Score ───
 
 describe('health score', () => {
-  test('unified mesh has reasonable health', async () => {
+  test('unified nexus has reasonable health', async () => {
     const stats = await collectStats(Topia_ROOT);
     const parsed = JSON.parse(renderStatusJson(stats));
     assert.ok(parsed.health >= 70, `Health ${parsed.health} should be >= 70`);

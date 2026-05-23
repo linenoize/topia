@@ -5,6 +5,14 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const { isCursorRuntime, writeHookResponse } = require('../lib/cursor-io.cjs');
+const { topiaDirForWrite } = require('../lib/topia-paths.cjs');
+
+const hookLines = [];
+const origLog = console.log.bind(console);
+console.log = (...args) => {
+  hookLines.push(args.map((a) => (typeof a === 'string' ? a : String(a))).join(' '));
+};
 
 const cwd = process.cwd();
 const hash = Buffer.from(cwd).toString('base64url').slice(0, 16);
@@ -13,7 +21,7 @@ const hash = Buffer.from(cwd).toString('base64url').slice(0, 16);
 
 const metricsJsonl = path.join(os.tmpdir(), `Topia-metrics-${hash}.jsonl`);
 const counterFile = path.join(os.tmpdir(), `Topia-context-watch-${hash}.json`);
-const TopiaMetricsDir = path.join(cwd, '.Topia', 'metrics');
+const TopiaMetricsDir = path.join(topiaDirForWrite(cwd), 'metrics');
 
 // Resolve skill names → expected model from agent frontmatter
 // Reads agents/*.md at flush time — no runtime model detection needed
@@ -187,3 +195,10 @@ console.log(`
 │  If any item is unclear → address it now.           │
 └─────────────────────────────────────────────────────┘
 `);
+
+const stopText = hookLines.join('\n').trim();
+if (isCursorRuntime()) {
+  writeHookResponse(stopText ? { additional_context: stopText } : {});
+} else {
+  for (const line of hookLines) origLog(line);
+}

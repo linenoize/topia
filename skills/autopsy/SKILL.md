@@ -25,7 +25,7 @@ Full codebase health assessment for legacy projects. Autopsy analyzes complexity
 
 ## Calls (outbound)
 
-- `scout` (L2): deep structural scan — files, LOC, entry points, imports
+- `recon` (L2): deep structural scan — files, LOC, entry points, imports
 - `research` (L3): identify if tech stack is outdated
 - `trend-scout` (L3): compare against current best practices
 - `journal` (L3): record health assessment findings
@@ -60,7 +60,7 @@ Skip this step for local-only projects with no remote.
 
 ### Step 1 — Structure scan
 
-Call `Topia:scout` with a request for a full project map. Ask scout to return:
+Call `Topia:recon` with a request for a full project map. Ask scout to return:
 - All source files with LOC counts
 - Entry points and main modules
 - Import/dependency graph (who imports who)

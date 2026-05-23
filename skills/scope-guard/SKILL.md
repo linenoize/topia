@@ -35,7 +35,7 @@ None — pure L3 monitoring utility.
 Read the original task/plan from one of these sources (check in order):
 
 1. TodoWrite task list — read active todos as the planned scope
-2. `.topia/progress.md` — use `Read` on `D:\Project\.Topia\progress.md` (or equivalent path)
+2. `.topia/progress.md` — use `Read` on `.topia/progress.md` (or equivalent path)
 3. If neither exists, ask the calling skill to provide the plan as a text description
 
 Extract from the plan:

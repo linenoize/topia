@@ -46,7 +46,7 @@ function chainEntry(chain, session = 'test-session') {
 }
 
 async function setupMetrics(tmpDir, sessions = [], chains = [], skillTotals = null) {
-  const metricsDir = path.join(tmpDir, '.Topia', 'metrics');
+  const metricsDir = path.join(tmpDir, '.topia', 'metrics');
   await mkdir(metricsDir, { recursive: true });
 
   if (sessions.length > 0) {
@@ -176,13 +176,13 @@ describe('analytics — with data', () => {
       tmpDir,
       [sessionEntry({ id: 's1' }), sessionEntry({ id: 's2' })],
       [
-        chainEntry(['build', 'plan', 'scout'], 's1'),
-        chainEntry(['build', 'plan', 'scout'], 's2'),
+        chainEntry(['build', 'plan', 'recon'], 's1'),
+        chainEntry(['build', 'plan', 'recon'], 's2'),
         chainEntry(['debug', 'fix'], 's1'),
       ],
     );
     const chains = await getSkillChains(tmpDir, 30);
-    assert.equal(chains[0].chain, 'build → plan → scout');
+    assert.equal(chains[0].chain, 'build → plan → recon');
     assert.equal(chains[0].count, 2);
     assert.equal(chains[1].chain, 'debug → fix');
     assert.equal(chains[1].count, 1);
@@ -244,7 +244,7 @@ describe('analytics — edge cases', () => {
   });
 
   it('handles malformed JSONL lines gracefully', async () => {
-    const metricsDir = path.join(tmpDir, '.Topia', 'metrics');
+    const metricsDir = path.join(tmpDir, '.topia', 'metrics');
     await mkdir(metricsDir, { recursive: true });
     await writeFile(
       path.join(metricsDir, 'sessions.jsonl'),
@@ -255,7 +255,7 @@ describe('analytics — edge cases', () => {
   });
 
   it('handles empty JSONL files', async () => {
-    const metricsDir = path.join(tmpDir, '.Topia', 'metrics');
+    const metricsDir = path.join(tmpDir, '.topia', 'metrics');
     await mkdir(metricsDir, { recursive: true });
     await writeFile(path.join(metricsDir, 'sessions.jsonl'), '');
     const overview = await getSessionOverview(tmpDir, 30);
@@ -289,7 +289,7 @@ describe('analytics — edge cases', () => {
   });
 
   it('handles corrupted skills.json', async () => {
-    const metricsDir = path.join(tmpDir, '.Topia', 'metrics');
+    const metricsDir = path.join(tmpDir, '.topia', 'metrics');
     await mkdir(metricsDir, { recursive: true });
     await writeFile(path.join(metricsDir, 'skills.json'), 'NOT JSON');
     // Should not throw
@@ -319,14 +319,14 @@ describe('analytics — dashboard HTML generation', () => {
         { model: 'opus', skill_count: 3 },
       ],
       sessionTrend: [{ date: '2026-03-30', sessions: 2, duration_min: 20, skill_invocations: 10, tool_calls: 80 }],
-      skillChains: [{ chain: 'build → plan → scout', count: 3 }],
+      skillChains: [{ chain: 'build → plan → recon', count: 3 }],
       toolDistribution: [
         { tool: 'Read', count: 50 },
         { tool: 'Edit', count: 30 },
       ],
       skillHeatmap: { heatmap: [], dates: [], maxCount: 1 },
       sessionTimeline: [],
-      skillMesh: { nodes: [], edges: [], maxCount: 1 },
+      skillNexus: { nodes: [], edges: [], maxCount: 1 },
       generated: new Date().toISOString(),
       days: 30,
     };
@@ -334,7 +334,7 @@ describe('analytics — dashboard HTML generation', () => {
     const html = generateDashboardHTML(data);
     assert.ok(html.includes('<!DOCTYPE html>'));
     assert.ok(html.includes('Topia Analytics'));
-    assert.ok(html.includes('Skill Mesh'));
+    assert.ok(html.includes('Topia Nexus'));
     assert.ok(html.includes('Models'));
     assert.ok(html.includes('Workflow Chains'));
     assert.ok(html.includes('Recent Sessions'));
@@ -359,7 +359,7 @@ describe('analytics — dashboard HTML generation', () => {
       toolDistribution: [],
       skillHeatmap: { heatmap: [], dates: [], maxCount: 1 },
       sessionTimeline: [],
-      skillMesh: { nodes: [], edges: [], maxCount: 1 },
+      skillNexus: { nodes: [], edges: [], maxCount: 1 },
       generated: new Date().toISOString(),
       days: 30,
     };

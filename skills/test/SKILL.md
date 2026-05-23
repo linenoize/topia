@@ -343,13 +343,13 @@ Save eval files as `skills/<name>/evals.md`. Each eval is a numbered scenario (E
 - `fix` (L2): verify fix passes tests
 - `review` (L2): untested edge case found → write test for it
 - `deploy` (L2): pre-deployment full test suite
-- `preflight` (L2): run targeted regression tests on affected code
+- `readiness` (L2): run targeted regression tests on affected code
 - `surgeon` (L2): verify refactored code
 - `launch` (L1): pre-deployment test suite
 - `safeguard` (L2): writing characterization tests for legacy code
 - `review-intake` (L2): write tests for issues identified during review intake
 - `scaffold` (L1): generate initial test suite for new project
-- `graft` (L2): write integration tests for grafted code
+- `integrate` (L2): write integration tests for grafted code
 - `skill-forge` (L2): write tests for new skill functionality
 - `mcp-builder` (L2): write tests for MCP server tools
 - `debug` (L2): write regression test capturing the bug
@@ -512,7 +512,7 @@ If you catch yourself with ANY of these, delete implementation code and restart 
 11. MUST NOT write a 2nd test until the 1st test reaches GREEN — vertical slicing only, bulk_test_count <= 1 enforced
 12. MUST emit commit pair per cycle (`test:` then `feat:`) — git log is the audit trail for "I did TDD" claims
 
-## Mesh Gates
+## Nexus Gates
 
 | Gate | Requires | If Missing |
 |------|----------|------------|
@@ -611,7 +611,7 @@ chain_metadata:
     status: "[RED | GREEN]"  # RED = TDD failing (expected), GREEN = all pass
   suggested_next:  # status-aware — pick based on RED or GREEN
     # When GREEN:
-    - skill: "Topia:preflight"
+    - skill: "Topia:readiness"
       reason: "[grounded in results — e.g., 'All 15 tests GREEN, check edge case completeness']"
       consumes: ["test_results", "test_files"]
     # When RED (TDD expected):

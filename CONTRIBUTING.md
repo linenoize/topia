@@ -1,6 +1,6 @@
 # Contributing to Topia
 
-Topia is an internal skill mesh. Contributions come from the team — there's no external community PR queue. The rules below keep the mesh disciplined as it grows.
+Topia is an internal Topia Nexus. Contributions come from the team — there's no external community PR queue. The rules below keep the nexus disciplined as it grows.
 
 ## Ways to contribute
 
@@ -24,7 +24,7 @@ Topia is an internal skill mesh. Contributions come from the team — there's no
 6. **Run the CI check**: `npm run ci`. This runs:
    - **Linter** (Biome)
    - **Unit tests**
-   - **Mesh integrity check** (`Topia doctor`)
+   - **Nexus integrity check** (`Topia doctor`)
 7. **Commit** using [Conventional Commits](https://www.conventionalcommits.org/).
 8. **Open a PR** against `main`.
 
@@ -33,17 +33,17 @@ Topia is an internal skill mesh. Contributions come from the team — there's no
 Topia skills are more than just prompts. They are **interconnected behavioral specifications**.
 
 1. **Follow the template**: Every skill MUST follow `docs/SKILL-TEMPLATE.md`.
-2. **Mesh discipline**:
+2. **Nexus discipline**:
    - **L1 Orchestrators** handle the full workflow (e.g., `build`).
    - **L2 Workflow Hubs** handle specific domain tasks (e.g., `plan`, `debug`).
    - **L3 Utilities** are stateless and pure (e.g., `research`, `git`).
-3. **Connections**: Define `Calls` and `Called By` to document how your skill fits into the mesh.
+3. **Connections**: Define `Calls` and `Called By` to document how your skill fits into the nexus.
 4. **Signals**: Use `emit` and `listen` for event-driven coordination.
 5. **Constraints**: Use `MUST` / `MUST NOT` and `<HARD-GATE>` blocks for enforcement.
 
 ## L4 extension packs
 
-Adding a domain pack? Read [`docs/CONTRIBUTING-L4.md`](docs/CONTRIBUTING-L4.md) — it lays out the 2-gate filter (domain coherence + core mesh integration).
+Adding a domain pack? Read [`docs/CONTRIBUTING-L4.md`](docs/CONTRIBUTING-L4.md) — it lays out the 2-gate filter (domain coherence + core nexus integration).
 
 ## Compiler & adapters
 
@@ -82,7 +82,7 @@ If you are adding a new platform, read `docs/MULTI-PLATFORM.md` first.
 ## Quality standards
 
 - **Tests**: All logic in `compiler/` must have associated tests in `compiler/__tests__/`.
-- **Mesh integrity**: `Topia doctor` must pass with zero errors.
+- **Nexus integrity**: `Topia doctor` must pass with zero errors.
 - **Bug fixes**: A regression test proving the bug is fixed is mandatory.
 
 ## License

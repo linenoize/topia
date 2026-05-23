@@ -11,25 +11,47 @@
  * detect and cleanly replace them without comment markers (settings.json is JSON).
  */
 
+import { resolveTopiaRoot } from './resolve-topia-root.js';
+import path from 'node:path';
+
 export const Topia_MANAGED_SIGNATURE = 'Topia hook-dispatch';
 
 /** Shared relative path to avoid per-file duplication. */
 export const SETTINGS_REL_PATH = '.claude/settings.json';
 
-const DISPATCH_CMD = 'npx --yes @linenoize/topia hook-dispatch';
+const NPX_DISPATCH_CMD = 'npx --yes @linenoize/topia hook-dispatch';
 
 /**
- * Regex that matches the exact dispatch invocation Topia writes.
- * Matches: `npx [--yes] @linenoize/topia hook-dispatch` or
- *          `node ... @linenoize/topia hook-dispatch` as word boundary.
- * Does NOT match arbitrary strings that merely contain those words.
+ * Regex that matches dispatch invocations Topia writes (npx or local node).
  */
-const Topia_DISPATCH_RE = /(^|\s)npx(\s+--yes)?\s+@linenoize\/topia\s+hook-dispatch\b/;
+const Topia_DISPATCH_RE =
+  /(^|\s)(npx(\s+--yes)?\s+@linenoize\/topia\s+hook-dispatch|node\s+("[^"]*topia\.js"|'[^']*topia\.js'|[^\s]*topia\.js)\s+hook-dispatch)\b/;
 
 /**
- * Regex that matches tier-emitted commands — they substitute a tier env var
- * (e.g. `${TOPIA_PRO_ROOT}`, `${TOPIA_BUSINESS_ROOT}`). These are Topia-managed
- * because only `Topia hooks install --tier <name>` writes them.
+ * Build the shell command prefix for hook-dispatch.
+ * Prefers `node <absolute>/compiler/bin/topia.js` when Topia root is known
+ * (clone, TOPIA_ROOT env, or Claude plugin cache). Falls back to npx only when
+ * the package is published and reachable on the npm registry.
+ *
+ * @param {string|null|undefined} topiaRoot
+ * @param {{ skipPluginCache?: boolean }} [opts]
+ * @returns {string}
+ */
+export function buildDispatchCommand(topiaRoot, opts = {}) {
+  const root = resolveTopiaRoot(topiaRoot, opts);
+  if (root) {
+    const cli = path.join(root, 'compiler', 'bin', 'topia.js');
+    return `node ${JSON.stringify(cli)} hook-dispatch`;
+  }
+  return NPX_DISPATCH_CMD;
+}
+
+/**
+ * Historical regex — matches `${TOPIA_*_ROOT}` env-var substitutions left
+ * over from the removed Pro/Business tiers. Kept defensively so that pre-1.0
+ * installs with tier-emitted entries still get recognised as Topia-managed
+ * and cleaned up by uninstall. Safe to delete once no tier-era settings
+ * files remain in the wild.
  */
 const Topia_TIER_RE = /\$\{TOPIA_[A-Z][A-Z0-9_]*_ROOT\}/;
 
@@ -37,14 +59,16 @@ const Topia_TIER_RE = /\$\{TOPIA_[A-Z][A-Z0-9_]*_ROOT\}/;
  * Build a preset hooks block for merging into `.claude/settings.json`.
  *
  * @param {'strict'|'gentle'} preset
+ * @param {{ topiaRoot?: string|null }} [opts]
  * @returns {Object} — { hooks: { PreToolUse: [...], PostToolUse: [...], Stop: [...] } }
  */
-export function buildPreset(preset) {
+export function buildPreset(preset, opts = {}) {
   if (preset !== 'strict' && preset !== 'gentle') {
     throw new Error(`Unknown preset: ${preset}. Use 'strict' or 'gentle'.`);
   }
 
   const flag = preset === 'gentle' ? ' --gentle' : '';
+  const dispatchCmd = buildDispatchCommand(opts.topiaRoot);
 
   return {
     hooks: {
@@ -54,7 +78,7 @@ export function buildPreset(preset) {
           hooks: [
             {
               type: 'command',
-              command: `${DISPATCH_CMD} preflight${flag}`,
+              command: `${dispatchCmd} readiness${flag}`,
               async: preset === 'gentle',
             },
           ],
@@ -64,7 +88,7 @@ export function buildPreset(preset) {
           hooks: [
             {
               type: 'command',
-              command: `${DISPATCH_CMD} sentinel${flag}`,
+              command: `${dispatchCmd} guardian${flag}`,
               async: false,
             },
           ],
@@ -76,7 +100,7 @@ export function buildPreset(preset) {
           hooks: [
             {
               type: 'command',
-              command: `${DISPATCH_CMD} dependency-doctor${flag}`,
+              command: `${dispatchCmd} dependency-doctor${flag}`,
               async: true,
             },
           ],
@@ -86,7 +110,7 @@ export function buildPreset(preset) {
           hooks: [
             {
               type: 'command',
-              command: `${DISPATCH_CMD} quarantine${flag}`,
+              command: `${dispatchCmd} quarantine${flag}`,
               async: true,
             },
           ],
@@ -98,7 +122,7 @@ export function buildPreset(preset) {
           hooks: [
             {
               type: 'command',
-              command: `${DISPATCH_CMD} completion-gate${flag}`,
+              command: `${dispatchCmd} completion-gate${flag}`,
               async: false,
             },
           ],
@@ -111,12 +135,11 @@ export function buildPreset(preset) {
 /**
  * Skills wired by presets — used by `Topia hooks status` to verify skill existence.
  */
-export const WIRED_SKILLS = ['preflight', 'sentinel', 'dependency-doctor', 'completion-gate', 'quarantine'];
+export const WIRED_SKILLS = ['readiness', 'guardian', 'dependency-doctor', 'completion-gate', 'quarantine'];
 
 /**
  * Detect if a hook command entry is Topia-managed.
- * Matches only the exact `npx [--yes] @linenoize/topia hook-dispatch` invocation
- * to avoid false-positives on user commands that merely contain those words.
+ * Matches npx or local `node …/topia.js hook-dispatch` invocations written by Topia.
  *
  * @param {Object} entry — single hook entry { type, command, ... }
  */

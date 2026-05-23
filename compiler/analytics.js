@@ -11,6 +11,7 @@
 import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
+import { resolveTopiaDir } from './lib/topia-paths.js';
 
 // ─── File Readers ───
 
@@ -30,7 +31,7 @@ function readJsonl(content) {
 }
 
 async function loadMetrics(TopiaRoot) {
-  const dir = path.join(TopiaRoot, '.Topia', 'metrics');
+  const dir = path.join(resolveTopiaDir(TopiaRoot), 'metrics');
   const files = {
     sessions: path.join(dir, 'sessions.jsonl'),
     chains: path.join(dir, 'chains.jsonl'),
@@ -281,9 +282,9 @@ export async function getSessionTimeline(TopiaRoot, days = 30, limit = 5) {
   }));
 }
 
-// ─── Skill Mesh (connections from skill frequency) ───
+// ─── Topia Nexus (connections from skill frequency) ───
 
-export async function getSkillMesh(TopiaRoot, days = 30) {
+export async function getSkillNexus(TopiaRoot, days = 30) {
   const { sessions, chains } = await loadMetrics(TopiaRoot);
   const filtered = filterByDays(sessions, days);
 
@@ -344,6 +345,9 @@ export async function getSkillMesh(TopiaRoot, days = 30) {
   return { nodes, edges, maxCount: Math.max(1, ...nodes.map((n) => n.count)) };
 }
 
+/** @deprecated Use getSkillNexus */
+export const getSkillMesh = getSkillNexus;
+
 // ─── All Queries ───
 
 export async function getAllAnalytics(TopiaRoot, days = 30) {
@@ -356,7 +360,7 @@ export async function getAllAnalytics(TopiaRoot, days = 30) {
     toolDistribution,
     skillHeatmap,
     sessionTimeline,
-    skillMesh,
+    skillNexus,
   ] = await Promise.all([
     getSessionOverview(TopiaRoot, days),
     getSkillFrequency(TopiaRoot, days),
@@ -366,7 +370,7 @@ export async function getAllAnalytics(TopiaRoot, days = 30) {
     getToolDistribution(TopiaRoot, days),
     getSkillHeatmap(TopiaRoot, days),
     getSessionTimeline(TopiaRoot, days, 5),
-    getSkillMesh(TopiaRoot, days),
+    getSkillNexus(TopiaRoot, days),
   ]);
 
   return {
@@ -378,7 +382,8 @@ export async function getAllAnalytics(TopiaRoot, days = 30) {
     toolDistribution,
     skillHeatmap,
     sessionTimeline,
-    skillMesh,
+    skillNexus,
+    skillMesh: skillNexus, // deprecated v1 alias
     generated: new Date().toISOString(),
     days,
   };

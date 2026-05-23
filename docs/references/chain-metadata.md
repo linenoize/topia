@@ -1,7 +1,5 @@
 # Chain Metadata — Cross-Skill Data Forwarding Contract
 
-Version: 1.0.0 | Since: v2.9.0
-
 ## Purpose
 
 Chain metadata is a structured YAML block appended to every skill output report. It enables:
@@ -55,7 +53,7 @@ Outcome of the skill execution. Determines what `suggested_next` makes sense:
 - `DONE` — suggest improvement/next-step skills
 - `DONE_WITH_CONCERNS` — suggest review/audit skills
 - `BLOCKED` — suggest debug/fix skills
-- `NEEDS_CONTEXT` — suggest scout/research skills
+- `NEEDS_CONTEXT` — suggest recon/research skills
 
 ### `domain` (required)
 Short label for the area of work. Used by skill-router for L4 pack auto-suggest (e.g., domain "payments" triggers `@Topia/ecommerce` suggestion).
@@ -197,7 +195,7 @@ chain_metadata:
     test_results: { passed: 42, failed: 0, coverage: 85 }
     quality_gates: { preflight: "PASS", sentinel: "WARN", review: "PASS" }
   suggested_next:
-    - skill: "Topia:sentinel"
+    - skill: "Topia:guardian"
       reason: "Sentinel returned WARN on auth middleware — deeper security review recommended"
       consumes: ["quality_gates"]
     - skill: "Topia:test"
@@ -221,7 +219,7 @@ chain_metadata:
     - skill: "Topia:fix"
       reason: "Critical bug identified with high confidence — fix immediately"
       consumes: ["root_cause"]
-    - skill: "Topia:sentinel"
+    - skill: "Topia:guardian"
       reason: "Security-related bug — check for similar patterns across codebase"
       consumes: ["root_cause"]
 ```

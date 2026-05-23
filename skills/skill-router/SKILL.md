@@ -54,7 +54,7 @@ Before standard routing, check if adaptive routing rules exist:
 
 **Override constraints**:
 - Overrides MUST NOT bypass layer discipline (L3 cannot call L1)
-- Overrides MUST NOT skip quality gates (sentinel, preflight, verification)
+- Overrides MUST NOT skip quality gates (guardian, readiness, verification)
 - Overrides MUST NOT route to non-existent skills
 - If an override seems wrong, announce it and let user decide to keep or disable
 
@@ -83,7 +83,7 @@ Before intent classification, categorize the request into one of 5 types. This d
 | `QUESTION` | "what is", "how does", "explain", "why" | **LITE** | Check if a skill has domain knowledge first; answer directly if no skill matches |
 | `DEBUG_REQUEST` | "error", "bug", "not working", "broken", "crash", "fails" | **FULL** | debug skill mandatory |
 | `REVIEW_REQUEST` | "review", "check", "audit", "look at this code" | **FULL** | review skill mandatory |
-| `EXPLORE` | "find", "search", "where is", "show me", "list", "Jira tickets", "CSV", "stories" | **LITE** | scout if codebase-related; answer directly if general |
+| `EXPLORE` | "find", "search", "where is", "show me", "list", "Jira tickets", "CSV", "stories" | **LITE** | recon if codebase-related; answer directly if general |
 
 **Enforcement levels:**
 - **FULL** → MUST route through a skill. Writing code without skill invocation = protocol violation.
@@ -143,7 +143,7 @@ These 5 skills are the main interface. Most user intents route here first:
 | Check project health / full audit | `Topia:audit` | Quality assessment |
 | New project / bootstrap / scaffold | `Topia:scaffold` | Greenfield project creation |
 
-**Default route**: If unclear, route to `Topia:build`. Cook handles 70% of all requests.
+**Default route**: If unclear, route to `Topia:build`. Build handles 70% of all requests.
 
 #### Power User Skills (Direct Invocation)
 
@@ -157,7 +157,7 @@ For users who know exactly what they want:
 | Write tests | `Topia:test` | L2 — TDD |
 | Refactor | `Topia:surgeon` | L2 — incremental |
 | Deploy (without marketing) | `Topia:deploy` | L2 |
-| Security concern | `Topia:sentinel` | L2 — opus for critical |
+| Security concern | `Topia:guardian` | L2 — opus for critical |
 | Performance issue | `Topia:perf` | L2 |
 | Database change | `Topia:db` | L2 |
 | Received code review / PR feedback | `Topia:review-intake` | L2 |
@@ -172,6 +172,7 @@ For users who know exactly what they want:
 | Generate leadership package / Jira CSV / User Stories | `Topia:documentation` | L2 |
 | Build MCP server | `Topia:mcp-builder` | L2 |
 | Red-team / challenge a plan / stress-test | `Topia:adversary` | L2 — requires opus |
+| Port / graft from repo / copy from external repo | `Topia:integrate` | L2 — challenge gate before code |
 
 #### Internal Skills (Called by Other Skills)
 
@@ -179,13 +180,13 @@ These are rarely invoked directly — they're called by higher-level skills:
 
 | Skill | Called By | Purpose |
 |---|---|---|
-| `Topia:scout` | build, plan, team | Codebase scanning |
+| `Topia:recon` | build, plan, team | Codebase scanning |
 | `Topia:fix` | debug, build | Apply code changes |
-| `Topia:preflight` | build | Quality gate |
+| `Topia:readiness` | build | Quality gate |
 | `Topia:verification` | build, fix | Run lint/test/build |
 | `Topia:hallucination-guard` | build, fix | Verify imports |
 | `Topia:completion-gate` | build | Validate claims |
-| `Topia:sentinel-env` | build, scaffold, onboard | Environment pre-flight |
+| `Topia:guardian-env` | build, scaffold, onboard | Environment pre-flight |
 | `Topia:research` / `Topia:docs-seeker` | any | Look up docs |
 | `Topia:session-bridge` | build, team | Save context (in-session state handoff) |
 | `Topia:journal` | build, team | Persistent work log within a session |
@@ -219,7 +220,7 @@ When user intent matches a domain-specific pattern or user explicitly invokes an
 1. If user explicitly invokes an L4 trigger (e.g., `/topia rag-patterns`), read the PACK.md index first, then load only the matching skill file (split packs) or extract the matching section (monolith packs)
 2. If the intent also involves implementation, route to `build` (L1) first — build will detect L4 context in Phase 1.5
 3. L4 packs supplement L1/L2 workflows — they are domain knowledge, not standalone orchestrators
-4. L4 packs can call L3 utilities (scout, verification) but CANNOT call L1 or L2 skills
+4. L4 packs can call L3 utilities (recon, verification) but CANNOT call L1 or L2 skills
 5. If the L4 pack file is not found on disk, skip silently and proceed with standard routing
 6. **NEVER load an entire split pack** — always load index first, then only the specific skill file needed
 
@@ -234,7 +235,7 @@ When the routed skill produces file changes, the **owner skill's constraints** a
 | `Dockerfile`, `*.yml` (CI/CD), `terraform/` | `Topia:deploy` | Deployment checklist, no hardcoded secrets |
 | `docs/*.md`, `README.md`, `CHANGELOG.md` | `Topia:docs` | Documentation patterns, no stale references |
 | `SKILL.md`, `PACK.md` | `Topia:skill-forge` | Skill template compliance, frontmatter validation |
-| `.env*`, `*secret*`, `*credential*` | `Topia:sentinel` | Security scan mandatory, never commit secrets |
+| `.env*`, `*secret*`, `*credential*` | `Topia:guardian` | Security scan mandatory, never commit secrets |
 | `*.css`, `*.scss`, `tailwind.config.*` | `@Topia/ui` | Design system patterns (if L4 pack installed) |
 
 **Ownership rules:**
@@ -276,7 +277,7 @@ The agent MUST NOT bypass routing with these excuses:
 | "Let me just read the file first" | Skills tell you HOW to read | Route first |
 | "I need more context before routing" | Route first, skill will gather context | Route it |
 | "The user just wants a quick answer" | Quick answers can still be wrong | Check routing table |
-| "No skill matches exactly" | Pick closest match, or use scout + plan | Route it |
+| "No skill matches exactly" | Pick closest match, or use recon + plan | Route it |
 | "I'll apply the skill patterns mentally" | Mental application misses constraints | Actually invoke it |
 | "This is just a follow-up" | Follow-ups can change intent | Re-check routing |
 
@@ -290,7 +291,7 @@ Once routed:
 
 ### Step 5 — Post-Completion Neural Memory Capture
 
-After ANY L1 or L2 workflow completes (build, team, launch, rescue, scaffold, plan, design, debug, fix, review, deploy, sentinel, perf, db, idea, docs, mcp-builder, etc.):
+After ANY L1 or L2 workflow completes (build, team, launch, rescue, scaffold, plan, design, debug, fix, review, deploy, guardian, readiness, perf, db, idea, docs, mcp-builder, integrate, etc.):
 
 1. Trigger `Topia:neural-memory` in **Capture Mode** automatically
 2. Save 2–5 memories covering: key decisions made, bugs fixed, patterns applied, architectural choices
@@ -320,8 +321,8 @@ When a previous skill's output contains a `chain_metadata` block in the conversa
 1. **Read `chain_metadata.suggested_next`** — these are data-driven recommendations from the skill that just ran. They have MORE context than the hardcoded table below.
 2. **Read `chain_metadata.status`** — override suggestion logic based on outcome:
    - `BLOCKED` → suggest `debug` or `fix` regardless of what the hardcoded table says
-   - `NEEDS_CONTEXT` → suggest `scout` or `research`
-   - `DONE_WITH_CONCERNS` → suggest `review` or `sentinel`
+   - `NEEDS_CONTEXT` → suggest `recon` or `research`
+   - `DONE_WITH_CONCERNS` → suggest `review` or `guardian`
 3. **Read `chain_metadata.domain`** — trigger L4 pack auto-suggest (see below)
 4. **Forward `chain_metadata.exports`** — when announcing the suggestion, mention what data is available: "Review can use the 5 changed files and test results from build."
 
@@ -345,9 +346,9 @@ When NO chain_metadata is present (skill didn't emit one, or legacy invocation),
 | `plan` | `adversary` | Plan created — stress-test before implementation |
 | `adversary` | `documentation` | Plan red-teamed — generate leadership package and Jira CSV |
 | `documentation` | `build` | Package approved — start implementation |
-| `test` (GREEN) | `preflight` | Tests pass — check for edge cases and completeness |
+| `test` (GREEN) | `readiness` | Tests pass — check for edge cases and completeness |
 | `review` (issues found) | `fix` | Issues identified — apply fixes |
-| `sentinel` (findings) | `fix` | Security issues — remediate |
+| `guardian` (findings) | `fix` | Security issues — remediate |
 
 #### L4 Extension Auto-Suggest (Domain Context Detection)
 
@@ -372,12 +373,14 @@ When routing a request through L1/L2 skills, skill-router SHOULD detect domain s
 
 **Auto-suggest rules:**
 1. Only suggest if the pack's PACK.md **exists on disk** — `Glob` for the pack path first. If not installed, skip silently.
-2. Suggest ONCE per session per pack — do not repeat after user has seen the suggestion.
-3. Format: brief inline note, not a blocking prompt. User can ignore and continue.
-4. If user is already inside the pack's workflow, do not re-suggest.
+2. Read `.topia/active-packs.json` if present — **do not** re-suggest packs already listed in `enabled` (onboard activated them).
+3. Suggest ONCE per session per pack — do not repeat after user has seen the suggestion.
+4. Format: brief inline note, not a blocking prompt. User can ignore and continue.
+5. If user is already inside the pack's workflow, do not re-suggest.
+6. When `chain_metadata.domain` matches an **active** pack, prefer loading that pack's patterns over generic suggestions.
 
 **Rules:**
-- Hard limit: 1 hop. NEVER chain recommendations (fix→test→preflight→...). Suggest ONE, let the user decide.
+- Hard limit: 1 hop. NEVER chain recommendations (fix→test→readiness→...). Suggest ONE, let the user decide.
 - Announcement format: "Suggested next: `Topia:<skill>` — [1-line reason]. Run it? (skip to continue)"
 - User can disable with "no suggestions" or "just do what I asked"
 - Inside `build` orchestration: skip recommendations — build already manages transitions

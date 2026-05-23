@@ -31,8 +31,8 @@ export async function emit({ preset, projectRoot }) {
   const rulesDir = path.join(projectRoot, RULES_REL_DIR);
 
   const rules = [
-    { name: 'preflight', description: 'Run preflight review before any source edit.' },
-    { name: 'sentinel', description: 'Security review before shell / infra edits.' },
+    { name: 'readiness', description: 'Run readiness check before any source edit.' },
+    { name: 'guardian', description: 'Security review before shell / infra edits.' },
     { name: 'dependency-doctor', description: 'Dependency audit after manifest edits.' },
   ];
 
@@ -78,14 +78,14 @@ export async function status(projectRoot) {
       installed: false,
       preset: null,
       wired: [],
-      missing: ['preflight', 'sentinel', 'dependency-doctor'],
+      missing: ['readiness', 'guardian', 'dependency-doctor'],
       notes: ['no .antigravity/rules directory'],
     };
   }
   const entries = await readdir(rulesDir, { withFileTypes: true });
   const TopiaFiles = entries.filter((e) => e.isFile() && e.name.startsWith(Topia_PREFIX) && e.name.endsWith('.md'));
   const wired = TopiaFiles.map((f) => f.name.replace(Topia_PREFIX, '').replace('.md', ''));
-  const expected = ['preflight', 'sentinel', 'dependency-doctor'];
+  const expected = ['readiness', 'guardian', 'dependency-doctor'];
   const missing = expected.filter((s) => !wired.includes(s));
 
   let preset = null;

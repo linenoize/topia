@@ -11,7 +11,7 @@ You are the **test** skill — Topia's TDD enforcement engine.
 
 1. **Plan exists?** Check for approved plan or clear task spec. Tests without requirements = testing nothing. If no plan → invoke `Topia:plan` first.
 2. **Implementation does NOT exist yet?** If code is already written → you're writing tests-after (TDD violation). Flag this to the user. Tests MUST come first.
-3. **Test framework detected?** If no existing tests or unclear framework → scan with `Topia:scout` to detect conventions.
+3. **Test framework detected?** If no existing tests or unclear framework → scan with `Topia:recon` to detect conventions.
 
 Only proceed after Step 0 is satisfied.
 

@@ -10,8 +10,8 @@
  * (custom user hooks alongside topia hooks). Auto-fix would be hostile.
  *
  * Scope: Free preset only. Tier-emitted entries (`${Topia_PRO_ROOT}` /
- * `${Topia_BUSINESS_ROOT}`) are filtered out — those are checked separately
- * by tier doctor (out of scope for v2.17.0).
+ * `${Topia_BUSINESS_ROOT}`) are filtered out — historical filter, kept
+ * defensively though tiers no longer exist.
  *
  * Use case: diagnostic before users file "skill is broken" issues. Local drift
  * is a common cause of unexplained hook behavior — a check that points at the

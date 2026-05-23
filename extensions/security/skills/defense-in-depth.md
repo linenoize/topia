@@ -99,5 +99,5 @@ Write tests that bypass each individual layer and confirm the next layer catches
 
 - Called by `debug` (L2): after root cause found, recommend defense-in-depth fix via `Topia:fix`
 - Called by `owasp-audit` (L4): when audit finds validation only at entry point
-- Complements `sentinel` (L2): sentinel gates commits, defense-in-depth designs the validation architecture
+- Complements `guardian` (L2): sentinel gates commits, defense-in-depth designs the validation architecture
 - Informs `api-security` (L4): API hardening is L1 of this model; defense-in-depth extends to all layers

@@ -395,7 +395,7 @@ Rollback point: git tag Topia-rescue-baseline (set in Phase 0)
 5. MUST tag a safe rollback point before starting surgery
 6. MUST NOT exceed blast radius of 5 files per surgical session
 
-## Mesh Gates
+## Nexus Gates
 
 | Gate | Requires | If Missing |
 |------|----------|------------|

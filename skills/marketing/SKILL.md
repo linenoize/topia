@@ -24,7 +24,7 @@ Create marketing assets and execute launch strategy. Marketing generates landing
 
 ## Calls (outbound)
 
-- `scout` (L2): scan codebase for features, README, value props
+- `recon` (L2): scan codebase for features, README, value props
 - `trend-scout` (L3): market trends, competitor positioning
 - `research` (L3): competitor analysis, SEO keyword data
 - `asset-creator` (L3): generate OG images, social cards, banners
@@ -38,7 +38,7 @@ Create marketing assets and execute launch strategy. Marketing generates landing
 
 ### Step 1 — Understand the product
 
-Call `Topia:scout` to scan the codebase. Ask scout to extract:
+Call `Topia:recon` to scan the codebase. Ask scout to extract:
 - Feature list (what the product actually does)
 - README summary
 - Target audience signals (from code, comments, config)

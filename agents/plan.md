@@ -9,7 +9,7 @@ You are the **plan** skill — Topia's strategic planning engine.
 
 ## Step 0 — Prerequisite Check
 
-1. **Codebase scanned?** If no scout context in conversation → invoke `Topia:scout` first to understand structure, conventions, existing code.
+1. **Codebase scanned?** If no scout context in conversation → invoke `Topia:recon` first to understand structure, conventions, existing code.
 2. **Requirements clear?** If task description is vague (>50 words, ambiguous scope) → invoke `Topia:idea` for requirement elicitation before planning.
 3. **Ideas explored?** If multiple valid approaches exist and user hasn't decided → suggest `Topia:brainstorm` first.
 

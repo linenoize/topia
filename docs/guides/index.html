@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Topia Guides — From Install to Production</title>
-  <meta name="description" content="Complete guide to using Topia — the 62-skill toolkit for AI coding assistants. Install, configure, and master every workflow.">
+  <meta name="description" content="Complete guide to using Topia — the 65-skill toolkit for AI coding assistants. Install, configure, and master every workflow.">
   <meta property="og:title" content="Topia Guides — From Install to Production">
-  <meta property="og:description" content="Learn how to use Topia's 62-skill toolkit to supercharge your AI coding assistant.">
+  <meta property="og:description" content="Learn how to use Topia's 65-skill toolkit to supercharge your AI coding assistant.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://linenoize.github.io/topia/guides/">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -336,11 +336,11 @@
     .layer-badge.l4 { background: rgba(245, 158, 11, 0.15); color: var(--amber); }
 
     /* ─── MESH EMBED ─── */
-    .mesh-embed {
+    .nexus-embed {
       width: 100%; height: 500px; border: 1px solid var(--border);
       border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 24px;
     }
-    .mesh-embed iframe { width: 100%; height: 100%; border: none; }
+    .nexus-embed iframe { width: 100%; height: 100%; border: none; }
 
     /* ─── BEFORE/AFTER ─── */
     .before-after {
@@ -419,7 +419,7 @@
       .sidebar-toggle { display: block; }
       .main { margin-left: 0; padding: 32px 20px 80px; }
       .before-after { grid-template-columns: 1fr; }
-      .mesh-embed { height: 350px; }
+      .nexus-embed { height: 350px; }
       .nav-links a:not(.btn):not(.active) { display: none; }
     }
     @media (max-width: 640px) {
@@ -450,7 +450,7 @@
       <div class="nav-links">
         <a href="../">Home</a>
         <a href="./" class="active">Guides</a>
-        <a href="../#pricing">Pricing</a>
+        <a href="../SKILLS.md">Skills</a>
         <div class="nav-controls notranslate" translate="no">
           <button class="theme-toggle" id="theme-toggle" aria-label="Toggle light/dark mode" title="Toggle theme">&#9790;</button>
           <div class="lang-dropdown" id="lang-dropdown">
@@ -498,7 +498,7 @@
 
       <div class="sidebar-group">
         <div class="sidebar-group-title">Core Concepts</div>
-        <a href="#mesh-architecture" class="sidebar-link">Architecture</a>
+        <a href="#nexus-architecture" class="sidebar-link">Architecture</a>
         <a href="#five-layers" class="sidebar-link">5-Layer System</a>
         <a href="#skill-connections" class="sidebar-link">Skill Connections</a>
         <a href="#model-routing" class="sidebar-link">Model Routing</a>
@@ -517,7 +517,6 @@
         <div class="sidebar-group-title">IDE & Platforms</div>
         <a href="#ide-claude" class="sidebar-link">Claude Code</a>
         <a href="#ide-cursor" class="sidebar-link">Cursor</a>
-        <a href="#ide-windsurf" class="sidebar-link">Windsurf</a>
         <a href="#ide-antigravity" class="sidebar-link">Antigravity</a>
         <a href="#ide-codex" class="sidebar-link">OpenAI Codex</a>
         <a href="#ide-opencode" class="sidebar-link">OpenCode</a>
@@ -559,7 +558,7 @@
       <h2 id="what-is-Topia">What is Topia?</h2>
 
       <p>
-        <strong>Topia is a 62-skill toolkit ecosystem</strong> for AI coding assistants. Instead of giving your AI one prompt at a time,
+        <strong>Topia is a 65-skill toolkit ecosystem</strong> for AI coding assistants. Instead of giving your AI one prompt at a time,
         Topia gives it structured workflows where skills call each other automatically.
       </p>
 
@@ -598,7 +597,6 @@
         <div class="tab-buttons">
           <button class="tab-btn active" data-tab="install-claude">Claude Code</button>
           <button class="tab-btn" data-tab="install-cursor">Cursor</button>
-          <button class="tab-btn" data-tab="install-windsurf">Windsurf</button>
           <button class="tab-btn" data-tab="install-antigravity">Antigravity</button>
           <button class="tab-btn" data-tab="install-openclaw">OpenClaw</button>
         </div>
@@ -621,27 +619,17 @@
         </div>
 
         <div class="tab-panel" id="install-cursor">
-          <p>Cursor uses <code>.mdc</code> rule files. Topia compiles all 62 skills into Cursor's format.</p>
+          <p>Cursor uses <code>.mdc</code> rule files. Topia compiles all 65 skills into Cursor's format.</p>
           <div class="code-wrapper">
             <div class="code-block"><span class="comment"># In your project directory</span>
 <span class="cmd">npx --yes @linenoize/topia init <span class="flag">--platform cursor</span></span>
 
 <span class="output">  → Detected: cursor</span>
 <span class="output">  ✓ Created topia.config.json</span>
-<span class="output">  ✓ Built 62 skills + 14 extensions to .cursor/rules/</span></div>
+<span class="output">  ✓ Built 65 skills + 10 extensions to .cursor/rules/</span></div>
             <button class="copy-btn" data-copy="npx --yes @linenoize/topia init --platform cursor">Copy</button>
           </div>
           <p>Skills are compiled into <code>.cursor/rules/</code>. Cursor picks them up automatically.</p>
-        </div>
-
-        <div class="tab-panel" id="install-windsurf">
-          <p>Windsurf uses <code>.md</code> rule files in its rules directory.</p>
-          <div class="code-wrapper">
-            <div class="code-block"><span class="cmd">npx --yes @linenoize/topia init <span class="flag">--platform windsurf</span></span>
-
-<span class="output">  ✓ Built 62 skills + 14 extensions to .windsurf/rules/</span></div>
-            <button class="copy-btn" data-copy="npx --yes @linenoize/topia init --platform windsurf">Copy</button>
-          </div>
         </div>
 
         <div class="tab-panel" id="install-antigravity">
@@ -649,7 +637,7 @@
           <div class="code-wrapper">
             <div class="code-block"><span class="cmd">npx --yes @linenoize/topia init <span class="flag">--platform antigravity</span></span>
 
-<span class="output">  ✓ Built 62 skills + 14 extensions to .agent/rules/</span></div>
+<span class="output">  ✓ Built 65 skills + 10 extensions to .agent/rules/</span></div>
             <button class="copy-btn" data-copy="npx --yes @linenoize/topia init --platform antigravity">Copy</button>
           </div>
           <div class="callout callout-info">
@@ -664,7 +652,7 @@
           <div class="code-wrapper">
             <div class="code-block"><span class="cmd">clawhub install skill-topia</span>
 
-<span class="comment"># All 62 skills installed as one mesh package</span>
+<span class="comment"># All 65 skills installed as one toolkit package</span>
 <span class="comment"># Works with any OpenClaw-compatible agent</span></div>
             <button class="copy-btn" data-copy="clawhub install skill-topia">Copy</button>
           </div>
@@ -733,19 +721,19 @@
       <!-- CORE CONCEPTS -->
       <!-- ═══════════════════════════════════ -->
 
-      <h2 id="mesh-architecture">Architecture</h2>
+      <h2 id="nexus-architecture">Architecture</h2>
 
       <p>
-        Unlike a pipeline (A→B→C) or hub-spoke (everything through one center), Topia's mesh means
+        Unlike a pipeline (A→B→C) or hub-spoke (everything through one center), Topia's nexus means
         <strong>skills call each other bidirectionally</strong> and <strong>route around failures</strong>.
       </p>
 
-      <div class="mesh-embed">
-        <iframe src="../assets/mesh-diagram.html" title="Topia Toolkit Architecture — Interactive Diagram" loading="lazy"></iframe>
+      <div class="nexus-embed">
+        <iframe src="../assets/nexus-diagram.html" title="Topia Toolkit Architecture — Interactive Diagram" loading="lazy"></iframe>
       </div>
 
       <p>
-        203 connections + 40 signals across 64 skills. When <code>debug</code> can't find the cause,
+        203 synapses + 44 pulses across 65 skills. When <code>debug</code> can't find the cause,
         it escalates to <code>problem-solver</code>. When <code>build</code> hits a wall 3 times,
         it pivots to <code>brainstorm</code>. When <code>sentinel</code> finds a vulnerability,
         it blocks the commit. The toolkit is self-healing.
@@ -786,7 +774,7 @@
             <td><span class="layer-badge l3">L3</span></td>
             <td>Utilities</td>
             <td>24</td>
-            <td>research, verification, git, session-bridge, sentinel-env...</td>
+            <td>research, verification, git, session-bridge, guardian-env...</td>
           </tr>
           <tr>
             <td><span class="layer-badge l4">L4</span></td>
@@ -848,7 +836,7 @@
           <tr><th>Model</th><th>Cost</th><th>Used For</th></tr>
         </thead>
         <tbody>
-          <tr><td><strong>Haiku</strong></td><td>Lowest</td><td>scout, verification, git, sentinel-env — scanning, checking</td></tr>
+          <tr><td><strong>Haiku</strong></td><td>Lowest</td><td>scout, verification, git, guardian-env — scanning, checking</td></tr>
           <tr><td><strong>Sonnet</strong></td><td>Medium</td><td>fix, test, review, design — code writing, analysis</td></tr>
           <tr><td><strong>Opus</strong></td><td>Highest</td><td>plan, architect, adversary, idea — deep reasoning, decisions</td></tr>
         </tbody>
@@ -1014,14 +1002,6 @@
 <span class="comment"># Cursor auto-loads them for every conversation</span></div>
       </div>
 
-      <h2 id="ide-windsurf">Windsurf</h2>
-
-      <div class="code-wrapper">
-        <div class="code-block"><span class="cmd">npx --yes @linenoize/topia init <span class="flag">--platform windsurf</span></span>
-
-<span class="comment"># Skills appear in .windsurf/rules/Topia/</span></div>
-      </div>
-
       <h2 id="ide-antigravity">Antigravity</h2>
 
       <div class="code-wrapper">
@@ -1047,7 +1027,7 @@
 <span class="output">  ├── Topia-fix/SKILL.md</span>
 <span class="output">  ├── Topia-plan/SKILL.md</span>
 <span class="output">  ├── Topia-test/SKILL.md</span>
-<span class="output">  └── ... (62 skills total)</span></div>
+<span class="output">  └── ... (65 skills total)</span></div>
       </div>
 
       <p>
@@ -1106,17 +1086,17 @@
       <div class="code-wrapper">
         <div class="code-block"><span class="cmd">clawhub install skill-topia</span>
 
-<span class="comment"># All 62 skills + 10 extension packs as one mesh package</span>
+<span class="comment"># All 65 skills + 10 extension packs as one toolkit package</span>
 <span class="comment"># Slug: skill-topia on clawhub.ai</span></div>
       </div>
 
       <div class="callout callout-warn">
         <strong>Important:</strong> Topia skills are NOT published individually on ClawHub.
-        The toolkit requires all 203 connections + 40 signals to function — installing skills separately would break routing.
+        The toolkit requires all 203 synapses + 44 pulses to function — installing skills separately would break routing.
       </div>
 
       <div class="callout callout-info">
-        <strong>All platforms get the same 62 skills.</strong> The compiler handles format differences.
+        <strong>All platforms get the same 65 skills.</strong> The compiler handles format differences.
         Cross-references, tool names, and model hints are adapted per platform.
       </div>
 
@@ -1223,7 +1203,7 @@
 <span class="comment"># Restart Claude Code to pick up changes</span></div>
       </div>
 
-      <h3>"npx command not found" (Cursor/Windsurf)</h3>
+      <h3>"npx command not found" (Cursor / Codex / Antigravity)</h3>
       <p>Make sure Node.js 18+ is installed. Or install globally:</p>
       <div class="code-wrapper">
         <div class="code-block"><span class="cmd">npm install -g @linenoize/topia</span>
@@ -1250,8 +1230,7 @@
 
       <h3>Is Topia free?</h3>
       <p>
-        Yes. The full 62-skill toolkit + 10 extension packs are <strong>free forever, MIT license</strong>.
-        <a href="../#pricing">Topia Pro</a> ($49 lifetime) adds business department skills (Product, Sales, Data Science).
+        Yes. The full 65-skill toolkit + 10 extension packs are <strong>MIT-licensed</strong> and internal-only — there's no paid tier or marketplace.
       </p>
 
       <h3>Does Topia work with my existing CLAUDE.md / .cursorrules?</h3>
@@ -1281,10 +1260,9 @@
       <!-- FOOTER -->
       <div style="margin-top:80px;padding-top:32px;border-top:1px solid var(--border);text-align:center;">
         <p style="color:var(--text-muted);font-size:13px;">
-          <span class="logo-Topia">&#9670;</span> Topia — Less skills. Deeper connections.
+          <span class="logo-Topia">&#9670;</span> Topia
           <br>
           <a href="https://github.com/linenoize/topia" target="_blank" rel="noopener">GitHub</a> &bull;
-          <a href="https://www.npmjs.com/package/@linenoize/topia" target="_blank" rel="noopener">npm</a> &bull;
           <a href="https://github.com/linenoize/topia/issues" target="_blank" rel="noopener">Issues</a>
         </p>
       </div>

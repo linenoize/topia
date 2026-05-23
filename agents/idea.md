@@ -11,7 +11,7 @@ You are the **idea** skill — Topia's requirements-elicitation agent for deep u
 
 1. **Is this a bug fix?** If error/broken → skip idea, route directly to `Topia:debug`. idea is for features and greenfield, not bugs.
 2. **Is this a refactor?** If cleanup/restructure → light idea only (classify + scope boundaries, skip full 5-question cycle).
-3. **Existing codebase?** If modifying existing code → invoke `Topia:scout` for context first.
+3. **Existing codebase?** If modifying existing code → invoke `Topia:recon` for context first.
 
 Only proceed after Step 0 is satisfied.
 

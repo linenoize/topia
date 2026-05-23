@@ -1,7 +1,10 @@
 import assert from 'node:assert';
+import path from 'node:path';
 import { describe, test } from 'node:test';
 import { detectPreset, mergePreset, stripTopiaHooks, summarizeTopiaHooks } from '../commands/hooks/merge.js';
 import { buildPreset, isTopiaManaged } from '../commands/hooks/presets.js';
+
+const REPO_ROOT = path.resolve(import.meta.dirname, '../..');
 
 describe('isTopiaManaged', () => {
   // T3: must reject strings that merely contain "Topia" or "hook-dispatch"
@@ -19,13 +22,18 @@ describe('isTopiaManaged', () => {
 
   test('T3: matches the exact @linenoize/topia hook-dispatch invocation', () => {
     const truePositives = [
-      'npx --yes @linenoize/topia hook-dispatch preflight',
-      'npx @linenoize/topia hook-dispatch sentinel',
+      'npx --yes @linenoize/topia hook-dispatch readiness',
+      'npx @linenoize/topia hook-dispatch guardian',
       'npx --yes @linenoize/topia hook-dispatch completion-gate --gentle',
     ];
     for (const cmd of truePositives) {
       assert.strictEqual(isTopiaManaged({ command: cmd }), true, `should match: ${cmd}`);
     }
+  });
+
+  test('matches local node topia.js hook-dispatch invocation', () => {
+    const cmd = `node ${JSON.stringify(path.join(REPO_ROOT, 'compiler', 'bin', 'topia.js'))} hook-dispatch readiness --gentle`;
+    assert.strictEqual(isTopiaManaged({ command: cmd }), true);
   });
 });
 
@@ -36,7 +44,7 @@ describe('buildPreset', () => {
     assert.ok(preset.hooks.PostToolUse);
     assert.ok(preset.hooks.Stop);
     const editGroup = preset.hooks.PreToolUse.find((g) => g.matcher === 'Edit|Write');
-    assert.ok(editGroup.hooks[0].command.includes('preflight'));
+    assert.ok(editGroup.hooks[0].command.includes('readiness'));
     assert.ok(editGroup.hooks[0].command.includes('--gentle'));
   });
 
@@ -72,7 +80,7 @@ describe('stripTopiaHooks', () => {
           {
             matcher: 'Edit|Write',
             hooks: [
-              { type: 'command', command: 'npx --yes @linenoize/topia hook-dispatch preflight --gentle' },
+              { type: 'command', command: 'npx --yes @linenoize/topia hook-dispatch readiness --gentle' },
               { type: 'command', command: 'my-custom-hook.sh' },
             ],
           },
@@ -141,7 +149,7 @@ describe('mergePreset', () => {
     const commands = editGroup.hooks.map((h) => h.command);
     assert.ok(commands.includes('user-lint.sh'), 'user hook preserved');
     assert.ok(
-      commands.some((c) => c.includes('preflight') && !c.includes('--gentle')),
+      commands.some((c) => c.includes('readiness') && !c.includes('--gentle')),
       'strict preflight installed',
     );
     assert.ok(!commands.some((c) => c.includes('--gentle')), 'no gentle entries remain');
@@ -163,7 +171,7 @@ describe('mergePreset', () => {
     const groups = merged.hooks.PreToolUse.filter((g) => g.matcher === 'Edit|Write');
     assert.strictEqual(groups.length, 1, 'no duplicate matcher group');
     assert.ok(groups[0].hooks.some((h) => h.command === 'user-guard.sh'));
-    assert.ok(groups[0].hooks.some((h) => h.command.includes('preflight')));
+    assert.ok(groups[0].hooks.some((h) => h.command.includes('readiness')));
   });
 });
 
@@ -172,8 +180,8 @@ describe('summarizeTopiaHooks', () => {
     const merged = mergePreset({}, buildPreset('gentle'));
     const summary = summarizeTopiaHooks(merged);
     assert.strictEqual(summary.total, 5);
-    assert.ok(summary.events.PreToolUse.includes('preflight'));
-    assert.ok(summary.events.PreToolUse.includes('sentinel'));
+    assert.ok(summary.events.PreToolUse.includes('readiness'));
+    assert.ok(summary.events.PreToolUse.includes('guardian'));
     assert.ok(summary.events.PostToolUse.includes('dependency-doctor'));
     assert.ok(summary.events.PostToolUse.includes('quarantine'));
     assert.ok(summary.events.Stop.includes('completion-gate'));
@@ -197,7 +205,7 @@ describe('detectPreset', () => {
     // manually inject a strict entry
     mixed.hooks.Stop[0].hooks.push({
       type: 'command',
-      command: 'npx --yes @linenoize/topia hook-dispatch sentinel',
+      command: 'npx --yes @linenoize/topia hook-dispatch guardian',
     });
     assert.strictEqual(detectPreset(mixed), 'mixed');
   });

@@ -3,7 +3,7 @@
  *
  * Tests that buildAll generates a valid skill-index.json with:
  * - Intent patterns mapped to skills
- * - Mesh-aware chain prediction from connections
+ * - Nexus-aware chain prediction from connections
  * - Complete skill graph
  */
 
@@ -66,8 +66,8 @@ describe('skill-index.json generation', () => {
       assert.ok(index.intents.debug.keywords.includes('bug'), 'debug missing "bug" keyword');
 
       // sentinel intent
-      assert.ok(index.intents.sentinel, 'missing sentinel intent');
-      assert.ok(index.intents.sentinel.keywords.includes('security'), 'sentinel missing "security" keyword');
+      assert.ok(index.intents.guardian, 'missing guardian intent');
+      assert.ok(index.intents.guardian.keywords.includes('security'), 'guardian missing "security" keyword');
     } finally {
       await rm(tmp, { recursive: true, force: true });
     }

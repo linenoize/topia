@@ -12,14 +12,24 @@
 ## Prerequisites
 
 - **Node.js 18+** (check: `node --version`)
-- One of: **Claude Code**, **Cursor**, **Windsurf**, **Google Antigravity**, **OpenAI Codex**, or **OpenCode**
+- One of: **Claude Code**, **Cursor**, **Google Antigravity**, **OpenAI Codex**, **OpenCode**, or **OpenClaw**
 - A project directory — existing or empty
 
 ---
 
 ## Step 1: Install (30 seconds)
 
-From your project root:
+**Claude Code (plugin marketplace):**
+
+```text
+/plugin marketplace add linenoize/topia
+/plugin install Topia@linenoize
+npx @linenoize/topia setup --global --preset gentle
+```
+
+See [`INSTALL-CLAUDE-CODE.md`](INSTALL-CLAUDE-CODE.md). Restart Claude Code after install.
+
+**Cursor / Codex / other IDEs** — from your project root:
 
 ```bash
 npx @linenoize/topia init
@@ -31,10 +41,10 @@ This detects your AI assistant and writes the right config files:
 |-----------|------------------|
 | Claude Code | `.claude/` (plugin), skills invoke via `/topia <name>` |
 | Cursor | `.cursor/rules/*.mdc` |
-| Windsurf | `.windsurf/workflows/*.md` |
 | Antigravity | `.antigravity/workflows/*.md` |
 | Codex | `.codex/skills/` |
 | OpenCode | `.opencode/skills/` |
+| OpenClaw | `.openclaw/skills/` |
 
 Verify install:
 
@@ -42,7 +52,7 @@ Verify install:
 npx @linenoize/topia doctor
 ```
 
-You should see: `✓ 65 skills, 10 packs, mesh valid`.
+You should see: `✓ 65 skills, 10 packs, nexus valid`.
 
 ---
 
@@ -80,7 +90,7 @@ Compare vanilla AI coding vs Topia:
 |---------|-----------|
 | Claude writes code first | `scout` reads codebase first |
 | Tests written last (or skipped) | `test` writes FAILING tests first (enforced) |
-| Commit whenever | `preflight` + `sentinel` must pass |
+| Commit whenever | `readiness` + `guardian` must pass |
 | "Looks done" = done | `completion-gate` validates evidence |
 
 **The toolkit makes Claude disciplined.** Not smarter — just less sloppy.
@@ -100,22 +110,22 @@ Presets:
 - `strict` — blocks commits that fail gates
 - `off`    → uninstall
 
-Now `preflight`, `sentinel`, and `completion-gate` auto-fire on every file edit. No more "remember to invoke the skill."
+Now `readiness`, `guardian`, and `completion-gate` auto-fire on every file edit. No more "remember to invoke the skill."
 
 ---
 
-## Step 5: Explore the Mesh
+## Step 5: Explore the Nexus
 
 ```bash
 npx @linenoize/topia status       # project health dashboard (neofetch-style)
-npx @linenoize/topia visualize    # interactive mesh graph (Canvas 2D)
-npx @linenoize/topia doctor       # validate install + mesh integrity
+npx @linenoize/topia visualize    # interactive nexus graph (Canvas 2D)
+npx @linenoize/topia doctor       # validate install + nexus integrity
 ```
 
 Read next:
 - [`SKILLS.md`](SKILLS.md) — all 65 skills, categorized by intent
 - [`ARCHITECTURE.md`](ARCHITECTURE.md) — 5-layer architecture reference
-- [`SIGNALS.md`](SIGNALS.md) — how skills auto-trigger each other
+- [`PULSES.md`](PULSES.md) — how skills auto-trigger each other
 - [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) — stuck? common fixes here
 
 ---

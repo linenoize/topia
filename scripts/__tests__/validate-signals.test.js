@@ -277,14 +277,14 @@ metadata:
     test('marketing.campaign.start is registered as external trigger', () => {
       assert.ok(
         EXTERNAL_TRIGGER_SIGNALS.has('marketing.campaign.start'),
-        'niche-finder listens; emitted by user/orchestrator from outside the mesh — must be whitelisted',
+        'niche-finder listens; emitted by user/orchestrator from outside the nexus — must be whitelisted',
       );
     });
 
     test('business.context.loaded is registered as external trigger', () => {
       assert.ok(
         EXTERNAL_TRIGGER_SIGNALS.has('business.context.loaded'),
-        'consulting-analysis listens; emitted by user via .topia/business/context.md from outside the mesh — must be whitelisted',
+        'consulting-analysis listens; emitted by user via .topia/business/context.md from outside the nexus — must be whitelisted',
       );
     });
   });

@@ -26,7 +26,7 @@ Performance regression gate. Analyzes code changes for patterns that cause measu
 
 ## Calls (outbound)
 
-- `scout` (L2): find hotpath files and identify framework in use
+- `recon` (L2): find hotpath files and identify framework in use
 - `browser-pilot` (L3): run Lighthouse / Core Web Vitals for frontend projects
 - `verification` (L3): run benchmark scripts if configured (e.g. `npm run bench`)
 - `design` (L2): when Lighthouse Accessibility BLOCK — design system may lack a11y foundation
@@ -302,7 +302,7 @@ Total estimated monthly                                  $X.XX
 4. MUST distinguish BLOCK (blocks merge) from WARN (should fix but doesn't block)
 5. MUST run framework-specific checks for detected framework — not just generic patterns
 
-## Mesh Gates (L1/L2 only)
+## Nexus Gates (L1/L2 only)
 
 | Gate | Requires | If Missing |
 |------|----------|------------|

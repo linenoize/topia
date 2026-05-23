@@ -21,8 +21,9 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
+import { normalizeTopiaDir, topiaDirForWrite } from '../../../compiler/lib/topia-paths.js';
 import { detectInvariants, renderInvariants } from './detect-invariants.js';
-import { applyInvariantsPointer } from './inject-claude-md.js';
+import { applyContextPointer, applyInvariantsPointer } from './inject-claude-md.js';
 
 const AUTO_HEADER = '## Auto-detected (new)';
 const TEMPLATE_REL_PATH = '../references/invariants-template.md';
@@ -130,7 +131,9 @@ function firstWhere(entry) {
 export async function runOnboardInvariants({ root, dryRun = false, templatePath } = {}) {
   if (!root) throw new Error('root is required');
 
-  const topiaDir = path.join(root, '.topia');
+  const normalized = normalizeTopiaDir(root, { dryRun });
+
+  const topiaDir = topiaDirForWrite(root);
   const invariantsPath = path.join(topiaDir, 'INVARIANTS.md');
   const claudeMdPath = path.join(root, 'CLAUDE.md');
 
@@ -154,7 +157,13 @@ export async function runOnboardInvariants({ root, dryRun = false, templatePath 
     dryRun,
   });
 
+  const contextPointer = await applyContextPointer({ claudeMdPath, dryRun });
+
   return {
+    normalized: {
+      changed: normalized.changed,
+      actions: normalized.actions,
+    },
     invariants: {
       path: invariantsPath,
       action: merged.seeded ? 'seeded' : merged.replaced ? 'replaced' : merged.appended ? 'appended' : 'noop',
@@ -168,8 +177,8 @@ export async function runOnboardInvariants({ root, dryRun = false, templatePath 
     },
     claudeMd: {
       path: pointer.path,
-      action: pointer.action,
-      reason: pointer.reason ?? null,
+      invariants: { action: pointer.action, reason: pointer.reason ?? null },
+      context: { action: contextPointer.action, reason: contextPointer.reason ?? null },
     },
     rendered,
   };

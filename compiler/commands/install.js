@@ -8,11 +8,12 @@
  * Steps (in order):
  *   0. Pre-flight: rune-kit conflict check. If detected, present options
  *      (migrate / abort / skip-with-warning) and act on the choice.
- *   1. claude plugin add . — register Topia with Claude Code
+ *   1. claude plugin marketplace add + install — register via linenoize marketplace (fallback: plugin add .)
  *   2. setup --global --preset gentle — wire discipline hooks globally
  *   3. agora-code MCP — detect Python 3.10+, pip install, register in .mcp.json
- *   4. doctor — verify mesh integrity
- *   5. Print "restart Claude Code" + edit `.topia/org/org.md` hints
+ *   4. project .gitignore — prompt once for Topia ignore rules
+ *   5. doctor — verify nexus integrity
+ *   6. Print "restart Claude Code" + edit `.topia/org/org.md` hints
  *
  * Flags:
  *   --yes              non-interactive (auto-accept defaults, skip rune-kit migration)
@@ -29,7 +30,15 @@ import os from 'node:os';
 import path from 'node:path';
 import { createInterface } from 'node:readline';
 import { migrateFromRune, planMigration as planRuneMigration } from './migrate-from-rune.js';
+import { resolveTopiaRoot } from './hooks/resolve-topia-root.js';
 import { runSetup } from './setup.js';
+import { ensureTopiaGitignore } from '../lib/ensure-gitignore.js';
+
+/** Claude Code marketplace id (`.claude-plugin/marketplace.json` → `name`). */
+const MARKETPLACE_ID = 'linenoize';
+/** Plugin entry id inside the marketplace catalog. */
+/** Must match `.claude-plugin/plugin.json` → `name` (UI update uses this id). */
+const MARKETPLACE_PLUGIN = 'Topia';
 
 function prompt(question) {
   const rl = createInterface({ input: process.stdin, output: process.stdout });
@@ -153,23 +162,53 @@ async function preflightRune({ cwd, autoYes, skipRuneCheck }) {
   return { proceeded: false, reason: 'unrecognised choice; re-run install' };
 }
 
+function hasMarketplaceCatalog(TopiaRoot) {
+  return existsSync(path.join(TopiaRoot, '.claude-plugin', 'marketplace.json'));
+}
+
 function registerPlugin({ TopiaRoot, dryRun }) {
   if (!which('claude')) {
     step('!', 'claude CLI not on PATH — skipping plugin registration.');
-    step(' ', 'Install Claude Code, then run:  claude plugin add .');
+    step(' ', `Install Claude Code, then:  /plugin marketplace add linenoize/topia`);
+    step(' ', `              then:  /plugin install ${MARKETPLACE_PLUGIN}@${MARKETPLACE_ID}`);
     return { ok: false, skipped: true };
   }
+
+  const useMarketplace = hasMarketplaceCatalog(TopiaRoot);
+  const installSpec = `${MARKETPLACE_PLUGIN}@${MARKETPLACE_ID}`;
+
   if (dryRun) {
-    step('·', `[dry-run] would: claude plugin add ${TopiaRoot}`);
+    if (useMarketplace) {
+      step('·', `[dry-run] would: claude plugin marketplace add ${TopiaRoot}`);
+      step('·', `[dry-run] would: claude plugin install ${installSpec}`);
+    } else {
+      step('·', `[dry-run] would: claude plugin add ${TopiaRoot}`);
+    }
     return { ok: true, dryRun: true };
   }
+
+  if (useMarketplace) {
+    try {
+      execFileSync('claude', ['plugin', 'marketplace', 'add', TopiaRoot], {
+        stdio: ['pipe', 'pipe', 'pipe'],
+      });
+      execFileSync('claude', ['plugin', 'install', installSpec], { stdio: ['pipe', 'pipe', 'pipe'] });
+      step('✓', `Plugin installed via marketplace (${installSpec}).`);
+      return { ok: true, via: 'marketplace' };
+    } catch (err) {
+      step('!', `Marketplace install failed: ${err.message.split('\n')[0]}`);
+      step(' ', 'Falling back to local plugin registration…');
+    }
+  }
+
   try {
     execFileSync('claude', ['plugin', 'add', TopiaRoot], { stdio: ['pipe', 'pipe', 'pipe'] });
-    step('✓', 'Plugin registered with Claude Code.');
-    return { ok: true };
+    step('✓', 'Plugin registered with Claude Code (local path).');
+    return { ok: true, via: 'plugin-add' };
   } catch (err) {
     step('!', `claude plugin add failed: ${err.message.split('\n')[0]}`);
-    step(' ', `Manual: cd ${TopiaRoot} && claude plugin add .`);
+    step(' ', `Manual: /plugin marketplace add linenoize/topia`);
+    step(' ', `        /plugin install ${installSpec}`);
     return { ok: false, error: err };
   }
 }
@@ -260,7 +299,7 @@ function runDoctorBriefly({ TopiaRoot, dryRun }) {
   try {
     const doctorPath = path.join(TopiaRoot, 'compiler', 'bin', 'topia.js');
     execFileSync('node', [doctorPath, 'doctor'], { stdio: ['pipe', 'pipe', 'pipe'] });
-    step('✓', 'topia doctor — mesh healthy.');
+    step('✓', 'topia doctor — nexus healthy.');
     return { ok: true };
   } catch (err) {
     step('!', `topia doctor reported issues: ${err.message.split('\n')[0]}`);
@@ -305,7 +344,15 @@ export async function runInstall({ TopiaRoot, projectRoot = process.cwd(), args 
     step('—', 'agora-code skipped (--skip-agora).');
   }
 
-  header('Step 4 — Verify install');
+  header('Step 4 — Project .gitignore');
+  await ensureTopiaGitignore({
+    projectRoot,
+    autoYes,
+    dryRun,
+    log: (icon, msg) => step(icon === 'ok' ? '✓' : icon === '.' ? '·' : icon === '-' ? '—' : '!', msg),
+  });
+
+  header('Step 5 — Verify install');
   const doctor = runDoctorBriefly({ TopiaRoot, dryRun });
 
   // ─── Final summary ───
@@ -318,15 +365,29 @@ export async function runInstall({ TopiaRoot, projectRoot = process.cwd(), args 
   console.log(
     `    agora-code MCP     : ${agora.ok ? '✓' : agora.skipped ? '— (skipped)' : `✗ (${agora.reason || 'failed'})`}`,
   );
-  console.log(`    Mesh health        : ${doctor.ok ? '✓' : '✗'}`);
+  console.log(`    Nexus health       : ${doctor.ok ? '✓' : '✗'}`);
 
   console.log('');
+  const resolvedRoot = resolveTopiaRoot(TopiaRoot);
+  const setupCli = resolvedRoot
+    ? `node ${JSON.stringify(path.join(resolvedRoot, 'compiler', 'bin', 'topia.js'))}`
+    : 'node <path-to-topia>/compiler/bin/topia.js';
+
   console.log('  Next steps:');
   console.log('    1. Restart Claude Code so it picks up the plugin.');
-  console.log('    2. Edit `.topia/org/org.md` to define your team / policy / approval flow.');
-  console.log('       (Sentinel + preflight read this at compile time. See docs/ORG-CONFIG.md.)');
+  if (!hooks.ok) {
+    console.log(`    2. Wire dispatch hooks: ${setupCli} setup --global --preset gentle`);
+    console.log('       (Do not use npx @linenoize/topia unless published to npm.)');
+  } else {
+    console.log('    2. Run `topia visualize` to explore the Nexus graph in your browser.');
+  }
+  console.log('    3. Edit `.topia/org/org.md` to define your team / policy / approval flow.');
+  console.log('       (guardian + readiness read this at compile time. See docs/ORG-CONFIG.md.)');
   if (!plugin.ok && plugin.skipped) {
-    console.log('    3. Install Claude Code, then run: claude plugin add .');
+    console.log('    3. Install Claude Code, then:');
+    console.log('         /plugin marketplace add linenoize/topia');
+    console.log(`         /plugin install ${MARKETPLACE_PLUGIN}@${MARKETPLACE_ID}`);
+    console.log('       See docs/INSTALL-CLAUDE-CODE.md');
   }
   if (!agora.ok && agora.reason === 'no-python') {
     console.log('    3. (Optional) Install Python 3.10+ then run: topia install --yes');

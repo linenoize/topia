@@ -1,11 +1,5 @@
 # Topia Vision
 
-> **"Less skills. Deeper connections."**
->
-> This document is the primary decision-making compass for Topia.
-> When in doubt about a design direction, a new feature, or a skill addition — consult this file first.
-> Last updated: 2026-05-13
-
 ---
 
 ## 1. Why Topia Exists
@@ -30,7 +24,7 @@ Topia is a **skill toolkit** — not a skill collection, not a pipeline, not an 
 
 **Technical definition:**
 
-> **Topia = 64 skills × 203 sync connections × 40 async signals × cross-session memory × multi-platform compiler**
+> **Topia = 65 skills × 203 sync connections × 44 async signals × cross-session memory × multi-platform compiler**
 
 All three components are equally essential:
 - Remove connections → becomes a collection (The Bloat wins)
@@ -145,14 +139,14 @@ The skill must fit one of these phases: planning, coding, testing, reviewing, de
 A skill must either call at least one existing skill OR be called by at least two existing skills — and ideally both. Connections must be meaningful (actual data flow), not ceremonial.
 
 ❌ **Fail example:** `code-formatter` — no inbound, no outbound, pure L3 with 0 connections
-✅ **Pass example:** `audit` — calls `sentinel`, `dependency-doctor`, `autopsy`, `scout`, `journal`; called by `build`, `launch`
+✅ **Pass example:** `audit` — calls `guardian`, `dependency-doctor`, `autopsy`, `scout`, `journal`; called by `build`, `launch`
 
 ### Gate 3 — Non-Redundancy
 > Can this skill's function be achieved by composing 2 existing skills?
 
 If yes, add a new workflow to an existing skill instead of creating a new one. Topia's philosophy is deepening connections in existing skills before adding new nodes.
 
-❌ **Fail example:** `quick-security-check` — just `sentinel` with fewer checks; redundant
+❌ **Fail example:** `quick-security-check` — just `guardian` with fewer checks; redundant
 ✅ **Pass example:** `audit` — orchestrates multiple skills into a unified 7-phase report; not achievable by a single existing skill
 
 ### Gate 4 — Layer Assignment
@@ -170,7 +164,7 @@ L1 if: full lifecycle orchestration, user-facing entry point
 This test separates essential skills from convenience features. If the skill's absence could be worked around trivially, it's not core.
 
 ❌ **Fail example:** `git-log-formatter` — convenience wrapper; absence has no workflow impact
-✅ **Pass example:** `sentinel` — no other skill provides security scanning; its absence leaves a critical gap
+✅ **Pass example:** `guardian` — no other skill provides security scanning; its absence leaves a critical gap
 
 ---
 
@@ -211,13 +205,13 @@ Topia operates on three time horizons. The roadmap is intentionally non-prescrip
 
 **Implementation**: Zero new L1-L3 skills added. 1 new hook (`metrics-collector`), 3 modified hooks, 4 extended skills (`audit`, `build`, `skill-router`, `onboard`), 2 new commands (`/topia metrics`, `/topia pack`).
 
-**Constraint:** Core graph expanded to 66 skills (v2.17.1+). Further growth happens in L4 packs.
+**Constraint:** Core graph holds at 65 skills. Further growth happens in L4 packs.
 
 ### H4 — Runtime Discipline ✅ COMPLETE (v2.12)
 
 **Goal:** Move workflow discipline from "invoke the skill" (opt-in) to "the platform fires it" (automatic).
 
-- ✅ **Native hooks across 4 platforms** — `Topia hooks install` wires `preflight`, `sentinel`, `completion-gate`, `dependency-doctor` as pre-tool-use hooks on Claude Code, Cursor, Windsurf, Antigravity
+- ✅ **Native hooks across 4 platforms** — `Topia hooks install` wires `readiness`, `guardian`, `completion-gate`, `dependency-doctor` as pre-tool-use hooks on Claude Code, Cursor, Windsurf, Antigravity
 - ✅ **Three presets** — `strict` (blocking), `gentle` (warnings, default), `off` (uninstall). Idempotent with full user-hook restore
 - ✅ **logic-guardian auto-seeding** — `Topia init` writes `.topia/INVARIANTS.md` with project-detected rules; preflight reads as a hard gate
 
@@ -232,7 +226,7 @@ Topia operates on three time horizons. The roadmap is intentionally non-prescrip
 *Topia is successful when these are true. Not when the feature list is long.*
 
 ### Graph Health
-- **Connection density** ≥ 3.0 connections/skill (currently: 3.3 at 215 connections / 64 skills) — do not let this drop below 2.5
+- **Connection density** ≥ 3.0 connections/skill (currently: 3.3 at 203 synapses / 65 skills) — do not let this drop below 2.5
 - **Dead nodes** = 0 — every skill has ≥1 inbound and ≥1 outbound connection
 - **Max chain depth used** < 6 in practice (ceiling is 8) — if chains regularly hit 8, the toolkit needs restructuring
 - **Bloat Index** = 0.00 — dead nodes / total skills

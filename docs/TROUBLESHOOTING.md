@@ -21,8 +21,8 @@ Common issues and how to fix them.
 ## 2. Hooks Not Auto-Firing
 
 **Symptoms:**
-- You edit a file and `preflight` doesn't run.
-- You run a shell command and `sentinel` doesn't run.
+- You edit a file and `readiness` doesn't run.
+- You run a shell command and `guardian` doesn't run.
 
 **Fixes:**
 - **Re-install hooks**: `npx @linenoize/topia hooks install --preset gentle`.
@@ -60,8 +60,30 @@ Common issues and how to fix them.
 
 **Symptoms:**
 - `verification` fails because of a missing tool (e.g., `npm`, `python`).
-- `sentinel-env` flags a missing binary.
+- `guardian-env` flags a missing binary.
 
 **Fixes:**
 - **Install the tool**: Topia uses your local environment. If the skill needs `biome`, you must have it installed.
 - **Check PATH**: Ensure the tool is in your shell's PATH.
+
+---
+
+## 6. Cursor Hook JSON Parse Errors
+
+**Symptoms:**
+- Hooks output channel shows `JSON Parse Error: Unexpected token 'T', "Topia-hook"...` on `postToolUse` or `sessionStart`.
+- Agent edits are blocked: `hook-dispatch ... returned invalid JSON`.
+- `stop` hook fails with `bun : The term 'bun' is not recognized`.
+
+**Causes:**
+- Cursor loads Claude Code / third-party hooks and requires **valid JSON on stdout** for every command hook.
+- Older Topia builds printed plain text (`Topia-hook: …`, `[Topia: .topia/ …]`) instead of JSON.
+- A `bun run …` stop hook in `~/.cursor/hooks.json` is from Cursor’s docs example — Topia plugin hooks use `node`, not Bun.
+
+**Fixes:**
+- **Update Topia** to a build that includes `hooks/lib/cursor-io.cjs` and JSON-aware hook scripts (this repo).
+- **Settings → Hooks**: remove any `bun run` hook you did not add intentionally, or install [Bun](https://bun.sh).
+- **Third-party skills**: with “Third-party skills” enabled, both plugin `hooks/hooks.json` and `.claude/settings.json` dispatch hooks run in Cursor — ensure both are updated.
+- **Debug**: open the **Hooks** tab in Cursor Settings and the **Hooks** output channel for the exact command and stderr.
+- **Re-install dispatch hooks** after updating: `node compiler/bin/topia.js setup --here --preset gentle` (or `--global`).
+- **Note**: `Topia hooks install --platform cursor` installs `.cursor/rules/Topia-*.mdc` rules only, not native `.cursor/hooks.json` entries.

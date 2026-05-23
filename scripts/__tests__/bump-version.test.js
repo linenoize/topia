@@ -26,6 +26,18 @@ function seedFixture(version) {
   );
   writeFileSync(join(root, '.claude-plugin', 'plugin.json'), JSON.stringify({ name: 'Topia', version }, null, 2));
   writeFileSync(
+    join(root, '.claude-plugin', 'marketplace.json'),
+    JSON.stringify(
+      {
+        name: 'linenoize',
+        version,
+        plugins: [{ name: 'Topia', version }],
+      },
+      null,
+      2,
+    ),
+  );
+  writeFileSync(
     join(root, 'docs', 'index.html'),
     `<p class="hero-badge">v${version} &middot; 65 skills &middot; MIT</p>\n`,
   );
@@ -65,6 +77,7 @@ describe('bump-version', () => {
     assert.match(out, /Bumping 1\.0\.0 → 1\.1\.0 \(DRY RUN\)/);
     assert.match(out, /package\.json/);
     assert.match(out, /plugin\.json/);
+    assert.match(out, /marketplace\.json/);
     assert.match(out, /docs\/index\.html/);
 
     const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
@@ -80,6 +93,10 @@ describe('bump-version', () => {
 
     const plugin = JSON.parse(readFileSync(join(root, '.claude-plugin', 'plugin.json'), 'utf8'));
     assert.strictEqual(plugin.version, '1.1.0');
+
+    const marketplace = JSON.parse(readFileSync(join(root, '.claude-plugin', 'marketplace.json'), 'utf8'));
+    assert.strictEqual(marketplace.version, '1.1.0');
+    assert.strictEqual(marketplace.plugins[0].version, '1.1.0');
 
     const indexHtml = readFileSync(join(root, 'docs', 'index.html'), 'utf8');
     assert.match(indexHtml, /v1\.1\.0\s*&middot;/);

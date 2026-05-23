@@ -33,7 +33,7 @@ Docs MUST be generated from actual code, not invented. Every statement in genera
 
 ## Calls (outbound)
 
-- `scout` (L2): scan codebase for documentation targets (routes, exports, components, configs)
+- `recon` (L2): scan codebase for documentation targets (routes, exports, components, configs)
 - `doc-processor` (L3): generate PDF/DOCX exports if requested
 - `git` (L3): read commit history for changelog generation
 
@@ -69,7 +69,7 @@ Auto-generate changelog from git commit history.
 
 #### Step 1 — Scan Codebase
 
-Invoke `Topia:scout` to extract:
+Invoke `Topia:recon` to extract:
 - Project name, description, tech stack
 - Directory structure and key files
 - Entry points (main, index, app)

@@ -4,7 +4,8 @@
  * bump-version.js — Atomically bump the Topia version across all distribution touchpoints.
  *
  * Replaces the manual sweep of: package.json, plugin.json,
- * docs/index.html (hero badge), CHANGELOG.md (heading promotion).
+ * marketplace.json (catalog + Topia plugin entry), docs/index.html (hero badge).
+ * CHANGELOG.md heading promotion remains manual.
  *
  * Usage:
  *   node scripts/bump-version.js 1.2.0              # write
@@ -59,6 +60,16 @@ const targets = [
   },
   {
     file: '.claude-plugin/plugin.json',
+    find: new RegExp(`"version":\\s*"${oldEsc}"`),
+    replace: () => `"version": "${newVersion}"`,
+  },
+  {
+    file: '.claude-plugin/marketplace.json',
+    find: new RegExp(`"version":\\s*"${oldEsc}"`),
+    replace: () => `"version": "${newVersion}"`,
+  },
+  {
+    file: '.claude-plugin/marketplace.json',
     find: new RegExp(`"version":\\s*"${oldEsc}"`),
     replace: () => `"version": "${newVersion}"`,
   },

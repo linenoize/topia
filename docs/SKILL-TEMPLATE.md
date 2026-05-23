@@ -76,7 +76,7 @@ Format:
 1. MUST [required behavior] — [why]
 2. MUST NOT [forbidden behavior] — [consequence]
 
-## Mesh Gates (L1/L2 only)
+## Nexus Gates (L1/L2 only)
 
 | Gate | Requires | If Missing |
 |------|----------|------------|
@@ -109,7 +109,7 @@ Why: Completion-gate validates claims generically. Self-Validation catches domai
 If this skill changes stats (skill count, test count, signal count, pack count, layer counts), sweep these files before committing:
 
 - [ ] `README.md` — stats, badges, feature list
-- [ ] `docs/index.html` (landing page) — meta tags, hero badge, mesh stats, footer
+- [ ] `docs/index.html` (landing page) — meta tags, hero badge, nexus stats, footer
 - [ ] `dashboard.html` (if local) — KPI cards, test count, skill tabs, layer counts
 - [ ] `CLAUDE.md` — commands, test count, skill list
 - [ ] `MEMORY.md` — milestones, version info

@@ -2,7 +2,7 @@
  * Cursor Adapter
  *
  * Emits .mdc rule files for .cursor/rules/ directory.
- * Uses @file references for cross-skill mesh.
+ * Uses @file references for cross-Topia Nexus.
  *
  * MODEL TIER MAPPING (v2.15+):
  * No-op. Cursor's Anthropic API integration understands `model: opus|sonnet|haiku`

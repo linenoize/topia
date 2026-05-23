@@ -4,9 +4,18 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const { isCursorRuntime, writeHookResponse } = require('../lib/cursor-io.cjs');
+const { resolveTopiaDir, topiaDirForWrite } = require('../lib/topia-paths.cjs');
+
+const hookLines = [];
+const origLog = console.log.bind(console);
+console.log = (...args) => {
+  hookLines.push(args.map((a) => (typeof a === 'string' ? a : String(a))).join(' '));
+};
 
 const cwd = process.cwd();
-const TopiaDir = path.join(cwd, '.Topia');
+const TopiaDirRead = resolveTopiaDir(cwd);
+const TopiaDirWrite = topiaDirForWrite(cwd);
 
 // Initialize fresh session state (shared between context-watch and metrics-collector)
 const hash = Buffer.from(cwd).toString('base64url').slice(0, 16);
@@ -38,10 +47,13 @@ function detectRuneMigration() {
   const hasRuneDir = fs.existsSync(runeDir) && fs.statSync(runeDir).isDirectory();
   if (!hasRuneDir && !runeKitPath) return;
 
-  // Suppress if already migrated or explicitly skipped
-  const migratedFlag = path.join(TopiaDir, 'migrated-from-rune.flag');
-  const skipFlag = path.join(TopiaDir, 'skip-rune-migration.flag');
-  if (fs.existsSync(migratedFlag) || fs.existsSync(skipFlag)) return;
+  function topiaFlagExists(name) {
+    return (
+      fs.existsSync(path.join(TopiaDirRead, name)) ||
+      fs.existsSync(path.join(TopiaDirWrite, name))
+    );
+  }
+  if (topiaFlagExists('migrated-from-rune.flag') || topiaFlagExists('skip-rune-migration.flag')) return;
 
   console.log('\n=== Topia: Rune migration recommended ===');
   if (hasRuneDir) {
@@ -55,7 +67,7 @@ function detectRuneMigration() {
   console.log('    1. Pull your prior decisions, ADRs, conventions, and learnings');
   console.log('       from .rune/ into .topia/ so this session can recall them.');
   console.log('    2. Disable rune-kit so it does not conflict with Topia. The two');
-  console.log('       plugins share ~30 skill names (build, plan, scout, graft, etc.);');
+  console.log('       plugins share ~30 skill names (build, plan, recon, integrate, etc.);');
   console.log('       with both active, the router will pick one non-deterministically.');
   console.log('');
   console.log('  If you decline:');
@@ -72,7 +84,9 @@ function detectRuneMigration() {
   console.log('');
 }
 
-if (fs.existsSync(TopiaDir)) {
+const hasTopiaState = fs.existsSync(TopiaDirRead) || fs.existsSync(TopiaDirWrite);
+if (hasTopiaState) {
+  const TopiaDir = TopiaDirRead;
   const stateFiles = [
     'progress.md',
     'decisions.md',
@@ -114,6 +128,16 @@ if (fs.existsSync(TopiaDir)) {
     }
   }
 
+  const activePacksPath = path.join(TopiaDir, 'active-packs.json');
+  if (fs.existsSync(activePacksPath)) {
+    try {
+      const ap = JSON.parse(fs.readFileSync(activePacksPath, 'utf-8'));
+      if (Array.isArray(ap.enabled) && ap.enabled.length > 0) {
+        console.log(`[Topia: active L4 packs: ${ap.enabled.join(', ')}]`);
+      }
+    } catch { /* non-critical */ }
+  }
+
   if (loaded.length > 0) {
     console.log(`\n[Topia: injected project state from ${loaded.join(', ')}]`);
   } else {
@@ -123,7 +147,7 @@ if (fs.existsSync(TopiaDir)) {
   console.log('[Topia: No .topia/ directory found. Run /topia onboard to set up project context.]');
 }
 
-// Tier detection hint (v2.17.1+) — Pro/Business plugins live in private repos
+// Tier detection hint — historical Pro/Business plugin paths; tiers no longer ship
 // and aren't auto-loaded like the Free plugin. If detected at sibling / env /
 // well-known path AND tier hooks aren't already wired in settings.json, nudge
 // user toward `Topia setup`. Self-suppressing — once wired, the check fails and
@@ -202,7 +226,8 @@ function detectTierHint() {
     console.log(`${cap} detected: ${source} (v${version})`);
   }
   const tierFlag = detected.map((d) => d.tier).join(',');
-  console.log(`Wire it: \`npx @linenoize/topia setup --global --tier ${tierFlag}\``);
+  console.log('Wire dispatch hooks: `node <topia>/compiler/bin/topia.js setup --global --preset gentle`');
+  console.log('(See docs/INSTALL-CLAUDE-CODE.md — do not use npx unless @linenoize/topia is on npm.)');
   console.log('(adds tier-specific hooks: autopilot circuit-breaker, context-sense, statusline)');
 }
 
@@ -212,4 +237,11 @@ function readManifestVersion(manifestPath) {
   } catch {
     return 'unknown';
   }
+}
+
+const sessionText = hookLines.join('\n').trim();
+if (isCursorRuntime()) {
+  writeHookResponse(sessionText ? { additional_context: sessionText } : {});
+} else {
+  for (const line of hookLines) origLog(line);
 }

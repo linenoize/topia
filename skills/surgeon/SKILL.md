@@ -30,7 +30,7 @@ Incremental refactorer that operates on ONE module per session using proven refa
 
 ## Calls (outbound)
 
-- `scout` (L2): understand module dependencies, consumers, and blast radius
+- `recon` (L2): understand module dependencies, consumers, and blast radius
 - `safeguard` (L2): if untested module found, build safety net first
 - `improve-architecture` (L2): if no proposal payload provided, request one before refactoring
 - `debug` (L2): when refactoring reveals hidden bugs
@@ -56,7 +56,7 @@ Honor the payload. If the payload's `adapters_planned` lists only 1 adapter, pus
 
 ### Step 1 — Pre-surgery scan
 
-Call `Topia:scout` targeting the module to refactor. Ask scout to return:
+Call `Topia:recon` targeting the module to refactor. Ask scout to return:
 - All files the module imports (dependencies)
 - All files that import the module (consumers)
 - Total file count touched (blast radius check)

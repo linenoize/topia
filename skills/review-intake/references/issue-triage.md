@@ -77,7 +77,7 @@ Bugs MUST attempt reproduction before being marked `ready-for-agent`. A confirme
 
 Process:
 1. Read the reporter's repro steps
-2. Trace the relevant code via `Topia:scout` / `Topia:debug`
+2. Trace the relevant code via `Topia:recon` / `Topia:debug`
 3. If the repro is a HTTP request / CLI invocation / browser flow → run it
 4. Report outcome:
    - **Confirmed repro** with code path → strong `ready-for-agent` signal

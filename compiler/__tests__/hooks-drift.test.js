@@ -45,7 +45,7 @@ describe('checkHookDrift', () => {
     const baseline = buildPreset('gentle');
     // Mutate one command to simulate operator hand-edit
     baseline.hooks.PreToolUse[0].hooks[0].command =
-      'npx --yes @linenoize/topia hook-dispatch preflight --custom-flag';
+      'npx --yes @linenoize/topia hook-dispatch readiness --custom-flag';
     await seedClaude(tmpRoot, baseline);
     const result = await checkHookDrift(tmpRoot);
     const drift = result.findings.filter((f) => f.status === 'drift');

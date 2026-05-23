@@ -22,7 +22,7 @@ Based on "Agents of Chaos" (arXiv:2602.20021) threat model: agents that read per
 
 ## Triggers
 
-- Called by `sentinel` during Step 4.7 (Agentic Security Scan)
+- Called by `guardian` during Step 4.7 (Agentic Security Scan)
 - Called by `team` before merging build reports (Phase 3a)
 - Called by `session-bridge` on load mode (Step 1.5)
 - `/topia integrity` — manual integrity scan of `.topia/` directory
@@ -34,7 +34,7 @@ None — pure validation (read-only scanning).
 
 ## Called By (inbound)
 
-- `sentinel` (L2): agentic security phase in commit pipeline
+- `guardian` (L2): agentic security phase in commit pipeline
 - `team` (L1): verify build report integrity before merge
 - `session-bridge` (L3): verify `.topia/` files on load
   (L3→L3 exception, documented — same pattern as hallucination-guard → research)
@@ -45,7 +45,7 @@ None — pure validation (read-only scanning).
 
 Determine what to scan based on caller context:
 
-- If called by `sentinel`: scan all `.topia/*.md` files + any state files in the commit diff
+- If called by `guardian`: scan all `.topia/*.md` files + any state files in the commit diff
 - If called by `team`: scan the build report text passed as input
 - If called by `session-bridge`: scan all `.topia/*.md` files
 - If called manually: scan all `.topia/*.md` files + project root for state files

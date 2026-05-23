@@ -26,7 +26,7 @@ const SAMPLE = `# Project Invariants
 #### build
 - **WHAT**: L1 orchestrator, 70% of tasks
 - **WHERE**: \`skills/build/**\`
-- **WHY**: breaking build breaks the mesh
+- **WHY**: breaking build breaks the nexus
 
 ### Critical Invariants
 
@@ -161,11 +161,28 @@ describe('loadInvariants — end-to-end', () => {
     }
   });
 
+  test('loads legacy invariants.md when INVARIANTS.md absent', async () => {
+    const root = await mkdtemp(path.join(tmpdir(), 'Topia-load-inv-legacy-'));
+    try {
+      await mkdir(path.join(root, '.topia'), { recursive: true });
+      await writeFile(path.join(root, '.topia', 'invariants.md'), SAMPLE, 'utf8');
+
+      const result = await loadInvariants({ root });
+      assert.strictEqual(result.loaded, true);
+      if (process.platform !== 'win32' && process.platform !== 'darwin') {
+        assert.strictEqual(result.legacyFilename, true);
+      }
+      assert.ok(result.path.includes('INVARIANTS.md'));
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
   test('loads + parses + renders when file present', async () => {
     const root = await mkdtemp(path.join(tmpdir(), 'Topia-load-inv-'));
     try {
-      await mkdir(path.join(root, '.Topia'), { recursive: true });
-      await writeFile(path.join(root, '.Topia', 'INVARIANTS.md'), SAMPLE, 'utf8');
+      await mkdir(path.join(root, '.topia'), { recursive: true });
+      await writeFile(path.join(root, '.topia', 'INVARIANTS.md'), SAMPLE, 'utf8');
 
       const result = await loadInvariants({ root });
       assert.strictEqual(result.loaded, true);
@@ -184,8 +201,8 @@ describe('loadInvariants — end-to-end', () => {
   test('flags staleness when mtime older than 30 days', async () => {
     const root = await mkdtemp(path.join(tmpdir(), 'Topia-load-inv-stale-'));
     try {
-      await mkdir(path.join(root, '.Topia'), { recursive: true });
-      const file = path.join(root, '.Topia', 'INVARIANTS.md');
+      await mkdir(path.join(root, '.topia'), { recursive: true });
+      const file = path.join(root, '.topia', 'INVARIANTS.md');
       await writeFile(file, SAMPLE, 'utf8');
       const old = new Date(Date.now() - 45 * 24 * 60 * 60 * 1000);
       await utimes(file, old, old);
@@ -200,8 +217,8 @@ describe('loadInvariants — end-to-end', () => {
   test('fresh file is not flagged stale', async () => {
     const root = await mkdtemp(path.join(tmpdir(), 'Topia-load-inv-fresh-'));
     try {
-      await mkdir(path.join(root, '.Topia'), { recursive: true });
-      await writeFile(path.join(root, '.Topia', 'INVARIANTS.md'), SAMPLE, 'utf8');
+      await mkdir(path.join(root, '.topia'), { recursive: true });
+      await writeFile(path.join(root, '.topia', 'INVARIANTS.md'), SAMPLE, 'utf8');
       const result = await loadInvariants({ root });
       assert.strictEqual(result.stale, false);
     } finally {
@@ -212,8 +229,8 @@ describe('loadInvariants — end-to-end', () => {
   test('malformed file → loaded:false, zero rules, does not throw', async () => {
     const root = await mkdtemp(path.join(tmpdir(), 'Topia-load-inv-bad-'));
     try {
-      await mkdir(path.join(root, '.Topia'), { recursive: true });
-      await writeFile(path.join(root, '.Topia', 'INVARIANTS.md'), 'not markdown in any structured sense', 'utf8');
+      await mkdir(path.join(root, '.topia'), { recursive: true });
+      await writeFile(path.join(root, '.topia', 'INVARIANTS.md'), 'not markdown in any structured sense', 'utf8');
       const result = await loadInvariants({ root });
       assert.strictEqual(result.loaded, false);
       assert.strictEqual(result.rules.length, 0);
@@ -232,11 +249,12 @@ describe('loadInvariants — end-to-end', () => {
     // depend on every field. Any drift must break this test.
     const root = await mkdtemp(path.join(tmpdir(), 'Topia-load-inv-contract-'));
     try {
-      await mkdir(path.join(root, '.Topia'), { recursive: true });
-      await writeFile(path.join(root, '.Topia', 'INVARIANTS.md'), SAMPLE, 'utf8');
+      await mkdir(path.join(root, '.topia'), { recursive: true });
+      await writeFile(path.join(root, '.topia', 'INVARIANTS.md'), SAMPLE, 'utf8');
       const result = await loadInvariants({ root });
       assert.deepStrictEqual(Object.keys(result).sort(), [
         'count',
+        'legacyFilename',
         'loaded',
         'overflow',
         'path',
@@ -264,7 +282,7 @@ describe('loadInvariants — end-to-end', () => {
     // distinguish "file absent" from "all rules retired".
     const root = await mkdtemp(path.join(tmpdir(), 'Topia-load-inv-archived-'));
     try {
-      await mkdir(path.join(root, '.Topia'), { recursive: true });
+      await mkdir(path.join(root, '.topia'), { recursive: true });
       const archivedOnly = [
         '# Project Invariants',
         '',
@@ -278,7 +296,7 @@ describe('loadInvariants — end-to-end', () => {
         '- **WHY**: retired 2026-01',
         '',
       ].join('\n');
-      await writeFile(path.join(root, '.Topia', 'INVARIANTS.md'), archivedOnly, 'utf8');
+      await writeFile(path.join(root, '.topia', 'INVARIANTS.md'), archivedOnly, 'utf8');
       const result = await loadInvariants({ root });
       assert.strictEqual(result.loaded, false);
       assert.strictEqual(result.count, 0);

@@ -120,6 +120,22 @@ describe('migrate-from-rune', () => {
     assert.ok(existsSync(join(root, '.topia', 'conventions.md')));
   });
 
+  test('normalizes invariants.md to .topia/INVARIANTS.md', async () => {
+    root = makeRuneProject({ withRune: false });
+    const runeDir = join(root, '.rune');
+    mkdirSync(runeDir, { recursive: true });
+    writeFileSync(join(runeDir, 'invariants.md'), '# Legacy invariants\n', 'utf-8');
+
+    await migrateFromRune({ cwd: root, autoYes: true, homeDir: root });
+
+    assert.ok(existsSync(join(root, '.topia', 'INVARIANTS.md')));
+    if (process.platform !== 'win32' && process.platform !== 'darwin') {
+      assert.ok(!existsSync(join(root, '.topia', 'invariants.md')));
+    }
+    const content = readFileSync(join(root, '.topia', 'INVARIANTS.md'), 'utf-8');
+    assert.match(content, /Legacy invariants/);
+  });
+
   test('--force overwrites existing .topia/ files', async () => {
     root = makeRuneProject({ withRune: true });
     mkdirSync(join(root, '.topia'), { recursive: true });

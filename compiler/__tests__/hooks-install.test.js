@@ -216,7 +216,7 @@ describe('uninstallHooks (claude adapter)', () => {
               {
                 matcher: 'Edit|Write',
                 hooks: [
-                  { type: 'command', command: 'npx --yes @linenoize/topia hook-dispatch preflight' },
+                  { type: 'command', command: 'npx --yes @linenoize/topia hook-dispatch readiness' },
                   { type: 'command', command: 'user-lint.sh' },
                 ],
               },
@@ -291,7 +291,7 @@ describe('hookStatus (claude adapter)', () => {
     const claude = result.results.find((r) => r.platform === 'claude');
     assert.strictEqual(claude.installed, true);
     assert.strictEqual(claude.preset, 'gentle');
-    assert.ok(claude.events.PreToolUse.includes('preflight'));
+    assert.ok(claude.events.PreToolUse.includes('readiness'));
     assert.ok(claude.events.Stop.includes('completion-gate'));
   });
 

@@ -8,7 +8,7 @@ const SKILLS_DIR = join(__dirname, '..', 'skills');
 const SIGNAL_NAME_PATTERN = /^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)+$/;
 
 /**
- * Signals that are intentionally emitted but not listened to within the mesh.
+ * Signals that are intentionally emitted but not listened to within the nexus.
  * Covers external entry points + observability-only signals.
  */
 export const INTENTIONAL_BROADCAST_SIGNALS = new Set([
@@ -28,7 +28,7 @@ export const INTENTIONAL_BROADCAST_SIGNALS = new Set([
 ]);
 
 /**
- * Signals that are listened to but not emitted within the mesh.
+ * Signals that are listened to but not emitted within the nexus.
  * Covers entry points fired by users / IDE events.
  */
 export const EXTERNAL_TRIGGER_SIGNALS = new Set([
@@ -160,6 +160,6 @@ if (process.argv[1] && fileURLToPath(import.meta.url).endsWith(process.argv[1].r
     for (const issue of issues) console.error(`  - ${issue}`);
     process.exit(1);
   } else {
-    console.log('\n✓ Signal mesh is consistent.');
+    console.log('\n✓ Pulse graph is consistent.');
   }
 }

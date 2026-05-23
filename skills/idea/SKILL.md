@@ -33,7 +33,7 @@ Output is a Requirements Document → hand off to Topia:plan for implementation 
 
 ## Calls (outbound)
 
-- `scout` (L2): scan existing codebase for context
+- `recon` (L2): scan existing codebase for context
 - `research` (L3): look up similar products, APIs, integrations
 - `plan` (L2): hand off Requirements Document for implementation planning
 - `brainstorm` (L2): when multiple approaches exist for a requirement
@@ -82,7 +82,7 @@ Read the user's request. Classify the requirement type:
 If Bug Fix → skip idea, route to build/debug directly.
 If Refactor → light version (Step 1 + Step 4 only). Skip Steps 2, 2.5, 3, 5, 6.
 
-If existing codebase → invoke `Topia:scout` for context before proceeding.
+If existing codebase → invoke `Topia:recon` for context before proceeding.
 
 ### Step 1.4 — Synthesis Trigger Check
 <MUST-READ path="references/synthesis-mode.md" trigger="when prior conversation already contains rich requirement context (pasted spec, > 1000 words discussion, continuation session, filled issue template)"/>

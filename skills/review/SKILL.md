@@ -16,7 +16,7 @@ metadata:
 
 ## Purpose
 
-Code quality analysis. Review finds bugs, bad patterns, security issues, and untested code. It does NOT fix anything — it reports findings and delegates: bugs go to Topia:fix, untested code goes to Topia:test, security-critical code goes to Topia:sentinel.
+Code quality analysis. Review finds bugs, bad patterns, security issues, and untested code. It does NOT fix anything — it reports findings and delegates: bugs go to Topia:fix, untested code goes to Topia:test, security-critical code goes to Topia:guardian.
 
 <HARD-GATE>
 A review that says "LGTM" or "code looks good" without specific file:line references is NOT a review.
@@ -32,10 +32,10 @@ Every review MUST cite at least one specific concern, suggestion, or explicit ap
 
 ## Calls (outbound)
 
-- `scout` (L2): find related code for fuller context during review
+- `recon` (L2): find related code for fuller context during review
 - `test` (L2): when untested edge cases found — write tests for them
 - `fix` (L2): when bugs found during review — trigger fix
-- `sentinel` (L2): when security-critical code detected (auth, input, crypto)
+- `guardian` (L2): when security-critical code detected (auth, input, crypto)
 - `docs-seeker` (L3): verify API usage is current and correct
 - `hallucination-guard` (L3): verify imports and API calls in reviewed code
 - `design` (L2): when UI anti-patterns suggest missing design system — recommend design skill invocation
@@ -53,7 +53,7 @@ Every review MUST cite at least one specific concern, suggestion, or explicit ap
 - `surgeon` (L2): review refactored code quality
 - `rescue` (L1): review refactored code quality
 - `design` (L2): review UI/design implementation quality
-- `graft` (L2): review grafted code integration
+- `integrate` (L2): review grafted code integration
 
 ## Cross-Hub Connections
 
@@ -62,7 +62,7 @@ Every review MUST cite at least one specific concern, suggestion, or explicit ap
 - `review` → `scout` — needs more context → scout finds related code
 - `review` → `improve-architecture` — when reviewer flag mentions "shallow", "wrapper", "indirection", or pass-through pattern
 - `review` ← `fix` — complex fix requests self-review
-- `review` → `sentinel` — security-critical code → sentinel deep scan
+- `review` → `guardian` — security-critical code → sentinel deep scan
 
 ## Execution
 
@@ -72,7 +72,7 @@ Determine what to review.
 
 - If triggered by a commit or PR: use `Bash` with `git diff main...HEAD` or `git diff HEAD~1` to see exactly what changed
 - If triggered by a specific file or feature: use `Read` on each named file
-- If context is unclear: use `Topia:scout` to identify all files touched by the change
+- If context is unclear: use `Topia:recon` to identify all files touched by the change
 - List every file in scope before proceeding — do not review files outside the stated scope
 
 ### Step 1.5: Blast Radius Assessment
@@ -178,7 +178,7 @@ Check for security-relevant issues.
 - Scan for: unvalidated user input passed to queries, file paths, or shell commands
 - Scan for: missing authentication checks on new routes or functions
 - Scan for: XSS vectors (unsanitized HTML output), CSRF exposure, open redirects
-- If any security-sensitive code found (auth logic, input handling, crypto, payment): call `Topia:sentinel` for deep scan
+- If any security-sensitive code found (auth logic, input handling, crypto, payment): call `Topia:guardian` for deep scan
 - Sentinel escalation is mandatory — do not skip it for auth or crypto code
 
 ### Step 4.5: API Pit-of-Success Check
@@ -642,7 +642,7 @@ chain_metadata:
 | Finding flood — 20+ findings overwhelm developer | MEDIUM | Confidence filter: only >80% confidence, consolidate similar issues per file |
 | "LGTM" without file:line evidence | HIGH | HARD-GATE blocks this — cite at least one specific item per changed file |
 | Expanding review scope beyond the diff | MEDIUM | Limit to `git diff` scope — do not creep into adjacent unchanged files |
-| Security finding without sentinel escalation | HIGH | Any auth/crypto/payment code touched → MUST call Topia:sentinel |
+| Security finding without sentinel escalation | HIGH | Any auth/crypto/payment code touched → MUST call Topia:guardian |
 | Skipping UI anti-pattern checks for frontend changes | MEDIUM | Any .tsx/.jsx/.svelte/.vue in diff → MUST run UI/UX Anti-Pattern Checks section |
 | Skipping spec compliance check (Step 5.5 Stage 1) | HIGH | Code quality without spec check ships clean code that does the wrong thing — always load the plan/ticket before reviewing quality |
 | Treating purple/indigo accent as "just a color choice" | MEDIUM | It is a documented AI-generated UI signature — always flag for domain justification |

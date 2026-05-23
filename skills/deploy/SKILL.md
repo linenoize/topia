@@ -36,7 +36,7 @@ Deploy applications to target platforms. Handles the full deployment flow — en
 - `db` (L2): pre-deploy migration safety check
 - `perf` (L2): pre-deploy performance regression check
 - `verification` (L2): pre-deploy build + lint + type check
-- `sentinel` (L2): pre-deploy security scan
+- `guardian` (L2): pre-deploy security scan
 - `browser-pilot` (L3): verify live deployment visually
 - `watchdog` (L3): setup post-deploy monitoring
 - `journal` (L3): record deploy decision, rollback plan, and post-deploy status
@@ -46,7 +46,7 @@ Deploy applications to target platforms. Handles the full deployment flow — en
 ## Cross-Hub Connections
 
 - `deploy` → `verification` — pre-deploy tests + build must pass
-- `deploy` → `sentinel` — security must pass before push
+- `deploy` → `guardian` — security must pass before push
 
 ## Execution Steps
 
@@ -58,7 +58,7 @@ Call `Topia:verification` to run the full test suite and build.
 If verification fails → STOP. Do NOT proceed. Report failure with test output.
 ```
 
-Call `Topia:sentinel` to run security scan.
+Call `Topia:guardian` to run security scan.
 
 ```
 If sentinel returns CRITICAL issues → STOP. Do NOT proceed. Report issues.
@@ -263,7 +263,7 @@ Known failure modes for this skill. Check these before declaring done.
 ## Done When
 
 - verification PASS (tests, types, lint, build all green)
-- sentinel PASS (no CRITICAL security findings)
+- guardian PASS (no CRITICAL security findings)
 - Deploy command succeeded with live URL captured
 - Live URL returns HTTP 200
 - watchdog monitoring active on deployed URL
