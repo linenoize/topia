@@ -129,7 +129,7 @@ Check for `.topia/features/*/requirements.md` via `Glob`. If a Requirements Docu
 
 If `project.onboarded` signal was received, scout output is already available in session context — skip re-invoking scout.
 
-Invoke `Topia:recon` if not already done — plans without context produce wrong file paths. Call `neural-memory` (Recall Mode) to surface past architecture decisions before making new ones.
+Invoke `Topia:recon` if not already done — plans without context produce wrong file paths. Invoke `Topia:neural-memory` (Recall Mode) to surface past architecture decisions before making new ones.
 
 **Feature Map**: Check for `.topia/features.md` via `Glob`. If it exists, read it — understand the existing feature landscape, dependencies, and known gaps BEFORE planning. Cross-reference: does the new feature overlap, conflict with, or depend on existing features? If `.topia/features.md` does not exist, note this — Step 6.5 will create it.
 

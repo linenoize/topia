@@ -72,7 +72,7 @@ Without an API key, keyword search still works — only semantic recall degrades
 ## How each Topia skill uses it
 
 ### `journal` — decision logging
-When agora-code MCP is available, `journal` SHOULD call `store_learning` in addition to writing to `.topia/decisions.md`. This makes the decision retrievable later via `recall_learnings`, not just by reading a file.
+When agora-code MCP is available, `journal` SHOULD call `store_learning` in addition to writing ADRs under `.topia/adr/` (and other journal-managed files). This makes the decision retrievable later via `recall_learnings`, not just by reading a file.
 
 ### `build` — pre-flight recall
 `build` Step 0 SHOULD call `recall_learnings` with the task description before starting. If a similar feature or bug surfaces in past sessions, surface it to the user before re-implementing.

@@ -123,6 +123,9 @@ Call `nmem_gaps(action="detect")` if working in a domain with sparse memories.
 
 ### Mode 2: Capture (After Task Completion)
 
+When triggered after `Topia:journal` writes an ADR: read the ADR file, extract decision + rejected alternatives. If journal already called agora `store_learning`, tag `source: journal-adr` and skip duplicate `store_learning`.
+
+
 Extract learnable patterns from completed work and save to neural memory.
 
 **Step 1 — Classify What Happened**

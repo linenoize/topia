@@ -108,7 +108,8 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 *.egg-info/
-build/
+# Repo-root Python packaging output only — not skills/build/ (L1 orchestrator)
+/build/
 .venv/
 venv/
 
@@ -116,3 +117,5 @@ venv/
 .~lock.*
 ehthumbs.db
 .mcp.json
+
+

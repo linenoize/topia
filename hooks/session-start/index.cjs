@@ -138,7 +138,13 @@ if (hasTopiaState) {
     } catch { /* non-critical */ }
   }
 
-  if (loaded.length > 0) {
+    console.log('');
+  console.log('[Topia: Memory checklist]');
+  console.log('  1. Invoke Topia:neural-memory (Recall Mode)');
+  console.log('  2. If agora-memory MCP registered: recall_learnings before large reads');
+  console.log('  3. After decisions: Topia:journal then neural-memory Capture');
+
+if (loaded.length > 0) {
     console.log(`\n[Topia: injected project state from ${loaded.join(', ')}]`);
   } else {
     console.log('[Topia: .topia/ directory found but no state files yet. Run /topia onboard to populate.]');
