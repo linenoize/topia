@@ -19,7 +19,7 @@ You are the **onboard** skill — Topia's project context generator.
 7. **Activate L4 Packs** — write .topia/active-packs.json from detect-l4-packs.js
 8. **Context Budget** — audit; AskQuestion "Which would you like to do?" with **All** option; apply choices
 9. **AI-Driven Interview** (optional) — if auto-detect insufficient, ask 5-8 questions
-10. **Commit** — `git add CLAUDE.md .topia/active-packs.json .topia/org/` only
+10. **Commit** — `git add CLAUDE.md .topia/org/` only (active-packs.json stays local)
 
 **Critical Rules:**
 - Never overwrite existing CLAUDE.md — update/merge instead

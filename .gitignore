@@ -26,7 +26,6 @@ pnpm-debug.log*
 /.topia/*
 !/.topia/org/
 !/.topia/org/**
-!/.topia/active-packs.json
 
 # Rune-kit state — older sibling project's `.rune/` directory.
 # Topia migrates these into `.topia/` via `topia migrate-from-rune`.

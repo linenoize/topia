@@ -12,7 +12,6 @@ export const TOPIA_GITIGNORE_BLOCK = `# Topia — local session state (do not co
 /.topia/*
 !/.topia/org/
 !/.topia/org/**
-!/.topia/active-packs.json
 .remember/
 .mcp.json
 `;
@@ -131,7 +130,6 @@ function findTrackedTopiaPaths(projectRoot) {
     if (!out) return [];
     return out.split('\n').filter(Boolean).filter((p) => {
       if (p === '.mcp.json') return true;
-      if (p === '.topia/active-packs.json') return false;
       if (p.startsWith('.topia/org/')) return false;
       if (p.startsWith('.topia/')) return true;
       return false;

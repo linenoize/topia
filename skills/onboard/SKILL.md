@@ -330,7 +330,6 @@ Output: `"ℹ️ This project is hard to auto-detect. Run /topia onboard --inter
 Use `Bash` to stage and commit only committable Topia files (not all of `.topia/`):
 ```bash
 git add CLAUDE.md
-git add -f .topia/active-packs.json 2>/dev/null || true
 git add .topia/org/ 2>/dev/null || true
 git commit -m "chore: initialize Topia project context"
 ```

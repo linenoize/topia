@@ -67,7 +67,7 @@ export function buildContextPointerBlock() {
     '- **Plans**: `plan-*.md`',
     '- **ADRs**: `adr/`',
     '- **Discipline**: `INVARIANTS.md`, `logic-manifest.json`',
-    '- **Org (committable)**: `org/org.md`, `active-packs.json`',
+    '- **Org (committable)**: `org/org.md`',
     '- **Overflow**: `project-context.md` when CLAUDE.md was trimmed',
     '- **MCP audit**: `mcp-audit.md` when generated',
     '',

@@ -305,15 +305,17 @@ Skills only call downward (with documented L3→L3 exceptions). Connections are 
 
 Every new session loads `.topia/` automatically.
 
-The `org/` tree and `.topia/active-packs.json` may be committed; all other `.topia/*` stays local
+Only the `org/` tree is intended for commit; all other `.topia/*` (including `active-packs.json`) stays local per workspace.
+
 ### Project .gitignore
 
-`topia install` and `topia setup --here` prompt once to append Topia ignore rules (`.topia/*`, `.mcp.json`, with exceptions for `org/` and `active-packs.json`). Decline is remembered via `.topia/skip-gitignore.flag`. Verify anytime with `topia doctor`.
+`topia install` and `topia setup --here` prompt once to append Topia ignore rules (`.topia/*`, `.mcp.json`, with an exception for `org/`). Decline is remembered via `.topia/skip-gitignore.flag`. Verify anytime with `topia doctor`.
 
 ### L4 packs: shipped vs activated
 
-All `@Topia/*` packs ship with the plugin. **Onboard** writes `.topia/active-packs.json` so this project declares which packs to lean on — not a separate install step.
- — it holds stable team and policy configuration. `guardian` and `readiness` consume it at compile time and inject an `<ORG-POLICY>` block into their runtime hooks. See [`.topia/org/org.md`](.topia/org/org.md) for the template.
+All `@Topia/*` packs ship with the plugin. **Onboard** writes `.topia/active-packs.json` locally so each workspace declares which packs to lean on — not a separate install step.
+
+The `org/` tree holds stable team and policy configuration. `guardian` and `readiness` consume it at compile time and inject an `<ORG-POLICY>` block into their runtime hooks. See [`.topia/org/org.md`](.topia/org/org.md) for the template.
 
 ---
 

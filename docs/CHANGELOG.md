@@ -4,6 +4,16 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
+## [2.0.5] — 2026-05-23
+
+### Changed
+
+- **`.topia/active-packs.json`** — no longer tracked in git; stays local per workspace. Onboard still writes it; only `.topia/org/` remains committable under `.topia/*`.
+- **Gitignore / doctor** — removed `!/.topia/active-packs.json` exception from canonical Topia gitignore block and tracked-path checks.
+- **Onboard docs** — commit step stages `CLAUDE.md` and `.topia/org/` only.
+
+---
+
 ## [2.0.3] — 2026-05-22
 
 ### Fixed
