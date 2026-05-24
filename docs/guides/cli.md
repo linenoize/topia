@@ -1,6 +1,6 @@
 # Topia CLI
 
-The Topia CLI compiles 65 AI coding skills into any IDE platform. One skill toolkit, every editor.
+The Topia CLI compiles 66 AI coding skills into any IDE platform. One skill toolkit, every editor.
 
 ---
 
@@ -10,7 +10,7 @@ The Topia CLI compiles 65 AI coding skills into any IDE platform. One skill tool
 
 ```bash
 cd your-project
-npx @protopia/skill-topia init
+node compiler/bin/topia.js init
 ```
 
 Topia auto-detects your platform (Cursor, Windsurf, Antigravity) and compiles skills into the correct format.
@@ -28,13 +28,13 @@ claude
 **Step 3** -- Verify the setup:
 
 ```bash
-npx @protopia/skill-topia doctor
+node compiler/bin/topia.js doctor
 ```
 
-That's it. 65 skills are now active in your AI assistant.
+That's it. 66 skills are now active in your AI assistant.
 
 > **Pro Tip**: For Claude Code, use the Protopia marketplace (no compilation):
-> `/plugin marketplace add protopia/skill-topia` then `/plugin install skill-topia@protopia`.
+> `/plugin marketplace add protopia/skill-topia` then `/plugin install Topia@protopia`.
 > See [`docs/INSTALL-CLAUDE-CODE.md`](../INSTALL-CLAUDE-CODE.md).
 
 ---
@@ -46,7 +46,7 @@ That's it. 65 skills are now active in your AI assistant.
 Interactive setup. Detects your platform, creates `topia.config.json`, and compiles all skills in one step.
 
 ```bash
-npx @protopia/skill-topia init
+node compiler/bin/topia.js init
 ```
 
 ```
@@ -56,7 +56,7 @@ npx @protopia/skill-topia init
 
   -> Detected: cursor
   -> Created topia.config.json
-  -> Built 65 skills + 10 extensions to .cursor/rules/
+  -> Built 66 skills + 10 extensions to .cursor/rules/
 ```
 
 **Flags**:
@@ -76,7 +76,7 @@ If Claude Code is detected (`.claude-plugin/` exists), init exits early with a m
 Recompile skills using existing config. Run after updating Topia or changing `topia.config.json`.
 
 ```bash
-npx @protopia/skill-topia build
+node compiler/bin/topia.js build
 ```
 
 ```
@@ -84,7 +84,7 @@ npx @protopia/skill-topia build
   [transform] Platform: cursor
   [transform] Resolved 142 cross-references
   [transform] Resolved 87 tool-name references
-  [emit]      65 skills + 10 extensions
+  [emit]      66 skills + 10 extensions
 
   -> Built 67 files to .cursor/rules/
 ```
@@ -106,7 +106,7 @@ npx @protopia/skill-topia build
 Validate compiled output. Checks that all skill files exist, cross-references resolve, and config is valid.
 
 ```bash
-npx @protopia/skill-topia doctor
+node compiler/bin/topia.js doctor
 ```
 
 Exits with code 0 if healthy, code 1 if issues found. Useful in CI pipelines.
@@ -124,7 +124,7 @@ Exits with code 0 if healthy, code 1 if issues found. Useful in CI pipelines.
 Show available commands and flags.
 
 ```bash
-npx @protopia/skill-topia help
+node compiler/bin/topia.js help
 ```
 
 ---
@@ -167,7 +167,7 @@ Skills load directly from `skills/*/SKILL.md`. The CLI detects `.claude-plugin/`
 Skills compile to `.cursor/rules/*.mdc` (Cursor's rule format).
 
 ```bash
-npx @protopia/skill-topia init --platform cursor
+node compiler/bin/topia.js init --platform cursor
 ```
 
 Output: `.cursor/rules/Topia-build.mdc`, `.cursor/rules/Topia-plan.mdc`, etc.
@@ -179,7 +179,7 @@ Each skill file gets a Cursor-compatible header with `alwaysApply: false` frontm
 Skills compile to `.windsurf/rules/*.md`.
 
 ```bash
-npx @protopia/skill-topia init --platform windsurf
+node compiler/bin/topia.js init --platform windsurf
 ```
 
 Output: `.windsurf/rules/Topia-build.md`, `.windsurf/rules/Topia-plan.md`, etc.
@@ -189,7 +189,7 @@ Output: `.windsurf/rules/Topia-build.md`, `.windsurf/rules/Topia-plan.md`, etc.
 Skills compile to `.agent/rules/*.md` (Google Antigravity format).
 
 ```bash
-npx @protopia/skill-topia init --platform antigravity
+node compiler/bin/topia.js init --platform antigravity
 ```
 
 Output: `.agent/rules/Topia-build.md`, `.agent/rules/Topia-plan.md`, etc.
@@ -199,7 +199,7 @@ Output: `.agent/rules/Topia-build.md`, `.agent/rules/Topia-plan.md`, etc.
 Fallback for any AI IDE that reads markdown rules from a directory.
 
 ```bash
-npx @protopia/skill-topia init --platform generic
+node compiler/bin/topia.js init --platform generic
 ```
 
 Output: `.ai/rules/Topia-build.md`, `.ai/rules/Topia-plan.md`, etc.
@@ -209,7 +209,7 @@ Output: `.ai/rules/Topia-build.md`, `.ai/rules/Topia-plan.md`, etc.
 Skills compile to an OpenClaw plugin structure with manifest, TypeScript entry point, and skill files.
 
 ```bash
-npx @protopia/skill-topia init --platform openclaw
+node compiler/bin/topia.js init --platform openclaw
 ```
 
 Output structure:
@@ -325,13 +325,13 @@ Topia ships 14 free extension packs (L4 layer). Each adds domain-specific skills
 **Enable specific packs**:
 
 ```bash
-npx @protopia/skill-topia init --extensions @Topia/ui,@Topia/backend
+node compiler/bin/topia.js init --extensions @Topia/ui,@Topia/backend
 ```
 
 **Enable all packs** (default):
 
 ```bash
-npx @protopia/skill-topia init
+node compiler/bin/topia.js init
 # extensions.enabled = null means all packs are included
 ```
 
@@ -354,29 +354,29 @@ npx @protopia/skill-topia init
 ```yaml
 # .github/workflows/topia.yml
 - name: Compile Topia skills
-  run: npx @protopia/skill-topia build
+  run: node compiler/bin/topia.js build
 - name: Validate output
-  run: npx @protopia/skill-topia doctor
+  run: node compiler/bin/topia.js doctor
 ```
 
 **Monorepo Setup** -- Compile to multiple packages from one Topia source:
 
 ```bash
-npx @protopia/skill-topia build --output packages/frontend --platform cursor
-npx @protopia/skill-topia build --output packages/backend --platform generic
+node compiler/bin/topia.js build --output packages/frontend --platform cursor
+node compiler/bin/topia.js build --output packages/backend --platform generic
 ```
 
 **Selective Skills** -- Disable skills you don't need to reduce noise:
 
 ```bash
-npx @protopia/skill-topia init --disable video-creator,asset-creator,trend-scout
+node compiler/bin/topia.js init --disable video-creator,asset-creator,trend-scout
 ```
 
 **Keep Updated** -- Pull latest skills and recompile:
 
 ```bash
 cd /path/to/topia && git pull
-cd /your/project && npx @protopia/skill-topia build
+cd /your/project && node compiler/bin/topia.js build
 ```
 
 ---

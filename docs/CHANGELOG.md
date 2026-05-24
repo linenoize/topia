@@ -34,7 +34,7 @@ All notable changes to Topia will be documented in this file.
 
 ### Added
 
-- **Protopia Claude Code marketplace** — restored `.claude-plugin/marketplace.json` (`protopia` catalog, `skill-topia` plugin). End users install via `/plugin marketplace add protopia/skill-topia` and `/plugin install skill-topia@protopia`.
+- **Protopia Claude Code marketplace** — restored `.claude-plugin/marketplace.json` (`protopia` catalog, `Topia` plugin). End users install via `/plugin marketplace add protopia/skill-topia` and `/plugin install Topia@protopia`.
 - **`docs/INSTALL-CLAUDE-CODE.md`** — marketplace vs clone install, hook layers, updates, troubleshooting.
 - **`docs/templates/team-claude-settings.json`** — optional `extraKnownMarketplaces` + `enabledPlugins` snippet for team repos.
 

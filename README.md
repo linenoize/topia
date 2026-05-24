@@ -80,7 +80,7 @@ node compiler/bin/topia.js visualize   # writes .topia/nexus.html and opens in b
 
 ```bash
 node compiler/bin/topia.js doctor
-# ✓ 65 skills, 203 synapses, 44 pulses — nexus is healthy
+# ✓ 66 skills, 203 synapses, 44 pulses — nexus is healthy
 ```
 
 ### Non-Claude IDEs
@@ -89,7 +89,7 @@ node compiler/bin/topia.js doctor
 node compiler/bin/topia.js init --platform cursor       # also: codex, antigravity, opencode, openclaw, generic
 ```
 
-Compiles all 65 skills to the target IDE's rule format.
+Compiles all 66 skills to the target IDE's rule format.
 
 ### Install flags
 

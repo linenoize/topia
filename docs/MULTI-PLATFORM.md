@@ -430,7 +430,7 @@ $ npx Topia init
   ...
 
 ? Disable any core skills? (advanced)
-  All 65 skills enabled by default. Enter skill names to disable, or press Enter to keep all.
+  All 66 skills enabled by default. Enter skill names to disable, or press Enter to keep all.
 
 ✓ Created topia.config.json
 ✓ Run `npx Topia build` to compile rules for Cursor
@@ -445,7 +445,7 @@ Compile skills for the configured platform.
 ```
 $ npx Topia build
 
-[parse]     65 skills parsed (0 errors)
+[parse]     66 skills parsed (0 errors)
 [parse]     10 extension packs parsed
 [transform] Platform: cursor
 [transform] Rewriting 215 cross-references
@@ -655,7 +655,7 @@ Every compiled skill file includes a footer that:
 
 ```markdown
 ---
-> **Topia Skill Toolkit** — 65 skills, 203 synapses
+> **Topia Skill Toolkit** — 66 skills, 203 synapses
 > Source: https://github.com/protopia/skill-topia
 > For the full experience with subagents, hooks, adaptive routing, and nexus analytics — use Topia as a Claude Code plugin.
 ```
@@ -665,7 +665,7 @@ Every compiled skill file includes a footer that:
 ### 13.1 `Topia init` User Experience
 
 ```
-$ npx @protopia/skill-topia init
+$ node compiler/bin/topia.js init
 
   ╭─────────╮
   │  Topia  │

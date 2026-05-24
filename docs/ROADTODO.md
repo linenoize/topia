@@ -146,7 +146,7 @@ Then add a one-shot `topia audit --skills` mode that prints per-skill scores.
 
 | Layer | Status |
 |------|--------|
-| Core skills (65) | ✅ Complete |
+| Core skills (66) | ✅ Complete |
 | Extension packs (10) | ✅ Complete — `@Topia/{ui,backend,devops,mobile,security,ecommerce,ai-ml,content,analytics,chrome-ext}` |
 | Platforms (6) | ✅ Active — Claude Code · Cursor · Codex · Antigravity · OpenCode · OpenClaw |
 | agora-code MCP (vendored, opt-in) | ✅ Wired into 4 skills with graceful degradation |

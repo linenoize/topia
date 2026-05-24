@@ -1,87 +1,57 @@
 # Install Topia on Claude Code
 
-Topia ships as a native Claude Code plugin with an optional **Protopia marketplace** catalog. Use the marketplace flow for the normal plugin menu experience; use `topia install` when you have cloned the repo locally.
+Two lines inside Claude Code. That's the whole install for 95% of users.
 
 ---
 
-## Recommended: marketplace + plugin menu
+## Install (in Claude Code — no terminal needed)
 
-Works for any machine with Claude Code — no manual clone required for the plugin itself.
-
-### In Claude Code (interactive)
+Paste these into a Claude Code session:
 
 ```text
 /plugin marketplace add protopia/skill-topia
 /plugin install Topia@protopia
-/reload-plugins
 ```
 
-Then wire global discipline hooks (one-time per machine). **Do not use `npx @protopia/skill-topia`** unless the package is published to your npm registry — a private GitHub repo does not make npm work.
+Restart Claude Code if `/Topia:build` does not appear.
 
-**After marketplace install** (auto-finds the plugin cache):
+**That is the complete install.** When the plugin loads you get:
 
-```bash
-node ~/.claude/plugins/cache/protopia/Topia/*/compiler/bin/topia.js setup --global --preset gentle
-```
+- All 66 skills (`/Topia:build`, `/Topia:plan`, …) and the `/topia` router command
+- All 64 subagents
+- All 11 discipline hooks — session-start, secrets-scan, quarantine, auto-format, typecheck, metrics-collector, pre-tool-guard, intent-router, context-watch, pre-compact, post-session-reflect
+- File-based memory in `.topia/`
 
-On Windows PowerShell, use the version folder name instead of `*` (e.g. `2.0.1`), or run from a clone:
-
-```powershell
-cd path\to\skill-topia
-node compiler/bin/topia.js setup --global --preset gentle
-```
-
-Restart Claude Code if `/Topia:build` or `/topia build` does not appear.
-
-### CLI (scriptable)
-
-```bash
-claude plugin marketplace add protopia/skill-topia
-claude plugin install Topia@protopia
-# Then wire hooks from the installed plugin (see "node … setup" above), or from a clone.
-```
-
-### Private GitHub repo
-
-Set `GITHUB_TOKEN` or `GH_TOKEN` with `repo` scope, then use the same commands. See [Claude plugin marketplaces — private repositories](https://code.claude.com/docs/en/plugin-marketplaces#private-repositories).
-
-### Team auto-install (optional)
-
-Merge [`docs/templates/team-claude-settings.json`](templates/team-claude-settings.json) into each repo’s `.claude/settings.json` (or your org template). Teammates are prompted to add the Protopia marketplace when they trust the project folder.
+Nothing else is required.
 
 ---
 
-## Alternative: clone + `topia install`
+## Optional: `/topia finalize` (still no terminal)
 
-For contributors or air-gapped installs. Uses the marketplace catalog from your local clone when `marketplace.json` is present.
+The plugin install covers the core experience. `/topia finalize` is a one-shot, in-chat command that opts you into the **extras**:
 
-```bash
-git clone https://github.com/protopia/skill-topia.git
-cd skill-topia
-npm install
-node compiler/bin/topia.js install
+```text
+/topia finalize
 ```
 
-Restart Claude Code afterward.
+It will ask you which to enable:
 
-Stable clone location (optional convention):
+| Extra | What it adds | Default |
+|-------|--------------|---------|
+| **System-wide dispatch hooks** | `readiness`, `guardian`, `completion-gate`, `dependency-doctor` fire even in repos without the plugin (writes to `~/.claude/settings.json`, gentle preset) | recommended |
+| **agora-code MCP** | Persistent cross-project memory (requires Python 3.10+). Skills gracefully degrade to file-based `.topia/` without it | optional |
+| **Project `.gitignore` rules** | Adds Topia-managed entries to `./.gitignore` for the current repo | optional |
 
-```bash
-mkdir -p ~/.claude/skills
-git clone https://github.com/protopia/skill-topia.git ~/.claude/skills/skill-topia
-cd ~/.claude/skills/skill-topia && npm install && node compiler/bin/topia.js install
-```
+Reversible at any time. Idempotent — re-run as often as you like. Writes `.topia/.finalized` so the first-run nudge stops appearing.
 
----
+Flags:
 
-## After install (each application repo)
+- `/topia finalize --strict` — strict preset instead of gentle
+- `/topia finalize --skip-agora` — skip the Python MCP step
+- `/topia finalize --all` — enable everything (still respects `--skip-agora`)
+- `/topia finalize --reset` — re-prompt next session
 
-| Step | Action |
-|------|--------|
-| Onboard | `/topia onboard` or `/Topia:onboard` |
-| Rune migration | If `.rune/` exists: `node path/to/skill-topia/compiler/bin/topia.js migrate-from-rune` |
-| Team policy | Edit `skill-topia/.topia/org/org.md` in the clone, then `topia setup --global` |
-| Verify | `node <skill-topia>/compiler/bin/topia.js doctor` |
+See [`commands/finalize.md`](../commands/finalize.md) for the full behavior contract.
 
 ---
 
@@ -96,12 +66,69 @@ Both work when the plugin is enabled. The `Topia` prefix comes from `.claude-plu
 
 ---
 
-## Two hook layers
+## After install (each application repo)
 
-1. **Plugin hooks** (`hooks/hooks.json`) — loaded automatically when the plugin is enabled (session-start, secrets-scan, quarantine, etc.).
-2. **Dispatch hooks** (`topia setup --global`) — writes `node …/compiler/bin/topia.js hook-dispatch` entries into `~/.claude/settings.json` (local path from clone or plugin cache; not `npx` unless the npm package is published).
+| Step | Action |
+|------|--------|
+| Onboard | `/topia onboard` or `/Topia:onboard` |
+| Rune migration | If `.rune/` exists: `/topia migrate-from-rune` (or run the CLI from a clone) |
+| Verify | `/topia doctor` (or `node <skill-topia>/compiler/bin/topia.js doctor` from a clone) |
 
-Most teams want **plugin install + `setup --global`**.
+---
+
+## Advanced
+
+### CLI alternative (terminal)
+
+For contributors, air-gapped installs, or users who prefer a clone:
+
+```bash
+git clone https://github.com/protopia/skill-topia.git
+cd skill-topia && npm install
+node compiler/bin/topia.js install
+```
+
+This is the equivalent of `/plugin install Topia@protopia` + `/topia finalize` from the terminal.
+
+Stable clone location (optional convention):
+
+```bash
+mkdir -p ~/.claude/skills
+git clone https://github.com/protopia/skill-topia.git ~/.claude/skills/skill-topia
+cd ~/.claude/skills/skill-topia && npm install && node compiler/bin/topia.js install
+```
+
+On Windows PowerShell, use the version folder name instead of the `*` glob (e.g. `2.0.5`), or run from a clone:
+
+```powershell
+cd path\to\skill-topia
+node compiler/bin/topia.js setup --global --preset gentle
+```
+
+**Do not use `npx @protopia/skill-topia`** unless the npm package is published to your registry — a private GitHub repo does not make npm work.
+
+### Scriptable / CI
+
+```bash
+claude plugin marketplace add protopia/skill-topia
+claude plugin install Topia@protopia
+node compiler/bin/topia.js install --yes --skip-agora     # finalize non-interactively
+```
+
+### Private GitHub repo
+
+Set `GITHUB_TOKEN` or `GH_TOKEN` with `repo` scope, then use the same `/plugin` commands. See [Claude plugin marketplaces — private repositories](https://code.claude.com/docs/en/plugin-marketplaces#private-repositories).
+
+### Team auto-install
+
+Merge [`docs/templates/team-claude-settings.json`](templates/team-claude-settings.json) into each repo's `.claude/settings.json` (or your org template). Teammates are prompted to add the Protopia marketplace when they trust the project folder.
+
+### Two hook layers (reference)
+
+1. **Plugin hooks** (`hooks/hooks.json`) — loaded automatically when the plugin is enabled. These are the 11 hooks listed above and need no extra install.
+2. **Dispatch hooks** (added by `/topia finalize` or `topia setup --global`) — writes `node …/compiler/bin/topia.js hook-dispatch` entries into `~/.claude/settings.json` so `readiness`/`guardian`/`completion-gate`/`dependency-doctor` apply system-wide.
+
+Plugin hooks alone cover the essentials. Dispatch hooks are the "extras" that `/topia finalize` enables.
 
 ---
 

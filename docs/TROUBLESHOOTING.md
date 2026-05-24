@@ -13,7 +13,7 @@ Common issues and how to fix them.
 **Fixes:**
 - **Run `Topia doctor`**: Checks if skills are compiled correctly for your platform.
 - **Check `.claude/settings.json`**: Ensure the plugin path is correct in `installed_plugins`.
-- **Re-init**: Run `npx @protopia/skill-topia init` to re-generate platform rule files.
+- **Re-init**: Run `node compiler/bin/topia.js init` to re-generate platform rule files.
 - **Pathing**: If using Cursor/Windsurf, ensure you are in the project root where `.cursor/rules` or `.windsurf/rules` live.
 
 ---
@@ -25,7 +25,7 @@ Common issues and how to fix them.
 - You run a shell command and `guardian` doesn't run.
 
 **Fixes:**
-- **Re-install hooks**: `npx @protopia/skill-topia hooks install --preset gentle`.
+- **Re-install hooks**: `node compiler/bin/topia.js hooks install --preset gentle`.
 - **Check Scope**: If you installed with `--global`, check `~/.claude/settings.json`. If local, check `<project>/.claude/settings.json`.
 - **IDE Support**: Remember that only Claude Code has 100% hook parity. Cursor and Windsurf use "best effort" rule injection. See [`HOOKS.md`](HOOKS.md) for the capability matrix.
 
@@ -39,7 +39,7 @@ Common issues and how to fix them.
 
 **Fixes:**
 - **Use `build` instead of `team`**: `team` is for large multi-file refactors. For 90% of tasks, `build` is more efficient.
-- **Disable unused skills**: Run `npx @protopia/skill-topia init --disable <names>` to prune skills you don't need.
+- **Disable unused skills**: Run `node compiler/bin/topia.js init --disable <names>` to prune skills you don't need.
 - **Check context window**: If context is > 80% full, Claude gets "chatty" and less efficient. Use `/compact` (Claude Code) to clear history.
 
 ---

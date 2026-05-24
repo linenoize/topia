@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Topia &mdash; discipline rails for AI coding agents</title>
-  <meta name="description" content="A workflow toolkit that gives AI coding agents structured rails: plan before code, test before merge, persist context across sessions. Internal-only, 65 skills, multi-platform.">
+  <meta name="description" content="A workflow toolkit that gives AI coding agents structured rails: plan before code, test before merge, persist context across sessions. Internal-only, 66 skills, multi-platform.">
   <meta property="og:title" content="Topia &mdash; discipline rails for AI coding agents">
   <meta property="og:description" content="Plan before code. Test before merge. Persist context across sessions. Hooks block bad commits. Memory survives session resets.">
   <meta property="og:type" content="website">
@@ -437,21 +437,29 @@ Fri: <span class="text-profit">get_file_symbols("auth")</span>
   <section class="section" id="install">
     <div class="container">
       <h2>Install</h2>
-      <p class="section-sub">Claude Code: Protopia marketplace. Other IDEs: compile from repo.</p>
+      <p class="section-sub">Two lines inside Claude Code. No terminal. No clone. Optional extras finalize from the chat.</p>
       <div class="install-grid">
         <div class="install-card">
           <h3>Claude Code</h3>
-          <p class="install-badge">Native plugin + marketplace</p>
-          <pre class="code-block"><code># Plugin menu (recommended)
+          <p class="install-badge">2-line install &middot; in-chat</p>
+          <pre class="code-block"><code># Paste into Claude Code — done.
 /plugin marketplace add protopia/skill-topia
-/plugin install skill-topia@protopia
-npx @protopia/skill-topia setup --global --preset gentle
-
-# Or clone + one-shot
-git clone https://github.com/protopia/skill-topia.git
+/plugin install Topia@protopia</code></pre>
+          <p>That's the whole install. All 66 skills, 64 subagents, 11 discipline hooks (secrets-scan, quarantine, metrics, auto-format, …), and <code>.topia/</code> memory are live the moment Claude reloads.</p>
+          <details style="margin-top:1rem;">
+            <summary style="cursor:pointer;color:var(--text-muted);font-size:0.9rem;">Optional: finalize extras (still no terminal)</summary>
+            <pre class="code-block" style="margin-top:0.75rem;"><code># Inside Claude — picks dispatch hooks, agora-code MCP,
+# project .gitignore. Idempotent. Writes .topia/.finalized.
+/topia finalize</code></pre>
+            <p style="font-size:0.85rem;color:var(--text-muted);">Adds system-wide <code>readiness</code> / <code>guardian</code> / <code>completion-gate</code> dispatch and (optionally) persistent memory. Skippable forever — the plugin works fully without it.</p>
+          </details>
+          <details style="margin-top:0.5rem;">
+            <summary style="cursor:pointer;color:var(--text-muted);font-size:0.9rem;">Prefer the terminal? Clone install</summary>
+            <pre class="code-block" style="margin-top:0.75rem;"><code>git clone https://github.com/protopia/skill-topia.git
 cd skill-topia &amp;&amp; npm install
 node compiler/bin/topia.js install</code></pre>
-          <p>See <code>docs/INSTALL-CLAUDE-CODE.md</code>. Skills: <code>/Topia:build</code> or <code>/topia build</code>.</p>
+          </details>
+          <p style="margin-top:0.75rem;">Skills invoke as <code>/Topia:build</code> or <code>/topia build</code>. Details: <a href="INSTALL-CLAUDE-CODE.html"><code>INSTALL-CLAUDE-CODE.md</code></a>.</p>
         </div>
         <div class="install-card">
           <h3>Cursor / Codex / Antigravity</h3>
@@ -459,15 +467,16 @@ node compiler/bin/topia.js install</code></pre>
           <pre class="code-block"><code>node compiler/bin/topia.js init --platform cursor
 node compiler/bin/topia.js init --platform codex
 node compiler/bin/topia.js init --platform antigravity</code></pre>
-          <p>Compiles all 65 skills into the target IDE's rule format. Same workflows, different rule files.</p>
+          <p>Compiles all 66 skills into the target IDE's rule format. Same workflows, different rule files.</p>
         </div>
         <div class="install-card">
           <h3>Persistent memory (optional)</h3>
           <p class="install-badge">agora-code MCP</p>
-          <pre class="code-block"><code># Requires Python 3.10+
+          <p>Easiest path: <code>/topia finalize</code> inside Claude offers to install this for you.</p>
+          <pre class="code-block"><code># Manual install — needs Python 3.10+
 pip install ./mcp-servers/agora-code
 
-# Register the MCP server in your project
+# Register in the project
 cat &gt;&gt; .mcp.json &lt;&lt; 'EOF'
 { "mcpServers": { "agora-memory": {
   "command": "agora-code",
@@ -520,7 +529,7 @@ EOF</code></pre>
           <span class="guide-icon">&#128214;</span>
           <div>
             <strong>Skill Catalog</strong>
-            <span>All 65 skills, one page</span>
+            <span>All 66 skills, one page</span>
           </div>
         </a>
         <a href="guides/#faq" class="guide-link">
@@ -542,7 +551,7 @@ EOF</code></pre>
     <div class="container">
       <div class="stats-grid">
         <div class="stat">
-          <span class="stat-num" data-target="65">0</span>
+          <span class="stat-num" data-target="66">0</span>
           <span class="stat-label">Skills</span>
         </div>
         <div class="stat">

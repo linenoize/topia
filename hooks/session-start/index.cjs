@@ -32,6 +32,10 @@ try {
 // prompt prominently. Self-suppressing via flag files in .topia/.
 detectRuneMigration();
 
+// First-run finalize nudge — one-line offer that points at /topia finalize.
+// Self-suppresses once .topia/.finalized OR .topia/skip-finalize.flag exists.
+detectFinalizeNudge();
+
 function detectRuneMigration() {
   const runeDir = path.join(cwd, '.rune');
   const home = os.homedir();
@@ -82,6 +86,40 @@ function detectRuneMigration() {
   console.log('  To suppress this warning without migrating:');
   console.log('    node compiler/bin/topia.js migrate-from-rune --skip');
   console.log('');
+}
+
+function detectFinalizeNudge() {
+  // Skip if user has already finalized or explicitly opted out.
+  const flags = ['.finalized', 'skip-finalize.flag'];
+  for (const f of flags) {
+    if (fs.existsSync(path.join(TopiaDirRead, f)) || fs.existsSync(path.join(TopiaDirWrite, f))) {
+      return;
+    }
+  }
+  // Heuristic: if ~/.claude/settings.json already has Topia dispatch hooks,
+  // the user finalized via the CLI before this nudge existed — write the flag
+  // silently so we never bother them.
+  try {
+    const settingsPath = path.join(os.homedir(), '.claude', 'settings.json');
+    if (fs.existsSync(settingsPath)) {
+      const raw = fs.readFileSync(settingsPath, 'utf-8');
+      if (raw.includes('topia.js hook-dispatch') || raw.includes('Topia-managed')) {
+        try {
+          fs.mkdirSync(TopiaDirWrite, { recursive: true });
+          fs.writeFileSync(
+            path.join(TopiaDirWrite, '.finalized'),
+            `finalized: ${new Date().toISOString()} (auto-detected from settings.json)\n`,
+          );
+        } catch { /* non-critical */ }
+        return;
+      }
+    }
+  } catch { /* non-critical — fall through to nudge */ }
+
+  console.log('\n[Topia: first-run tip] Plugin is installed — you are ready to use /topia build.');
+  console.log('  Optional extras (system-wide hooks, agora-code memory, project .gitignore):');
+  console.log('    /topia finalize        — interactive opt-in (recommended)');
+  console.log('    /topia finalize --reset  hides this tip permanently');
 }
 
 const hasTopiaState = fs.existsSync(TopiaDirRead) || fs.existsSync(TopiaDirWrite);

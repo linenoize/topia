@@ -11,11 +11,15 @@ Route to the appropriate Topia skill, CLI command, or extension pack based on th
 
 ---
 
+## Finalize install (run from inside Claude — no terminal required)
+
+- `/topia finalize` — **in-Claude one-shot finish-install.** Run after `/plugin install Topia@protopia` to enable the optional extras (system-wide dispatch hooks, agora-code MCP, project `.gitignore`) without leaving the chat. See [`commands/finalize.md`](finalize.md). Flags: `--strict`, `--skip-agora`, `--all`, `--reset`.
+
 ## CLI commands (run from terminal)
 
 These are entry-points the user runs in their shell. They do not invoke a skill — they execute the `compiler/bin/topia.js` binary.
 
-- `topia install` — one-shot end-to-end setup (rune-kit detect → plugin register → hooks wire → agora-code MCP install → doctor verify). Flags: `--dry-run`, `--here`, `--preset gentle|strict`, `--yes`, `--skip-agora`, `--skip-rune-check`.
+- `topia install` — terminal alternative to `/topia finalize` for users running from a clone. One-shot end-to-end setup (rune-kit detect → plugin register → hooks wire → agora-code MCP install → doctor verify). Flags: `--dry-run`, `--here`, `--preset gentle|strict`, `--yes`, `--skip-agora`, `--skip-rune-check`.
 - `topia setup` — interactive wizard for the hook-installer step only (scope + preset). Useful when you've already cloned + `npm install`'d but want to (re)wire hooks.
 - `topia init` — for non-Claude IDEs: compile skills into the target platform's rule format (`--platform cursor|codex|antigravity|opencode|openclaw|generic`).
 - `topia build` — recompile skills using the existing `topia.config.json`.

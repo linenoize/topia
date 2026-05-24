@@ -24,7 +24,7 @@
 ```text
 /plugin marketplace add protopia/skill-topia
 /plugin install Topia@protopia
-npx @protopia/skill-topia setup --global --preset gentle
+node compiler/bin/topia.js setup --global --preset gentle
 ```
 
 See [`INSTALL-CLAUDE-CODE.md`](INSTALL-CLAUDE-CODE.md). Restart Claude Code after install.
@@ -32,7 +32,7 @@ See [`INSTALL-CLAUDE-CODE.md`](INSTALL-CLAUDE-CODE.md). Restart Claude Code afte
 **Cursor / Codex / other IDEs** — from your project root:
 
 ```bash
-npx @protopia/skill-topia init
+node compiler/bin/topia.js init
 ```
 
 This detects your AI assistant and writes the right config files:
@@ -49,10 +49,10 @@ This detects your AI assistant and writes the right config files:
 Verify install:
 
 ```bash
-npx @protopia/skill-topia doctor
+node compiler/bin/topia.js doctor
 ```
 
-You should see: `✓ 65 skills, 10 packs, nexus valid`.
+You should see: `✓ 66 skills, 10 packs, nexus valid`.
 
 ---
 
@@ -102,7 +102,7 @@ Compare vanilla AI coding vs Topia:
 By default, Topia skills only run when you invoke them. To auto-fire quality gates on every tool use:
 
 ```bash
-npx @protopia/skill-topia hooks install --preset gentle
+node compiler/bin/topia.js hooks install --preset gentle
 ```
 
 Presets:
@@ -117,13 +117,13 @@ Now `readiness`, `guardian`, and `completion-gate` auto-fire on every file edit.
 ## Step 5: Explore the Nexus
 
 ```bash
-npx @protopia/skill-topia status       # project health dashboard (neofetch-style)
-npx @protopia/skill-topia visualize    # interactive nexus graph (Canvas 2D)
-npx @protopia/skill-topia doctor       # validate install + nexus integrity
+node compiler/bin/topia.js status       # project health dashboard (neofetch-style)
+node compiler/bin/topia.js visualize    # interactive nexus graph (Canvas 2D)
+node compiler/bin/topia.js doctor       # validate install + nexus integrity
 ```
 
 Read next:
-- [`SKILLS.md`](SKILLS.md) — all 65 skills, categorized by intent
+- [`SKILLS.md`](SKILLS.md) — all 66 skills, categorized by intent
 - [`ARCHITECTURE.md`](ARCHITECTURE.md) — 5-layer architecture reference
 - [`PULSES.md`](PULSES.md) — how skills auto-trigger each other
 - [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) — stuck? common fixes here
