@@ -37,6 +37,7 @@
 import { existsSync } from 'node:fs';
 import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
+import { extractSynapseSkillsFromSection } from './lib/synapse-tables.js';
 import { parsePack, parseTemplate } from './parser.js';
 
 /**
@@ -421,21 +422,32 @@ export async function checkNexusIntegrity(TopiaRoot) {
 
   results.stats.skills = skills.size;
 
-  // Step 2: Validate reciprocals
+  // Step 2: Validate reciprocals (both directions — matches validate-nexus.js)
   const missingReciprocals = [];
 
   for (const [name, skill] of skills) {
     for (const called of skill.calls) {
       const targetSkill = skills.get(called.skill);
-      if (!targetSkill) continue; // External skill or L4 pack
+      if (!targetSkill) continue;
 
-      // Check if target acknowledges this caller
       const acknowledges = targetSkill.calledBy.some((c) => c.skill === name);
       if (!acknowledges) {
         missingReciprocals.push({
           caller: name,
           callee: called.skill,
-          reason: called.reason,
+          reason: `${called.skill} missing "${name}" in Called By`,
+        });
+      }
+    }
+
+    for (const caller of skill.calledBy) {
+      if (caller.skill === 'user') continue;
+      const callerSkill = skills.get(caller.skill);
+      if (callerSkill && !callerSkill.calls.some((c) => c.skill === name)) {
+        missingReciprocals.push({
+          caller: caller.skill,
+          callee: name,
+          reason: `${caller.skill} missing "${name}" in Calls`,
         });
       }
     }
@@ -488,7 +500,7 @@ export async function checkNexusIntegrity(TopiaRoot) {
       byCallee[m.callee].push(m.caller);
     }
     for (const [callee, callers] of Object.entries(byCallee)) {
-      results.warnings.push(`${callee}: missing callers in Called By: ${callers.join(', ')}`);
+      results.warnings.push(`${callee}: missing reciprocal synapse — ${callers.join(', ')}`);
     }
   }
 
@@ -618,35 +630,18 @@ function parseSkillConnections(content, skillName) {
       .filter((s) => s.length > 0);
   }
 
-  // Extract Calls section
-  const callsMatch = content.match(/## Calls \(outbound\)\s*\n([\s\S]*?)(?=\n## |\n---|Z)/);
+  // Extract Calls / Called By via shared synapse parser (phase tables, pipe bullets, ext layer)
+  const callsMatch = content.match(/## Calls \(outbound[^)]*\)([\s\S]*?)(?=\n## )/);
   if (callsMatch) {
-    const lines = callsMatch[1].split('\n');
-    for (const line of lines) {
-      // Match patterns like: - `recon` (L2): scan codebase
-      // Or: - recon (L2): scan codebase
-      const match = line.match(/^-\s*`?([a-z][\w-]*)`?\s*\(L\d\)/i);
-      if (match) {
-        const skillRef = match[1].toLowerCase();
-        const reason = line
-          .replace(match[0], '')
-          .replace(/^[:\s-]+/, '')
-          .trim();
-        result.calls.push({ skill: skillRef, reason });
-      }
+    for (const skillRef of extractSynapseSkillsFromSection(callsMatch[1])) {
+      result.calls.push({ skill: skillRef, reason: '' });
     }
   }
 
-  // Extract Called By section
-  const calledByMatch = content.match(/## Called By \(inbound\)\s*\n([\s\S]*?)(?=\n## |\n---|Z)/);
+  const calledByMatch = content.match(/## Called By \(inbound[^)]*\)([\s\S]*?)(?=\n## )/);
   if (calledByMatch) {
-    const lines = calledByMatch[1].split('\n');
-    for (const line of lines) {
-      const match = line.match(/^-\s*`?([a-z][\w-]*)`?\s*\(L\d\)/i);
-      if (match) {
-        const skillRef = match[1].toLowerCase();
-        result.calledBy.push({ skill: skillRef });
-      }
+    for (const skillRef of extractSynapseSkillsFromSection(calledByMatch[1])) {
+      result.calledBy.push({ skill: skillRef });
     }
   }
 

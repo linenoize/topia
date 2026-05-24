@@ -1,7 +1,7 @@
 {
   "name": "@protopia/skill-topia",
-  "version": "2.0.3",
-  "description": "65-skill Topia Nexus for AI coding assistants — runtime discipline rails via native hooks, 5-layer architecture, 203 synapses + 44 pulses, optional agora-code neural memory, multi-platform compiler.",
+  "version": "2.0.4",
+  "description": "66-skill Topia Nexus for AI coding assistants — runtime discipline rails via native hooks, 5-layer architecture, 203 synapses + 44 pulses, optional agora-code neural memory, multi-platform compiler.",
   "type": "module",
   "bin": {
     "topia": "./compiler/bin/topia.js"
@@ -10,6 +10,8 @@
     "build": "node compiler/bin/topia.js build",
     "doctor": "node compiler/bin/topia.js doctor && node scripts/version-sync-check.js",
     "test": "node --test compiler/__tests__/*.test.js scripts/__tests__/*.test.js",
+    "validate:nexus": "node scripts/validate-nexus.js",
+    "validate:packs": "node scripts/validate-pack.js",
     "test:coverage": "c8 --reporter=text --reporter=lcov node --test compiler/__tests__/*.test.js scripts/__tests__/*.test.js",
     "lint": "biome check .",
     "lint:fix": "biome check --fix .",

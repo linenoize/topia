@@ -38,12 +38,14 @@ Output is a Requirements Document → hand off to Topia:plan for implementation 
 - `plan` (L2): hand off Requirements Document for implementation planning
 - `brainstorm` (L2): when multiple approaches exist for a requirement
 - `design` (L2): when requirements include UI/UX components — hand off visual requirements
+- `problem-solver` (L3): structured reasoning when requirements have conflicting constraints
 
 ## Called By (inbound)
 
 - `build` (L1): before Phase 2 PLAN, when task is non-trivial
 - `scaffold` (L1): Phase 1, before any project generation
 - `plan` (L2): when plan receives vague requirements
+- `documentation` (L2): reads requirements and plan artifacts for leadership package
 - `mcp-builder` (L2): requirements elicitation before MCP server design
 - User: `/topia idea` direct invocation
 

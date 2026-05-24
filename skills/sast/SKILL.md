@@ -27,7 +27,7 @@ Sentinel catches obvious patterns (hardcoded secrets, SQL string concat). SAST c
 
 ## Calls (outbound)
 
-None — pure runner using Bash for all tools.
+- `verification` (L3): run lint, types, tests, and build alongside static analysis findings
 
 ## Called By (inbound)
 

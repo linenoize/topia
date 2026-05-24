@@ -71,6 +71,14 @@ Called By ← marketing (L2): when creating blog content
 | | Auth-gated content (members-only posts), subscription paywalls | Premium content model |
 | `@Topia/ecommerce` | Product-linked blog posts, shoppable content, affiliate links | Commerce + content hybrid sites |
 
+## Constraints
+
+1. MUST validate all CMS content against a schema before rendering — malformed data must not crash pages.
+2. MUST include `hreflang` tags on all locale-specific pages — missing hreflang hurts international SEO.
+3. MUST NOT hardcode user-visible strings when i18n is configured — every string goes through the translation system.
+4. MUST generate sitemap dynamically from actual content — static sitemaps go stale.
+5. MUST redirect old CMS URLs permanently (301) before go-live — 302 redirects do not transfer link equity.
+
 ## Sharp Edges
 
 | Failure Mode | Severity | Mitigation |

@@ -237,7 +237,8 @@ describe('validate-skills', () => {
     test('validates actual Topia skills directory', () => {
       const { scanned, allIssues, warnings } = validateAllSkills(join(__dirname, '../../skills'));
       assert.ok(scanned >= 50, `Expected 50+ skills, got ${scanned}`);
-      console.log(`  Scanned ${scanned} skills: ${allIssues.length} issues, ${warnings.length} warnings`);
+      assert.strictEqual(allIssues.length, 0, `Skill issues: ${allIssues.join(', ')}`);
+      assert.strictEqual(warnings.length, 0, `Skill warnings: ${warnings.join(', ')}`);
     });
   });
 });

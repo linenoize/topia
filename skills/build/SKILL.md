@@ -747,12 +747,14 @@ Mentally track tool call fingerprints. 3 identical calls → WARN. 5 identical c
 | Phase | Sub-skill | Layer | Purpose |
 |-------|-----------|-------|---------|
 | 0 / 8 | `neural-memory` | ext | Recall context at start; capture learnings at end |
+| 0 / 8 | `recall` | L3 | Unified cross-source memory recall at session start |
 | 0.5 | `guardian-env` | L3 | Environment pre-flight (first run only) |
 | 1 | `recon` | L2 | Scan codebase before planning |
 | 1 | `onboard` | L2 | Initialize project context if no CLAUDE.md |
 | 1 | `idea` | L2 | Requirement elicitation for features |
 | 1 | `logic-guardian` | L2 | Conditional: when `.topia/logic-manifest.json` exists — protect complex business logic before any edits |
 | 2 | `plan` | L2 | Create implementation plan |
+| 2 | `documentation` | L2 | Leadership package when stakeholder approval needed |
 | 2 | `brainstorm` | L2 | Trade-off analysis / rescue mode |
 | 2 | `design` | L2 | UI/design phase for frontend features — invoke with `mode: "tweaks-default"` (one opinionated default + accept natural-language tweaks, not a 5-option menu) |
 | 2.5 | `adversary` | L2 | Red-team challenge on approved plan |
@@ -777,6 +779,14 @@ Mentally track tool call fingerprints. 3 identical calls → WARN. 5 identical c
 | 8 | `session-bridge` | L3 | Save context for future sessions |
 | any | `context-pack` | L3 | create structured handoff briefings before spawning subagents |
 | any | `skill-forge` | L2 | When new skill creation detected during build |
+| any | `context-engine` | L3 | Context budget management at phase boundaries |
+| any | `docs` | L2 | Generate or update documentation when scope warrants |
+| any | `git` | L3 | Stage and commit when user approves |
+| any | `improve-architecture` | L2 | Shallow-module deepening during quality gate |
+| any | `integrate` | L2 | Port features from external repos when task requires |
+| any | `mcp-builder` | L2 | Scaffold MCP servers when integration detected |
+| any | `retro` | L2 | Post-feature retrospective when user requests |
+| any | `scaffold` | L1 | Greenfield project bootstrap when task requires |
 | 1.5 | L4 extension packs | L4 | Domain-specific patterns when stack matches |
 
 ## Data Flow

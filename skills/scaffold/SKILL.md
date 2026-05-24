@@ -42,6 +42,8 @@ Generated projects MUST build and pass tests. A scaffold that produces broken co
 - `git` (L3): Phase 8 — initial commit with semantic message
 - `verification` (L3): Phase 9 — lint + types + tests + build
 - `guardian` (L2): Phase 9 — security scan on generated code
+- `context-pack` (L3): structured handoff briefings before parallel module generation
+- `mcp-builder` (L2): scaffold MCP servers when project includes MCP integration
 
 ## Called By (inbound)
 

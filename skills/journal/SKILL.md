@@ -39,6 +39,7 @@ Persistent state tracking and Architecture Decision Records across sessions. Jou
 - `integrate` (L2): auto-log integrate operations — source URL, mode, challenge score, files changed
 - `retro` (L2): record retrospective insights and decisions
 - `improve-architecture` (L2): record an ADR when the user rejects a deepening candidate with a load-bearing reason
+- `logic-guardian` (L2): record logic changes as ADRs for cross-session persistence
 
 ## Files Managed
 

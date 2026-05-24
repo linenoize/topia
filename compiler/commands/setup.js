@@ -18,6 +18,7 @@ import path from 'node:path';
 import { createInterface } from 'node:readline';
 import { installHooks } from './hooks/install.js';
 import { ensureTopiaGitignore } from '../lib/ensure-gitignore.js';
+import { normalizeTopiaDir } from '../lib/topia-paths.js';
 
 /**
  * @param {{ projectRoot: string, TopiaRoot: string, args: object }} opts
@@ -49,6 +50,7 @@ export async function runSetup({ projectRoot, TopiaRoot, args = {} }) {
   });
 
   if (scope === 'current') {
+    normalizeTopiaDir(projectRoot);
     await ensureTopiaGitignore({
       projectRoot,
       autoYes: Boolean(args.yes),

@@ -210,7 +210,7 @@ Produce structured output for the calling skill. Update TodoWrite to completed.
 
 ## Calls (outbound)
 
-None — pure scanner using Glob, Grep, Read, and Bash tools directly. Does not invoke other skills.
+- `recall` (L3): load prior session context before scanning unfamiliar areas
 
 ## Called By (inbound)
 

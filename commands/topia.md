@@ -111,7 +111,8 @@ These are entry-points the user runs in their shell. They do not invoke a skill 
 - 🤖 `/topia context-pack <task>` — package context for subagent delegation.
 - ↻ `/topia journal` — ADRs + decision history. User runs to log; also called by `build`/`rescue`.
 - 🤖 `/topia session-bridge` — auto-saves decisions / conventions / progress to `.topia/`. Fires at session boundaries.
-- ↻ `/topia neural-memory <recall|store>` — semantic memory graph (uses agora-code MCP when registered).
+- ↻ `/topia recall [topic]` — unified memory recall (`.topia/`, `.remember/`, neural-memory, agora). Read-only.
+- ↻ `/topia neural-memory <recall|store>` — semantic memory graph writes and MCP-only recall
 - 🤖 `/topia integrity-check` — detect adversarial content in `.topia/` files. Called by `guardian` / `session-bridge`.
 
 ### Monitoring / Scope

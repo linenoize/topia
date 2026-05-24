@@ -238,10 +238,7 @@ None
     test('validates actual Topia skills directory', () => {
       const { skillCount, issues } = validateMesh(join(__dirname, '../../skills'));
       assert.ok(skillCount >= 50, `Expected 50+ skills, got ${skillCount}`);
-      // Log but don't fail — nexus may have known issues
-      if (issues.length > 0) {
-        console.log(`  Nexus has ${issues.length} connection issues (known)`);
-      }
+      assert.strictEqual(issues.length, 0, `Nexus issues:\n${issues.join('\n')}`);
     });
   });
 });

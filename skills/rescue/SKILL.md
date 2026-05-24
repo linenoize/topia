@@ -42,6 +42,8 @@ Legacy refactoring orchestrator for safely modernizing messy codebases. Rescue r
 - `onboard` (L2): generate context for unfamiliar legacy project
 - `dependency-doctor` (L3): audit dependencies in legacy project
 - `context-pack` (L3): create structured handoff briefings before spawning subagents
+- `context-engine` (L3): context budget management between refactoring sessions
+- `scope-guard` (L3): verify rescue changes stay within declared module scope
 - `neural-memory` | Phase start + phase end | Recall past refactoring patterns, capture new ones
 
 ## Called By (inbound)

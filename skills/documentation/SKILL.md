@@ -24,6 +24,18 @@ Bridges the gap between technical planning and organizational approval. This ski
 - Automatically suggested after `plan` or `adversary`
 - User asks for "Jira tickets", "CSV", or "stories"
 
+## Calls (outbound)
+
+- `idea` (L2): read `requirements.md` from feature folder
+- `plan` (L2): read `plan.md` and phase files from feature folder
+- `adversary` (L2): read `adversary-report.md` when available for risk summary
+
+## Called By (inbound)
+
+- `build` (L1): when leadership package needed before implementation
+- `plan` (L2): when plan output needs stakeholder-ready artifacts
+- User: `/topia documentation` direct invocation
+
 ## Workflow
 
 ### Phase 1: Context Intake
@@ -87,6 +99,23 @@ Known failure modes for this skill. Check these before declaring done.
 | Skipping `adversary-report.md` when it exists | MEDIUM | Risk Assessment section in the brief loses signal if adversary findings are not summarized |
 | Writing implementation code to satisfy a Jira field | HIGH | Constraint 3 — documentation only. If a field needs code-level detail, point to a file path, don't inline code |
 | Stale tickets after plan revision | MEDIUM | If `plan.md` is regenerated, re-run documentation to keep ticket/phase parity |
+
+## Output Format
+
+```
+LEADERSHIP PACKAGE — <feature-name>
+===================================
+Feature folder: .topia/features/<name>/
+
+Artifacts:
+- user-stories.md — Agile stories with acceptance criteria
+- jira-tickets.csv — RFC-4180 import file (N tickets)
+- leadership-brief.md — Executive summary, timeline, risks
+
+Ticket summary:
+| Phase | Issue Type | Summary |
+| ...   | ...        | ...     |
+```
 
 ## Cost Profile
 

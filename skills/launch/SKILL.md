@@ -40,6 +40,9 @@ Orchestrate the full deployment and marketing pipeline. Launch coordinates testi
 - `marketing` (L2): create launch assets (landing copy, social, SEO)
 - `watchdog` (L3): setup post-deploy monitoring
 - `video-creator` (L3): create launch/demo video content
+- `docs` (L2): generate launch documentation and release notes
+- `git` (L3): tag release and push deployment branch
+- `verification` (L3): pre-deploy lint, types, tests, and build gate
 - L4 extension packs: domain-specific launch patterns when context matches (e.g., @Topia/devops for infrastructure, @Topia/ecommerce for storefront)
 
 ## Called By (inbound)

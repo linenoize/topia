@@ -90,6 +90,8 @@ Copy the feature, then refactor and optimize. Fix anti-patterns, add missing tes
 - `recon` (L2): scan LOCAL codebase for conventions, patterns, stack detection
 - `fix` (L2): implement adapted code (port and improve modes)
 - `review` (L2): post-integrate quality check (improve mode only)
+- `journal` (L3): auto-log integrate operations — source URL, mode, challenge score, files changed
+- `test` (L2): verify integrated code passes existing test suite
 
 ## Called By (inbound)
 

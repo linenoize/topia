@@ -35,6 +35,7 @@ Pre-commit quality gate that catches "almost right" code — the kind that compi
 - `guardian` (L2): security sub-check on changed files
 - `hallucination-guard` (L3): verify imports and API references exist
 - `test` (L2): run test suite as pre-commit check
+- `verification` (L3): lint + types + build as part of pre-commit quality gate
 
 ## Called By (inbound)
 

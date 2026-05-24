@@ -65,6 +65,14 @@ deep-research → web-extraction: research loop uses extraction for each discove
 deep-research → embedding-search: relevance scoring uses embeddings for semantic similarity
 ```
 
+## Constraints
+
+1. MUST implement exponential backoff retry on all LLM API calls — rate limits are guaranteed at scale.
+2. MUST validate LLM output with Zod/Pydantic — never trust raw text parsing.
+3. MUST separate training and evaluation datasets — leakage invalidates all metrics.
+4. MUST NOT embed sensitive data without consent — vector stores are not easily deletable.
+5. MUST use rootless Docker or gVisor for high-security code execution sandboxes.
+
 ## Sharp Edges
 
 - **Rate limits**: MUST implement exponential backoff retry on all LLM API calls — guaranteed at scale.

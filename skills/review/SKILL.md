@@ -42,6 +42,8 @@ Every review MUST cite at least one specific concern, suggestion, or explicit ap
 - `perf` (L2): when performance patterns detected in frontend diff
 - `review-intake` (L2): structured intake for complex multi-file reviews
 - `sast` (L3): static analysis security scan on reviewed code
+- `improve-architecture` (L2): when shallow-module flag fires during review
+- `logic-guardian` (L2): check if reviewed diff removes or modifies manifested logic
 - L4 extension packs: domain-specific review patterns when context matches (e.g., @Topia/ui for frontend, @Topia/security for auth code)
 - `neural-memory` | After review complete | Capture code quality insight
 

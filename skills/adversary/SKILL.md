@@ -49,6 +49,7 @@ Every finding MUST reference the specific plan section, file, or assumption it c
 - `team` (L1): when decomposing large tasks, adversary validates the decomposition
 - `debug` (L2): (oracle-mode) listens to `agent.stuck` from debug after 3 disproved hypotheses
 - `fix` (L2): (oracle-mode) listens to `agent.stuck` from fix after 2+ failed attempts
+- `documentation` (L2): reads adversary report for leadership risk summary
 - User: `/topia adversary` direct invocation
 
 ## Cross-Hub Connections

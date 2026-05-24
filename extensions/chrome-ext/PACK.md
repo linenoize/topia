@@ -65,6 +65,14 @@ Called By ← launch (L1): pre-flight check before CWS submission
 Called By ← preflight (L2): runs cws-preflight as part of broader pre-deploy audit
 ```
 
+## Constraints
+
+1. MUST register `chrome.runtime.onMessage.addListener` at module top level — listeners inside async IIFEs are silently ignored after service worker termination.
+2. MUST use `chrome.alarms` for periodic work — never rely on `setTimeout` keepalive hacks (broken Chrome 119+).
+3. MUST check `chrome.runtime.lastError` on every `sendMessage` callback — undefined response is not success.
+4. MUST run `grep -r "eval(" node_modules/` before Chrome Web Store submission — bundled eval fails review.
+5. MUST slice streaming AI deltas (`chunk.slice(prev.length)`) — cumulative chunks duplicate UI content.
+
 ## Sharp Edges
 
 | Failure Mode | Severity | Mitigation |

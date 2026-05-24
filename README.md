@@ -4,7 +4,7 @@
 
 <p align="center">
   <strong>Topia — internal skill toolkit for AI coding assistants.</strong><br>
-  65 skills · 203 synapses · 44 pulses · 10 extension packs · optional persistent memory via agora-code MCP
+  66 skills · 203 synapses · 44 pulses · 10 extension packs · optional persistent memory via agora-code MCP
 </p>
 
 <p align="center">

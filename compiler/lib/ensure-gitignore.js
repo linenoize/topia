@@ -13,10 +13,11 @@ export const TOPIA_GITIGNORE_BLOCK = `# Topia — local session state (do not co
 !/.topia/org/
 !/.topia/org/**
 !/.topia/active-packs.json
+.remember/
 .mcp.json
 `;
 
-export const REQUIRED_PATTERNS = ['/.topia/*', '!/.topia/org/', '.mcp.json'];
+export const REQUIRED_PATTERNS = ['/.topia/*', '!/.topia/org/', '.remember/', '.mcp.json'];
 
 function prompt(question) {
   const rl = createInterface({ input: process.stdin, output: process.stdout });

@@ -38,6 +38,7 @@ Incremental refactorer that operates on ONE module per session using proven refa
 - `test` (L2): verify after each change (REPLACE old shallow-module tests with deepened-interface tests, don't layer)
 - `review` (L2): quality check on refactored code
 - `journal` (L3): update rescue progress
+- `logic-guardian` (L2): pre-refactor gate before modifying manifested logic
 
 ## Consuming proposal payloads
 
