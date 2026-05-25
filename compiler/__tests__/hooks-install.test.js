@@ -159,14 +159,14 @@ describe('installHooks (claude adapter)', () => {
 
   test('--platform all targets only detected platforms (no silent dir creation)', async () => {
     // Bare dir → no platforms detected → all expands to nothing
-    const bare = await installHooks(tmpRoot, { preset: 'gentle', platform: 'all' });
+    const bare = await installHooks(tmpRoot, { preset: 'gentle', platform: 'all', topiaRoot: Topia_ROOT });
     assert.deepStrictEqual(bare.platforms, []);
     assert.strictEqual(bare.written, false);
 
     // Seed .claude/ + .cursor/ only → all picks up those two, NOT windsurf/antigravity
     await seedClaude(tmpRoot);
     await mkdir(path.join(tmpRoot, '.cursor'), { recursive: true });
-    const result = await installHooks(tmpRoot, { preset: 'gentle', platform: 'all' });
+    const result = await installHooks(tmpRoot, { preset: 'gentle', platform: 'all', topiaRoot: Topia_ROOT });
     assert.ok(result.platforms.includes('claude'));
     assert.ok(result.platforms.includes('cursor'));
     assert.ok(!result.platforms.includes('windsurf'), 'must not force-create windsurf dir');

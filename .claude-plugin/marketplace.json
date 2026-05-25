@@ -1,7 +1,7 @@
 {
   "name": "protopia",
   "description": "Topia skill toolkit — 66 interconnected skills, discipline hooks, optional agora-code memory",
-  "version": "2.0.7",
+  "version": "2.0.8",
   "owner": {
     "name": "Protopia"
   },
@@ -11,7 +11,7 @@
       "displayName": "Topia",
       "source": "./",
       "description": "66-skill Topia Nexus for Claude Code — TDD rails, readiness/guardian/completion-gate hooks, Maestro routing, optional agora-code neural memory",
-      "version": "2.0.7",
+      "version": "2.0.8",
       "author": {
         "name": "skill-topia"
       },

@@ -4,6 +4,16 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
+## [2.0.8] — 2026-05-25
+
+### Fixed
+
+- **`validate-signals`** — parse SKILL.md frontmatter with `\r?\n` so Windows CRLF checkouts report signals correctly (was silently returning 0 signals).
+- **`hooks-install` test** — pass `topiaRoot` in `--platform all` tests so cursor adapter does not depend on plugin cache layout.
+- **Line endings** — add `.gitattributes` (`eol=lf` for `*.md`, `*.js`, `*.cjs`, `*.mjs`, `*.json`) to prevent CRLF parser regressions on Windows.
+
+---
+
 ## [2.0.7] — 2026-05-25
 
 ### Added

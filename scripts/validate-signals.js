@@ -46,7 +46,7 @@ export const EXTERNAL_TRIGGER_SIGNALS = new Set([
  */
 export function parseSignals(filePath) {
   const content = readFileSync(filePath, 'utf-8');
-  const match = content.match(/^---\n([\s\S]*?)\n---/);
+  const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   if (!match) return { name: '', emit: [], listen: [] };
 
   const fm = match[1];

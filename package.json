@@ -1,6 +1,6 @@
 {
   "name": "@protopia/skill-topia",
-  "version": "2.0.7",
+  "version": "2.0.8",
   "description": "66-skill Topia Nexus for AI coding assistants — runtime discipline rails via native hooks, 5-layer architecture, 203 synapses + 44 pulses, optional agora-code neural memory, multi-platform compiler.",
   "type": "module",
   "bin": {
