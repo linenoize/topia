@@ -4,6 +4,7 @@
 
 ## 1. Principles
 
+0. **Windows paths** — agents must not run Git Bash `mkdir -p` with `C:\...` or `folder:C:\...` paths (creates empty `alembic;C`-style junk). See `docs/INSTALL-CLAUDE-CODE.md` and `scripts/scan-mangled-windows-dirs.js`.
 1. **ALL skills on ALL platforms** — no Lite version, no skipping infrastructure skills.
 2. **Zero knowledge loss** — every workflow step, constraint, HARD-GATE, sharp edge ships everywhere.
 3. **Single source of truth** — `skills/*.md` is canonical. Other platforms get compiled output.

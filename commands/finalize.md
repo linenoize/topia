@@ -98,9 +98,18 @@ Show the user the final output.
 ### Step 5 — Write the flag and report
 
 ```bash
-mkdir -p .topia
-echo "finalized: $(date -Iseconds)" > .topia/.finalized
+node -e "require('fs').mkdirSync('.topia',{recursive:true})"
+node -e "require('fs').writeFileSync('.topia/.finalized','finalized: '+new Date().toISOString()+'\\n')"
 ```
+
+**Windows:** Do not use Git Bash `mkdir -p` with absolute paths. It creates empty junk folders:
+
+| Bad | Artifact |
+|-----|----------|
+| `mkdir -p C:\...\screenshots` | `C?CodeBase?...` fused folder |
+| `mkdir -p alembic:C:\...\alembic` | `alembic;C`, `app;C`, … |
+
+Use relative paths only, or `node scripts/ensure-dir.mjs .topia` from the Topia repo. Scan: `node scripts/scan-mangled-windows-dirs.js --root .`
 
 Print a one-paragraph summary:
 - ✅ what was enabled

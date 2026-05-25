@@ -4,6 +4,20 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
+## [2.0.7] — 2026-05-25
+
+### Added
+
+- **`scripts/scan-mangled-windows-dirs.js`** — detect empty junk folders from Git Bash `mkdir -p` on Windows (`alembic;C`, fused `CCodeBase…`, etc.).
+- **`scripts/ensure-dir.mjs`** — cross-platform relative-path mkdir helper for agents.
+
+### Changed
+
+- **Windows path guidance** — onboard, finalize, safeguard, test skills and install docs warn against Bash `mkdir -p` with `C:\…` or `folder:C:\…` paths; prefer Node `mkdirSync` or `ensure-dir.mjs`.
+- **`docs/MULTI-PLATFORM.md`** — documents the Windows mkdir pitfall.
+
+---
+
 ## [2.0.6] — 2026-05-25
 
 ### Added

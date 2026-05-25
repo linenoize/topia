@@ -113,7 +113,20 @@ node skills/onboard/scripts/ensure-gitignore.js --root <project-root>
 - Record outcome in the Onboard Report under `### Gitignore`
 
 ### Step 5 — Initialize .topia/ Directory
-Use `Bash` to create the directory: `mkdir -p .topia`
+Create `.topia/` with Node (do **not** use Git Bash `mkdir -p` on Windows — it creates junk folders):
+
+```bash
+node -e "require('fs').mkdirSync('.topia',{recursive:true})"
+```
+
+**Windows Git Bash pitfalls** (empty stray folders):
+
+| Bad command | Artifact |
+|-------------|----------|
+| `mkdir -p C:\CodeBase\...\screenshots` | `C?CodeBase?...` or `CCodeBase...` (backslash escapes) |
+| `mkdir -p alembic:C:\CodeBase\...\alembic` | `alembic;C`, `app;C`, `tests;C` (colon stored as `;C`) |
+
+Use **relative** paths only, or `node scripts/ensure-dir.mjs .topia screenshots` from the Topia plugin root.
 
 Use `Write` to create each file:
 - `.topia/conventions.md` — paste the extracted conventions from Step 3 in full detail

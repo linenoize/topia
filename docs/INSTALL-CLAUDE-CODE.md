@@ -98,6 +98,15 @@ git clone https://github.com/protopia/skill-topia.git ~/.claude/skills/skill-top
 cd ~/.claude/skills/skill-topia && npm install && node compiler/bin/topia.js install
 ```
 
+**Windows path pitfall (Git Bash `mkdir -p`):** Never pass Windows absolute paths or `folder:C:\...` hybrids:
+
+| Bad | Stray folder created |
+|-----|----------------------|
+| `mkdir -p C:\CodeBase\tools\proj\screenshots` | `C?CodeBase?tools?...` or `CCodeBasetoolsprojscreenshots` |
+| `mkdir -p alembic:C:\CodeBase\tools\proj\alembic` | `alembic;C`, `app;C`, `tests;C` (empty) |
+
+Use relative dirs from the project root, `node -e "require('fs').mkdirSync('.topia',{recursive:true})"`, or `node path/to/skill-topia/scripts/ensure-dir.mjs .topia`. Scan for damage: `node path/to/skill-topia/scripts/scan-mangled-windows-dirs.js --root .`
+
 On Windows PowerShell, use the version folder name instead of the `*` glob (e.g. `2.0.5`), or run from a clone:
 
 ```powershell
