@@ -535,6 +535,10 @@ function render() {
     skillHeatmap: { heatmap: [], dates: [], maxCount: 1 },
     sessionTimeline: [],
     skillNexus: { nodes: [], edges: [], maxCount: 1 },
+    tokenOverview: { sessions_with_token_data: 0, avg_context_peak: null, avg_estimated_tokens: 0, avg_compactions: 0, total_estimated_tokens: 0, platform_split: {} },
+    tokenTrend: [],
+    platformComparison: { session_counts: {}, token_stats: {} },
+    savingsVsBaseline: { has_baseline: false },
     generated: new Date().toISOString(), days: 30
   }, DATA);
 
@@ -607,6 +611,96 @@ function render() {
     topRow.appendChild(modelCard);
   }
   app.appendChild(topRow);
+
+  // ── Token KPIs ──
+  const tok = d.tokenOverview || {};
+  if (tok.sessions_with_token_data > 0) {
+    const tokenRow = el('div', { className: 'kpi-strip', style: 'margin-bottom:16px' });
+    const tokenKpis = [
+      {
+        label: 'Context Peak (avg)',
+        value: tok.avg_context_peak != null ? fmtNum(tok.avg_context_peak) : 'n/a',
+        sub: 'measured at compaction',
+        color: 'var(--red)',
+      },
+      {
+        label: 'Est. Tokens / Session',
+        value: fmtNum(tok.avg_estimated_tokens),
+        sub: fmtNum(tok.total_estimated_tokens) + ' total',
+        color: 'var(--amber)',
+      },
+      {
+        label: 'Compactions',
+        value: String(tok.avg_compactions),
+        sub: 'avg per session',
+        color: 'var(--purple)',
+      },
+    ];
+    for (const k of tokenKpis) {
+      tokenRow.appendChild(el('div', { className: 'kpi-card' },
+        el('div', { className: 'kpi-label' }, k.label),
+        el('div', { className: 'kpi-value', style: 'color:' + k.color }, String(k.value)),
+        el('div', { className: 'kpi-sub' }, k.sub)
+      ));
+    }
+    app.appendChild(tokenRow);
+
+    const plat = d.platformComparison?.session_counts || {};
+    const platParts = [];
+    if (plat.cursor) platParts.push('Cursor: ' + plat.cursor);
+    if (plat.claude) platParts.push('Claude: ' + plat.claude);
+    if (platParts.length > 0) {
+      app.appendChild(el('div', { className: 'kpi-sub', style: 'margin-bottom:12px;text-align:center' },
+        'Platforms — ' + platParts.join(' · ')
+      ));
+    }
+  }
+
+  // ── Baseline savings card ──
+  const savings = d.savingsVsBaseline || {};
+  if (savings.has_baseline && savings.recent_avg != null) {
+    const saving = savings.delta_percent > 0;
+    const card = el('div', {
+      className: 'kpi-card',
+      style: 'margin-bottom:16px;border-color:' + (saving ? 'var(--green)' : 'var(--red)'),
+    });
+    card.appendChild(el('div', { className: 'kpi-label' }, 'vs Baseline (A/B)'));
+    card.appendChild(el('div', {
+      className: 'kpi-value',
+      style: 'color:' + (saving ? 'var(--green)' : 'var(--red)'),
+    }, (saving ? '-' : '+') + Math.abs(savings.delta_percent) + '%'));
+    card.appendChild(el('div', { className: 'kpi-sub' },
+      'Recent avg ~' + fmtNum(savings.recent_avg) + ' est. tokens vs baseline ~' + fmtNum(savings.baseline.without_topia_avg_tokens)
+    ));
+    app.appendChild(card);
+  }
+
+  // ── Token trend (simple table) ──
+  if (d.tokenTrend && d.tokenTrend.length > 0) {
+    const trendPanel = el('div', { className: 'heatmap-panel' });
+    trendPanel.appendChild(el('div', { className: 'heatmap-title' }, 'Token Trend'));
+    const table = el('table', { style: 'width:100%;border-collapse:collapse;font-size:13px' });
+    const thead = el('thead');
+    thead.appendChild(el('tr', null,
+      el('th', { style: 'text-align:left;padding:6px;color:var(--text-muted)' }, 'Date'),
+      el('th', { style: 'text-align:right;padding:6px;color:var(--text-muted)' }, 'Sessions'),
+      el('th', { style: 'text-align:right;padding:6px;color:var(--text-muted)' }, 'Est. Tokens'),
+      el('th', { style: 'text-align:right;padding:6px;color:var(--text-muted)' }, 'Avg Peak')
+    ));
+    table.appendChild(thead);
+    const tbody = el('tbody');
+    for (const row of d.tokenTrend.slice(-14)) {
+      tbody.appendChild(el('tr', null,
+        el('td', { style: 'padding:6px' }, row.date),
+        el('td', { style: 'padding:6px;text-align:right' }, String(row.sessions)),
+        el('td', { style: 'padding:6px;text-align:right' }, fmtNum(row.estimated_tokens)),
+        el('td', { style: 'padding:6px;text-align:right' }, row.avg_context_peak != null ? fmtNum(row.avg_context_peak) : '—')
+      ));
+    }
+    table.appendChild(tbody);
+    trendPanel.appendChild(table);
+    app.appendChild(trendPanel);
+  }
 
   // ── Topia Nexus ──
   const meshPanel = el('div', { className: 'nexus-panel' });

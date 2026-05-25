@@ -36,6 +36,8 @@ async function loadMetrics(TopiaRoot) {
     sessions: path.join(dir, 'sessions.jsonl'),
     chains: path.join(dir, 'chains.jsonl'),
     skills: path.join(dir, 'skills.json'),
+    tokens: path.join(dir, 'tokens.jsonl'),
+    baseline: path.join(dir, 'baseline.json'),
   };
 
   let sessions = [];
@@ -62,7 +64,23 @@ async function loadMetrics(TopiaRoot) {
     }
   }
 
-  return { sessions, chains, skillTotals };
+  let tokenEvents = [];
+  try {
+    if (existsSync(files.tokens)) tokenEvents = readJsonl(await readFile(files.tokens, 'utf-8'));
+  } catch {
+    /* use empty */
+  }
+
+  let baseline = null;
+  if (existsSync(files.baseline)) {
+    try {
+      baseline = JSON.parse(await readFile(files.baseline, 'utf-8'));
+    } catch {
+      /* ignore */
+    }
+  }
+
+  return { sessions, chains, skillTotals, tokenEvents, baseline };
 }
 
 // ─── Date Filtering ───
@@ -348,6 +366,144 @@ export async function getSkillNexus(TopiaRoot, days = 30) {
 /** @deprecated Use getSkillNexus */
 export const getSkillMesh = getSkillNexus;
 
+// ─── Token Analytics ───
+
+function sessionsWithTokens(sessions) {
+  return sessions.filter((s) => s.tokens && s.tokens.confidence !== 'none');
+}
+
+export async function getTokenOverview(TopiaRoot, days = 30) {
+  const { sessions } = await loadMetrics(TopiaRoot);
+  const filtered = filterByDays(sessions, days);
+  const withTokens = sessionsWithTokens(filtered);
+
+  if (withTokens.length === 0) {
+    return {
+      sessions_with_token_data: 0,
+      avg_context_peak: null,
+      avg_estimated_tokens: 0,
+      avg_compactions: 0,
+      total_estimated_tokens: 0,
+      platform_split: {},
+    };
+  }
+
+  let peakSum = 0;
+  let peakCount = 0;
+  let estimatedSum = 0;
+  let compactionSum = 0;
+  const platformSplit = {};
+
+  for (const s of withTokens) {
+    const t = s.tokens;
+    if (typeof t.context_peak === 'number') {
+      peakSum += t.context_peak;
+      peakCount += 1;
+    }
+    estimatedSum += t.total_estimated || 0;
+    compactionSum += t.compactions || 0;
+
+    const plat = s.platform || 'unknown';
+    if (!platformSplit[plat]) {
+      platformSplit[plat] = { sessions: 0, estimated_tokens: 0, context_peak_sum: 0, context_peak_count: 0 };
+    }
+    platformSplit[plat].sessions += 1;
+    platformSplit[plat].estimated_tokens += t.total_estimated || 0;
+    if (typeof t.context_peak === 'number') {
+      platformSplit[plat].context_peak_sum += t.context_peak;
+      platformSplit[plat].context_peak_count += 1;
+    }
+  }
+
+  return {
+    sessions_with_token_data: withTokens.length,
+    avg_context_peak: peakCount > 0 ? Math.round(peakSum / peakCount) : null,
+    avg_estimated_tokens: Math.round(estimatedSum / withTokens.length),
+    avg_compactions: Math.round((compactionSum / withTokens.length) * 10) / 10,
+    total_estimated_tokens: estimatedSum,
+    platform_split: platformSplit,
+  };
+}
+
+export async function getTokenTrend(TopiaRoot, days = 30) {
+  const { sessions } = await loadMetrics(TopiaRoot);
+  const filtered = filterByDays(sessions, days);
+  const byDate = {};
+
+  for (const s of filtered) {
+    if (!s.tokens || s.tokens.confidence === 'none') continue;
+    const date = s.date;
+    if (!byDate[date]) {
+      byDate[date] = {
+        date,
+        sessions: 0,
+        context_peak_sum: 0,
+        context_peak_count: 0,
+        estimated_tokens: 0,
+      };
+    }
+    byDate[date].sessions += 1;
+    byDate[date].estimated_tokens += s.tokens.total_estimated || 0;
+    if (typeof s.tokens.context_peak === 'number') {
+      byDate[date].context_peak_sum += s.tokens.context_peak;
+      byDate[date].context_peak_count += 1;
+    }
+  }
+
+  return Object.values(byDate)
+    .map((d) => ({
+      date: d.date,
+      sessions: d.sessions,
+      avg_context_peak: d.context_peak_count > 0 ? Math.round(d.context_peak_sum / d.context_peak_count) : null,
+      estimated_tokens: d.estimated_tokens,
+    }))
+    .sort((a, b) => a.date.localeCompare(b.date));
+}
+
+export async function getPlatformComparison(TopiaRoot, days = 30) {
+  const overview = await getTokenOverview(TopiaRoot, days);
+  const { sessions } = await loadMetrics(TopiaRoot);
+  const filtered = filterByDays(sessions, days);
+
+  const counts = { cursor: 0, claude: 0, unknown: 0 };
+  for (const s of filtered) {
+    const p = s.platform === 'cursor' ? 'cursor' : s.platform === 'claude' ? 'claude' : 'unknown';
+    counts[p] += 1;
+  }
+
+  return {
+    session_counts: counts,
+    token_stats: overview.platform_split,
+  };
+}
+
+export async function getSavingsVsBaseline(TopiaRoot) {
+  const { baseline, sessions } = await loadMetrics(TopiaRoot);
+  if (!baseline || baseline.without_topia_avg_tokens == null) {
+    return { has_baseline: false };
+  }
+
+  const recent = sessions.filter((s) => s.tokens?.total_estimated).slice(-10);
+  if (recent.length === 0) {
+    return { has_baseline: true, baseline, recent_avg: null, delta_percent: null };
+  }
+
+  const recentAvg = Math.round(
+    recent.reduce((sum, s) => sum + (s.tokens.total_estimated || 0), 0) / recent.length,
+  );
+  const baselineVal = baseline.without_topia_avg_tokens;
+  const deltaPercent =
+    baselineVal > 0 ? Math.round(((baselineVal - recentAvg) / baselineVal) * 1000) / 10 : null;
+
+  return {
+    has_baseline: true,
+    baseline,
+    recent_avg: recentAvg,
+    delta_percent: deltaPercent,
+    saving: deltaPercent != null ? deltaPercent > 0 : null,
+  };
+}
+
 // ─── All Queries ───
 
 export async function getAllAnalytics(TopiaRoot, days = 30) {
@@ -361,6 +517,10 @@ export async function getAllAnalytics(TopiaRoot, days = 30) {
     skillHeatmap,
     sessionTimeline,
     skillNexus,
+    tokenOverview,
+    tokenTrend,
+    platformComparison,
+    savingsVsBaseline,
   ] = await Promise.all([
     getSessionOverview(TopiaRoot, days),
     getSkillFrequency(TopiaRoot, days),
@@ -371,6 +531,10 @@ export async function getAllAnalytics(TopiaRoot, days = 30) {
     getSkillHeatmap(TopiaRoot, days),
     getSessionTimeline(TopiaRoot, days, 5),
     getSkillNexus(TopiaRoot, days),
+    getTokenOverview(TopiaRoot, days),
+    getTokenTrend(TopiaRoot, days),
+    getPlatformComparison(TopiaRoot, days),
+    getSavingsVsBaseline(TopiaRoot),
   ]);
 
   return {
@@ -384,6 +548,10 @@ export async function getAllAnalytics(TopiaRoot, days = 30) {
     sessionTimeline,
     skillNexus,
     skillMesh: skillNexus, // deprecated v1 alias
+    tokenOverview,
+    tokenTrend,
+    platformComparison,
+    savingsVsBaseline,
     generated: new Date().toISOString(),
     days,
   };

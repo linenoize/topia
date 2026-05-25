@@ -26,7 +26,8 @@ These are entry-points the user runs in their shell. They do not invoke a skill 
 - `topia doctor` — validate compiled output + nexus integrity (`--nexus` for nexus only, `--hooks` for hook drift, `--strict` for CI).
 - `topia status` — neofetch-style project dashboard.
 - `topia visualize` — open the interactive skill-graph in a browser.
-- `topia analytics` — usage analytics dashboard.
+- `topia analytics` — usage analytics dashboard (sessions, skills, **token KPIs**). See [`docs/TOKEN-METRICS.md`](../docs/TOKEN-METRICS.md).
+- `topia metrics` — token + nexus metrics summary (alias for analytics token queries; opens dashboard unless `--json`).
 - `topia hooks install|uninstall|status` — manage runtime hooks per platform.
 - `topia migrate-from-rune` — pull `.rune/` memories into `.topia/` and disable the rune-kit plugin. See [`commands/migrate-from-rune.md`](migrate-from-rune.md).
 
@@ -70,6 +71,7 @@ These are entry-points the user runs in their shell. They do not invoke a skill 
 - 🤖 `/topia logic-guardian` — protects business logic from accidental deletion. Auto-fires when `.topia/logic-manifest.json` exists.
 - 🤖 `/topia quarantine` — prompt-injection advisory on untrusted MCP / WebFetch / upload reads. Auto-fires.
 - 👤 `/topia audit` — comprehensive 8-dimension health audit.
+- 👤 `/topia metrics` — nexus + **token** metrics only (audit Phase 8). CLI: `topia metrics` or `topia analytics`.
 - 👤 `/topia autopsy` — codebase health assessment (Rescue's RECON phase).
 - ↻ `/topia perf` — performance regression gate (N+1, sync-in-async, memory leaks). Called by `build` Phase 5.
 

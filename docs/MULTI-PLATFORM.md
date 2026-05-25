@@ -394,7 +394,8 @@ Claude Code hooks (hooks.json) enforce behaviors programmatically. Other platfor
 | `typecheck` | PostToolUse(Edit) | `MUST: After editing .ts/.tsx files, verify TypeScript compilation succeeds (no type errors).` |
 | `context-watch` | PreToolUse(Edit) | `SHOULD: Monitor your context usage. If working on a long task, summarize progress before context fills up.` |
 | `pre-tool-guard` | PreToolUse(Read) | (no equivalent needed — platform handles file access) |
-| `metrics-collector` | PostToolUse(Skill) | (no equivalent — metrics are Claude Code plugin feature) |
+| `metrics-collector` | PostToolUse(Skill) | Cursor: native `postToolUse` via `.cursor/hooks.json`; Claude: plugin hook |
+| `token-meter` | PostToolUse(*) | Cursor + Claude: estimates tool I/O tokens (chars × 0.25) |
 | `session-start` | SessionStart | (no equivalent — platform handles session init) |
 | `pre-compact` | PreCompact | `MUST: Before summarizing/compacting context, save important decisions and progress to project files.` |
 | `post-session-reflect` | Stop | `SHOULD: Before ending, save architectural decisions and progress to .topia/ directory for future sessions.` |

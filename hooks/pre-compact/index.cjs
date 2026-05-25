@@ -1,97 +1,116 @@
 // Topia Pre-Compact Hook
-// Saves critical state BEFORE Claude auto-compacts context window.
-// Prevents data loss from losing decisions, progress, and metrics mid-session.
-//
-// Captures: context-watch state, active task summary, decisions made this session.
-// Writes snapshot to .topia/pre-compact-snapshot.md for post-compact recovery.
+// Saves critical state BEFORE context compaction and records measured token usage.
 
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const { readStdinJson, isCursorRuntime, writeHookResponse } = require('../lib/cursor-io.cjs');
 const { resolveTopiaDir, topiaDirForWrite } = require('../lib/topia-paths.cjs');
+const { appendEvent } = require('../lib/metrics-buffer.cjs');
+const { detectPlatform, extractCompactionTokens } = require('../lib/token-meter.cjs');
 
 const cwd = process.cwd();
 const TopiaDirRead = resolveTopiaDir(cwd);
 const TopiaDirWrite = topiaDirForWrite(cwd);
-
-// Read context-watch state (tool counts, session timing)
 const hash = Buffer.from(cwd).toString('base64url').slice(0, 16);
 const counterFile = path.join(os.tmpdir(), `Topia-context-watch-${hash}.json`);
 
-let watchState = null;
-try {
-  const raw = fs.readFileSync(counterFile, 'utf-8');
-  watchState = JSON.parse(raw);
-} catch {
-  // No counter file — session may be fresh
-}
+async function main() {
+  const hookData = await readStdinJson();
+  const platform = detectPlatform(hookData);
+  const compaction = extractCompactionTokens(hookData);
 
-// Collect .topia/ state summaries
-const stateFiles = ['progress.md', 'decisions.md', 'conventions.md'];
-const summaries = [];
+  let watchState = null;
+  try {
+    watchState = JSON.parse(fs.readFileSync(counterFile, 'utf-8'));
+  } catch {
+    /* fresh session */
+  }
 
-if (fs.existsSync(TopiaDirRead)) {
-  for (const file of stateFiles) {
-    const filePath = path.join(TopiaDirRead, file);
-    if (fs.existsSync(filePath)) {
+  if (compaction) {
+    appendEvent(cwd, {
+      event: 'compaction',
+      platform,
+      ...compaction,
+    });
+    if (typeof compaction.context_tokens === 'number') {
+      appendEvent(cwd, {
+        event: 'context_peak',
+        platform,
+        context_tokens: compaction.context_tokens,
+        context_usage_percent: compaction.context_usage_percent,
+        context_window_size: compaction.context_window_size,
+      });
+    }
+  }
+
+  const stateFiles = ['progress.md', 'decisions.md', 'conventions.md'];
+  const summaries = [];
+
+  if (fs.existsSync(TopiaDirRead)) {
+    for (const file of stateFiles) {
+      const filePath = path.join(TopiaDirRead, file);
+      if (!fs.existsSync(filePath)) continue;
       try {
         const content = fs.readFileSync(filePath, 'utf-8').trim();
         if (content.length > 0) {
-          // Take first 50 lines to keep snapshot compact
-          const lines = content.split('\n').slice(0, 50);
-          summaries.push({ file, preview: lines.join('\n') });
+          summaries.push({ file, preview: content.split('\n').slice(0, 50).join('\n') });
         }
       } catch {
-        // Skip unreadable files
+        /* skip */
       }
     }
   }
-}
 
-// Build snapshot
-const snapshot = [];
-snapshot.push('# Pre-Compact Snapshot');
-snapshot.push(`Generated: ${new Date().toISOString()}`);
-snapshot.push('');
+  const snapshot = ['# Pre-Compact Snapshot', `Generated: ${new Date().toISOString()}`, ''];
 
-if (watchState) {
-  snapshot.push('## Session Metrics');
-  snapshot.push(`- Tool calls: ${watchState.count || 0}`);
-  snapshot.push(`- Session start: ${watchState.sessionStart || 'unknown'}`);
-  if (watchState.toolCounts) {
-    const top5 = Object.entries(watchState.toolCounts)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5);
-    snapshot.push(`- Top tools: ${top5.map(([k, v]) => `${k}(${v})`).join(', ')}`);
-  }
-  snapshot.push('');
-}
-
-if (summaries.length > 0) {
-  snapshot.push('## State Files (preview)');
-  for (const { file, preview } of summaries) {
-    snapshot.push(`### .topia/${file}`);
-    snapshot.push(preview);
+  if (watchState) {
+    snapshot.push('## Session Metrics');
+    snapshot.push(`- Tool calls: ${watchState.count || 0}`);
+    snapshot.push(`- Session start: ${watchState.sessionStart || 'unknown'}`);
+    if (watchState.toolCounts) {
+      const top5 = Object.entries(watchState.toolCounts)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5);
+      snapshot.push(`- Top tools: ${top5.map(([k, v]) => `${k}(${v})`).join(', ')}`);
+    }
     snapshot.push('');
   }
-}
 
-// Write snapshot if we have anything worth saving
-if (watchState || summaries.length > 0) {
-  try {
-    if (!fs.existsSync(TopiaDirWrite)) {
-      fs.mkdirSync(TopiaDirWrite, { recursive: true });
+  if (compaction) {
+    snapshot.push('## Context Usage (measured)');
+    if (compaction.context_tokens != null) snapshot.push(`- Context tokens: ${compaction.context_tokens}`);
+    if (compaction.context_usage_percent != null) {
+      snapshot.push(`- Context usage: ${compaction.context_usage_percent}%`);
     }
-    fs.writeFileSync(
-      path.join(TopiaDirWrite, 'pre-compact-snapshot.md'),
-      snapshot.join('\n')
-    );
-    console.log(`[Topia pre-compact] State snapshot saved (${watchState ? watchState.count : 0} tool calls, ${summaries.length} state files).`);
-  } catch (e) {
-    console.error(`[Topia pre-compact] Failed to save snapshot: ${e.message}`);
+    if (compaction.context_window_size != null) {
+      snapshot.push(`- Context window: ${compaction.context_window_size}`);
+    }
+    snapshot.push(`- Trigger: ${compaction.trigger}`);
+    snapshot.push('');
   }
-} else {
-  console.log('[Topia pre-compact] No state to snapshot — fresh session.');
+
+  if (summaries.length > 0) {
+    snapshot.push('## State Files (preview)');
+    for (const { file, preview } of summaries) {
+      snapshot.push(`### .topia/${file}`, preview, '');
+    }
+  }
+
+  if (watchState || summaries.length > 0 || compaction) {
+    try {
+      if (!fs.existsSync(TopiaDirWrite)) fs.mkdirSync(TopiaDirWrite, { recursive: true });
+      fs.writeFileSync(path.join(TopiaDirWrite, 'pre-compact-snapshot.md'), snapshot.join('\n'));
+    } catch {
+      /* best-effort */
+    }
+  }
+
+  if (isCursorRuntime(hookData)) {
+    writeHookResponse({});
+  }
+
+  process.exit(0);
 }
 
-process.exit(0);
+main().catch(() => process.exit(0));

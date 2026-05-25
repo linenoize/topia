@@ -1,39 +1,49 @@
 // Topia Metrics Collector Hook
 // PostToolUse on Skill — captures skill invocations for H3 nexus analytics
 // Append-only JSONL to tmpdir. Flushed to .topia/metrics/ at session end.
-// Async: true — never blocks skill execution.
-//
-// Data source: stdin JSON from Claude Code (not env vars)
 
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const { readStdinJson, isCursorRuntime, writeHookResponse } = require('../lib/cursor-io.cjs');
+const { appendEvent } = require('../lib/metrics-buffer.cjs');
+const { detectPlatform, estimateSkillLoadTokens } = require('../lib/token-meter.cjs');
 
 const cwd = process.cwd();
 const hash = Buffer.from(cwd).toString('base64url').slice(0, 16);
-const metricsFile = path.join(os.tmpdir(), `Topia-metrics-${hash}.jsonl`);
 const watchFile = path.join(os.tmpdir(), `Topia-context-watch-${hash}.json`);
+const skillCacheFile = path.join(os.tmpdir(), `Topia-skill-cache-${hash}.json`);
 
-// Read stdin JSON to get tool input (Claude Code passes hook data via stdin)
-let stdinData = '';
-process.stdin.setEncoding('utf-8');
-process.stdin.on('data', chunk => { stdinData += chunk; });
-process.stdin.on('end', () => {
+function loadSkillCache() {
+  try {
+    return JSON.parse(fs.readFileSync(skillCacheFile, 'utf-8'));
+  } catch {
+    return {};
+  }
+}
+
+function saveSkillCache(cache) {
+  try {
+    fs.writeFileSync(skillCacheFile, JSON.stringify(cache));
+  } catch {
+    /* best-effort */
+  }
+}
+
+async function main() {
+  const hookData = await readStdinJson();
+  const platform = detectPlatform(hookData);
   let skillName = 'unknown';
 
   try {
-    const hookData = JSON.parse(stdinData);
-    // PostToolUse stdin: { tool: "Skill", tool_input: { skill: "Topia:build", ... }, tool_result: ... }
-    const toolInput = hookData.tool_input || {};
+    const toolInput = hookData.tool_input || hookData.toolInput || {};
     const raw = toolInput.skill || toolInput.name || '';
     skillName = raw.replace(/^Topia:/, '') || 'unknown';
   } catch {
-    // Fallback: try env var for backwards compatibility
     const toolInput = process.env.CLAUDE_TOOL_INPUT || '';
     try {
       const parsed = JSON.parse(toolInput);
-      const raw = parsed.skill || parsed.name || '';
-      skillName = raw.replace(/^Topia:/, '');
+      skillName = (parsed.skill || parsed.name || '').replace(/^Topia:/, '');
     } catch {
       const match = toolInput.match(/(?:Topia:)?([a-z][\w-]*)/i);
       if (match) skillName = match[1];
@@ -44,43 +54,47 @@ process.stdin.on('end', () => {
     const now = Date.now();
     const ts = new Date(now).toISOString();
 
-    // Read session ID from context-watch state (shared tmpdir file)
     let sessionId = null;
     try {
-      const watchState = JSON.parse(fs.readFileSync(watchFile, 'utf-8'));
-      sessionId = watchState.sessionId || null;
-    } catch { /* no watch state yet */ }
+      sessionId = JSON.parse(fs.readFileSync(watchFile, 'utf-8')).sessionId || null;
+    } catch {
+      /* no watch state */
+    }
 
-    // Compute duration since last skill event (approximate skill execution time)
+    const pluginRoot = process.env.CLAUDE_PLUGIN_ROOT || path.join(__dirname, '..', '..');
+    const skillCache = loadSkillCache();
+    if (skillCache[skillName] == null) {
+      skillCache[skillName] = estimateSkillLoadTokens(skillName, pluginRoot);
+      saveSkillCache(skillCache);
+    }
+    const estimatedTokens = skillCache[skillName] || 0;
+
     let durationMs = null;
     try {
-      const lines = fs.readFileSync(metricsFile, 'utf-8').trim().split('\n').filter(Boolean);
+      const { readEvents } = require('../lib/metrics-buffer.cjs');
+      const lines = readEvents(cwd).filter((e) => e.event === 'invoke' || e.event === 'skill_invoke');
       if (lines.length > 0) {
-        const last = JSON.parse(lines[lines.length - 1]);
-        durationMs = now - new Date(last.ts).getTime();
-        // Cap at 10 minutes — longer gaps are idle time, not skill duration
+        durationMs = now - new Date(lines[lines.length - 1].ts).getTime();
         if (durationMs > 600000) durationMs = null;
       }
-    } catch { /* first event or read error */ }
+    } catch {
+      /* first event */
+    }
 
-    const entry = JSON.stringify({
-      ts,
+    appendEvent(cwd, {
       skill: skillName,
       event: 'invoke',
       session_id: sessionId,
-      duration_ms: durationMs
+      duration_ms: durationMs,
+      platform,
+      estimated_tokens: estimatedTokens,
     });
-
-    try {
-      fs.appendFileSync(metricsFile, entry + '\n');
-    } catch {
-      // Non-critical — metrics are best-effort
-    }
   }
 
+  if (isCursorRuntime(hookData)) {
+    writeHookResponse({});
+  }
   process.exit(0);
-});
+}
 
-// Handle empty stdin (pipe closed immediately)
-process.stdin.on('error', () => process.exit(0));
-process.stdin.resume();
+main().catch(() => process.exit(0));

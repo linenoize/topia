@@ -459,6 +459,14 @@ async function cmdAnalytics(projectRoot, args) {
   }
 
   logStep('◎', `${data.overview.total_sessions} sessions, ${data.overview.total_skill_invocations} skill invocations`);
+  if (data.tokenOverview?.sessions_with_token_data > 0) {
+    const t = data.tokenOverview;
+    logStep(
+      '◎',
+      `Token data: ~${t.avg_estimated_tokens} est. tokens/session` +
+        (t.avg_context_peak != null ? `, peak ctx ${t.avg_context_peak}` : ''),
+    );
+  }
 
   const html = generateDashboardHTML(data);
 
@@ -687,6 +695,7 @@ async function main() {
       break;
     case 'analytics':
     case 'dash':
+    case 'metrics':
       await cmdAnalytics(projectRoot, args);
       break;
     case 'hooks':
@@ -739,7 +748,8 @@ async function main() {
       log('    visualize  Interactive nexus graph (opens in browser)');
       log('    migrate-v1   Rewrite v1 skill names in .topia/ state');
       log('               [--dry-run] [--force] [--yes]');
-      log('    analytics  Usage analytics dashboard');
+      log('    analytics  Usage analytics dashboard (sessions, skills, token KPIs)');
+      log('    metrics    Alias for analytics — token + nexus metrics summary');
       log('    hooks      Install/uninstall/status for multi-platform auto-discipline');
       log(
         '               hooks install [--preset gentle|strict|off] [--platform claude|cursor|windsurf|antigravity|all] [--global]',

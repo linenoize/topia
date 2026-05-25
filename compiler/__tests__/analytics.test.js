@@ -6,10 +6,14 @@ import { afterEach, beforeEach, describe, it } from 'node:test';
 import {
   getAllAnalytics,
   getModelDistribution,
+  getPlatformComparison,
+  getSavingsVsBaseline,
   getSessionOverview,
   getSessionTrend,
   getSkillChains,
   getSkillFrequency,
+  getTokenOverview,
+  getTokenTrend,
   getToolDistribution,
 } from '../analytics.js';
 
@@ -295,6 +299,72 @@ describe('analytics — edge cases', () => {
     // Should not throw
     const data = await getAllAnalytics(tmpDir, 30);
     assert.ok(data);
+  });
+});
+
+describe('analytics — token metrics', () => {
+  let tmpDir;
+  beforeEach(async () => {
+    tmpDir = await mkdtemp(path.join(os.tmpdir(), 'Topia-analytics-token-'));
+  });
+  afterEach(async () => {
+    await rm(tmpDir, { recursive: true, force: true });
+  });
+
+  it('getTokenOverview aggregates session token fields', async () => {
+    await setupMetrics(tmpDir, [
+      sessionEntry({
+        platform: 'cursor',
+        tokens: {
+          context_peak: 100000,
+          total_estimated: 5000,
+          compactions: 1,
+          confidence: 'mixed',
+        },
+      }),
+      sessionEntry({
+        platform: 'claude',
+        tokens: {
+          context_peak: 80000,
+          total_estimated: 3000,
+          compactions: 0,
+          confidence: 'estimated',
+        },
+      }),
+    ]);
+    const overview = await getTokenOverview(tmpDir, 30);
+    assert.strictEqual(overview.sessions_with_token_data, 2);
+    assert.strictEqual(overview.avg_context_peak, 90000);
+    assert.strictEqual(overview.avg_estimated_tokens, 4000);
+    assert.strictEqual(overview.platform_split.cursor.sessions, 1);
+  });
+
+  it('getSavingsVsBaseline computes delta when baseline exists', async () => {
+    const metricsDir = path.join(tmpDir, '.topia', 'metrics');
+    await mkdir(metricsDir, { recursive: true });
+    await writeFile(
+      path.join(metricsDir, 'baseline.json'),
+      JSON.stringify({ without_topia_avg_tokens: 10000, measured_date: today(), task_type: 'feature' }),
+    );
+    await setupMetrics(tmpDir, [
+      sessionEntry({ tokens: { total_estimated: 5000, confidence: 'estimated' } }),
+    ]);
+    const savings = await getSavingsVsBaseline(tmpDir);
+    assert.strictEqual(savings.has_baseline, true);
+    assert.strictEqual(savings.recent_avg, 5000);
+    assert.strictEqual(savings.delta_percent, 50);
+    assert.strictEqual(savings.saving, true);
+  });
+
+  it('getAllAnalytics includes token fields', async () => {
+    await setupMetrics(tmpDir, [
+      sessionEntry({ tokens: { total_estimated: 1000, confidence: 'estimated' } }),
+    ]);
+    const data = await getAllAnalytics(tmpDir, 30);
+    assert.ok(data.tokenOverview);
+    assert.ok(Array.isArray(data.tokenTrend));
+    assert.ok(data.platformComparison);
+    assert.ok(data.savingsVsBaseline);
   });
 });
 

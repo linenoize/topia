@@ -111,7 +111,7 @@ Presets:
 | Platform    | Maturity     | Pre-edit  | Pre-Bash   | Post-edit | Stop (completion-gate) | Native artifact                     |
 |-------------|--------------|-----------|------------|-----------|------------------------|-------------------------------------|
 | Claude Code | **stable**   | auto-fire | auto-fire  | auto-fire | **auto-fire**          | `.claude/settings.json` (JSON)      |
-| Cursor      | beta         | rule-inject | —        | —         | —                      | `.cursor/rules/Topia-*.mdc`          |
+| Cursor      | beta         | rule-inject + **hooks.json** | —        | —         | sessionEnd / stop | `.cursor/rules/Topia-*.mdc` + `.cursor/hooks.json` |
 | Windsurf    | beta         | workflow + cascade-rule | workflow | — | —                      | `.windsurf/workflows/` + `.windsurf/rules/` |
 | Antigravity | experimental | rule-inject | —        | —         | —                      | `.antigravity/rules/Topia-*.md`      |
 
@@ -154,15 +154,24 @@ Merges into the `hooks` object, preserving any user-authored entries. Topia entr
 }
 ```
 
-### Cursor (`.cursor/rules/Topia-*.mdc`)
+### Cursor (`.cursor/rules/Topia-*.mdc` + `.cursor/hooks.json`)
 
-Three auto-attach rules:
+**Discipline rules** (three auto-attach `.mdc` files):
 
-- `Topia-preflight.mdc` — `alwaysApply: true`, fires before any source-file edit.
-- `Topia-sentinel.mdc` — glob-scoped to `**/*.sh`, `Dockerfile`, `.github/workflows/*.yml`, `.env*`.
+- `Topia-readiness.mdc` — `alwaysApply: true`, fires before any source-file edit.
+- `Topia-guardian.mdc` — glob-scoped to shell / infra / env files.
 - `Topia-dependency-doctor.mdc` — scoped to manifest / lockfile edits.
 
-No `completion-gate` equivalent — Cursor has no Stop-hook primitive. Invoke manually via `/topia completion-gate` before wrapping up.
+**Metrics hooks** (native `.cursor/hooks.json`, installed by `topia hooks install --platform cursor`):
+
+- `sessionStart` → session-start
+- `postToolUse` → token-meter (all tools) + metrics-collector (Skill)
+- `preCompact` → pre-compact (records **measured** context tokens)
+- `sessionEnd` / `stop` → post-session-reflect (flush to `.topia/metrics/`)
+
+Invoke `/topia completion-gate` manually before wrapping up — no native completion-gate on Cursor.
+
+See [`TOKEN-METRICS.md`](TOKEN-METRICS.md) for token confidence tiers and baseline A/B setup.
 
 ### Windsurf (`.windsurf/workflows/` + `.windsurf/rules/`)
 
@@ -206,7 +215,7 @@ Topia handles this via [`hooks/lib/cursor-io.cjs`](../hooks/lib/cursor-io.cjs):
 
 ## Limitations
 
-- Only Claude Code gets native `Stop` (completion-gate) via settings presets without third-party mapping quirks. Cursor maps `Stop` → `stop` when third-party hooks are enabled.
+- Only Claude Code gets native `Stop` (completion-gate) via settings presets without third-party mapping quirks. Cursor maps `Stop` → `stop` and also provides `sessionEnd` for metrics flush when `.cursor/hooks.json` is installed.
 - Cursor/Windsurf/Antigravity **rule** install (`Topia hooks install --platform cursor`) is best-effort — the LLM still decides whether to read rules. Native Cursor `hooks.json` is separate from `.mdc` rules.
 - `Topia hooks status --platform all` is the single source of truth for "what am I actually getting on this machine." Check it after install.
 

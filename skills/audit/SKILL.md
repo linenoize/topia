@@ -344,12 +344,18 @@ Apply **only** if the framework was detected in Phase 0. Skip entirely if not re
 3. Read `.topia/metrics/sessions.jsonl` — extract session count, avg duration, avg tool calls
 4. Read `.topia/metrics/chains.jsonl` — extract most common skill chains
 5. Read `.topia/metrics/routing-overrides.json` (if exists) — list active routing overrides
+6. Read `.topia/metrics/baseline.json` (if exists) — A/B baseline for savings comparison
+7. Run `node compiler/bin/topia.js analytics --json` (or `topia metrics --json`) — extract `tokenOverview`, `tokenTrend`, `savingsVsBaseline`
 
 Compute and report:
 - **Top 10 most-used skills** (by total invocations)
 - **Unused skills** (0 invocations across all tracked sessions) — potential dead nodes
 - **Most common skill chains** (top 5 patterns from chains.jsonl)
 - **Average session stats** (duration, tool calls, skill invocations)
+- **Token stats** (when `sessions.jsonl` includes `tokens`):
+  - Avg context peak (measured), avg estimated tokens/session, avg compactions
+  - Platform split (cursor vs claude)
+  - Baseline delta % if `baseline.json` present
 - **Active routing overrides** and their application count
 - **Nexus density check**: cross-reference invocation data with declared connections — skills that are declared as "Called By" but never actually invoked may indicate broken nexus paths
 
@@ -370,11 +376,13 @@ Output as a section in the final audit report:
 2. debug → recon → fix → verification (12x)
 
 **Session Stats**: 23 sessions, avg 35min, avg 52 tool calls
+**Token Stats**: avg peak ctx 94k (measured), ~4.2k est. tokens/session, 1.2 compactions/session, confidence mixed
+**Baseline**: -18% vs without_topia (if baseline.json set)
 **Unused Skills**: [list or "none"]
 **Routing Overrides**: [count] active
 ```
 
-**Shortcut**: `/topia metrics` invokes ONLY this phase, not the full 7-phase audit.
+**Shortcut**: `/topia metrics` invokes ONLY this phase, not the full 8-phase audit. CLI: `topia metrics` or `topia analytics`.
 
 ---
 

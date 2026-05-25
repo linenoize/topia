@@ -4,6 +4,22 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
+## [2.0.6] — 2026-05-25
+
+### Added
+
+- **Token metrics** — `hooks/token-meter`, shared `hooks/lib/token-meter.cjs` and `metrics-buffer.cjs`; sessions record measured/estimated tokens, compaction events, and platform. `docs/TOKEN-METRICS.md` and baseline template.
+- **Analytics CLI** — `topia analytics` / `topia metrics --json` with token overview, trends, and savings vs `.topia/metrics/baseline.json`.
+- **Cursor hooks adapter** — expanded `compiler/adapters/hooks/cursor.js` for token-meter install paths and dashboard token panels.
+
+### Changed
+
+- **Metrics hooks** — `context-watch`, `metrics-collector`, `post-session-reflect`, and `pre-compact` write token fields into `.topia/metrics/sessions.jsonl`.
+- **`skills/audit`** — Phase 8 reports token stats and baseline delta; shortcut documents `topia metrics` / `topia analytics`.
+- **`commands/topia.md`** — documents analytics/metrics commands alongside remote finalize flow.
+
+---
+
 ## [2.0.5] — 2026-05-23
 
 ### Changed
