@@ -1,9 +1,9 @@
-# Skill Index — All 65 Core Skills
+# Skill Index — All 66 Core Skills
 
 > **Need a skill?** Invoke via `/topia <skill-name>` in Claude Code, or `@Topia:<skill-name>` in Cursor / Codex / Antigravity.
 > Every skill has a `SKILL.md` at `skills/<name>/SKILL.md` — read that for the full spec.
 
-**Total:** 65 skills across 5 layers · 203 synapses + 44 pulses
+**Total:** 66 skills across 5 layers · 203 synapses + 44 pulses
 **Quick find:** use Ctrl+F on this page
 
 ---

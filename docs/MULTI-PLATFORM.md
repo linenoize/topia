@@ -4,6 +4,7 @@
 
 ## 1. Principles
 
+0. **Windows paths** — agents must not run Git Bash `mkdir -p` with `C:\...` or `folder:C:\...` paths (creates empty `alembic;C`-style junk). See `docs/INSTALL-CLAUDE-CODE.md` and `scripts/scan-mangled-windows-dirs.js`.
 1. **ALL skills on ALL platforms** — no Lite version, no skipping infrastructure skills.
 2. **Zero knowledge loss** — every workflow step, constraint, HARD-GATE, sharp edge ships everywhere.
 3. **Single source of truth** — `skills/*.md` is canonical. Other platforms get compiled output.
@@ -394,7 +395,8 @@ Claude Code hooks (hooks.json) enforce behaviors programmatically. Other platfor
 | `typecheck` | PostToolUse(Edit) | `MUST: After editing .ts/.tsx files, verify TypeScript compilation succeeds (no type errors).` |
 | `context-watch` | PreToolUse(Edit) | `SHOULD: Monitor your context usage. If working on a long task, summarize progress before context fills up.` |
 | `pre-tool-guard` | PreToolUse(Read) | (no equivalent needed — platform handles file access) |
-| `metrics-collector` | PostToolUse(Skill) | (no equivalent — metrics are Claude Code plugin feature) |
+| `metrics-collector` | PostToolUse(Skill) | Cursor: native `postToolUse` via `.cursor/hooks.json`; Claude: plugin hook |
+| `token-meter` | PostToolUse(*) | Cursor + Claude: estimates tool I/O tokens (chars × 0.25) |
 | `session-start` | SessionStart | (no equivalent — platform handles session init) |
 | `pre-compact` | PreCompact | `MUST: Before summarizing/compacting context, save important decisions and progress to project files.` |
 | `post-session-reflect` | Stop | `SHOULD: Before ending, save architectural decisions and progress to .topia/ directory for future sessions.` |
@@ -430,7 +432,7 @@ $ npx Topia init
   ...
 
 ? Disable any core skills? (advanced)
-  All 65 skills enabled by default. Enter skill names to disable, or press Enter to keep all.
+  All 66 skills enabled by default. Enter skill names to disable, or press Enter to keep all.
 
 ✓ Created topia.config.json
 ✓ Run `npx Topia build` to compile rules for Cursor
@@ -445,7 +447,7 @@ Compile skills for the configured platform.
 ```
 $ npx Topia build
 
-[parse]     65 skills parsed (0 errors)
+[parse]     66 skills parsed (0 errors)
 [parse]     10 extension packs parsed
 [transform] Platform: cursor
 [transform] Rewriting 215 cross-references
@@ -655,7 +657,7 @@ Every compiled skill file includes a footer that:
 
 ```markdown
 ---
-> **Topia Skill Toolkit** — 65 skills, 203 synapses
+> **Topia Skill Toolkit** — 66 skills, 203 synapses
 > Source: https://github.com/linenoize/topia
 > For the full experience with subagents, hooks, adaptive routing, and nexus analytics — use Topia as a Claude Code plugin.
 ```
@@ -665,7 +667,7 @@ Every compiled skill file includes a footer that:
 ### 13.1 `Topia init` User Experience
 
 ```
-$ npx @linenoize/topia init
+$ node compiler/bin/topia.js init
 
   ╭─────────╮
   │  Topia  │

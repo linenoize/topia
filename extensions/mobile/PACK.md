@@ -75,6 +75,14 @@ Inter-skill: ios-build-pipeline → app-store-connect (upload build → attach t
 | Flutter | Riverpod / BLoC | GoRouter | Flutter CLI | Shorebird |
 | Native iOS (Swift) | SwiftUI @Observable | NavigationStack | xcodebuild | — |
 
+## Constraints
+
+1. MUST audit all native dependencies against New Architecture compatibility before upgrading React Native.
+2. MUST NOT deploy OTA updates across React Native version boundaries — bytecode mismatch crashes on launch.
+3. MUST serve Apple App Site Association at exact path without redirects — Universal Links silently break on redirect.
+4. MUST include `PrivacyInfo.xcprivacy` for App Store submission — absence triggers auto-rejection.
+5. MUST use FCM v1 with service account JSON — Legacy API is shut down.
+
 ## Sharp Edges
 
 Critical failures to know before using this pack:

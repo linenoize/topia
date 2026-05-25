@@ -191,10 +191,12 @@ These are rarely invoked directly — they're called by higher-level skills:
 | `Topia:session-bridge` | build, team | Save context (in-session state handoff) |
 | `Topia:journal` | build, team | Persistent work log within a session |
 | `Topia:neural-memory` | build, team, any L1/L2 | Cross-session cognitive persistence via Neural Memory MCP — semantic complement to session-bridge and journal |
+| `Topia:recall` | build, plan, recon, session-start | Unified read-only recall across `.topia/`, `.remember/`, neural-memory, agora-memory |
 | `Topia:git` | build, scaffold, team, launch | Semantic commits, PRs, branches |
 | `Topia:doc-processor` | docs, marketing | PDF/DOCX/XLSX/PPTX generation |
 | "Done" / "ship it" / "xong" | — | `Topia:verification` → commit |
-| "recall", "remember", "brain", "nmem", "cross-project memory" | `Topia:neural-memory` | Retrieve or persist cross-session context |
+| "recall", "what did we do", "session context", "pick up where we left off" | `Topia:recall` | Unified cross-source memory read |
+| "remember", "brain", "nmem", "cross-project memory", "store learning" | `Topia:neural-memory` | Persist or query semantic graph memory |
 
 #### Domain Extension Packs (L4)
 

@@ -123,7 +123,7 @@ function main(raw) {
  * Source format:
  *   mcp:<namespace>      — for mcp__* tools
  *   webfetch:<host>      — for WebFetch
- *   upload:<basename>    — for Read of **/uploads/**
+ *   upload:<basename>    — for Read of paths under an `uploads/` directory
  *   trusted:<namespace>  — for trusted MCPs (skip)
  *   non-upload-read      — for Read outside uploads (skip)
  *   unknown              — for unmatched tool names (skip)
@@ -207,11 +207,8 @@ function extractHost(url) {
   }
 }
 
-/**
- * Match `**\/uploads/**` glob — any path containing /uploads/ as a directory segment.
- * Strict segment match (NOT substring) to avoid false positives like
- * `/var/no-uploads/file.txt`.
- */
+// Match any path with `uploads` as a directory segment (not a substring).
+// Avoids false positives like `/var/no-uploads/file.txt`.
 function isUploadPath(filePath) {
   if (!filePath) return false;
   const normalized = filePath.replace(/\\/g, '/');

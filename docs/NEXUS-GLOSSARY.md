@@ -22,7 +22,7 @@ Canonical terminology for Skill-Topia v2. Use these terms in docs, CLI output, a
 
 | Term | Definition |
 |------|------------|
-| **Neural Memory** | Persistent cross-session context via vendored **agora-code** MCP (optional). Topia = Skills + Memory. |
+| **Neural Memory** | L3 skill + Neural Memory MCP (nmem_*); optional agora-memory. journal = human ADR trail; indexes via Capture. |
 | **8 Pillars** | The eight dimensions of the `audit` skill health check (security, dependencies, architecture, performance, infrastructure, documentation, nexus analytics, governance). |
 
 ## Skill layers

@@ -73,6 +73,14 @@ infra-as-code → ci-cd: IaC changes flow through CI/CD with plan-and-apply pipe
 infra-as-code → monitoring: IaC provisions monitoring infrastructure (alerts, dashboards)
 ```
 
+## Constraints
+
+1. MUST validate Docker multi-stage `COPY --from=` stage names before emitting build configs.
+2. MUST detect actual package manager from lockfile presence before emitting CI cache keys.
+3. MUST constrain Prometheus label values to bounded sets — never use user IDs as labels.
+4. MUST emit `nginx -t` before any proxy reload — syntax errors take down production.
+5. MUST include `certbot renew --dry-run` verification for SSL renewal configs.
+
 ## Sharp Edges
 
 | Failure Mode | Severity | Mitigation |

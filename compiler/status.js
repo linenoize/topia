@@ -63,26 +63,28 @@ function progressBar(pct, width = 20) {
 
 // ─── Memory health (agora-code MCP) ───
 
-export function detectMemoryHealth(projectRoot) {
-  const candidates = [
+function readMcpConfigs(projectRoot) {
+  const paths = [
     path.join(projectRoot, '.cursor', 'mcp.json'),
     path.join(projectRoot, '.mcp.json'),
     path.join(os.homedir(), '.cursor', 'mcp.json'),
   ];
-
-  for (const configPath of candidates) {
+  const texts = [];
+  for (const configPath of paths) {
     if (!existsSync(configPath)) continue;
-    try {
-      const raw = readFileSync(configPath, 'utf-8');
-      if (/agora[-_]?code/i.test(raw)) {
-        return { status: 'active', detail: 'agora-code registered' };
-      }
-    } catch {
-      /* ignore */
-    }
+    try { texts.push(readFileSync(configPath, 'utf-8')); } catch { }
   }
+  return texts.join('\n');
+}
 
-  return { status: 'inactive', detail: 'agora-code not configured (file-based .topia/ only)' };
+export function detectMemoryHealth(projectRoot) {
+  const raw = readMcpConfigs(projectRoot);
+  const hasAgora = /agora[-_]?code|"agora-memory"/i.test(raw);
+  const hasNmem = /neural-memory/i.test(raw);
+  if (hasAgora && hasNmem) return { status: 'active', detail: 'agora-memory + neural-memory registered' };
+  if (hasAgora) return { status: 'active', detail: 'agora-memory registered' };
+  if (hasNmem) return { status: 'active', detail: 'neural-memory registered' };
+  return { status: 'inactive', detail: 'file-based .topia/ only (no memory MCP)' };
 }
 
 // ─── Data Collection ───

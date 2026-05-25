@@ -9,6 +9,7 @@ import { existsSync } from 'node:fs';
 import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { parseSkill } from './parser.js';
+import { extractSynapseEdgesFromSkill } from './lib/synapse-tables.js';
 
 // ─── Data Collection ───
 
@@ -19,6 +20,7 @@ export async function collectGraphData(TopiaRoot) {
   const nodes = [];
   const edges = [];
   const signalEdges = [];
+  const synapseEdges = [];
   const signalMap = {};
 
   // Parse core skills
@@ -47,6 +49,10 @@ export async function collectGraphData(TopiaRoot) {
         if (target !== parsed.name) {
           edges.push({ source: parsed.name, target, type: 'crossref' });
         }
+      }
+
+      for (const se of extractSynapseEdgesFromSkill(content, parsed.name)) {
+        synapseEdges.push(se);
       }
 
       // Signal edges
@@ -100,11 +106,13 @@ export async function collectGraphData(TopiaRoot) {
   return {
     nodes,
     edges,
+    synapseEdges,
     signalEdges,
     signals: Object.keys(signalMap),
     stats: {
       nodeCount: nodes.length,
       edgeCount: edges.length,
+      synapseEdgeCount: synapseEdges.length,
       signalEdgeCount: signalEdges.length,
       signalCount: Object.keys(signalMap).length,
     },
@@ -254,6 +262,9 @@ let hoveredNode = null;
 let selectedNode = null;
 let activeFilters = new Set(['L0','L1','L2','L3','L4']);
 let searchTerm = '';
+let showCrossrefs = true;
+let showSynapses = true;
+let showSignals = true;
 
 // ─── Init ───
 const canvas = document.getElementById('canvas');
@@ -331,8 +342,25 @@ function draw() {
   ctx.translate(cam.x * cam.zoom, cam.y * cam.zoom);
   ctx.scale(cam.zoom, cam.zoom);
 
+  if (showSynapses) {
+    for (const e of (DATA.synapseEdges || [])) {
+      const src = getNode(e.source);
+      const tgt = getNode(e.target);
+      if (!src || !tgt || !src.visible || !tgt.visible) continue;
+      const isHighlighted = hoveredNode && (hoveredNode.id === e.source || hoveredNode.id === e.target);
+      ctx.beginPath();
+      ctx.moveTo(src.x, src.y);
+      ctx.lineTo(tgt.x, tgt.y);
+      ctx.strokeStyle = isHighlighted ? 'rgba(56,189,248,0.7)' : 'rgba(56,189,248,0.25)';
+      ctx.lineWidth = isHighlighted ? 2 : 1;
+      ctx.setLineDash([6, 3]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+  }
+
   // Draw cross-ref edges
-  for (const e of DATA.edges) {
+  if (showCrossrefs) for (const e of DATA.edges) {
     const src = getNode(e.source);
     const tgt = getNode(e.target);
     if (!src || !tgt || !src.visible || !tgt.visible) continue;
@@ -354,7 +382,7 @@ function draw() {
   }
 
   // Draw signal edges (dashed)
-  for (const e of DATA.signalEdges) {
+  if (showSignals) for (const e of DATA.signalEdges) {
     const src = getNode(e.source);
     const tgt = getNode(e.target);
     if (!src || !tgt || !src.visible || !tgt.visible) continue;
@@ -448,6 +476,10 @@ function highlightConnected(node) {
     if (e.target === node.id) connected.add(e.source);
   }
   for (const e of DATA.signalEdges) {
+    if (e.source === node.id) connected.add(e.target);
+    if (e.target === node.id) connected.add(e.source);
+  }
+  for (const e of (DATA.synapseEdges || [])) {
     if (e.source === node.id) connected.add(e.target);
     if (e.target === node.id) connected.add(e.source);
   }
@@ -587,9 +619,22 @@ for (const [layer, color] of Object.entries(LAYER_COLORS)) {
 }
 
 // ─── Stats ───
+// Edge toggles
+function addEdgeToggle(label, color, get, set) {
+  const btn = document.createElement('button');
+  btn.className = 'filter-btn active';
+  btn.textContent = label;
+  btn.style.setProperty('--btn-color', color);
+  btn.onclick = () => { set(!get()); btn.classList.toggle('active', get()); draw(); };
+  filtersEl.appendChild(btn);
+}
+addEdgeToggle('Cross-refs', '#475569', () => showCrossrefs, (x) => { showCrossrefs = x; });
+addEdgeToggle('Synapses', '#38bdf8', () => showSynapses, (x) => { showSynapses = x; });
+addEdgeToggle('Signals', '#f59e0b', () => showSignals, (x) => { showSignals = x; });
+
 document.getElementById('stats').textContent =
   DATA.stats.nodeCount + ' nodes · ' +
-  DATA.stats.edgeCount + ' edges · ' +
+  DATA.stats.edgeCount + ' cross-refs · ' + (DATA.stats.synapseEdgeCount || 0) + ' synapses · ' +
   DATA.stats.signalCount + ' signals';
 
 // ─── Boot ───

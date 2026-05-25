@@ -176,7 +176,7 @@ describe('installHooks (claude adapter)', () => {
   });
 
   test('--platform <name> still force-creates the platform dir (explicit opt-in)', async () => {
-    const result = await installHooks(tmpRoot, { preset: 'gentle', platform: 'cursor' });
+    const result = await installHooks(tmpRoot, { preset: 'gentle', platform: 'cursor', topiaRoot: Topia_ROOT });
     assert.deepStrictEqual(result.platforms, ['cursor']);
     assert.ok(existsSync(path.join(tmpRoot, '.cursor', 'rules')));
   });

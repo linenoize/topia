@@ -40,6 +40,7 @@ If root cause cannot be identified after 3 hypothesis cycles:
 
 - `recon` (L2): find related code, trace imports, identify affected modules
 - `fix` (L2): when root cause found, hand off with diagnosis for fix application
+- `test` (L2): write regression test after root cause confirmed
 - `brainstorm` (L2): 3-Fix Escalation when root cause is "wrong approach" — invoke with mode="rescue" for category-diverse alternatives
 - `plan` (L2): 3-Fix Escalation when root cause is "wrong module design" — invoke for redesign
 - `docs-seeker` (L3): lookup API docs for unclear errors or deprecated APIs

@@ -301,6 +301,15 @@ export function auditTopiaPaths(root) {
  * @returns {object}
  */
 export function appendTopiaPathChecks(results, projectRoot) {
+  const { actions, changed } = normalizeTopiaDir(projectRoot);
+  if (changed && actions.length > 0) {
+    results.checks.push({
+      name: 'Topia path normalization',
+      status: 'pass',
+      detail: actions.join('; '),
+    });
+  }
+
   const { warnings } = auditTopiaPaths(projectRoot);
   if (warnings.length === 0) {
     results.checks.push({ name: 'Topia state paths', status: 'pass' });

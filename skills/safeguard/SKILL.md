@@ -94,7 +94,8 @@ For planned new implementations, mark insertion points:
 Use `Bash` to record current config state:
 
 ```bash
-mkdir -p .topia cp tsconfig.json .topia/tsconfig.frozen.json 2>/dev/null || true
+node -e "require('fs').mkdirSync('.topia',{recursive:true})"
+cp tsconfig.json .topia/tsconfig.frozen.json 2>/dev/null || true
 cp .eslintrc* .topia/ 2>/dev/null || true
 cp package-lock.json .topia/package-lock.frozen.json 2>/dev/null || true
 echo "Config frozen at $(date)" > .topia/freeze.log

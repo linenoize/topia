@@ -80,12 +80,18 @@ High-level multi-feature planning — organize features into milestones.
 ## Calls (outbound)
 
 - `recon` (L2): scan codebase for existing patterns, conventions, and structure
+- `idea` (L2): refine vague requirements before planning
 - `brainstorm` (L2): when multiple valid approaches exist
 - `adversary` (L2): optional red-team gate on critical plan output (features touching auth, payments, or data integrity)
 - `research` (L3): external knowledge lookup
 - `sequential-thinking` (L3): complex architecture with many trade-offs
+- `problem-solver` (L3): structured reasoning for complex trade-off decisions
+- `scope-guard` (L3): verify plan scope matches approved boundaries
+- `test` (L2): define test strategy and coverage expectations in plan
 - L4 extension packs: domain-specific architecture patterns
 - `neural-memory` | Before architecture decisions | Recall past decisions on similar problems
+- `recall` (L3): unified cross-source recall before planning
+- `documentation` (L2): generate leadership package after plan approval
 
 ## Called By (inbound)
 
@@ -93,6 +99,7 @@ High-level multi-feature planning — organize features into milestones.
 - `team` (L1): task decomposition into parallel workstreams
 - `brainstorm` (L2): when idea needs structuring
 - `rescue` (L1): plan refactoring strategy
+- `documentation` (L2): when plan output needs stakeholder-ready Jira package
 - `idea` (L2): hand-off after requirements complete
 - `scaffold` (L1): Phase 3 architecture planning
 - `skill-forge` (L2): plan structure for new skill
@@ -129,7 +136,7 @@ Check for `.topia/features/*/requirements.md` via `Glob`. If a Requirements Docu
 
 If `project.onboarded` signal was received, scout output is already available in session context — skip re-invoking scout.
 
-Invoke `Topia:recon` if not already done — plans without context produce wrong file paths. Call `neural-memory` (Recall Mode) to surface past architecture decisions before making new ones.
+Invoke `Topia:recon` if not already done — plans without context produce wrong file paths. Invoke `Topia:neural-memory` (Recall Mode) to surface past architecture decisions before making new ones.
 
 **Feature Map**: Check for `.topia/features.md` via `Glob`. If it exists, read it — understand the existing feature landscape, dependencies, and known gaps BEFORE planning. Cross-reference: does the new feature overlap, conflict with, or depend on existing features? If `.topia/features.md` does not exist, note this — Step 6.5 will create it.
 

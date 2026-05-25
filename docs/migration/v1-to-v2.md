@@ -37,8 +37,8 @@ CLI: `topia doctor --nexus` ( `--mesh` deprecated for one release).
 ## Migrate project state
 
 ```bash
-npx @linenoize/topia migrate-v1
-npx @linenoize/topia migrate-v1 --dry-run
+node compiler/bin/topia.js migrate-v1
+node compiler/bin/topia.js migrate-v1 --dry-run
 ```
 
 Rewrites v1 skill names in `.topia/` files and writes `.topia/migrated-from-v1.flag`.
@@ -48,7 +48,7 @@ Rewrites v1 skill names in `.topia/` files and writes `.topia/migrated-from-v1.f
 After upgrading the package:
 
 ```bash
-npx @linenoize/topia build --platform cursor
+node compiler/bin/topia.js build --platform cursor
 ```
 
 ## Hooks

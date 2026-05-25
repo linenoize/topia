@@ -24,7 +24,7 @@ Persistent state tracking and Architecture Decision Records across sessions. Jou
 
 ## Calls (outbound)
 
-None — pure L3 state management utility.
+- `neural-memory` (L3): after each ADR passes the gate — Capture Mode; dedupe agora when tagged source: journal-adr
 
 ## Called By (inbound)
 
@@ -39,6 +39,7 @@ None — pure L3 state management utility.
 - `integrate` (L2): auto-log integrate operations — source URL, mode, challenge score, files changed
 - `retro` (L2): record retrospective insights and decisions
 - `improve-architecture` (L2): record an ADR when the user rejects a deepening candidate with a load-bearing reason
+- `logic-guardian` (L2): record logic changes as ADRs for cross-session persistence
 
 ## Files Managed
 
@@ -219,6 +220,7 @@ Emit the journal update summary to the calling skill.
 - **Risks Logged**: [count] ([severity breakdown])
 - **Files Updated**: [list of .topia/ files modified]
 - **Next Module**: [next in queue, or "rescue complete"]
+- **Memory digest**: backends (nmem / agora / file-only); captures queued
 ```
 
 ## Context Recovery (new session)

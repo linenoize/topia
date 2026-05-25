@@ -47,7 +47,6 @@ export const TOPIA_GITIGNORE_BLOCK = \`# Topia — local session state (do not c
 /.topia/*
 !/.topia/org/
 !/.topia/org/**
-!/.topia/active-packs.json
 .mcp.json
 \`;
 
@@ -159,7 +158,6 @@ function findTrackedTopiaPaths(projectRoot) {
     if (!out) return [];
     return out.split('\\n').filter(Boolean).filter((p) => {
       if (p === '.mcp.json') return true;
-      if (p === '.topia/active-packs.json') return false;
       if (p.startsWith('.topia/org/')) return false;
       if (p.startsWith('.topia/')) return true;
       return false;
@@ -839,7 +837,6 @@ patch(
   `!/.topia/org/**
 `,
   `!/.topia/org/**
-!/.topia/active-packs.json
 `,
 );
 
@@ -987,7 +984,6 @@ git add CLAUDE.md .topia/ && git commit -m "chore: initialize Topia project cont
 Use \`Bash\` to stage and commit only committable Topia files (not all of \`.topia/\`):
 \`\`\`bash
 git add CLAUDE.md
-git add -f .topia/active-packs.json 2>/dev/null || true
 git add .topia/org/ 2>/dev/null || true
 git commit -m "chore: initialize Topia project context"
 \`\`\``,
@@ -1022,7 +1018,7 @@ patch(
 patch(
   'agents/onboard.md',
   `10. **Commit** — \`git add CLAUDE.md .topia/ && git commit\``,
-  `10. **Commit** — \`git add CLAUDE.md .topia/active-packs.json .topia/org/\` only`,
+  `10. **Commit** — \`git add CLAUDE.md .topia/org/\` only (active-packs.json stays local)`,
   true,
 );
 
@@ -1047,16 +1043,16 @@ patch(
 const gitignoreBlurb = `
 ### Project .gitignore
 
-\`topia install\` and \`topia setup --here\` prompt once to append Topia ignore rules (\`.topia/*\`, \`.mcp.json\`, with exceptions for \`org/\` and \`active-packs.json\`). Decline is remembered via \`.topia/skip-gitignore.flag\`. Verify anytime with \`topia doctor\`.
+\`topia install\` and \`topia setup --here\` prompt once to append Topia ignore rules (\`.topia/*\`, \`.mcp.json\`, with an exception for \`org/\`). Decline is remembered via \`.topia/skip-gitignore.flag\`. Verify anytime with \`topia doctor\`.
 `;
 
 const l4Blurb = `
 ### L4 packs: shipped vs activated
 
-All \`@Topia/*\` packs ship with the plugin. **Onboard** writes \`.topia/active-packs.json\` so this project declares which packs to lean on — not a separate install step.
+All \`@Topia/*\` packs ship with the plugin. **Onboard** writes \`.topia/active-packs.json\` locally so each workspace declares which packs to lean on — not a separate install step.
 `;
 
-patch('README.md', 'The `org/org.md` is the only `.topia/` file committed to the repo', 'The `org/` tree and `.topia/active-packs.json` may be committed; all other `.topia/*` stays local' + gitignoreBlurb + l4Blurb, true);
+patch('README.md', 'The `org/org.md` is the only `.topia/` file committed to the repo', 'Only the `org/` tree is intended for commit; all other `.topia/*` (including `active-packs.json`) stays local per workspace.' + gitignoreBlurb + l4Blurb, true);
 
 // hook-dispatch test for cursor JSON
 patch(

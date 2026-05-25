@@ -23,7 +23,7 @@ Dependency health management covering outdated packages, known vulnerabilities, 
 
 ## Calls (outbound)
 
-None — pure L3 utility using Bash for package manager commands.
+- `verification` (L3): test + build after dependency updates (Campaign Mode and post-change validation)
 
 ## Executable Instructions
 

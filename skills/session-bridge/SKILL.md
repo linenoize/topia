@@ -32,6 +32,8 @@ Solve the #1 developer complaint: context loss across sessions. Session-bridge a
 
 # Exception: L3→L3 coordination (same pattern as hallucination-guard → research)
 - `integrity-check` (L3): verify .topia/ file integrity before loading state
+- `context-engine` (L3): coordinate compaction timing with context budget
+- `neural-memory` (L3): cross-project pattern extraction in Save Mode Step 6
 
 ## Called By (inbound)
 
@@ -41,6 +43,7 @@ Solve the #1 developer complaint: context loss across sessions. Session-bridge a
 - `context-pack` (L3): coordinate state for sub-agent handoff
 - `neural-memory` (L3): sync key decisions back to `.topia/` files after Capture Mode
 - `adversary` (L2): (oracle-mode) detach protocol when target model is opus-class for non-blocking dispatch
+- `logic-guardian` (L2): save manifest state so next session loads it immediately
 
 ## State Files Managed
 

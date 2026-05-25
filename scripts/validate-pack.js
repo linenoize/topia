@@ -32,6 +32,66 @@ export function parseFrontmatter(content) {
   return match[1];
 }
 
+export function isSplitFormat(frontmatter) {
+  return frontmatter != null && /format:\s*split/i.test(frontmatter);
+}
+
+export function extractSplitSkillLinks(content) {
+  const skillsSection = content.match(/## Skills Included([\s\S]*?)(?=\n## )/);
+  if (!skillsSection) return [];
+  const links = [];
+  const linkRe = /\]\(skills\/([a-z0-9-]+)\.md\)/gi;
+  let match;
+  while ((match = linkRe.exec(skillsSection[1])) !== null) {
+    links.push(match[1]);
+  }
+  return [...new Set(links)];
+}
+
+export function validateSplitSkills(packDir, packName, skillSlugs) {
+  const issues = [];
+  const skillsDir = join(packDir, 'skills');
+
+  if (skillSlugs.length === 0) {
+    issues.push(`${packName}: No skills linked under "## Skills Included" (expected skills/*.md links)`);
+    return issues;
+  }
+
+  if (!existsSync(skillsDir)) {
+    issues.push(`${packName}: Missing skills/ directory for split-format pack`);
+    return issues;
+  }
+
+  for (const slug of skillSlugs) {
+    const skillPath = join(skillsDir, `${slug}.md`);
+    if (!existsSync(skillPath)) {
+      issues.push(`${packName}: Missing skill file skills/${slug}.md`);
+      continue;
+    }
+    const skillContent = readFileSync(skillPath, 'utf-8').replace(/\r\n/g, '\n');
+    if (slug === 'reference' || /shared reference/i.test(skillContent)) {
+      continue;
+    }
+    if (!skillContent.includes('**Step 1')) {
+      issues.push(`${packName}: skills/${slug}.md should have workflow steps (Step 1, Step 2, ...)`);
+    }
+  }
+
+  return issues;
+}
+
+export function validateMonolithSkills(packName, content) {
+  const issues = [];
+  const skillHeaders = content.match(/### \w/g);
+  if (!skillHeaders || skillHeaders.length === 0) {
+    issues.push(`${packName}: No skills found under "## Skills Included" (expected ### headers)`);
+  }
+  if (!content.includes('**Step 1')) {
+    issues.push(`${packName}: Skills should have workflow steps (Step 1, Step 2, ...)`);
+  }
+  return issues;
+}
+
 export function validatePack(packDir) {
   const issues = [];
   const packName = basename(packDir);
@@ -67,15 +127,10 @@ export function validatePack(packDir) {
     }
   }
 
-  // Check for at least one skill
-  const skillHeaders = content.match(/### \w/g);
-  if (!skillHeaders || skillHeaders.length === 0) {
-    issues.push(`${packName}: No skills found under "## Skills Included" (expected ### headers)`);
-  }
-
-  // Check for workflow steps in skills
-  if (!content.includes('**Step 1')) {
-    issues.push(`${packName}: Skills should have workflow steps (Step 1, Step 2, ...)`);
+  if (isSplitFormat(frontmatter)) {
+    issues.push(...validateSplitSkills(packDir, packName, extractSplitSkillLinks(content)));
+  } else {
+    issues.push(...validateMonolithSkills(packName, content));
   }
 
   return issues;

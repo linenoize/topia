@@ -77,6 +77,14 @@ Called By ← review (L2): when payment or cart code under review
 Called By ← idea (L2): requirements elicitation for e-commerce features
 ```
 
+## Constraints
+
+1. MUST use idempotency keys derived from cart ID + version — never timestamp-based keys for Payment Intents.
+2. MUST use raw request body (`express.raw`) for Stripe webhook signature verification — parsed JSON breaks HMAC.
+3. MUST use optimistic locking or serializable isolation for inventory during high-concurrency sales.
+4. MUST store webhook `event.id` and check before processing — duplicate events create duplicate orders.
+5. MUST wrap payment + order creation in a transaction — money taken without order record is a critical failure.
+
 ## Sharp Edges
 
 | Failure Mode | Severity | Mitigation |

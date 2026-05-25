@@ -11,18 +11,23 @@ Route to the appropriate Topia skill, CLI command, or extension pack based on th
 
 ---
 
+## Finalize install (run from inside Claude — no terminal required)
+
+- `/topia finalize` — **in-Claude one-shot finish-install.** Run after `/plugin install Topia@linenoize` to enable the optional extras (system-wide dispatch hooks, agora-code MCP, project `.gitignore`) without leaving the chat. See [`commands/finalize.md`](finalize.md). Flags: `--strict`, `--skip-agora`, `--all`, `--reset`.
+
 ## CLI commands (run from terminal)
 
 These are entry-points the user runs in their shell. They do not invoke a skill — they execute the `compiler/bin/topia.js` binary.
 
-- `topia install` — one-shot end-to-end setup (rune-kit detect → plugin register → hooks wire → agora-code MCP install → doctor verify). Flags: `--dry-run`, `--here`, `--preset gentle|strict`, `--yes`, `--skip-agora`, `--skip-rune-check`.
+- `topia install` — terminal alternative to `/topia finalize` for users running from a clone. One-shot end-to-end setup (rune-kit detect → plugin register → hooks wire → agora-code MCP install → doctor verify). Flags: `--dry-run`, `--here`, `--preset gentle|strict`, `--yes`, `--skip-agora`, `--skip-rune-check`.
 - `topia setup` — interactive wizard for the hook-installer step only (scope + preset). Useful when you've already cloned + `npm install`'d but want to (re)wire hooks.
 - `topia init` — for non-Claude IDEs: compile skills into the target platform's rule format (`--platform cursor|codex|antigravity|opencode|openclaw|generic`).
 - `topia build` — recompile skills using the existing `topia.config.json`.
 - `topia doctor` — validate compiled output + nexus integrity (`--nexus` for nexus only, `--hooks` for hook drift, `--strict` for CI).
 - `topia status` — neofetch-style project dashboard.
 - `topia visualize` — open the interactive skill-graph in a browser.
-- `topia analytics` — usage analytics dashboard.
+- `topia analytics` — usage analytics dashboard (sessions, skills, **token KPIs**). See [`docs/TOKEN-METRICS.md`](../docs/TOKEN-METRICS.md).
+- `topia metrics` — token + nexus metrics summary (alias for analytics token queries; opens dashboard unless `--json`).
 - `topia hooks install|uninstall|status` — manage runtime hooks per platform.
 - `topia migrate-from-rune` — pull `.rune/` memories into `.topia/` and disable the rune-kit plugin. See [`commands/migrate-from-rune.md`](migrate-from-rune.md).
 
@@ -66,6 +71,7 @@ These are entry-points the user runs in their shell. They do not invoke a skill 
 - 🤖 `/topia logic-guardian` — protects business logic from accidental deletion. Auto-fires when `.topia/logic-manifest.json` exists.
 - 🤖 `/topia quarantine` — prompt-injection advisory on untrusted MCP / WebFetch / upload reads. Auto-fires.
 - 👤 `/topia audit` — comprehensive 8-dimension health audit.
+- 👤 `/topia metrics` — nexus + **token** metrics only (audit Phase 8). CLI: `topia metrics` or `topia analytics`.
 - 👤 `/topia autopsy` — codebase health assessment (Rescue's RECON phase).
 - ↻ `/topia perf` — performance regression gate (N+1, sync-in-async, memory leaks). Called by `build` Phase 5.
 
@@ -111,7 +117,8 @@ These are entry-points the user runs in their shell. They do not invoke a skill 
 - 🤖 `/topia context-pack <task>` — package context for subagent delegation.
 - ↻ `/topia journal` — ADRs + decision history. User runs to log; also called by `build`/`rescue`.
 - 🤖 `/topia session-bridge` — auto-saves decisions / conventions / progress to `.topia/`. Fires at session boundaries.
-- ↻ `/topia neural-memory <recall|store>` — semantic memory graph (uses agora-code MCP when registered).
+- ↻ `/topia recall [topic]` — unified memory recall (`.topia/`, `.remember/`, neural-memory, agora). Read-only.
+- ↻ `/topia neural-memory <recall|store>` — semantic memory graph writes and MCP-only recall
 - 🤖 `/topia integrity-check` — detect adversarial content in `.topia/` files. Called by `guardian` / `session-bridge`.
 
 ### Monitoring / Scope

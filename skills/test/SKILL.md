@@ -333,7 +333,7 @@ Save eval files as `skills/<name>/evals.md`. Each eval is a numbered scenario (E
 ## Error Recovery
 
 - If test framework not found: ask calling skill to specify, or check `package.json` `devDependencies`
-- If `Write` to test file fails: check if directory exists, create it first with `Bash mkdir -p`
+- If `Write` to test file fails: create parent dirs with `node -e "require('fs').mkdirSync('path/to/dir',{recursive:true})"` (avoid `mkdir -p` with Windows `C:\...` paths in Git Bash)
 - If tests error on import (module not found): check that source file path is correct, adjust imports
 - If `Bash` test runner hangs beyond 120 seconds: kill and report as TIMEOUT
 

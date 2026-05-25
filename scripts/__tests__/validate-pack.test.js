@@ -138,6 +138,45 @@ describe('validate-pack', () => {
       assert.ok(issues.some((i) => i.includes('No skills found')));
     });
 
+    test('passes for split-format pack with linked skills', () => {
+      const packDir = join(tempDir, 'split-pack');
+      const skillsDir = join(packDir, 'skills');
+      mkdirSync(skillsDir, { recursive: true });
+      writeFileSync(
+        join(packDir, 'PACK.md'),
+        `---
+name: split-pack
+description: Split test
+layer: L4
+format: split
+---
+# split-pack
+## Purpose
+Test
+## Triggers
+Test
+## Skills Included
+| Skill | Model | Description |
+| [alpha](skills/alpha.md) | sonnet | Alpha skill |
+## Connections
+None
+## Constraints
+None
+## Sharp Edges
+| Edge | Impact | Mitigation |
+| None | - | - |
+## Done When
+Done
+## Cost Profile
+Low
+`,
+      );
+      writeFileSync(join(skillsDir, 'alpha.md'), '#### Workflow\n\n**Step 1 — Run**\nDo it.\n');
+
+      const issues = validatePack(packDir);
+      assert.strictEqual(issues.length, 0);
+    });
+
     test('fails when no workflow steps', () => {
       const packDir = join(tempDir, 'no-steps');
       mkdirSync(packDir);
@@ -160,9 +199,11 @@ describe('validate-pack', () => {
 
       for (const pack of packs) {
         const issues = validatePack(join(extDir, pack));
-        if (issues.length > 0) {
-          console.log(`  ${pack}: ${issues.length} issues (known)`);
-        }
+        assert.strictEqual(
+          issues.length,
+          0,
+          `${pack} pack issues:\n${issues.join('\n')}`,
+        );
       }
     });
   });

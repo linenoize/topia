@@ -23,7 +23,7 @@ Video content planning for product demos and marketing. Writes narration scripts
 
 ## Calls (outbound)
 
-None — pure L3 utility.
+- `slides` (L3): slide-based video storyboards when brief includes presentation format
 
 ## Executable Instructions
 

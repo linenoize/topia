@@ -72,6 +72,14 @@ Inter-skill: async-pipeline → background-jobs (pipeline stages use job queue f
 Inter-skill: async-pipeline → caching-patterns (pipeline results cached by content hash)
 ```
 
+## Constraints
+
+1. MUST hard-cap JWT access tokens at 15 minutes and refresh tokens at 7 days — never emit tokens without expiry.
+2. MUST use deterministic idempotency keys for background jobs — never use random UUIDs as job IDs.
+3. MUST include both `up()` and `down()` in every database migration — flag any missing rollback.
+4. MUST NOT use `origin: '*'` in production CORS configs — check `NODE_ENV` before emitting.
+5. MUST wire dead-letter queue alerts for critical queues — never silently drop failed jobs.
+
 ## Sharp Edges
 
 - **Auth**: Never emit JWT without expiry; hard-cap access tokens at 15min, refresh at 7d.

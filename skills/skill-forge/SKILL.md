@@ -28,6 +28,7 @@ The skill that builds skills. Applies Test-Driven Development to skill authoring
 - `plan` (L2): structure complex skills with multiple phases
 - `hallucination-guard` (L3): verify referenced skills/tools actually exist
 - `verification` (L3): validate SKILL.md format compliance
+- `test` (L2): verify generated skill examples compile and pass tests
 - `journal` (L3): record skill creation decisions in ADR
 
 ## Called By (inbound)

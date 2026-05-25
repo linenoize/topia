@@ -4,11 +4,67 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
+## [2.0.7] — 2026-05-25
+
+### Added
+
+- **`scripts/scan-mangled-windows-dirs.js`** — detect empty junk folders from Git Bash `mkdir -p` on Windows (`alembic;C`, fused `CCodeBase…`, etc.).
+- **`scripts/ensure-dir.mjs`** — cross-platform relative-path mkdir helper for agents.
+
+### Changed
+
+- **Windows path guidance** — onboard, finalize, safeguard, test skills and install docs warn against Bash `mkdir -p` with `C:\…` or `folder:C:\…` paths; prefer Node `mkdirSync` or `ensure-dir.mjs`.
+- **`docs/MULTI-PLATFORM.md`** — documents the Windows mkdir pitfall.
+
+---
+
+## [2.0.6] — 2026-05-25
+
+### Added
+
+- **Token metrics** — `hooks/token-meter`, shared `hooks/lib/token-meter.cjs` and `metrics-buffer.cjs`; sessions record measured/estimated tokens, compaction events, and platform. `docs/TOKEN-METRICS.md` and baseline template.
+- **Analytics CLI** — `topia analytics` / `topia metrics --json` with token overview, trends, and savings vs `.topia/metrics/baseline.json`.
+- **Cursor hooks adapter** — expanded `compiler/adapters/hooks/cursor.js` for token-meter install paths and dashboard token panels.
+
+### Changed
+
+- **Metrics hooks** — `context-watch`, `metrics-collector`, `post-session-reflect`, and `pre-compact` write token fields into `.topia/metrics/sessions.jsonl`.
+- **`skills/audit`** — Phase 8 reports token stats and baseline delta; shortcut documents `topia metrics` / `topia analytics`.
+- **`commands/topia.md`** — documents analytics/metrics commands alongside remote finalize flow.
+
+---
+
+## [2.0.5] — 2026-05-23
+
+### Changed
+
+- **`.topia/active-packs.json`** — no longer tracked in git; stays local per workspace. Onboard still writes it; only `.topia/org/` remains committable under `.topia/*`.
+- **Gitignore / doctor** — removed `!/.topia/active-packs.json` exception from canonical Topia gitignore block and tracked-path checks.
+- **Onboard docs** — commit step stages `CLAUDE.md` and `.topia/org/` only.
+
+---
+
+## [2.0.3] — 2026-05-22
+
+### Fixed
+
+- **`.gitignore`** — `build/` → `/build/` so `skills/build/` (L1 orchestrator) is no longer ignored; skill is tracked in git for all clones.
+- **Nexus visualizer** — renders `## Calls` synapse edges (cyan) with Cross-refs / Synapses / Signals toggles; stats show synapse count.
+
+### Changed
+
+- **Memory pipeline** — `journal` calls `neural-memory` after ADRs; Journal Update includes a memory digest; `plan` / `recon` / `research` / `build` use `Topia:neural-memory`; session-start hook prints a memory checklist.
+- **`topia status`** — reports agora-memory and neural-memory MCP registration separately.
+- **`validate-nexus.js`** — parses table-row Calls entries via `compiler/lib/synapse-tables.js`.
+- **Docs** — `NEXUS-GLOSSARY` and agora integration doc clarify journal vs neural-memory vs agora backends.
+
+---
+
 ## [2.0.1] — 2026-05-20
 
 ### Added
 
-- **linenoize Claude Code marketplace** — restored `.claude-plugin/marketplace.json` (`linenoize` catalog, `Topia` plugin). End users install via `/plugin marketplace add linenoize/topia` and `/plugin install Topia@linenoize`.
+- **linenoize Claude Code marketplace** — restored `.claude-plugin/marketplace.json` (`protopia` catalog, `Topia` plugin). End users install via `/plugin marketplace add linenoize/topia` and `/plugin install Topia@linenoize`.
 - **`docs/INSTALL-CLAUDE-CODE.md`** — marketplace vs clone install, hook layers, updates, troubleshooting.
 - **`docs/templates/team-claude-settings.json`** — optional `extraKnownMarketplaces` + `enabledPlugins` snippet for team repos.
 

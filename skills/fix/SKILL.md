@@ -39,6 +39,7 @@ If unsure whether the test is wrong or the implementation is wrong → call `Top
 - `verification` (L3): validate fix doesn't break existing functionality
 - `docs-seeker` (L3): check correct API usage before applying changes
 - `hallucination-guard` (L3): verify imports after code changes
+- `logic-guardian` (L2): pre-edit gate before modifying manifest-listed logic files
 - `recon` (L2): find related code before applying changes
 - `neural-memory` (L3): after fix verified — capture fix pattern (cause → solution)
 - `adversary` (L2): on `agent.stuck` after 2+ failed attempts — oracle-mode dispatches stateless second-model pass to break confirmation-bias loop

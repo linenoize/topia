@@ -1,0 +1,6 @@
+{
+  "without_topia_avg_tokens": 50000,
+  "measured_date": "2026-05-23",
+  "task_type": "feature",
+  "notes": "A/B baseline from same prompt with Topia hooks disabled. Copy to .topia/metrics/baseline.json"
+}

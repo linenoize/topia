@@ -6,6 +6,7 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { extractSynapseSkillsFromSection } from '../compiler/lib/synapse-tables.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const SKILLS_DIR = join(__dirname, '..', 'skills');
@@ -17,11 +18,7 @@ export function parseSkillMd(filePath) {
   const callsMatch = content.match(/## Calls \(outbound[^)]*\)([\s\S]*?)(?=\n## )/);
   const calledByMatch = content.match(/## Called By \(inbound[^)]*\)([\s\S]*?)(?=\n## )/);
 
-  const extractSkills = (text) => {
-    if (!text) return [];
-    const matches = text.matchAll(/`([a-z-]+)`\s*\(L[0-4]\)/g);
-    return [...matches].map((m) => m[1]);
-  };
+  const extractSkills = extractSynapseSkillsFromSection;
 
   return {
     name,

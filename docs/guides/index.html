@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Topia Guides — From Install to Production</title>
-  <meta name="description" content="Complete guide to using Topia — the 65-skill toolkit for AI coding assistants. Install, configure, and master every workflow.">
+  <meta name="description" content="Complete guide to using Topia — the 66-skill toolkit for AI coding assistants. Install, configure, and master every workflow.">
   <meta property="og:title" content="Topia Guides — From Install to Production">
-  <meta property="og:description" content="Learn how to use Topia's 65-skill toolkit to supercharge your AI coding assistant.">
+  <meta property="og:description" content="Learn how to use Topia's 66-skill toolkit to supercharge your AI coding assistant.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://linenoize.github.io/topia/guides/">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -558,7 +558,7 @@
       <h2 id="what-is-Topia">What is Topia?</h2>
 
       <p>
-        <strong>Topia is a 65-skill toolkit ecosystem</strong> for AI coding assistants. Instead of giving your AI one prompt at a time,
+        <strong>Topia is a 66-skill toolkit ecosystem</strong> for AI coding assistants. Instead of giving your AI one prompt at a time,
         Topia gives it structured workflows where skills call each other automatically.
       </p>
 
@@ -610,7 +610,7 @@
 <span class="comment"># Step 2: Point Claude Code at the plugin directory</span>
 <span class="cmd">claude --plugin-dir ./Topia</span>
 
-<span class="output">  65 skills loaded from Topia</span></div>
+<span class="output">  66 skills loaded from Topia</span></div>
             <button class="copy-btn" data-copy="git clone <internal-repo>/Topia.git && claude --plugin-dir ./Topia">Copy</button>
           </div>
           <div class="callout callout-tip">
@@ -619,14 +619,14 @@
         </div>
 
         <div class="tab-panel" id="install-cursor">
-          <p>Cursor uses <code>.mdc</code> rule files. Topia compiles all 65 skills into Cursor's format.</p>
+          <p>Cursor uses <code>.mdc</code> rule files. Topia compiles all 66 skills into Cursor's format.</p>
           <div class="code-wrapper">
             <div class="code-block"><span class="comment"># In your project directory</span>
 <span class="cmd">npx --yes @linenoize/topia init <span class="flag">--platform cursor</span></span>
 
 <span class="output">  → Detected: cursor</span>
 <span class="output">  ✓ Created topia.config.json</span>
-<span class="output">  ✓ Built 65 skills + 10 extensions to .cursor/rules/</span></div>
+<span class="output">  ✓ Built 66 skills + 10 extensions to .cursor/rules/</span></div>
             <button class="copy-btn" data-copy="npx --yes @linenoize/topia init --platform cursor">Copy</button>
           </div>
           <p>Skills are compiled into <code>.cursor/rules/</code>. Cursor picks them up automatically.</p>
@@ -637,7 +637,7 @@
           <div class="code-wrapper">
             <div class="code-block"><span class="cmd">npx --yes @linenoize/topia init <span class="flag">--platform antigravity</span></span>
 
-<span class="output">  ✓ Built 65 skills + 10 extensions to .agent/rules/</span></div>
+<span class="output">  ✓ Built 66 skills + 10 extensions to .agent/rules/</span></div>
             <button class="copy-btn" data-copy="npx --yes @linenoize/topia init --platform antigravity">Copy</button>
           </div>
           <div class="callout callout-info">
@@ -652,7 +652,7 @@
           <div class="code-wrapper">
             <div class="code-block"><span class="cmd">clawhub install skill-topia</span>
 
-<span class="comment"># All 65 skills installed as one toolkit package</span>
+<span class="comment"># All 66 skills installed as one toolkit package</span>
 <span class="comment"># Works with any OpenClaw-compatible agent</span></div>
             <button class="copy-btn" data-copy="clawhub install skill-topia">Copy</button>
           </div>
@@ -733,7 +733,7 @@
       </div>
 
       <p>
-        203 synapses + 44 pulses across 65 skills. When <code>debug</code> can't find the cause,
+        203 synapses + 44 pulses across 66 skills. When <code>debug</code> can't find the cause,
         it escalates to <code>problem-solver</code>. When <code>build</code> hits a wall 3 times,
         it pivots to <code>brainstorm</code>. When <code>sentinel</code> finds a vulnerability,
         it blocks the commit. The toolkit is self-healing.
@@ -1027,7 +1027,7 @@
 <span class="output">  ├── Topia-fix/SKILL.md</span>
 <span class="output">  ├── Topia-plan/SKILL.md</span>
 <span class="output">  ├── Topia-test/SKILL.md</span>
-<span class="output">  └── ... (65 skills total)</span></div>
+<span class="output">  └── ... (66 skills total)</span></div>
       </div>
 
       <p>
@@ -1050,10 +1050,10 @@
 
       <div class="code-wrapper">
         <div class="code-block"><span class="comment"># Build Topia skills for OpenCode</span>
-<span class="cmd">npx @linenoize/topia build <span class="flag">--platform opencode</span> <span class="flag">--output .</span></span>
+<span class="cmd">node compiler/bin/topia.js build <span class="flag">--platform opencode</span> <span class="flag">--output .</span></span>
 
 <span class="comment"># Or initialize with auto-detection</span>
-<span class="cmd">npx @linenoize/topia init</span>
+<span class="cmd">node compiler/bin/topia.js init</span>
 
 <span class="comment"># Output structure:</span>
 <span class="output">  .opencode/</span>
@@ -1086,7 +1086,7 @@
       <div class="code-wrapper">
         <div class="code-block"><span class="cmd">clawhub install skill-topia</span>
 
-<span class="comment"># All 65 skills + 10 extension packs as one toolkit package</span>
+<span class="comment"># All 66 skills + 10 extension packs as one toolkit package</span>
 <span class="comment"># Slug: skill-topia on clawhub.ai</span></div>
       </div>
 
@@ -1096,7 +1096,7 @@
       </div>
 
       <div class="callout callout-info">
-        <strong>All platforms get the same 65 skills.</strong> The compiler handles format differences.
+        <strong>All platforms get the same 66 skills.</strong> The compiler handles format differences.
         Cross-references, tool names, and model hints are adapted per platform.
       </div>
 
@@ -1230,7 +1230,7 @@
 
       <h3>Is Topia free?</h3>
       <p>
-        Yes. The full 65-skill toolkit + 10 extension packs are <strong>MIT-licensed</strong> and internal-only — there's no paid tier or marketplace.
+        Yes. The full 66-skill toolkit + 10 extension packs are <strong>MIT-licensed</strong> and internal-only — there's no paid tier or marketplace.
       </p>
 
       <h3>Does Topia work with my existing CLAUDE.md / .cursorrules?</h3>

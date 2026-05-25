@@ -4,7 +4,7 @@
 
 <p align="center">
   <strong>Topia — internal skill toolkit for AI coding assistants.</strong><br>
-  65 skills · 203 synapses · 44 pulses · 10 extension packs · optional persistent memory via agora-code MCP
+  66 skills · 203 synapses · 44 pulses · 10 extension packs · optional persistent memory via agora-code MCP
 </p>
 
 <p align="center">
@@ -80,7 +80,7 @@ node compiler/bin/topia.js visualize   # writes .topia/nexus.html and opens in b
 
 ```bash
 node compiler/bin/topia.js doctor
-# ✓ 65 skills, 203 synapses, 44 pulses — nexus is healthy
+# ✓ 66 skills, 203 synapses, 44 pulses — nexus is healthy
 ```
 
 ### Non-Claude IDEs
@@ -89,7 +89,7 @@ node compiler/bin/topia.js doctor
 node compiler/bin/topia.js init --platform cursor       # also: codex, antigravity, opencode, openclaw, generic
 ```
 
-Compiles all 65 skills to the target IDE's rule format.
+Compiles all 66 skills to the target IDE's rule format.
 
 ### Install flags
 
@@ -305,15 +305,17 @@ Skills only call downward (with documented L3→L3 exceptions). Connections are 
 
 Every new session loads `.topia/` automatically.
 
-The `org/` tree and `.topia/active-packs.json` may be committed; all other `.topia/*` stays local
+Only the `org/` tree is intended for commit; all other `.topia/*` (including `active-packs.json`) stays local per workspace.
+
 ### Project .gitignore
 
-`topia install` and `topia setup --here` prompt once to append Topia ignore rules (`.topia/*`, `.mcp.json`, with exceptions for `org/` and `active-packs.json`). Decline is remembered via `.topia/skip-gitignore.flag`. Verify anytime with `topia doctor`.
+`topia install` and `topia setup --here` prompt once to append Topia ignore rules (`.topia/*`, `.mcp.json`, with an exception for `org/`). Decline is remembered via `.topia/skip-gitignore.flag`. Verify anytime with `topia doctor`.
 
 ### L4 packs: shipped vs activated
 
-All `@Topia/*` packs ship with the plugin. **Onboard** writes `.topia/active-packs.json` so this project declares which packs to lean on — not a separate install step.
- — it holds stable team and policy configuration. `guardian` and `readiness` consume it at compile time and inject an `<ORG-POLICY>` block into their runtime hooks. See [`.topia/org/org.md`](.topia/org/org.md) for the template.
+All `@Topia/*` packs ship with the plugin. **Onboard** writes `.topia/active-packs.json` locally so each workspace declares which packs to lean on — not a separate install step.
+
+The `org/` tree holds stable team and policy configuration. `guardian` and `readiness` consume it at compile time and inject an `<ORG-POLICY>` block into their runtime hooks. See [`.topia/org/org.md`](.topia/org/org.md) for the template.
 
 ---
 

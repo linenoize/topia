@@ -30,7 +30,7 @@ Based on "Agents of Chaos" (arXiv:2602.20021) threat model: agents that read per
 
 ## Calls (outbound)
 
-None — pure validation (read-only scanning).
+- `quarantine` (L3): listens for `quarantine.notice.emitted` to bias scanning of state files that incorporated quarantined content
 
 ## Called By (inbound)
 

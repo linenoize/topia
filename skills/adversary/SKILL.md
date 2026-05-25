@@ -8,7 +8,7 @@ metadata:
   model: opus
   group: quality
   tools: "Read, Glob, Grep"
-  emit: oracle.dispatched, oracle.response, oracle.failed
+  emit: oracle.dispatched, oracle.response, oracle.failed, adversary.passed
   listen: agent.stuck, context.preview
 ---
 
@@ -49,6 +49,7 @@ Every finding MUST reference the specific plan section, file, or assumption it c
 - `team` (L1): when decomposing large tasks, adversary validates the decomposition
 - `debug` (L2): (oracle-mode) listens to `agent.stuck` from debug after 3 disproved hypotheses
 - `fix` (L2): (oracle-mode) listens to `agent.stuck` from fix after 2+ failed attempts
+- `documentation` (L2): reads adversary report for leadership risk summary
 - User: `/topia adversary` direct invocation
 
 ## Cross-Hub Connections
@@ -190,8 +191,8 @@ Synthesize all findings into an actionable report.
 
 After reporting:
 - If verdict is REVISE: return to `plan` with findings attached as constraints
-- If verdict is HARDEN: present remediations to user for plan update
-- If verdict is PROCEED: pass findings to build Phase 3 as implementation notes
+- If verdict is HARDEN: present remediations to user for plan update; emit `adversary.passed` once remediations are accepted
+- If verdict is PROCEED: pass findings to build Phase 3 as implementation notes; emit `adversary.passed` so downstream skills (e.g. `documentation`) can package the hardened plan for stakeholders
 
 ## Output Format
 

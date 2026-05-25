@@ -102,6 +102,12 @@ Before decomposing, classify the task into a complexity tier. Each tier defines 
 - `scope-guard` (L3): pre-merge scope verification — validate each stream's actual file changes against declared ownership
 - `worktree` (L3): create isolated worktrees for parallel build instances
 - `context-pack` (L3): create structured handoff briefings before spawning subagents
+- `adversary` (L2): validate task decomposition before parallel dispatch
+- `context-engine` (L3): context budget management before parallel dispatch and after merge
+- `git` (L3): coordinate branch strategy across parallel workstreams
+- `logic-guardian` (L2): validate logic integrity across parallel workstreams
+- `scaffold` (L1): delegate greenfield scaffolding when task includes new project setup
+- `verification` (L3): verify each parallel workstream before merge
 - L4 extension packs: domain-specific patterns when context matches (e.g., @Topia/mobile when porting web to mobile)
 
 ## Called By (inbound)

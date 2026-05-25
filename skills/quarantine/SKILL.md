@@ -154,6 +154,13 @@ On timeout the hook emits `decision=timeout` to telemetry and exits 0 (advisory 
 | Trust an internal MCP | append namespace to `~/.claude/quarantine.d/trusted-mcp-allowlist.txt` (effective next call) |
 | Permanent removal | `Topia hooks install --preset off` (uninstalls all Topia-managed hooks) |
 
+## Output Format
+
+```
+[QUARANTINE-NOTICE] tool=<name> source=<mcp|web|upload> session=<id>
+Advisory only — operator decides whether to proceed.
+```
+
 ## Cost Profile
 
 Hook is Node-only — no LLM tokens. Adds ~5-10 ms per matched call. Telemetry ~150 bytes per JSONL line. Negligible.

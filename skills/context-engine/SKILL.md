@@ -42,6 +42,7 @@ Context-engine also manages **behavioral mode injection** via `contexts/` direct
 
 # Exception: L3→L3 coordination
 - `session-bridge` (L3): coordinate state save when context critical
+- `neural-memory` (L3): Flush Mode before compaction to preserve decisions
 
 ## Called By (inbound)
 

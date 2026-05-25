@@ -48,10 +48,11 @@ Without this skill, each project is an island. With it, a caching pattern discov
 - Session end / before compaction → Run **Flush Mode** (capture remaining context)
 
 **Manual trigger:**
-- `/topia recall <topic>` — search neural memory for a topic
-- `/topia remember <text>` — save a specific memory
+- `/topia remember <text>` — save a specific memory (Capture Mode)
 - `/topia brain-health` — check neural memory health + maintenance
 - `/topia hypothesize <question>` — start hypothesis tracking
+
+For unified cross-source recall (`.topia/`, `.remember/`, MCP), use **`Topia:recall`** instead.
 
 ## Calls (outbound)
 
@@ -84,6 +85,7 @@ Without this skill, each project is an island. With it, a caching pattern discov
 - `session-bridge` (L3): Step 6 (cross-project extraction) — extract generalizable patterns
 - `journal` (L3): after ADR written — extract decision + rejected alternatives
 - `context-engine` (L3): before compaction — trigger Flush Mode to preserve context
+- `recall` (L3): MCP recall leg of unified cross-source recall report
 
 ## Modes
 
@@ -122,6 +124,9 @@ Call `nmem_gaps(action="detect")` if working in a domain with sparse memories.
 ---
 
 ### Mode 2: Capture (After Task Completion)
+
+When triggered after `Topia:journal` writes an ADR: read the ADR file, extract decision + rejected alternatives. If journal already called agora `store_learning`, tag `source: journal-adr` and skip duplicate `store_learning`.
+
 
 Extract learnable patterns from completed work and save to neural memory.
 
