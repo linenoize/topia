@@ -209,13 +209,28 @@ Topia handles this via [`hooks/lib/cursor-io.cjs`](../hooks/lib/cursor-io.cjs):
 - Plugin hooks (`session-start`, `quarantine`, `post-session-reflect`, `pre-tool-guard`) emit `{ additional_context }`, `{ permission }`, or `{}` as appropriate.
 - `hook-dispatch` emits event-shaped JSON (`permission` for `preToolUse`, `additional_context` for `postToolUse`).
 
-**Not Topia:** a `stop` hook that runs `bun run …` comes from a user or team `~/.cursor/hooks.json` template, not from this repository. Remove it or install Bun.
+**Not topia:** a `stop` hook that runs `bun run …` comes from a user or team `~/.cursor/hooks.json` template, not from this repository. Remove it or install Bun.
 
 **Debugging:** Cursor Settings → Hooks tab + Hooks output channel. See [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) §6.
 
+## Context lifecycle hooks (Claude Code plugin)
+
+These ship in plugin [`hooks/hooks.json`](../hooks/hooks.json) and automate checkpoint + compact boundaries:
+
+| Hook | Event | Behavior |
+|------|-------|----------|
+| `context-watch` | `PreToolUse` (all tools) | Counts tool calls; YELLOW/ORANGE/RED warnings aligned with `context-engine` |
+| `pre-compact` | `PreCompact` | Headless `checkpoint-from-hook.js` → `.topia/checkpoint.md` + metrics |
+| `post-compact` | `PostCompact` | Re-injects checkpoint + progress after `/compact` |
+| `git-push-checkpoint` | `PreToolUse` (`Bash`, `git push`) | Checkpoint before push; recommends compact or new session |
+| `tool-collector` | `PostToolUse` (all) | Per-tool totals → `.topia/metrics/tools.json` at session end |
+
+Agent follow-up: invoke `topia:context-lifecycle` when hook messages appear. Baseline summary: `npm run metrics:baseline`.
+
 ## Limitations
 
-- Only Claude Code gets native `Stop` (completion-gate) via settings presets without third-party mapping quirks. Cursor maps `Stop` → `stop` and also provides `sessionEnd` for metrics flush when `.cursor/hooks.json` is installed.
+- Only Claude Code gets native `Stop` (completion-gate) via settings presets without third-party mapping quirks.
+- `PostCompact` and `git-push-checkpoint` require the Topia plugin hooks bundle (not Cursor `.cursor/hooks.json` alone unless extended). Cursor maps `Stop` → `stop` and also provides `sessionEnd` for metrics flush when `.cursor/hooks.json` is installed.
 - Cursor/Windsurf/Antigravity **rule** install (`Topia hooks install --platform cursor`) is best-effort — the LLM still decides whether to read rules. Native Cursor `hooks.json` is separate from `.mdc` rules.
 - `Topia hooks status --platform all` is the single source of truth for "what am I actually getting on this machine." Check it after install.
 

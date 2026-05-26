@@ -82,6 +82,7 @@ For unified cross-source recall (`.topia/`, `.remember/`, MCP), use **`topia:rec
 - `guardian` (L2): after security finding — capture vulnerability pattern
 - `incident` (L2): after resolution — capture incident root cause + fix
 - `retro` (L2): during retrospective — capture retro insights and patterns
+- `context-lifecycle` (L3): Flush Mode before compaction at boundaries
 - `session-bridge` (L3): Step 6 (cross-project extraction) — extract generalizable patterns
 - `journal` (L3): after ADR written — extract decision + rejected alternatives
 - `context-engine` (L3): before compaction — trigger Flush Mode to preserve context

@@ -327,7 +327,7 @@ Pattern 6: → invoke `topia:plan`             — flow arrow reference
 
 ### 5.2 Resolution Strategy
 
-The parser uses a regex to find all `topia:<name>` patterns and records them as `CrossRef` entries. The transformer then rewrites each based on the platform adapter. The regex is case-insensitive so legacy `Topia:` references (pre-v3.0.0) are still recognized.
+The parser uses a regex to find all `topia:<name>` patterns and records them as `CrossRef` entries. The transformer then rewrites each based on the platform adapter. The regex is case-insensitive so legacy `topia:` references (pre-v3.0.0) are still recognized.
 
 ```javascript
 // Cross-reference regex (handles both backtick-wrapped and bare; case-insensitive)
@@ -522,7 +522,7 @@ Topia/
 │   │   ├── antigravity.js      # .agent/rules/*.md
 │   │   └── generic.js          # .ai/rules/*.md (fallback)
 │   └── transforms/             # Individual transform functions
-│       ├── cross-references.js # Topia:<name> rewriting
+│       ├── cross-references.js # topia:<name> rewriting
 │       ├── tool-names.js       # Read/Write/Edit/etc. rewriting
 │       ├── frontmatter.js      # context:fork, agent:, model: handling
 │       ├── subagents.js        # Parallel → sequential conversion

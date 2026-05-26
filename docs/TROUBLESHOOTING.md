@@ -77,7 +77,7 @@ Common issues and how to fix them.
 
 **Causes:**
 - Cursor loads Claude Code / third-party hooks and requires **valid JSON on stdout** for every command hook.
-- Older Topia builds printed plain text (`Topia-hook: …`, `[Topia: .topia/ …]`) instead of JSON.
+- Older Topia builds printed plain text (`Topia-hook: …`, `[topia: .topia/ …]`) instead of JSON.
 - A `bun run …` stop hook in `~/.cursor/hooks.json` is from Cursor’s docs example — Topia plugin hooks use `node`, not Bun.
 
 **Fixes:**

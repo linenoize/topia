@@ -4,12 +4,42 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
+## [3.1.0] — 2026-05-25
+
+Ports upstream `protopia/skill-topia` v2.1.0 (`abf71b3`). Rebrand to `linenoize/topia` (lowercase plugin name preserved from v3.0.0) applied via `scripts/port-rebrand.mjs`.
+
+### Added
+
+- **`context-lifecycle` skill (L3)** — manages context window lifecycle: headless checkpoints on pre-compact and `git push`, PostCompact re-injection of project state, all-tool context-watch metrics.
+- **`hooks/git-push-checkpoint/`** — captures a session checkpoint right before `git push` so the work shipped to remote is tied to a recoverable snapshot.
+- **`hooks/post-compact/`** — re-injects critical project state after a context compaction so the next turn starts hydrated rather than cold.
+- **`hooks/tool-collector/`** — per-tool token usage metrics (extends `token-meter` from v2.0.6).
+- **`hooks/lib/checkpoint-runner.cjs`** — shared checkpoint runner used by the new lifecycle hooks.
+- **`scripts/capture-metrics-baseline.js`** — records a metrics baseline for regression detection.
+- **`scripts/__tests__/checkpoint-from-hook.test.js`** + **`compiler/__tests__/analytics-context.test.js`** — coverage for the new lifecycle path.
+
+### Changed
+
+- **Token analytics** — `compiler/analytics.js` and `hooks/lib/token-meter.cjs` now surface expensive sessions and per-tool token use.
+- **`validate-signals`** wired into CI via `scripts/validate-signals.js`.
+- **`hooks/context-watch`** rewritten to track all tool dispatches, not just skill invocations.
+- **`hooks/pre-compact`** / **`hooks/post-session-reflect`** updated for the lifecycle workflow.
+- Skill cross-refs added: `audit`, `build`, `context-engine`, `context-pack`, `neural-memory`, `recall`, `rescue`, `session-bridge`, `team` now call `context-lifecycle` where appropriate.
+- Skill count: 66 → **67** (added `context-lifecycle`).
+- Synapses: 298 → 308. Pulses: 44 → 47.
+
+### Port mechanics
+
+- `scripts/port-rebrand.mjs` SCOPED entry for `.claude-plugin/plugin.json` now also restores `displayName: "Topia"` (upstream lacks the field; without this, every future sync would silently drop the cosmetic brand label).
+
+---
+
 ## [3.0.0] — 2026-05-25
 
 ### Breaking
 
 - **Plugin renamed to lowercase `topia`** — `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json` now use `"name": "topia"` (was `"Topia"`). This makes the install ID, on-disk cache path, and skill namespace prefix all match the lowercase `linenoize/topia` GitHub slug and the `topia` CLI binary name. `displayName: "Topia"` is preserved so the `/plugin` picker still shows the capitalized brand. Reason: Claude Code plugin lookups are case-sensitive — users routinely typed `/plugin install topia@linenoize` (lowercase) and got "Plugin topia not found in marketplace linenoize".
-- **Skill namespace flipped from `Topia:` to `topia:`** — invocations are now `/topia:build`, `/topia:plan`, etc. The compiler's cross-reference detector is case-insensitive, so legacy `Topia:` references in user-authored SKILL.md / docs continue to be recognized and rewritten correctly.
+- **Skill namespace flipped to lowercase `topia:` prefix** — invocations are now `/topia:build`, `/topia:plan`, etc. (previously the capitalized prefix). The compiler's cross-reference detector is case-insensitive (`/[Tt]opia:/`), so legacy capital-T references in user-authored SKILL.md / docs continue to be recognized and rewritten correctly.
 
 ### Migration
 
@@ -87,7 +117,7 @@ Already-installed hooks (`Topia-managed: true` marker in cursor/windsurf/antigra
 
 ### Changed
 
-- **Memory pipeline** — `journal` calls `neural-memory` after ADRs; Journal Update includes a memory digest; `plan` / `recon` / `research` / `build` use `Topia:neural-memory`; session-start hook prints a memory checklist.
+- **Memory pipeline** — `journal` calls `neural-memory` after ADRs; Journal Update includes a memory digest; `plan` / `recon` / `research` / `build` use `topia:neural-memory`; session-start hook prints a memory checklist.
 - **`topia status`** — reports agora-memory and neural-memory MCP registration separately.
 - **`validate-nexus.js`** — parses table-row Calls entries via `compiler/lib/synapse-tables.js`.
 - **Docs** — `NEXUS-GLOSSARY` and agora integration doc clarify journal vs neural-memory vs agora backends.

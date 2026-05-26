@@ -25,6 +25,9 @@ export const INTENTIONAL_BROADCAST_SIGNALS = new Set([
   'oracle.failed', // session-bridge → terminal output
   'invariants.seeded', // logic-guardian → terminal output
   'autopilot.downgraded', // legacy — kept as a no-op allowlist entry for back-compat in tests
+  'context.checkpoint.written', // hooks — observability
+  'context.compacted', // post-compact / context-lifecycle — observability
+  'context.pressure.high', // context-watch / context-engine — observability until runtime bus
 ]);
 
 /**

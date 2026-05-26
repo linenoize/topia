@@ -35,6 +35,7 @@ When a parent agent delegates work to a subagent, critical context gets lost —
 - `rescue` (L1): before delegating module-level refactoring
 - `scaffold` (L1): before delegating component generation
 - Any L2 skill that spawns subagents
+- `context-lifecycle` (L3): handoff packets before subagent spawn at boundaries
 
 ## Data Flow
 

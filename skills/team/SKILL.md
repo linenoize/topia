@@ -104,6 +104,7 @@ Before decomposing, classify the task into a complexity tier. Each tier defines 
 - `context-pack` (L3): create structured handoff briefings before spawning subagents
 - `adversary` (L2): validate task decomposition before parallel dispatch
 - `context-engine` (L3): context budget management before parallel dispatch and after merge
+- `context-lifecycle` (L3): Boundary Save before dispatch; Hook Resume after merge or git push; Post-Compact Resume when needed
 - `git` (L3): coordinate branch strategy across parallel workstreams
 - `logic-guardian` (L2): validate logic integrity across parallel workstreams
 - `scaffold` (L1): delegate greenfield scaffolding when task includes new project setup

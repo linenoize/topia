@@ -270,7 +270,7 @@ function buildOrgPolicyBlock(orgConfig, targetSkill) {
   if (!orgConfig) return null;
 
   const lines = [];
-  lines.push(`\n\n<!-- Topia: Organization Policy (${orgConfig.name}) -->`);
+  lines.push(`\n\n<!-- topia: Organization Policy (${orgConfig.name}) -->`);
   lines.push(`<ORG-POLICY template="${orgConfig.name}" governance="${orgConfig.governanceLevel.level}">`);
 
   if (targetSkill === 'guardian' || targetSkill === 'sentinel') {

@@ -101,16 +101,26 @@ function normalizeSessionTokens(events = []) {
   let contextPeakPercent = null;
   let contextWindowSize = null;
   let compactions = 0;
+  let checkpointsWritten = 0;
   let hasMeasured = false;
   let hasEstimated = false;
 
   const compactionRows = [];
+  const toolIoByTool = {};
 
   for (const evt of events) {
     const type = evt.event || evt.type;
-    if (type === 'tool_io') {
+    if (type === 'tool_io' || type === 'tool_use') {
       estimatedIo += evt.estimated_tokens || 0;
       hasEstimated = true;
+      const toolName = evt.tool || 'unknown';
+      if (!toolIoByTool[toolName]) {
+        toolIoByTool[toolName] = { invocations: 0, estimated_tokens: 0 };
+      }
+      toolIoByTool[toolName].invocations += 1;
+      toolIoByTool[toolName].estimated_tokens += evt.estimated_tokens || 0;
+    } else if (type === 'context_checkpoint_written') {
+      checkpointsWritten += 1;
     } else if (type === 'skill_invoke' || type === 'invoke') {
       estimatedSkills += evt.estimated_tokens || 0;
       hasEstimated = true;
@@ -154,10 +164,13 @@ function normalizeSessionTokens(events = []) {
       estimated_skills: estimatedSkills,
       estimated_agent_response: estimatedAgentResponse,
       compactions,
+      checkpoints_written: checkpointsWritten,
+      tool_io_by_tool: Object.keys(toolIoByTool).length > 0 ? toolIoByTool : undefined,
       total_estimated: totalEstimated,
       confidence,
     },
     compactionRows,
+    toolIoByTool,
   };
 }
 

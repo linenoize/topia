@@ -1,7 +1,7 @@
 {
   "name": "@linenoize/topia",
-  "version": "3.0.0",
-  "description": "66-skill Topia Nexus for AI coding assistants — runtime discipline rails via native hooks, 5-layer architecture, 203 synapses + 44 pulses, optional agora-code neural memory, multi-platform compiler.",
+  "version": "3.1.0",
+  "description": "67-skill Topia Nexus for AI coding assistants — runtime discipline rails via native hooks, 5-layer architecture, 203 synapses + 44 pulses, optional agora-code neural memory, multi-platform compiler.",
   "type": "module",
   "bin": {
     "topia": "./compiler/bin/topia.js"
@@ -16,7 +16,9 @@
     "lint": "biome check .",
     "lint:fix": "biome check --fix .",
     "format": "biome format --write .",
-    "ci": "biome check . && node --test compiler/__tests__/*.test.js scripts/__tests__/*.test.js && node compiler/bin/topia.js doctor",
+    "ci": "biome check . && node --test compiler/__tests__/*.test.js scripts/__tests__/*.test.js && node scripts/validate-signals.js && node compiler/bin/topia.js doctor",
+    "validate:signals": "node scripts/validate-signals.js",
+    "metrics:baseline": "node scripts/capture-metrics-baseline.js",
     "version-check": "node scripts/version-sync-check.js",
     "version-bump": "node scripts/bump-version.js",
     "postinstall": "node scripts/postinstall.js",

@@ -1,13 +1,14 @@
 // Topia Pre-Compact Hook
-// Saves critical state BEFORE context compaction and records measured token usage.
+// Headless checkpoint + snapshot BEFORE context compaction; records measured token usage.
 
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-const { readStdinJson, isCursorRuntime, writeHookResponse } = require('../lib/cursor-io.cjs');
+const { readStdinJson, isCursorRuntime, writeHookResponse, emitHookOutput } = require('../lib/cursor-io.cjs');
 const { resolveTopiaDir, topiaDirForWrite } = require('../lib/topia-paths.cjs');
 const { appendEvent } = require('../lib/metrics-buffer.cjs');
 const { detectPlatform, extractCompactionTokens } = require('../lib/token-meter.cjs');
+const { runCheckpointFromHook } = require('../lib/checkpoint-runner.cjs');
 
 const cwd = process.cwd();
 const TopiaDirRead = resolveTopiaDir(cwd);
@@ -25,6 +26,16 @@ async function main() {
     watchState = JSON.parse(fs.readFileSync(counterFile, 'utf-8'));
   } catch {
     /* fresh session */
+  }
+
+  const checkpoint = runCheckpointFromHook(cwd, 'pre-compact');
+  if (checkpoint?.ok) {
+    appendEvent(cwd, {
+      event: 'context_checkpoint_written',
+      trigger: 'pre-compact',
+      tool_calls: checkpoint.toolCalls,
+      had_prior_checkpoint: checkpoint.hadPriorCheckpoint,
+    });
   }
 
   if (compaction) {
@@ -64,9 +75,18 @@ async function main() {
 
   const snapshot = ['# Pre-Compact Snapshot', `Generated: ${new Date().toISOString()}`, ''];
 
+  if (checkpoint?.ok) {
+    snapshot.push('## Checkpoint');
+    snapshot.push(`- Written: .topia/checkpoint.md`);
+    snapshot.push(`- Tool calls: ${checkpoint.toolCalls}`);
+    snapshot.push(`- Had prior checkpoint: ${checkpoint.hadPriorCheckpoint ? 'yes' : 'no'}`);
+    snapshot.push('');
+  }
+
   if (watchState) {
     snapshot.push('## Session Metrics');
     snapshot.push(`- Tool calls: ${watchState.count || 0}`);
+    snapshot.push(`- Pressure: ${watchState.pressureLevel || 'unknown'}`);
     snapshot.push(`- Session start: ${watchState.sessionStart || 'unknown'}`);
     if (watchState.toolCounts) {
       const top5 = Object.entries(watchState.toolCounts)
@@ -97,7 +117,7 @@ async function main() {
     }
   }
 
-  if (watchState || summaries.length > 0 || compaction) {
+  if (watchState || summaries.length > 0 || compaction || checkpoint?.ok) {
     try {
       if (!fs.existsSync(TopiaDirWrite)) fs.mkdirSync(TopiaDirWrite, { recursive: true });
       fs.writeFileSync(path.join(TopiaDirWrite, 'pre-compact-snapshot.md'), snapshot.join('\n'));
@@ -106,8 +126,14 @@ async function main() {
     }
   }
 
+  const instruction =
+    '[Topia pre-compact] State checkpointed to .topia/checkpoint.md. Run /compact now. ' +
+    'After compact, PostCompact will re-inject checkpoint + progress; invoke topia:context-lifecycle if needed.';
+
   if (isCursorRuntime(hookData)) {
-    writeHookResponse({});
+    writeHookResponse({ additional_context: instruction });
+  } else {
+    emitHookOutput({}, { event: hookData, claudeLine: instruction });
   }
 
   process.exit(0);

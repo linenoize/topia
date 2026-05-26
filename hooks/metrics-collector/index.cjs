@@ -38,7 +38,7 @@ async function main() {
   try {
     const toolInput = hookData.tool_input || hookData.toolInput || {};
     const raw = toolInput.skill || toolInput.name || '';
-    // Case-insensitive: accepts both v3+ `topia:` and legacy `Topia:` prefixes.
+    // Case-insensitive: accepts both v3+ `topia:` and legacy `topia:` prefixes.
     skillName = raw.replace(/^[Tt]opia:/, '') || 'unknown';
   } catch {
     const toolInput = process.env.CLAUDE_TOOL_INPUT || '';

@@ -15,11 +15,11 @@ const SKIP_DIRS = new Set(['node_modules', '.git', 'mcp-servers', 'references/ui
 const REPLACEMENTS = [
   // Skill IDs (order: longest / most specific first)
   ['guardian-env', 'guardian-env'],
-  ['Topia:guardian-env', 'Topia:guardian-env'],
-  ['Topia:guardian', 'Topia:guardian'],
-  ['Topia:readiness', 'Topia:readiness'],
-  ['Topia:integrate', 'Topia:integrate'],
-  ['Topia:recon', 'Topia:recon'],
+  ['topia:guardian-env', 'topia:guardian-env'],
+  ['topia:guardian', 'topia:guardian'],
+  ['topia:readiness', 'topia:readiness'],
+  ['topia:integrate', 'topia:integrate'],
+  ['topia:recon', 'topia:recon'],
   ['`guardian`', '`guardian`'],
   ['`readiness`', '`readiness`'],
   ['`integrate`', '`integrate`'],

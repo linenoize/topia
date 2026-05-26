@@ -4,7 +4,7 @@
 
 <p align="center">
   <strong>Topia — internal skill toolkit for AI coding assistants.</strong><br>
-  66 skills · 203 synapses · 44 pulses · 10 extension packs · optional persistent memory via agora-code MCP
+  67 skills · 203 synapses · 44 pulses · 10 extension packs · optional persistent memory via agora-code MCP
 </p>
 
 <p align="center">
@@ -40,7 +40,7 @@ Install like any other Claude Code plugin — no clone required for the plugin i
 Then wire global discipline hooks (one-time per machine). The npm package is **not** required for a private repo — use `node` against a clone or the Claude plugin cache (see [`docs/INSTALL-CLAUDE-CODE.md`](docs/INSTALL-CLAUDE-CODE.md)):
 
 ```bash
-cd topia && node compiler/bin/topia.js setup --global --preset gentle
+cd skill-topia && node compiler/bin/topia.js setup --global --preset gentle
 ```
 
 Restart Claude Code, then use `/topia build` or `/topia:build`. Full guide: [`docs/INSTALL-CLAUDE-CODE.md`](docs/INSTALL-CLAUDE-CODE.md). Team repos can merge [`docs/templates/team-claude-settings.json`](docs/templates/team-claude-settings.json) into `.claude/settings.json` to prompt the marketplace on folder trust.
@@ -51,12 +51,12 @@ Validate the catalog before release: `claude plugin validate .`
 
 ```bash
 git clone https://github.com/linenoize/topia.git
-cd topia
+cd skill-topia
 npm install
 node compiler/bin/topia.js install
 ```
 
-Optional stable location: `~/.claude/skills/topia` (see [`docs/INSTALL-CLAUDE-CODE.md`](docs/INSTALL-CLAUDE-CODE.md)).
+Optional stable location: `~/.claude/skills/skill-topia` (see [`docs/INSTALL-CLAUDE-CODE.md`](docs/INSTALL-CLAUDE-CODE.md)).
 
 `topia install` is a one-shot orchestrator. In order, it:
 
@@ -80,7 +80,7 @@ node compiler/bin/topia.js visualize   # writes .topia/nexus.html and opens in b
 
 ```bash
 node compiler/bin/topia.js doctor
-# ✓ 66 skills, 203 synapses, 44 pulses — nexus is healthy
+# ✓ 67 skills, 203 synapses, 44 pulses — nexus is healthy
 ```
 
 ### Non-Claude IDEs
@@ -89,7 +89,7 @@ node compiler/bin/topia.js doctor
 node compiler/bin/topia.js init --platform cursor       # also: codex, antigravity, opencode, openclaw, generic
 ```
 
-Compiles all 66 skills to the target IDE's rule format.
+Compiles all 67 skills to the target IDE's rule format.
 
 ### Install flags
 

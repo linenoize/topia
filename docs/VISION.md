@@ -6,7 +6,7 @@
 
 The problem is not that developers lack AI tools. The problem is that AI tools behave like interns with amnesia — capable, but stateless, siloed, and unable to hand work off cleanly.
 
-Three specific failures motivated Topia:
+Three specific failures motivated topia:
 
 **Failure 1: Isolation.** Most skill ecosystems are collections, not systems. 500+ skills exist that don't know each other. When `debug` finds a root cause, nothing hands that diagnosis to `fix`. The developer becomes the integration layer — which defeats the purpose of AI tooling.
 

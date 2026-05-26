@@ -406,7 +406,7 @@ This is NOT optional formatting. It is evidence that routing occurred. If this l
 ## Routing Decision
 - **Intent**: [classified user intent]
 - **Type**: CODE_CHANGE | QUESTION | DEBUG_REQUEST | REVIEW_REQUEST | EXPLORE
-- **Skill**: Topia:[skill-name]
+- **Skill**: topia:[skill-name]
 - **Confidence**: HIGH | MEDIUM | LOW
 - **Override**: [routing override applied, if any]
 - **Reason**: [one-line justification for skill selection]
@@ -415,9 +415,9 @@ This is NOT optional formatting. It is evidence that routing occurred. If this l
 For multi-skill chains:
 ```
 ## Routing Chain
-1. Topia:[skill-1] — [purpose]
-2. Topia:[skill-2] — [purpose]
-3. Topia:[skill-3] — [purpose]
+1. topia:[skill-1] — [purpose]
+2. topia:[skill-2] — [purpose]
+3. topia:[skill-3] — [purpose]
 ```
 
 ## Constraints

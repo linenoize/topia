@@ -36,7 +36,7 @@
         ]
       },
       {
-        "matcher": "Edit|Write",
+        "matcher": ".*",
         "hooks": [
           {
             "type": "command",
@@ -52,6 +52,11 @@
             "type": "command",
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cjs\" secrets-scan",
             "async": false
+          },
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cjs\" git-push-checkpoint",
+            "async": true
           }
         ]
       }
@@ -63,6 +68,11 @@
           {
             "type": "command",
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cjs\" token-meter",
+            "async": true
+          },
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cjs\" tool-collector",
             "async": true
           }
         ]
@@ -110,6 +120,18 @@
           {
             "type": "command",
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cjs\" pre-compact",
+            "async": false
+          }
+        ]
+      }
+    ],
+    "PostCompact": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cjs\" post-compact",
             "async": false
           }
         ]

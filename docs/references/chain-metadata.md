@@ -163,7 +163,7 @@ When chain_metadata is present in the conversation context from a previous skill
 2. **Read `suggested_next`** — prefer these over the hardcoded one-hop table (they're data-driven)
 3. **Read `domain`** — trigger L4 pack auto-suggest if domain matches a pack
 4. **Read `exports`** — when routing to suggested skill, include relevant export keys in the routing context so the next skill knows what data is available
-5. **Announce**: "Based on [skill] output: [suggested_next.reason]. Run `Topia:[skill]`? (skip to continue)"
+5. **Announce**: "Based on [skill] output: [suggested_next.reason]. Run `topia:[skill]`? (skip to continue)"
 
 **Conflict resolution**: If chain_metadata suggests skill A but skill-router's hardcoded table suggests skill B, prefer chain_metadata (it has more context).
 

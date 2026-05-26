@@ -110,11 +110,13 @@ const SCOPED = [
     ],
   },
   // Plugin `name` field — upstream ships "Topia"; our fork uses lowercase "topia".
-  // Targeted to plugin manifest files only so prose mentions of "Topia" aren't touched.
+  // For plugin.json we also restore `displayName: "Topia"` (upstream lacks it).
+  // marketplace.json already carries displayName upstream, so do NOT add it there.
+  // Idempotent: after one run the source string is gone so a re-run is a no-op.
   {
     file: '.claude-plugin/plugin.json',
     pairs: [
-      ['"name": "Topia"', '"name": "topia"'],
+      ['"name": "Topia"', '"name": "topia",\n  "displayName": "Topia"'],
     ],
   },
   {

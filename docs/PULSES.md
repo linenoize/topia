@@ -30,7 +30,10 @@ When `debug` finishes and emits `bug.diagnosed`, the nexus routes the event to e
 | `ideas.ready` | brainstorm | build | Brainstorm produced approach options |
 | `plan.ready` | plan | build | Phase plan approved and saved |
 | `phase.complete` | build, team | session-bridge | A phase finished; checkpoint state |
-| `checkpoint.request` | build | session-bridge | Context pressure — save before compact |
+| `checkpoint.request` | build | session-bridge, context-lifecycle | Context pressure — save before compact |
+| `context.pressure.high` | context-engine | context-lifecycle | ORANGE/RED tool-call pressure (advisory) |
+| `context.checkpoint.written` | pre-compact hook, git-push hook | *(observability)* | Headless `.topia/checkpoint.md` written |
+| `context.compacted` | context-lifecycle | *(observability)* | Post-compact resume confirmed |
 | `project.onboarded` | onboard | plan | First-session setup done |
 | `invariants.seeded` | onboard | logic-guardian | `.topia/INVARIANTS.md` populated |
 | `invariants.loaded` | session-bridge | logic-guardian | Invariants read at session start |

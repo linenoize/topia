@@ -22,7 +22,7 @@ One-shot, interactive migration command for projects coming from rune-kit.
 
 ## When to run
 
-The session-start hook prints a `=== Topia: Rune migration recommended ===` banner if it detects `.rune/` OR the rune-kit plugin AND no migration/skip flag exists. Run this command at that point.
+The session-start hook prints a `=== topia: Rune migration recommended ===` banner if it detects `.rune/` OR the rune-kit plugin AND no migration/skip flag exists. Run this command at that point.
 
 ## Usage
 

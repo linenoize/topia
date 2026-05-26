@@ -142,12 +142,16 @@ function flushMetrics(hookData) {
     duration_min: durationMin,
     tool_calls: watchState.count,
     tool_distribution: watchState.toolCounts,
+    pressure_level: watchState.pressureLevel || 'green',
     skill_invocations: skillEvents.length,
     skills_used: Object.keys(skillCounts),
     primary_skill: primarySkill,
     models_used: modelsUsed,
     skill_durations: Object.keys(skillDurations).length > 0 ? skillDurations : undefined,
     tokens,
+    expensive_session:
+      (tokens.compactions || 0) >= 2 ||
+      (typeof tokens.context_peak === 'number' && tokens.context_peak >= 90000),
   };
 
   const sessionsFile = path.join(TopiaMetricsDir, 'sessions.jsonl');
@@ -209,6 +213,31 @@ function flushMetrics(hookData) {
       chainsFile,
       `${JSON.stringify({ session: sessionId, chain: skillChain, depth: skillChain.length })}\n`,
     );
+  }
+
+  const { toolIoByTool } = normalizeSessionTokens(allEvents);
+  if (toolIoByTool && Object.keys(toolIoByTool).length > 0) {
+    const toolsFile = path.join(TopiaMetricsDir, 'tools.json');
+    let toolsData = { version: 1, updated: now, tools: {} };
+    if (fs.existsSync(toolsFile)) {
+      try {
+        toolsData = JSON.parse(fs.readFileSync(toolsFile, 'utf-8'));
+        if (!toolsData.tools) toolsData.tools = {};
+      } catch {
+        /* fresh */
+      }
+    }
+    for (const [tool, stats] of Object.entries(toolIoByTool)) {
+      if (!toolsData.tools[tool]) {
+        toolsData.tools[tool] = { total_invocations: 0, estimated_tokens_total: 0, sessions: 0 };
+      }
+      toolsData.tools[tool].total_invocations += stats.invocations;
+      toolsData.tools[tool].estimated_tokens_total += stats.estimated_tokens;
+      toolsData.tools[tool].sessions += 1;
+      toolsData.tools[tool].last_used = now.slice(0, 10);
+    }
+    toolsData.updated = now;
+    fs.writeFileSync(toolsFile, `${JSON.stringify(toolsData, null, 2)}\n`);
   }
 
   clearEvents(cwd);

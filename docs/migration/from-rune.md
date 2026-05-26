@@ -12,7 +12,7 @@ If you previously used rune-kit in a project, run `migrate-from-rune` once after
 After cloning Topia and starting Claude Code, the session-start hook detects `.rune/` AND/OR `~/.claude/plugins/cache/rune-kit/` and prints:
 
 ```
-=== Topia: Rune migration recommended ===
+=== topia: Rune migration recommended ===
   · Found .rune/ in this project (rune-kit's state directory)
   · Found rune-kit plugin at ~/.claude/plugins/cache/rune-kit
 

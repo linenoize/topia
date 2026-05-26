@@ -59,7 +59,7 @@ function detectRuneMigration() {
   }
   if (topiaFlagExists('migrated-from-rune.flag') || topiaFlagExists('skip-rune-migration.flag')) return;
 
-  console.log('\n=== Topia: Rune migration recommended ===');
+  console.log('\n=== topia: Rune migration recommended ===');
   if (hasRuneDir) {
     console.log(`  · Found .rune/ in this project (rune-kit's state directory)`);
   }
@@ -116,7 +116,7 @@ function detectFinalizeNudge() {
     }
   } catch { /* non-critical — fall through to nudge */ }
 
-  console.log('\n[Topia: first-run tip] Plugin is installed — you are ready to use /topia build.');
+  console.log('\n[topia: first-run tip] Plugin is installed — you are ready to use /topia build.');
   console.log('  Optional extras (system-wide hooks, agora-code memory, project .gitignore):');
   console.log('    /topia finalize        — interactive opt-in (recommended)');
   console.log('    /topia finalize --reset  hides this tip permanently');
@@ -171,24 +171,24 @@ if (hasTopiaState) {
     try {
       const ap = JSON.parse(fs.readFileSync(activePacksPath, 'utf-8'));
       if (Array.isArray(ap.enabled) && ap.enabled.length > 0) {
-        console.log(`[Topia: active L4 packs: ${ap.enabled.join(', ')}]`);
+        console.log(`[topia: active L4 packs: ${ap.enabled.join(', ')}]`);
       }
     } catch { /* non-critical */ }
   }
 
     console.log('');
-  console.log('[Topia: Memory checklist]');
+  console.log('[topia: Memory checklist]');
   console.log('  1. Invoke topia:recall (unified .topia/ + .remember/ + MCP)');
   console.log('  2. If agora-memory MCP registered: recall_learnings before large reads');
   console.log('  3. After decisions: topia:journal then neural-memory Capture');
 
 if (loaded.length > 0) {
-    console.log(`\n[Topia: injected project state from ${loaded.join(', ')}]`);
+    console.log(`\n[topia: injected project state from ${loaded.join(', ')}]`);
   } else {
-    console.log('[Topia: .topia/ directory found but no state files yet. Run /topia onboard to populate.]');
+    console.log('[topia: .topia/ directory found but no state files yet. Run /topia onboard to populate.]');
   }
 } else {
-  console.log('[Topia: No .topia/ directory found. Run /topia onboard to set up project context.]');
+  console.log('[topia: No .topia/ directory found. Run /topia onboard to set up project context.]');
 }
 
 // Tier detection hint — historical Pro/Business plugin paths; tiers no longer ship

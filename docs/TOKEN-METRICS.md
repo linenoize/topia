@@ -28,6 +28,9 @@ npx @linenoize/topia analytics
 | Tool I/O estimate | **estimated** | `postToolUse` → char count × 0.25 on tool input + output |
 | Skill load estimate | **estimated** | Skill/agent file size when `Skill` tool fires |
 | Compaction count | **measured** | `preCompact` events per session |
+| Per-tool I/O totals | **estimated** | `tool-collector` → `.topia/metrics/tools.json` at session end |
+| Checkpoint writes | **measured** | `context_checkpoint_written` events (pre-compact / git push) |
+| Expensive session flag | **derived** | 2+ compactions or high `context_peak` in `sessions.jsonl` |
 
 Every session entry includes `tokens.confidence`:
 
@@ -85,6 +88,8 @@ topia analytics --days 7
 | `.topia/metrics/tokens.jsonl` | Per-compaction rows |
 | `.topia/metrics/skills.json` | Skill totals + `estimated_tokens_total` |
 | `.topia/metrics/baseline.json` | Optional A/B baseline (user-created) |
+| `.topia/metrics/tools.json` | Per-tool invocation + estimated token totals |
+| `.topia/metrics/context-baseline.json` | Optional snapshot from `npm run metrics:baseline -- --write` |
 
 ## Interpreting results
 

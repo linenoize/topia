@@ -345,7 +345,8 @@ Apply **only** if the framework was detected in Phase 0. Skip entirely if not re
 4. Read `.topia/metrics/chains.jsonl` — extract most common skill chains
 5. Read `.topia/metrics/routing-overrides.json` (if exists) — list active routing overrides
 6. Read `.topia/metrics/baseline.json` (if exists) — A/B baseline for savings comparison
-7. Run `node compiler/bin/topia.js analytics --json` (or `topia metrics --json`) — extract `tokenOverview`, `tokenTrend`, `savingsVsBaseline`
+7. Run `node compiler/bin/topia.js analytics --json` (or `topia metrics --json`) — extract `tokenOverview`, `tokenTrend`, `savingsVsBaseline`, `toolTokenDistribution`, `expensiveSessions`
+8. Read `.topia/metrics/tools.json` if present — per-tool invocation and estimated token totals
 
 Compute and report:
 - **Top 10 most-used skills** (by total invocations)
@@ -357,6 +358,8 @@ Compute and report:
   - Platform split (cursor vs claude)
   - Baseline delta % if `baseline.json` present
 - **Active routing overrides** and their application count
+- **Top tools by estimated I/O tokens** (from `tools.json` / `toolTokenDistribution`) — candidates to reduce Read/Skill/MCP usage
+- **Expensive sessions** (2+ compactions or high `context_peak`) — correlate with `pressure_level` and primary skill
 - **Nexus density check**: cross-reference invocation data with declared connections — skills that are declared as "Called By" but never actually invoked may indicate broken nexus paths
 
 **Propose routing overrides**: If patterns suggest inefficiency (e.g., debug consistently called 3+ times in a chain for the same session), propose a new routing override for user approval.

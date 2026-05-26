@@ -35,6 +35,7 @@ Use at session start, before architecture decisions, or when resuming work after
 - `plan` (L2): before architecture decisions on similar problems
 - `recon` (L2): when codebase scan benefits from prior session context
 - User: `/topia recall` direct invocation
+- `context-lifecycle` (L3): minimal recall after post-compact resume
 
 ## Workflow
 

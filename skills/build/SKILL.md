@@ -497,7 +497,7 @@ Projects can define phase-specific rules in `.topia/phase-rules.md` that apply O
 
 ## Checkpoint Protocol (Opt-In)
 
-Invoke `topia:session-bridge` after Phase 2, 4, and 5 to save intermediate state. OPT-IN — activate only if task spans 3+ phases, context-watch is ORANGE, or user explicitly requests checkpoints. Before spawning subagents, invoke `topia:context-pack` to create structured handoff briefings.
+Invoke `topia:context-lifecycle` (Boundary Save mode) after Phase 2, 4, and 5 when task spans 3+ phases, context-watch is YELLOW+, or user requests checkpoints. It coordinates `session-bridge` Save, optional `neural-memory` Flush, and `/compact` guidance. Hooks also write `.topia/checkpoint.md` on pre-compact and `git push`. Before spawning subagents, invoke `topia:context-pack` for handoff briefings.
 
 ## Phase Transition Protocol (MANDATORY)
 
@@ -780,6 +780,7 @@ Mentally track tool call fingerprints. 3 identical calls → WARN. 5 identical c
 | any | `context-pack` | L3 | create structured handoff briefings before spawning subagents |
 | any | `skill-forge` | L2 | When new skill creation detected during build |
 | any | `context-engine` | L3 | Context budget management at phase boundaries |
+| any | `context-lifecycle` | L3 | Automated save/compact/resume at phase boundaries and after hook checkpoints |
 | any | `docs` | L2 | Generate or update documentation when scope warrants |
 | any | `git` | L3 | Stage and commit when user approves |
 | any | `improve-architecture` | L2 | Shallow-module deepening during quality gate |

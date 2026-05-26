@@ -84,7 +84,7 @@ That's **the toolkit in action**. Six skills cooperated — you didn't invoke an
 
 ## Step 3: What Just Happened?
 
-Compare vanilla AI coding vs Topia:
+Compare vanilla AI coding vs topia:
 
 | Vanilla | With Topia |
 |---------|-----------|

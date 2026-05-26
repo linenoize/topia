@@ -21,7 +21,7 @@
  *    Unknown keys land in `frontmatter` verbatim and pass through.
  *  - `emit` / `listen` are always arrays (comma-split). Empty if missing.
  *  - Cross-refs use canonical lowercase form `topia:<name>` (v3.0.0+).
- *    Detection is case-insensitive so legacy `Topia:` references in older
+ *    Detection is case-insensitive so legacy `topia:` references in older
  *    SKILL.md / docs are still recognized and rewritten.
  *  - Missing sections produce empty values, never throw — doctor.js detects gaps.
  */

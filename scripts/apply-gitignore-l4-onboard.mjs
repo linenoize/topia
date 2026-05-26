@@ -849,30 +849,30 @@ patch(
 patch(
   'hooks/session-start/index.cjs',
   `  if (loaded.length > 0) {
-    console.log(\`\\n[Topia: injected project state from \${loaded.join(', ')}]\`);
+    console.log(\`\\n[topia: injected project state from \${loaded.join(', ')}]\`);
   } else {
-    console.log('[Topia: .topia/ directory found but no state files yet. Run /topia onboard to populate.]');
+    console.log('[topia: .topia/ directory found but no state files yet. Run /topia onboard to populate.]');
   }
 } else {
-  console.log('[Topia: No .topia/ directory found. Run /topia onboard to set up project context.]');
+  console.log('[topia: No .topia/ directory found. Run /topia onboard to set up project context.]');
 }`,
   `  const activePacksPath = path.join(TopiaDir, 'active-packs.json');
   if (fs.existsSync(activePacksPath)) {
     try {
       const ap = JSON.parse(fs.readFileSync(activePacksPath, 'utf-8'));
       if (Array.isArray(ap.enabled) && ap.enabled.length > 0) {
-        console.log(\`[Topia: active L4 packs: \${ap.enabled.join(', ')}]\`);
+        console.log(\`[topia: active L4 packs: \${ap.enabled.join(', ')}]\`);
       }
     } catch { /* non-critical */ }
   }
 
   if (loaded.length > 0) {
-    console.log(\`\\n[Topia: injected project state from \${loaded.join(', ')}]\`);
+    console.log(\`\\n[topia: injected project state from \${loaded.join(', ')}]\`);
   } else {
-    console.log('[Topia: .topia/ directory found but no state files yet. Run /topia onboard to populate.]');
+    console.log('[topia: .topia/ directory found but no state files yet. Run /topia onboard to populate.]');
   }
 } else {
-  console.log('[Topia: No .topia/ directory found. Run /topia onboard to set up project context.]');
+  console.log('[topia: No .topia/ directory found. Run /topia onboard to set up project context.]');
 }`,
   true,
 );

@@ -2,7 +2,7 @@
  * Cross-Reference Transform
  *
  * Rewrites `topia:<name>` references to platform-native format.
- * Case-insensitive — legacy `Topia:` references are still detected.
+ * Case-insensitive — legacy `topia:` references are still detected.
  */
 
 const CROSS_REF_PATTERN = /`[Tt]opia:([a-z][\w-]*)`/g;

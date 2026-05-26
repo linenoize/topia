@@ -3,7 +3,7 @@
 > **Need a skill?** Invoke via `/topia <skill-name>` in Claude Code, or `@topia:<skill-name>` in Cursor / Codex / Antigravity.
 > Every skill has a `SKILL.md` at `skills/<name>/SKILL.md` — read that for the full spec.
 
-**Total:** 66 skills across 5 layers · 203 synapses + 44 pulses
+**Total:** 67 skills across 5 layers · 203 synapses + 44 pulses
 **Quick find:** use Ctrl+F on this page
 
 ---
@@ -225,6 +225,7 @@ Generate and parse office documents — PDF, DOCX, XLSX, PPTX, CSV. Pure format 
 | 🔄 | **sast** | Static analysis runner — ESLint, Semgrep, Bandit, Clippy, govulncheck |
 | 🤖 | **integrity-check** | Detects prompt injection, memory poisoning in `.topia/` files |
 | 🤖 | **context-engine** | Context window management, artifact folding, auto-compaction |
+| 🤖 | **context-lifecycle** | Automated save/compact/resume at phase boundaries, push, and post-compact |
 | 🤖 | **context-pack** | Structured handoff briefings between agents |
 | 🔄 | **journal** | Persistent state tracking — ADRs, decisions, progress |
 | 🤖 | **session-bridge** | Cross-session context persistence to `.topia/` files |

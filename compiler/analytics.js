@@ -64,6 +64,17 @@ async function loadMetrics(TopiaRoot) {
     }
   }
 
+  let toolTotals = {};
+  const toolsFile = path.join(dir, 'tools.json');
+  if (existsSync(toolsFile)) {
+    try {
+      const raw = JSON.parse(await readFile(toolsFile, 'utf-8'));
+      toolTotals = raw.tools || {};
+    } catch {
+      /* corrupted — use empty */
+    }
+  }
+
   let tokenEvents = [];
   try {
     if (existsSync(files.tokens)) tokenEvents = readJsonl(await readFile(files.tokens, 'utf-8'));
@@ -80,7 +91,7 @@ async function loadMetrics(TopiaRoot) {
     }
   }
 
-  return { sessions, chains, skillTotals, tokenEvents, baseline };
+  return { sessions, chains, skillTotals, toolTotals, tokenEvents, baseline };
 }
 
 // ─── Date Filtering ───
@@ -206,6 +217,53 @@ export async function getSkillChains(TopiaRoot, days = 30) {
   return Object.entries(patterns)
     .map(([chain, count]) => ({ chain, count }))
     .sort((a, b) => b.count - a.count)
+    .slice(0, 20);
+}
+
+export async function getToolTokenDistribution(TopiaRoot, days = 30) {
+  const { toolTotals } = await loadMetrics(TopiaRoot);
+
+  return Object.entries(toolTotals)
+    .map(([tool, stats]) => ({
+      tool,
+      invocations: stats.total_invocations || 0,
+      estimated_tokens: stats.estimated_tokens_total || 0,
+      sessions: stats.sessions || 0,
+      last_used: stats.last_used || null,
+    }))
+    .sort((a, b) => b.estimated_tokens - a.estimated_tokens);
+}
+
+export async function getExpensiveSessions(TopiaRoot, days = 30) {
+  const { sessions } = await loadMetrics(TopiaRoot);
+  const filtered = filterByDays(sessions, days);
+
+  const peaks = filtered
+    .map((s) => s.tokens?.context_peak)
+    .filter((p) => typeof p === 'number');
+  const p90 =
+    peaks.length > 0
+      ? peaks.sort((a, b) => a - b)[Math.floor(peaks.length * 0.9)] ?? peaks[peaks.length - 1]
+      : 90000;
+
+  return filtered
+    .filter(
+      (s) =>
+        s.expensive_session === true ||
+        (s.tokens?.compactions || 0) >= 2 ||
+        (typeof s.tokens?.context_peak === 'number' && s.tokens.context_peak >= p90),
+    )
+    .map((s) => ({
+      id: s.id,
+      date: s.date,
+      platform: s.platform,
+      tool_calls: s.tool_calls,
+      compactions: s.tokens?.compactions || 0,
+      context_peak: s.tokens?.context_peak ?? null,
+      pressure_level: s.pressure_level || 'unknown',
+      primary_skill: s.primary_skill,
+    }))
+    .sort((a, b) => (b.context_peak || 0) - (a.context_peak || 0))
     .slice(0, 20);
 }
 
@@ -514,6 +572,8 @@ export async function getAllAnalytics(TopiaRoot, days = 30) {
     sessionTrend,
     skillChains,
     toolDistribution,
+    toolTokenDistribution,
+    expensiveSessions,
     skillHeatmap,
     sessionTimeline,
     skillNexus,
@@ -528,6 +588,8 @@ export async function getAllAnalytics(TopiaRoot, days = 30) {
     getSessionTrend(TopiaRoot, days),
     getSkillChains(TopiaRoot, days),
     getToolDistribution(TopiaRoot, days),
+    getToolTokenDistribution(TopiaRoot, days),
+    getExpensiveSessions(TopiaRoot, days),
     getSkillHeatmap(TopiaRoot, days),
     getSessionTimeline(TopiaRoot, days, 5),
     getSkillNexus(TopiaRoot, days),
@@ -544,6 +606,8 @@ export async function getAllAnalytics(TopiaRoot, days = 30) {
     sessionTrend,
     skillChains,
     toolDistribution,
+    toolTokenDistribution,
+    expensiveSessions,
     skillHeatmap,
     sessionTimeline,
     skillNexus,

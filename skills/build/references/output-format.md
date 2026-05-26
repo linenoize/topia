@@ -52,7 +52,7 @@ chain_metadata:
     phase_count: [N]
     concerns: []  # populated if DONE_WITH_CONCERNS
   suggested_next:  # 1-3 data-driven recommendations based on THIS output
-    - skill: "Topia:[skill]"
+    - skill: "topia:[skill]"
       reason: "[grounded in actual data — not generic advice]"
       consumes: ["[export keys the suggested skill would use]"]
 ```

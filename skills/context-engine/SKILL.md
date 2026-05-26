@@ -9,7 +9,7 @@ metadata:
   model: haiku
   group: state
   tools: "Read, Glob, Grep"
-  emit: context.preview, output.density.set
+  emit: context.preview, context.pressure.high, output.density.set
 ---
 
 # context-engine
@@ -42,6 +42,7 @@ Context-engine also manages **behavioral mode injection** via `contexts/` direct
 
 # Exception: L3→L3 coordination
 - `session-bridge` (L3): coordinate state save when context critical
+- `context-lifecycle` (L3): Boundary Save and compact/resume orchestration at ORANGE/RED
 - `neural-memory` (L3): Flush Mode before compaction to preserve decisions
 
 ## Called By (inbound)
@@ -52,6 +53,7 @@ Context-engine also manages **behavioral mode injection** via `contexts/` direct
 - `context-pack` (L3): when packaging context for sub-agent handoff
 - `session-bridge` (L3): coordinates with context-engine for compaction timing
 - `adversary` (L2): (oracle-mode) emit `context.preview` before bundle build to gate token cost
+- `context-lifecycle` (L3): health checks before Boundary Save and compact guidance
 
 ## Execution
 
