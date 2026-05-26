@@ -218,8 +218,10 @@ claude plugin validate .
 | `/topia` missing | `/reload-plugins` or restart |
 | Hooks not firing | Re-run `node …/topia.js setup --global`; `node …/topia.js doctor --hooks` |
 | `npm 404` on `@linenoize/topia` | Expected if unpublished — use `node …/topia.js` from clone or plugin cache, not `npx` |
-| Relative path install fails | Add marketplace via **git** (`linenoize/topia`), not a raw URL to `marketplace.json` only |
+| Relative path install fails (v3.1.1 and earlier) | Upgrade to v3.1.2+ — the marketplace now uses an explicit GitHub source so direct-URL installs work. Or add the marketplace via **git** (`linenoize/topia`). |
 | Update: Plugin "topia" not found | Marketplace id must match `plugin.json` (case-sensitive) → use lowercase `topia@linenoize`. Run `/plugin marketplace update linenoize` then `/plugin update topia@linenoize`. |
 | Update: Plugin "Topia" not found (capital T) | You installed v2.x — upgrade path is `/plugin uninstall Topia@linenoize` then `/plugin install topia@linenoize`. As of v3.0.0 the plugin id is lowercase. |
 
 See [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md).
+
+For the differences between user / project / local install scopes and what fails in each, see [`INSTALL-SCOPES.md`](INSTALL-SCOPES.md).

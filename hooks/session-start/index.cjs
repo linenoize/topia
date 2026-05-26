@@ -89,37 +89,77 @@ function detectRuneMigration() {
 }
 
 function detectFinalizeNudge() {
-  // Skip if user has already finalized or explicitly opted out.
-  const flags = ['.finalized', 'skip-finalize.flag'];
-  for (const f of flags) {
+  // Top-level dismiss — written by `/topia finalize --dismiss` (or --reset).
+  // If present, suppress the entire first-run menu permanently.
+  const dismissFlags = ['.dismissed', 'skip-first-run.flag'];
+  for (const f of dismissFlags) {
     if (fs.existsSync(path.join(TopiaDirRead, f)) || fs.existsSync(path.join(TopiaDirWrite, f))) {
       return;
     }
   }
-  // Heuristic: if ~/.claude/settings.json already has Topia dispatch hooks,
-  // the user finalized via the CLI before this nudge existed — write the flag
-  // silently so we never bother them.
-  try {
-    const settingsPath = path.join(os.homedir(), '.claude', 'settings.json');
-    if (fs.existsSync(settingsPath)) {
-      const raw = fs.readFileSync(settingsPath, 'utf-8');
-      if (raw.includes('topia.js hook-dispatch') || raw.includes('Topia-managed')) {
-        try {
-          fs.mkdirSync(TopiaDirWrite, { recursive: true });
-          fs.writeFileSync(
-            path.join(TopiaDirWrite, '.finalized'),
-            `finalized: ${new Date().toISOString()} (auto-detected from settings.json)\n`,
-          );
-        } catch { /* non-critical */ }
-        return;
-      }
-    }
-  } catch { /* non-critical — fall through to nudge */ }
 
-  console.log('\n[topia: first-run tip] Plugin is installed — you are ready to use /topia build.');
-  console.log('  Optional extras (system-wide hooks, agora-code memory, project .gitignore):');
-  console.log('    /topia finalize        — interactive opt-in (recommended)');
-  console.log('    /topia finalize --reset  hides this tip permanently');
+  // Detect per-task completion state. Each block has its own flag so the menu
+  // shrinks as the user completes steps (e.g. once they run /topia onboard,
+  // the onboarding line disappears next session).
+  const has = (flag) =>
+    fs.existsSync(path.join(TopiaDirRead, flag)) ||
+    fs.existsSync(path.join(TopiaDirWrite, flag));
+
+  // Auto-detect finalize from ~/.claude/settings.json so users who finalized
+  // via the CLI before this menu existed don't keep getting nudged.
+  let finalized = has('.finalized');
+  if (!finalized) {
+    try {
+      const settingsPath = path.join(os.homedir(), '.claude', 'settings.json');
+      if (fs.existsSync(settingsPath)) {
+        const raw = fs.readFileSync(settingsPath, 'utf-8');
+        if (raw.includes('topia.js hook-dispatch') || raw.includes('Topia-managed')) {
+          try {
+            fs.mkdirSync(TopiaDirWrite, { recursive: true });
+            fs.writeFileSync(
+              path.join(TopiaDirWrite, '.finalized'),
+              `finalized: ${new Date().toISOString()} (auto-detected from settings.json)\n`,
+            );
+          } catch { /* non-critical */ }
+          finalized = true;
+        }
+      }
+    } catch { /* fall through */ }
+  }
+
+  // Onboard is "done" once the repo has any persisted state file written by
+  // onboard (DEVELOPER-GUIDE / conventions / progress / decisions). Without
+  // this heuristic, onboarded users on machines that didn't run finalize
+  // would still see "set up this repo" — confusing for them.
+  const onboardSignals = ['DEVELOPER-GUIDE.md', 'conventions.md', 'progress.md', 'decisions.md'];
+  const onboarded = onboardSignals.some((f) => has(f));
+
+  // If everything is done, no menu. Self-suppressed.
+  if (finalized && onboarded) {
+    try {
+      fs.mkdirSync(TopiaDirWrite, { recursive: true });
+      fs.writeFileSync(
+        path.join(TopiaDirWrite, '.dismissed'),
+        `auto-dismissed: ${new Date().toISOString()} (finalize + onboard complete)\n`,
+      );
+    } catch { /* non-critical */ }
+    return;
+  }
+
+  // Structured first-run menu. Each line indicates state with [ ] / [x] so
+  // the user sees what's left. Dismissible at any time.
+  console.log('\n  ╭───────────────────────────────────────────────────────────╮');
+  console.log('  │  Topia is installed. Pick your next step:                 │');
+  console.log('  ╰───────────────────────────────────────────────────────────╯');
+  console.log(`    [${finalized ? 'x' : ' '}] /topia finalize  — system-wide discipline hooks +`);
+  console.log('                          agora-code persistent memory (one-time per machine)');
+  console.log(`    [${onboarded ? 'x' : ' '}] /topia onboard   — scan this repo, write CLAUDE.md +`);
+  console.log('                          .topia/ context so future sessions start hydrated');
+  console.log('    [ ] /topia doctor    — verify install health and surface any fixes');
+  console.log('    [ ] /topia --help    — full command reference');
+  console.log('');
+  console.log('  Hide this menu permanently:   /topia finalize --dismiss');
+  console.log('  (Each completed step auto-checks itself the next session.)');
 }
 
 const hasTopiaState = fs.existsSync(TopiaDirRead) || fs.existsSync(TopiaDirWrite);

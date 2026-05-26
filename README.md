@@ -37,6 +37,21 @@ Install like any other Claude Code plugin — no clone required for the plugin i
 /plugin install topia@linenoize
 ```
 
+**Plugin id is lowercase `topia` as of v3.0.0.** If your client refuses with "Plugin topia not found in marketplace linenoize", run `/plugin marketplace update linenoize` first so the local catalog is refreshed.
+
+#### Which install paths work
+
+| Path | Command | Works? |
+|------|---------|--------|
+| GitHub shorthand (recommended) | `/plugin marketplace add linenoize/topia` | ✓ |
+| Git URL | `/plugin marketplace add https://github.com/linenoize/topia` | ✓ |
+| Direct URL to `marketplace.json` | `/plugin marketplace add https://raw.githubusercontent.com/linenoize/topia/main/.claude-plugin/marketplace.json` | ✓ (v3.1.2+) |
+| Local clone | `/plugin marketplace add /path/to/clone` | ✓ |
+
+Before v3.1.2, the direct-URL path failed because our plugin used a relative-path source (`"./"`) that only resolves when the marketplace is git-cloned. v3.1.2 switched to an explicit GitHub source, so all four paths now work.
+
+After install, restart Claude Code (or `/reload-plugins`). On the first session you'll see a structured menu offering `/topia finalize` (system-wide discipline hooks + persistent memory), `/topia onboard` (set up this repo), and `/topia doctor` (verify install).
+
 Then wire global discipline hooks (one-time per machine). The npm package is **not** required for a private repo — use `node` against a clone or the Claude plugin cache (see [`docs/INSTALL-CLAUDE-CODE.md`](docs/INSTALL-CLAUDE-CODE.md)):
 
 ```bash

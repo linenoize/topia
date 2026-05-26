@@ -4,6 +4,25 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
+## [3.1.2] — 2026-05-26
+
+Install hardening + post-install UX work driven by downstream reports of users either failing to install the plugin or installing it and never realizing they should run `/topia finalize`.
+
+### Changed
+
+- **Marketplace plugin source switched from `"./"` to an explicit GitHub object.** The relative-path source only resolved when the marketplace was added via git shorthand or git URL. Users who added the catalog via a direct URL to `marketplace.json` got "path not found" errors. The new `"source": { "source": "github", "repo": "linenoize/topia" }` form works for *all* four supported install paths (git shorthand, git URL, direct URL, local clone). Trade-off: when added via git shorthand the plugin is now cloned twice — once for the marketplace, once for the plugin install — but the cache hit on the second clone makes this near-instant.
+- **`scripts/port-rebrand.mjs` SCOPED entry for marketplace.json** now also rewrites `"source": "./"` → the GitHub form, so future syncs from upstream don't re-introduce the relative path.
+- **Session-start first-run nudge is now a structured menu** with per-step completion indicators (`[ ]` / `[x]`). Lists `/topia finalize`, `/topia onboard`, `/topia doctor`, `/topia --help`. Each step auto-checks itself the next session once detected (e.g. running `/topia onboard` writes `.topia/DEVELOPER-GUIDE.md`, which the menu then treats as "onboard done"). The whole menu auto-suppresses once both finalize and onboard are detected, and can be hidden manually with `/topia finalize --dismiss`. Replaces the silent one-line "first-run tip" that downstream users reported skipping.
+- **`/topia finalize --dismiss`** added as a flag-only short-circuit. Writes `.topia/.dismissed` and exits — does NOT run finalize, does NOT install hooks. For users who want to silence the menu without committing to extras.
+
+### Docs
+
+- **`docs/INSTALL-SCOPES.md`** (new) — covers user / project / local install scopes, what each controls, what fails per scope (including the common "I ran finalize but dispatch hooks don't fire in my other repo" foot-gun), and when to pick which.
+- **README install-paths matrix** — explicit table of which `/plugin marketplace add` forms work, with the v3.1.2 fix that unblocked direct-URL adds.
+- **Troubleshooting row updated** in `docs/INSTALL-CLAUDE-CODE.md` to point at the v3.1.2 fix instead of just telling users to use git shorthand.
+
+---
+
 ## [3.1.1] — 2026-05-25
 
 ### Changed

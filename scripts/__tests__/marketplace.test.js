@@ -13,7 +13,13 @@ describe('marketplace.json', () => {
     assert.ok(Array.isArray(marketplace.plugins));
     const entry = marketplace.plugins.find((p) => p.name === 'topia');
     assert.ok(entry, 'topia plugin entry required (must match plugin.json name; lowercase as of v3.0.0)');
-    assert.equal(entry.source, './');
+    // v3.1.2+: source is a github object so the marketplace works whether users
+    // add it via GitHub shorthand (`/plugin marketplace add linenoize/topia`)
+    // OR via direct URL to marketplace.json. The earlier `"./"` relative path
+    // only worked when the marketplace was cloned via git.
+    assert.equal(typeof entry.source, 'object', 'source should be a github object');
+    assert.equal(entry.source.source, 'github');
+    assert.equal(entry.source.repo, 'linenoize/topia');
   });
 
   test('versions align with package.json', () => {

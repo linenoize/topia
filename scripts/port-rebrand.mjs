@@ -123,6 +123,14 @@ const SCOPED = [
     file: '.claude-plugin/marketplace.json',
     pairs: [
       ['"name": "Topia"', '"name": "topia"'],
+      // v3.1.2+: plugin source switches from relative `"./"` to a github object so
+      // the catalog works whether users add the marketplace via git shorthand or via
+      // direct URL to marketplace.json. Upstream still ships `"./"`; this rewrites it
+      // on every port. Idempotent (after first run the source string is gone).
+      [
+        '"source": "./",',
+        '"source": { "source": "github", "repo": "linenoize/topia" },',
+      ],
     ],
   },
 ];

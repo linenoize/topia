@@ -20,6 +20,22 @@ After a successful run, writes `.topia/.finalized` so the session-start nudge st
 
 You are running inside Claude Code with access to `Bash`. Follow these steps:
 
+### Step 0 — Handle flag-only short-circuits
+
+Before doing anything else, parse the user's command for flag-only modes that should not run the full finalize flow:
+
+**If the user passed `--dismiss`:** write `.topia/.dismissed` and exit. No prompts, no hook setup. This is the "just hide the first-run menu, I'm not ready to commit to anything" path. Reversible.
+
+```bash
+mkdir -p .topia
+printf 'dismissed: %s\n' "$(date -Iseconds)" > .topia/.dismissed
+echo "First-run menu dismissed for this repo. Delete .topia/.dismissed to bring it back."
+```
+
+Then return — do NOT proceed to Step 1.
+
+**If the user passed `--reset`:** delete `.topia/.finalized` (existing behavior — re-prompts next session). After deleting, continue to Step 1 only if the user also asked to re-finalize; otherwise stop.
+
 ### Step 1 — Locate the plugin cache
 
 Run:
@@ -125,6 +141,7 @@ The slash command takes no required arguments. Recognized free-form intent:
 - `/topia finalize --skip-agora` — skip the Python MCP step
 - `/topia finalize --all` — enable everything non-interactively (still respects `--skip-agora`)
 - `/topia finalize --reset` — delete `.topia/.finalized` and re-prompt next session
+- `/topia finalize --dismiss` — write `.topia/.dismissed` so the first-run menu in session-start stops appearing in this repo. Does **not** finalize, does **not** install hooks. Use when the user wants to ignore the menu permanently without enabling extras. The flag is per-repo (lives in `.topia/`) so other repos are unaffected. Reversible: delete `.topia/.dismissed` to bring the menu back.
 
 ## What this is NOT
 
