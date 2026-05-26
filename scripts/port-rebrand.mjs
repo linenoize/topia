@@ -123,13 +123,20 @@ const SCOPED = [
     file: '.claude-plugin/marketplace.json',
     pairs: [
       ['"name": "Topia"', '"name": "topia"'],
-      // v3.1.2+: plugin source switches from relative `"./"` to a github object so
-      // the catalog works whether users add the marketplace via git shorthand or via
-      // direct URL to marketplace.json. Upstream still ships `"./"`; this rewrites it
-      // on every port. Idempotent (after first run the source string is gone).
+      // v3.2.1+: plugin source uses an explicit HTTPS `url` object so the clone
+      // always uses HTTPS. The earlier `{ source: "github", repo: ... }` form
+      // resolves to `git@github.com:...` (SSH) in Claude Code's plugin manager,
+      // which fails for users without GitHub SSH keys configured.
+      // Upstream still ships `"./"`; this rewrites it on every port. The second
+      // pair fixes up older fork copies that still carry the github-object form.
+      // Both are idempotent (after first run the source string is gone).
       [
         '"source": "./",',
+        '"source": { "source": "url", "url": "https://github.com/linenoize/topia.git" },',
+      ],
+      [
         '"source": { "source": "github", "repo": "linenoize/topia" },',
+        '"source": { "source": "url", "url": "https://github.com/linenoize/topia.git" },',
       ],
     ],
   },

@@ -4,6 +4,23 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
+## [3.2.1] — 2026-05-26
+
+Critical install fix driven by downstream user report: `/plugin install topia@linenoize` failed with `git@github.com: Permission denied (publickey)` for any user without GitHub SSH keys configured.
+
+### Fixed
+
+- **Marketplace plugin source switched from `{ source: "github", repo: ... }` to `{ source: "url", url: "https://github.com/linenoize/topia.git" }`.** Claude Code's plugin manager resolves the `github` source type to an SSH URL (`git@github.com:owner/repo`), which fails for the majority of users — most never set up GitHub SSH keys. The `url` source with an explicit `https://...git` URL forces HTTPS so the clone works for everyone. Same install command from the user's side (`/plugin install topia@linenoize`); they just won't get the SSH error anymore.
+- **`scripts/port-rebrand.mjs`** — SCOPED entry for marketplace.json now rewrites both upstream's `"./"` form AND any stale `{ source: "github", repo: ... }` form to the new HTTPS `url` object. Idempotent — re-running on an already-fixed tree is a no-op.
+- **`scripts/__tests__/marketplace.test.js`** — assertions updated to verify the `url` source shape with an explicit `https://` URL.
+
+### Notes
+
+- Upgrade path for existing users: run `/plugin marketplace update linenoize` then `/plugin install topia@linenoize` again. Existing installs are not affected (the SSH issue only blocks fresh clones).
+- The plugin cache path is unchanged. The plugin name, displayName, all skill namespaces, and every command are unchanged. This is a pure source-URL fix.
+
+---
+
 ## [3.2.0] — 2026-05-26
 
 Adds two L3 discoverability skills and a WSL note on the cache-path quirk.

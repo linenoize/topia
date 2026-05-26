@@ -13,13 +13,13 @@ describe('marketplace.json', () => {
     assert.ok(Array.isArray(marketplace.plugins));
     const entry = marketplace.plugins.find((p) => p.name === 'topia');
     assert.ok(entry, 'topia plugin entry required (must match plugin.json name; lowercase as of v3.0.0)');
-    // v3.1.2+: source is a github object so the marketplace works whether users
-    // add it via GitHub shorthand (`/plugin marketplace add linenoize/topia`)
-    // OR via direct URL to marketplace.json. The earlier `"./"` relative path
-    // only worked when the marketplace was cloned via git.
-    assert.equal(typeof entry.source, 'object', 'source should be a github object');
-    assert.equal(entry.source.source, 'github');
-    assert.equal(entry.source.repo, 'linenoize/topia');
+    // v3.2.1+: source is a url object pointing to the HTTPS clone URL. The
+    // earlier `{ source: "github", repo: ... }` form resolves to `git@github.com:...`
+    // (SSH) in Claude Code's plugin manager, which fails for users without
+    // GitHub SSH keys. Using `url` + explicit `https://...git` forces HTTPS.
+    assert.equal(typeof entry.source, 'object', 'source should be a url object');
+    assert.equal(entry.source.source, 'url');
+    assert.equal(entry.source.url, 'https://github.com/linenoize/topia.git');
   });
 
   test('versions align with package.json', () => {
