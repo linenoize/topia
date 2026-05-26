@@ -105,6 +105,46 @@ Fix: git rm --cached .topia/contract.md .topia/decisions.md ... && git commit -m
 
 After that the files are untracked and the gitignore block keeps them out.
 
+## How the plugin cache is laid out (and what survives an upgrade)
+
+Claude Code stores each installed plugin version in its own directory under `~/.claude/plugins/cache/<marketplace-owner>/<plugin-name>/<version>/`. For Topia, that's `~/.claude/plugins/cache/linenoize/topia/3.1.3/` for v3.1.3.
+
+```text
+~/.claude/plugins/cache/
+└── linenoize/
+    └── topia/
+        ├── 3.1.0/    ← left over from a previous version
+        ├── 3.1.2/    ← left over from a previous version
+        └── 3.1.3/    ← active version
+```
+
+When you upgrade with `/plugin update topia@linenoize`, Claude Code clones the new version into a *new* subdirectory. The old one stays until Claude Code's cache cleanup runs (or you remove it manually). The resolver in `compiler/commands/hooks/resolve-topia-root.js` picks the highest available version — so the upgrade is atomic from the user's perspective.
+
+### What survives an upgrade
+
+This is the key distinction users get wrong:
+
+| Where it lives | Survives upgrade? | What goes here |
+|----------------|-------------------|----------------|
+| `cache/linenoize/topia/<version>/` | **Replaced** by each new version | Plugin source: skills, hooks, scripts, ref docs. Treat as read-only — edits here are discarded on the next install. |
+| `cache/.../docs/ORG-CONFIG.md` | Replaced (it's the *template*) | Reference doc showing the org-config schema. Read it, don't edit it here. |
+| `<project>/.topia/org/org.md` | **Yes** — always preserved | **Your actual org policy.** Where `guardian` / `readiness` read team rules from. Edit this one. |
+| `<project>/.topia/*.md` (state, ADRs, decisions) | Yes — outside cache | Session state and project memory. Auto-managed by skills like `journal`, `session-bridge`, `onboard`. |
+| `~/.claude/settings.json` | Yes — separate file | Dispatch hooks (from `/topia finalize`), plugin enable flags. Survives any plugin upgrade. |
+| `<project>/.claude/settings.json` or `.local.json` | Yes — outside cache | Project- or local-scope plugin enable flags, per-repo dispatch hooks. |
+
+### Common gotcha: "I edited a file in the cache and now it's gone"
+
+You probably opened a file like `cache/linenoize/topia/3.1.2/docs/ORG-CONFIG.md`, made changes, then ran `/plugin update`. The new version went into `cache/linenoize/topia/3.1.3/` with the upstream template content — your edits are still in `3.1.2/` if cache cleanup hasn't deleted it, but the resolver is now using `3.1.3/`, so functionally your changes are gone.
+
+The right move: copy the file you wanted to customize into `<project>/.topia/org/org.md` (for org config) or use the appropriate `.topia/` state file. Those live in your project, are tracked by you (or gitignored if private), and are untouched by plugin upgrades.
+
+### Windows case-preservation quirk
+
+NTFS (and default APFS on macOS) is **case-insensitive but case-preserving.** If you installed Topia at v2.x — when the plugin was named `Topia` (capital T) — the cache directory was created as `cache/linenoize/Topia/`. When v3.x flipped the canonical name to lowercase, Claude Code's writes go through the same case-insensitive lookup and *into* the existing `Topia/` directory. The directory name on disk doesn't get rewritten to lowercase, but everything still works because the OS treats both forms as the same path.
+
+If you want the directory to display as lowercase, uninstall and reinstall the plugin (Claude Code will create the new directory with the canonical lowercase name). On Linux or case-sensitive macOS volumes, you'd see *two* directories after upgrade — `Topia/` from v2.x and `topia/` from v3.x — and the resolver tries `topia/` first.
+
 ## When in doubt
 
 User scope + `/topia finalize` covers 90% of cases. Pick that unless you have a specific reason not to.

@@ -168,10 +168,12 @@ Restart Claude Code if skills or hooks still look stale after `/reload-plugins`.
 **Re-wire dispatch hooks** (recommended after every plugin update if you use `setup --global`; always safe):
 
 ```bash
-node ~/.claude/plugins/cache/linenoize/Topia/*/compiler/bin/topia.js setup --global --preset gentle
+node ~/.claude/plugins/cache/linenoize/topia/*/compiler/bin/topia.js setup --global --preset gentle
 ```
 
-On Windows, replace `*` with the version folder (e.g. `2.0.2`), or run from your clone:
+If you upgraded from v2.x on a case-insensitive filesystem (Windows / default macOS), your cache directory may still be named `Topia/` (capital T) from the original install — case-insensitive lookup means both paths resolve to the same files, so the lowercase command above still works. On Linux or case-sensitive macOS, fresh v3.x installs always use lowercase.
+
+On Windows, replace `*` with the version folder (e.g. `3.1.2`), or run from your clone:
 
 ```powershell
 cd path\to\skill-topia

@@ -4,6 +4,26 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
+## [3.1.3] — 2026-05-26
+
+Cleanup driven by a user report of a `cache\linenoize\Topia\3.1.1` path showing the legacy capital-T directory name even after upgrading to v3.x.
+
+### Fixed
+
+- **`commands/finalize.md`** — the bash that locates the plugin cache referenced `cache/linenoize/Topia/` (capital T from the v2.x days). Flipped to lowercase `topia/` (canonical since v3.0.0). The capital-T path is now a secondary fallback so users upgrading from v2.x on case-insensitive filesystems aren't stranded.
+- **`docs/INSTALL-CLAUDE-CODE.md`** — the post-update "re-wire dispatch hooks" command flipped from `cache/linenoize/Topia/*` to `cache/linenoize/topia/*`. Added a note explaining the Windows / macOS case-preservation behavior so users seeing the capital-T directory on disk don't panic.
+
+### Docs
+
+- **`docs/INSTALL-SCOPES.md`** — new "How the plugin cache is laid out" section explaining versioned cache directories, what survives an upgrade vs what doesn't (with a table mapping every Topia-managed file to "survives upgrade? yes/no"), and the common "I edited a file in the cache and now it's gone" gotcha. The cache holds plugin source and is replaced wholesale by every upgrade; user-editable state lives in `<project>/.topia/`, never in the cache. Specifically calls out that `<project>/.topia/org/org.md` is the live org policy, while `cache/.../docs/ORG-CONFIG.md` is just the template.
+- **Windows case-preservation note** in INSTALL-SCOPES.md — NTFS and default APFS are case-insensitive but case-preserving, so v2.x installs that created the `Topia/` directory keep that capitalization on disk through v3.x upgrades. Functionally fine; cosmetically jarring. Documented so users don't worry.
+
+### Notes on parity with upstream
+
+We are operationally ahead of `protopia/skill-topia` v2.1.0 (their latest at `abf71b3` — no new upstream commits since our last port). Every skill, hook, and script they ship is present in our fork, plus the v3.0.0 rename, the v3.1.x UX work, this v3.1.3 cleanup, and the lowercase `linenoize/topia` rebrand. The only files upstream has that we don't are their `.github/` directory (CI workflows, issue/PR templates) and `.mcp.json` — none of which affect runtime behavior. Worth porting separately because they need adapting for the `linenoize` org, not a mechanical rebrand.
+
+---
+
 ## [3.1.2] — 2026-05-26
 
 Install hardening + post-install UX work driven by downstream reports of users either failing to install the plugin or installing it and never realizing they should run `/topia finalize`.

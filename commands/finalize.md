@@ -41,7 +41,13 @@ Then return — do NOT proceed to Step 1.
 Run:
 
 ```bash
-TOPIA_ROOT="$(ls -dt ~/.claude/plugins/cache/linenoize/Topia/* 2>/dev/null | head -1)"
+# Canonical path is lowercase (plugin name is `topia` as of v3.0.0). Linux/macOS
+# are case-sensitive; the legacy capital-T directory is also checked as a fallback
+# for users who upgraded from v2.x on a case-insensitive filesystem.
+TOPIA_ROOT="$(ls -dt ~/.claude/plugins/cache/linenoize/topia/* 2>/dev/null | head -1)"
+if [ -z "$TOPIA_ROOT" ]; then
+  TOPIA_ROOT="$(ls -dt ~/.claude/plugins/cache/linenoize/Topia/* 2>/dev/null | head -1)"
+fi
 if [ -z "$TOPIA_ROOT" ]; then
   # Fallback: maybe the user is in a clone of the repo
   if [ -f "compiler/bin/topia.js" ]; then
