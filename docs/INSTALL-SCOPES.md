@@ -145,6 +145,12 @@ NTFS (and default APFS on macOS) is **case-insensitive but case-preserving.** If
 
 If you want the directory to display as lowercase, uninstall and reinstall the plugin (Claude Code will create the new directory with the canonical lowercase name). On Linux or case-sensitive macOS volumes, you'd see *two* directories after upgrade — `Topia/` from v2.x and `topia/` from v3.x — and the resolver tries `topia/` first.
 
+### WSL on Windows
+
+When Claude Code on Windows shells out through WSL (which is common — many users have it as their default `Bash`), the Linux side accesses the cache via `/mnt/c/Users/<user>/.claude/plugins/cache/linenoize/topia/`. WSL's DrvFs honors the underlying NTFS case-insensitivity for `/mnt/c/...` paths, so lowercase lookups still resolve to a directory created as `Topia/` — same behavior as native Windows access. You don't need to do anything special.
+
+The one edge case: WSL2 lets you enable per-directory case sensitivity via `fsutil.exe file SetCaseSensitiveInfo`. If a user opted into that on the cache directory (rare and deliberate), lowercase lookups would fail when the on-disk name is `Topia/`. Every Topia path lookup falls back to the capital-T form for exactly this reason — `commands/finalize.md` and `compiler/commands/hooks/resolve-topia-root.js` both try both spellings.
+
 ## When in doubt
 
 User scope + `/topia finalize` covers 90% of cases. Pick that unless you have a specific reason not to.

@@ -156,6 +156,8 @@ function detectFinalizeNudge() {
   console.log(`    [${onboarded ? 'x' : ' '}] /topia onboard   — scan this repo, write CLAUDE.md +`);
   console.log('                          .topia/ context so future sessions start hydrated');
   console.log('    [ ] /topia doctor    — verify install health and surface any fixes');
+  console.log('    [ ] /topia:faq       — list bundled docs + visualizer entry points');
+  console.log('    [ ] /topia:tut       — replay this menu later with current status');
   console.log('    [ ] /topia --help    — full command reference');
   console.log('');
   console.log('  Hide this menu permanently:   /topia finalize --dismiss');

@@ -131,6 +131,10 @@ These are entry-points the user runs in their shell. They do not invoke a skill 
 - ↻ `/topia dependency-doctor` — outdated packages + CVE scan + prioritized update plan.
 - 👤 `/topia guardian-env` — environment pre-flight (OS, runtime versions, tools, ports, env vars).
 
+### Docs / discoverability
+- 👤 `/topia faq` — list every HTML doc + visualizer entry point with one-shot open-in-browser commands. Use when "where are the docs?" comes up.
+- 👤 `/topia tut` — replay the first-run menu with current completion status (finalize / onboard / doctor / faq). Re-entry point when the session-start menu has been dismissed.
+
 ### Browser / Media
 - ↻ `/topia browser-pilot <url>` — Playwright automation + a11y audit.
 - 👤 `/topia asset-creator <brief>` — SVG icons, OG images, social banners.

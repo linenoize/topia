@@ -3,7 +3,7 @@
 > **Need a skill?** Invoke via `/topia <skill-name>` in Claude Code, or `@topia:<skill-name>` in Cursor / Codex / Antigravity.
 > Every skill has a `SKILL.md` at `skills/<name>/SKILL.md` — read that for the full spec.
 
-**Total:** 67 skills across 5 layers · 203 synapses + 44 pulses
+**Total:** 69 skills across 5 layers · 203 synapses + 44 pulses
 **Quick find:** use Ctrl+F on this page
 
 ---

@@ -4,7 +4,7 @@
 
 <p align="center">
   <strong>Topia — internal skill toolkit for AI coding assistants.</strong><br>
-  67 skills · 203 synapses · 44 pulses · 10 extension packs · optional persistent memory via agora-code MCP
+  69 skills · 203 synapses · 44 pulses · 10 extension packs · optional persistent memory via agora-code MCP
 </p>
 
 <p align="center">
@@ -95,7 +95,7 @@ node compiler/bin/topia.js visualize   # writes .topia/nexus.html and opens in b
 
 ```bash
 node compiler/bin/topia.js doctor
-# ✓ 67 skills, 203 synapses, 44 pulses — nexus is healthy
+# ✓ 69 skills, 203 synapses, 44 pulses — nexus is healthy
 ```
 
 ### Non-Claude IDEs
@@ -104,7 +104,7 @@ node compiler/bin/topia.js doctor
 node compiler/bin/topia.js init --platform cursor       # also: codex, antigravity, opencode, openclaw, generic
 ```
 
-Compiles all 67 skills to the target IDE's rule format.
+Compiles all 69 skills to the target IDE's rule format.
 
 ### Install flags
 

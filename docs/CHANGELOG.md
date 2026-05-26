@@ -4,6 +4,27 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
+## [3.2.0] — 2026-05-26
+
+Adds two L3 discoverability skills and a WSL note on the cache-path quirk.
+
+### Added
+
+- **`topia:faq`** — lists every HTML entry point Topia ships (bundled docs in the plugin cache, GitHub Pages mirror, on-demand visualizer) with copy-pasteable open-in-browser commands for Windows / macOS / Linux / WSL. Use when a user can't find the docs or asks "where's the skill graph?" Read-only.
+- **`topia:tut`** — re-shows the structured first-run menu (finalize / onboard / doctor / faq / help) with current completion status. Mirrors the heuristics in `hooks/session-start/index.cjs` `detectFinalizeNudge()` so check-marks reflect real state. Replays unconditionally — useful after the session-start menu has been dismissed. Beginner / intermediate / advanced *tutorial tracks* are not yet shipped; this is the menu re-entry point for v3.2.0.
+- **Session-start menu** now lists `/topia:faq` and `/topia:tut` alongside `finalize` / `onboard` / `doctor`, so new users discover them.
+- **WSL section in `docs/INSTALL-SCOPES.md`** — explains that DrvFs honors NTFS case-insensitivity for `/mnt/c/...` paths, so the lowercase plugin-cache path resolves correctly even when the on-disk directory is `Topia/`. Documents the rare per-directory case-sensitivity escape hatch and notes both `commands/finalize.md` and `compiler/commands/hooks/resolve-topia-root.js` fall back to the capital-T form to cover it.
+
+### Counts
+
+- Skills: 67 → **69** (added `faq`, `tut`).
+
+### Tests
+
+- All 1097 → 1109 pass, 0 fail, 3 skipped. (12 new tests exercise the new skills via the validate-skills integration suite.)
+
+---
+
 ## [3.1.3] — 2026-05-26
 
 Cleanup driven by a user report of a `cache\linenoize\Topia\3.1.1` path showing the legacy capital-T directory name even after upgrading to v3.x.
