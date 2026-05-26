@@ -49,14 +49,14 @@ When `hotfix` chain is active AND triggered from a live incident (not a dev-time
 ```
 FULL HOTFIX CHAIN (when incident is active):
 
-1. CONTAIN   → `Topia:incident` (if not already running): triage + contain blast radius first
+1. CONTAIN   → `topia:incident` (if not already running): triage + contain blast radius first
 2. BRANCH    → create hotfix branch via worktree (isolate from main)
-3. FIX       → `Topia:fix` (minimal change only — no refactoring, no scope creep)
-4. VERIFY    → `Topia:verification` (full test suite on hotfix branch)
-5. SENTINEL  → `Topia:guardian` (security check — fix may introduce new surface)
-6. DEPLOY    → `Topia:deploy` (deploy hotfix to production)
-7. WATCHDOG  → `Topia:watchdog` (confirm health check passes post-deploy)
-8. POSTMORTEM → `Topia:journal` + `Topia:neural-memory` (capture root cause + fix pattern)
+3. FIX       → `topia:fix` (minimal change only — no refactoring, no scope creep)
+4. VERIFY    → `topia:verification` (full test suite on hotfix branch)
+5. SENTINEL  → `topia:guardian` (security check — fix may introduce new surface)
+6. DEPLOY    → `topia:deploy` (deploy hotfix to production)
+7. WATCHDOG  → `topia:watchdog` (confirm health check passes post-deploy)
+8. POSTMORTEM → `topia:journal` + `topia:neural-memory` (capture root cause + fix pattern)
 
 HARD-GATES:
 - Do NOT skip CONTAIN if users are actively affected
@@ -98,7 +98,7 @@ When `--template <name>` is provided, build loads a pre-built workflow template 
 - Contains "security", "auth", "vulnerability", "CVE" → `security`
 - Contains "urgent", "hotfix", "production" → `hotfix`
 - Contains "quick", "just", "chỉ cần", "copy", "move", "rename", "bump" → `nano`
-- Contains "graft", "port from", "copy from repo", "clone feature from" → **delegate to `Topia:integrate`** (not a build chain — hand off entirely)
+- Contains "graft", "port from", "copy from repo", "clone feature from" → **delegate to `topia:integrate`** (not a build chain — hand off entirely)
 - Contains `--template` → load template workflow (see above)
 - Default → `feature`
 
@@ -205,7 +205,7 @@ THEN: Fast Mode activated
 
 ## Phase 0.5: ENVIRONMENT CHECK (First Run Only)
 
-**SUB-SKILL**: Use `Topia:guardian-env` — verify the environment can run the project before planning.
+**SUB-SKILL**: Use `topia:guardian-env` — verify the environment can run the project before planning.
 
 Auto-trigger: no `.topia/` dir (first run) OR build just failed with env-looking errors AND NOT fast mode. Skip silently on subsequent runs. Force with `/topia env-check`.
 
@@ -213,12 +213,12 @@ Auto-trigger: no `.topia/` dir (first run) OR build just failed with env-looking
 
 **Goal**: Know what exists before changing anything.
 
-**REQUIRED SUB-SKILLS**: Use `Topia:recon`. For non-trivial tasks, use `Topia:idea`.
+**REQUIRED SUB-SKILLS**: Use `topia:recon`. For non-trivial tasks, use `topia:idea`.
 
 1. Create TodoWrite with all applicable phases for this task
 2. Mark Phase 1 as `in_progress`
 2.5. **Optional — agora-code recall gate**: if `agora-memory` MCP server is registered, call `recall_learnings` with the task description's keywords BEFORE asking the user anything. If past sessions surface relevant decisions, bugs, or rejected approaches → present to user as "we've seen this before: …" and proceed with that context. If unavailable, skip silently. See `docs/mcp-integrations/agora-code.md`.
-3. **idea gate**: Feature Request / Integration / Greenfield → invoke `Topia:idea`. Task > 50 words or business terms (users, revenue, workflow) → invoke `Topia:idea`. Bug Fix / simple Refactor → skip. idea produces `.topia/features/<name>/requirements.md` for Phase 2. **Synthesis-mode auto-trigger**: if user pasted a spec > 200 words, conversation has > 1000 words on this feature, `.topia/features/<name>/requirements.md` already exists (continuation), or user said "synthesize"/"just write the spec" → idea Step 1.4 activates Synthesis Mode (extract + cite sources + confirm), skipping the 5-question elicitation. Build does NOT need to choose mode — idea detects automatically.
+3. **idea gate**: Feature Request / Integration / Greenfield → invoke `topia:idea`. Task > 50 words or business terms (users, revenue, workflow) → invoke `topia:idea`. Bug Fix / simple Refactor → skip. idea produces `.topia/features/<name>/requirements.md` for Phase 2. **Synthesis-mode auto-trigger**: if user pasted a spec > 200 words, conversation has > 1000 words on this feature, `.topia/features/<name>/requirements.md` already exists (continuation), or user said "synthesize"/"just write the spec" → idea Step 1.4 activates Synthesis Mode (extract + cite sources + confirm), skipping the 5-question elicitation. Build does NOT need to choose mode — idea detects automatically.
 4. **Decision enforcement**: `Glob` for `.topia/decisions.md`; if exists, `Read` + extract constraints for Phase 2. Plan MUST NOT contradict active decisions without explicit user override.
 4b. **Contract enforcement**: If `.topia/contract.md` was loaded in Phase 0.6, list applicable contract sections for this task (e.g., `contract.security` for auth work, `contract.data` for database changes). These rules constrain Phase 2 planning and Phase 4 implementation.
 
@@ -226,7 +226,7 @@ Auto-trigger: no `.topia/` dir (first run) OR build just failed with env-looking
 
 Ask **2 questions** before planning: (1) "What does success look like?" (2) "What should NOT change?"
 
-Skip if: bug fix with clear repro steps | user said "just do it" | fast mode + <10 LOC | hotfix chain active. Complexity revealed → escalate to `Topia:idea`.
+Skip if: bug fix with clear repro steps | user said "just do it" | fast mode + <10 LOC | hotfix chain active. Complexity revealed → escalate to `topia:idea`.
 
 5. Invoke recon to scan the codebase (Glob + Grep + Read on relevant files)
 6. Summarize: what exists, project conventions, files likely to change, active decision constraints
@@ -280,7 +280,7 @@ After recon completes, check if the detected tech stack or task description matc
 5. Announce "Loading template: <name> (<pack>)" → skip Phase 1, 1.5, 1.7, 2 → proceed to Phase 4 with Phase 1 of the template
 6. If template not found: warn user and fall through to normal workflow
 
-**Step 0.5 — Cross-Project Recall**: Invoke `Topia:neural-memory` (Recall Mode) with 3-5 topics relevant to the current task. Always prefix queries with the project name (e.g., `"ProjectName auth pattern"` not `"auth pattern"`).
+**Step 0.5 — Cross-Project Recall**: Invoke `topia:neural-memory` (Recall Mode) with 3-5 topics relevant to the current task. Always prefix queries with the project name (e.g., `"ProjectName auth pattern"` not `"auth pattern"`).
 
 1. Use `Glob` to check for `.topia/plan-*.md` files
 2. If a master plan exists matching the current task: Read it → find first `⬚ Pending` or `🔄 Active` phase → load ONLY that phase file → announce "Resuming from Phase N" → skip to Phase 4
@@ -302,13 +302,13 @@ Contract violations are NON-NEGOTIABLE. If `.topia/contract.md` exists and a pla
 
 **Goal**: Break the task into concrete implementation steps before writing code.
 
-**REQUIRED SUB-SKILL**: Use `Topia:plan`
+**REQUIRED SUB-SKILL**: Use `topia:plan`
 
 1. Mark Phase 2 as `in_progress`
 2. **Feature workspace** (opt-in) — for non-trivial features (3+ phases), suggest creating `.topia/features/<feature-name>/` with `spec.md`, `plan.md`, `decisions.md`, `status.md`. Skip for simple bug fixes, fast mode.
 3. Create implementation plan: exact files to create/modify, change order, dependencies, active decision constraints
-4. If multiple valid approaches exist → invoke `Topia:brainstorm` for trade-off analysis
-5. **Frontend detection** — if task touches `.tsx/.jsx/.vue/.svelte/.css`, component files, or mentions "UI/page/screen/design/layout/landing": invoke `Topia:design` BEFORE plan approval. Pass hint `mode: "tweaks-default"` — design proposes ONE opinionated default per `.topia/design-system.md` (Step 2.7), not a 5-option menu. User replies with tweaks ("more professional", "darker") rather than picking from a list. If `.topia/design-system.md` is missing, design creates it first.
+4. If multiple valid approaches exist → invoke `topia:brainstorm` for trade-off analysis
+5. **Frontend detection** — if task touches `.tsx/.jsx/.vue/.svelte/.css`, component files, or mentions "UI/page/screen/design/layout/landing": invoke `topia:design` BEFORE plan approval. Pass hint `mode: "tweaks-default"` — design proposes ONE opinionated default per `.topia/design-system.md` (Step 2.7), not a 5-option menu. User replies with tweaks ("more professional", "darker") rather than picking from a list. If `.topia/design-system.md` is missing, design creates it first.
 6. Present plan to user for approval
 7. If feature workspace was created, write approved plan to `.topia/features/<name>/plan.md`
 8. Mark Phase 2 as `completed`
@@ -330,7 +330,7 @@ Breaking change without RFC = BLOCKED. No exceptions.
 
 **Goal**: Stress-test the approved plan BEFORE writing code — catch flaws at plan time, not implementation time.
 
-**REQUIRED SUB-SKILL**: Use `Topia:adversary`
+**REQUIRED SUB-SKILL**: Use `topia:adversary`
 
 1. **Skip conditions**: bug fixes, hotfixes, simple refactors (< 3 files, no new logic), fast mode
 2. **Run adversary** — Full Red-Team mode for new features/architectural changes; Quick Challenge mode for smaller plans
@@ -342,7 +342,7 @@ Breaking change without RFC = BLOCKED. No exceptions.
 
 ### Phase-Aware Execution (Master Plan + Phase Files)
 
-When `Topia:plan` produces a **master plan + phase files** (non-trivial tasks):
+When `topia:plan` produces a **master plan + phase files** (non-trivial tasks):
 
 1. After plan approval: load ONLY Phase 1's file — do NOT load all phase files
 2. Execute through build Phase 3-6 (test → implement → quality → verify)
@@ -358,11 +358,11 @@ If the coder model needs info from other phases, it's in the Cross-Phase Context
 
 **Goal**: Define expected behavior with failing tests BEFORE writing implementation.
 
-**REQUIRED SUB-SKILL**: Use `Topia:test`
+**REQUIRED SUB-SKILL**: Use `topia:test`
 
 1. Mark Phase 3 as `in_progress`
 2. **Eval definitions** (Full/Critical rigor only): Before writing tests, define capability evals (pass@k) and regression evals (pass^k) in `.topia/evals/<feature>.md`. Capability evals test "can the system do this new thing?" — regression evals test "did we break existing behavior?" Skip for Fast/Standard rigor levels.
-3. Write ONE test for the next behavior — vertical slicing required, see `Topia:test` `references/vertical-tdd.md`. Bulk-writing tests = horizontal violation, blocks Phase 4
+3. Write ONE test for the next behavior — vertical slicing required, see `topia:test` `references/vertical-tdd.md`. Bulk-writing tests = horizontal violation, blocks Phase 4
 4. **Python async pre-check** (if async-first Python flagged in Phase 1): verify `pytest-asyncio` is installed and `asyncio_mode = "auto"` is in `pyproject.toml` — if missing, warn user before writing async tests
 5. Run the test to verify it FAILS — expected: RED because implementation doesn't exist yet
 6. Mark Phase 3 as `completed` (one cycle); Phase 4 implements that one cycle, then loop returns here for the next test
@@ -373,7 +373,7 @@ If the coder model needs info from other phases, it's in the Cross-Phase Context
 
 **Goal**: Write the minimum code to make tests pass.
 
-**REQUIRED SUB-SKILL**: Use `Topia:fix`
+**REQUIRED SUB-SKILL**: Use `topia:fix`
 
 1. Mark Phase 4 as `in_progress`
 2. **Phase-file execution** — if working from a master plan + phase file:
@@ -384,9 +384,9 @@ If the coder model needs info from other phases, it's in the Cross-Phase Context
 3. Implement the feature following the plan (Write for new files, Edit for existing)
 4. Run tests after each significant change — if fail → debug and fix
    - **Python async** (if async-first flagged): no blocking calls in async functions — `time.sleep` → `asyncio.sleep`, `requests` → `httpx.AsyncClient`, use `asyncio.gather()` for parallel I/O
-5. If stuck → invoke `Topia:debug` (max 3 debug↔fix loops). Fixes outside plan scope require user approval (R4).
+5. If stuck → invoke `topia:debug` (max 3 debug↔fix loops). Fixes outside plan scope require user approval (R4).
    - **Oracle reattach check** — between tasks, glob `.topia/oracle-pending/*.json`. For any record with `status=pending`, invoke `session-bridge --reattach <sessionId>`. If `complete` → consume the response (route to debug/fix per `sourceSkill`). If `pending` → continue with next independent task. If `failed` → continue without second opinion.
-6. **Re-plan check** — evaluate before Phase 5: max debug loops hit? out-of-scope files changed? new dep changes approach? user scope change? If any fire → invoke `Topia:plan` with delta context, get user approval before resuming.
+6. **Re-plan check** — evaluate before Phase 5: max debug loops hit? out-of-scope files changed? new dep changes approach? user scope change? If any fire → invoke `topia:plan` with delta context, get user approval before resuming.
 7. **Approach Pivot Gate** — if re-plan ALSO fails:
 
    <HARD-GATE>
@@ -395,7 +395,7 @@ If the coder model needs info from other phases, it's in the Cross-Phase Context
    MUST invoke brainstorm(mode="rescue") before giving up.
    </HARD-GATE>
 
-   Invoke `Topia:brainstorm(mode="rescue")` with `failed_approach`, `failure_evidence[]`, `original_goal`. Returns 3-5 alternatives → user picks → **restart from Phase 2**.
+   Invoke `topia:brainstorm(mode="rescue")` with `failed_approach`, `failure_evidence[]`, `original_goal`. Returns 3-5 alternatives → user picks → **restart from Phase 2**.
 
 8. All tests MUST pass before proceeding
 9. Mark Phase 4 as `completed`
@@ -444,28 +444,28 @@ During Phase 5 quality checks, if a gate finding traces to an **upstream artifac
 
 1. Tag finding as `UPSTREAM:<phase>` (e.g., `UPSTREAM:plan`, `UPSTREAM:spec`)
 2. STOP current quality gate — fixing code won't resolve an upstream problem
-3. Re-invoke the upstream skill (`Topia:plan` for plan issues, `Topia:idea` for spec gaps) with the finding as context
+3. Re-invoke the upstream skill (`topia:plan` for plan issues, `topia:idea` for spec gaps) with the finding as context
 4. Get user approval on the corrected upstream artifact
 5. Resume Phase 5 from the beginning (re-run all gates — upstream change may invalidate prior PASS results)
 
 ### 5a. Preflight (Spec Compliance + Logic) — STAGE 1
-**REQUIRED SUB-SKILL**: Use `Topia:readiness`
+**REQUIRED SUB-SKILL**: Use `topia:readiness`
 - Spec compliance: compare approved plan vs actual diff
 - Logic review, error handling, completeness
 - **Must pass before 5c (review) can start** — no point reviewing code quality if it doesn't match the spec
 
 ### 5b. Security — STAGE 1
-**REQUIRED SUB-SKILL**: Use `Topia:guardian`
+**REQUIRED SUB-SKILL**: Use `topia:guardian`
 - Secret scan, OWASP check (no injection/XSS/CSRF), dependency audit
 
 ### 5c. Code Review — STAGE 2
-**REQUIRED SUB-SKILL**: Use `Topia:review`
+**REQUIRED SUB-SKILL**: Use `topia:review`
 - Pattern compliance, code quality, performance bottlenecks
 - Reviewer reads code independently — does NOT rely on implementer's claims
 - **Reviewer isolation** (when invoked via `team`): The review agent MUST be a separate context window from the implementing agent. Author reasoning contaminates review — the reviewer should never have seen the implementation's reasoning chain. Sonnet implements, a fresh Sonnet reviews.
 
 ### 5d. Completion Gate — STAGE 2
-**REQUIRED SUB-SKILL**: Use `Topia:completion-gate`
+**REQUIRED SUB-SKILL**: Use `topia:completion-gate`
 - Validate agent claims match evidence trail (tests ran, files changed, build passed)
 - No truncated code files (`// ...`, `// rest of code`, bare ellipsis) — agent MUST complete all output
 - Any UNCONFIRMED claim → BLOCK
@@ -497,7 +497,7 @@ Projects can define phase-specific rules in `.topia/phase-rules.md` that apply O
 
 ## Checkpoint Protocol (Opt-In)
 
-Invoke `Topia:session-bridge` after Phase 2, 4, and 5 to save intermediate state. OPT-IN — activate only if task spans 3+ phases, context-watch is ORANGE, or user explicitly requests checkpoints. Before spawning subagents, invoke `Topia:context-pack` to create structured handoff briefings.
+Invoke `topia:session-bridge` after Phase 2, 4, and 5 to save intermediate state. OPT-IN — activate only if task spans 3+ phases, context-watch is ORANGE, or user explicitly requests checkpoints. Before spawning subagents, invoke `topia:context-pack` to create structured handoff briefings.
 
 ## Phase Transition Protocol (MANDATORY)
 
@@ -507,17 +507,17 @@ Before entering ANY Phase N+1, assert: Phase N `completed` in TodoWrite | gate c
 
 ## Phase 6: VERIFY
 
-**REQUIRED SUB-SKILL**: Use `Topia:verification` — run lint, type check, full test suite, build. Then `Topia:hallucination-guard` to verify imports and API signatures. ALL checks MUST pass before commit.
+**REQUIRED SUB-SKILL**: Use `topia:verification` — run lint, type check, full test suite, build. Then `topia:hallucination-guard` to verify imports and API signatures. ALL checks MUST pass before commit.
 
 ## Phase 7: COMMIT
 
-**RECOMMENDED SUB-SKILL**: Use `Topia:git` — stage specific files (`git add <files>`, NOT `git add .`), generate semantic commit message from diff. If working from master plan: update phase status `🔄 → ✅`, announce next phase or "All phases complete."
+**RECOMMENDED SUB-SKILL**: Use `topia:git` — stage specific files (`git add <files>`, NOT `git add .`), generate semantic commit message from diff. If working from master plan: update phase status `🔄 → ✅`, announce next phase or "All phases complete."
 
 ## Phase 8: BRIDGE
 
 **Goal**: Save context for future sessions and record metrics for nexus analytics.
 
-**REQUIRED SUB-SKILL**: Use `Topia:session-bridge`
+**REQUIRED SUB-SKILL**: Use `topia:session-bridge`
 
 1. Mark Phase 8 as `in_progress`
 2. Save to `.topia/decisions.md` (approach + trade-offs), `.topia/progress.md` (task complete), `.topia/conventions.md` (new patterns)
@@ -531,7 +531,7 @@ Before entering ANY Phase N+1, assert: Phase N `completed` in TodoWrite | gate c
    - [ ] `MEMORY.md` — milestones, version info
 
    **Skip if**: No stats changed (pure refactor, docs-only, style change). **MANDATORY** if any numeric stat in README differs from actual.
-6. **Step 8.6 — Capture Learnings**: `Topia:neural-memory` (Capture Mode) — 2-5 memories: architecture decisions, patterns, error root-causes, trade-offs. Cognitive language (causal/decisional/comparative). Tags: `[project, tech, topic]`. Priority 5 routine / 7-8 decisions / 9-10 critical errors.
+6. **Step 8.6 — Capture Learnings**: `topia:neural-memory` (Capture Mode) — 2-5 memories: architecture decisions, patterns, error root-causes, trade-offs. Cognitive language (causal/decisional/comparative). Tags: `[project, tech, topic]`. Priority 5 routine / 7-8 decisions / 9-10 critical errors.
 6. Mark Phase 8 as `completed`
 
 ## Autonomous Loop Patterns
@@ -813,7 +813,7 @@ Mentally track tool call fingerprints. 3 identical calls → WARN. 5 identical c
 | Gate | Requires | If Missing |
 |------|----------|------------|
 | Resume Gate | Phase 0 checks for master plan before starting | Proceed to Phase 1 |
-| Recon Gate | recon output before Phase 2 | Invoke Topia:recon first |
+| Recon Gate | recon output before Phase 2 | Invoke topia:recon first |
 | Plan Gate | User-approved plan before Phase 3 | Cannot proceed |
 | Adversary Gate | adversary verdict before Phase 3 for features | Skip for bugfix/hotfix/refactor |
 | Phase File Gate | Active phase file only (multi-session) | Load only active phase |

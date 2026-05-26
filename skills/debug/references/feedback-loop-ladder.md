@@ -25,7 +25,7 @@ Run the ladder before Step 3 (Form Hypotheses) when ANY of these are true:
 | 1 | **Failing test at the bug's seam** (unit, integration, e2e) | Fast | Hard pass/fail | Default — bug already has a test infrastructure |
 | 2 | **curl / HTTP script** against running dev server | Fast | Snapshot-diffable | API or backend bugs |
 | 3 | **CLI invocation with fixture input**, diff stdout vs known-good snapshot | Fast | Snapshot-diffable | CLI tools, parsers, formatters |
-| 4 | **Headless browser script** (Playwright / `Topia:browser-pilot`) — drives UI, asserts on DOM/console/network | Medium | Reliable | UI bugs, JS errors, network failures |
+| 4 | **Headless browser script** (Playwright / `topia:browser-pilot`) — drives UI, asserts on DOM/console/network | Medium | Reliable | UI bugs, JS errors, network failures |
 | 5 | **Replay a captured trace** — save real network request / payload / event log to disk; replay through code path in isolation | Fast | Deterministic | Bugs reproducible only with specific data |
 | 6 | **Throwaway harness** — minimal subset of system (one service, mocked deps), exercise bug code path with single function call | Fast | Isolated | Bug deep inside framework or service stack |
 | 7 | **Property / fuzz loop** — 1000 random inputs, look for failure mode | Slow | Probabilistic | "Sometimes wrong output", race conditions, edge cases |

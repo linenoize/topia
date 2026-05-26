@@ -1,11 +1,11 @@
 ---
 name: finalize
-description: One-shot finalize-install. Run inside Claude Code after `/plugin install Topia@linenoize` to enable the optional pieces (system-wide dispatch hooks, agora-code persistent memory, project .gitignore) without leaving the chat. Idempotent — safe to re-run.
+description: One-shot finalize-install. Run inside Claude Code after `/plugin install topia@linenoize` to enable the optional pieces (system-wide dispatch hooks, agora-code persistent memory, project .gitignore) without leaving the chat. Idempotent — safe to re-run.
 ---
 
 # /topia finalize
 
-The marketplace install (`/plugin install Topia@linenoize`) is already complete for the core experience: all 66 skills, all 64 subagents, the 11 plugin hooks (session-start, secrets-scan, quarantine, metrics-collector, …), and file-based `.topia/` memory all work the moment the plugin is enabled.
+The marketplace install (`/plugin install topia@linenoize`) is already complete for the core experience: all 66 skills, all 64 subagents, the 11 plugin hooks (session-start, secrets-scan, quarantine, metrics-collector, …), and file-based `.topia/` memory all work the moment the plugin is enabled.
 
 This command finalizes the **optional** extras:
 
@@ -35,7 +35,7 @@ fi
 echo "TOPIA_ROOT=$TOPIA_ROOT"
 ```
 
-If neither path resolves, stop and tell the user: "Plugin cache not found. Run `/plugin install Topia@linenoize` first, or clone the repo and re-run this command from inside the clone."
+If neither path resolves, stop and tell the user: "Plugin cache not found. Run `/plugin install topia@linenoize` first, or clone the repo and re-run this command from inside the clone."
 
 ### Step 2 — Ask the user which extras to enable
 
@@ -128,7 +128,7 @@ The slash command takes no required arguments. Recognized free-form intent:
 
 ## What this is NOT
 
-- It does **not** install the plugin itself — that's `/plugin install Topia@linenoize`.
+- It does **not** install the plugin itself — that's `/plugin install topia@linenoize`.
 - It does **not** add new skills or agents — those are already loaded by the plugin.
 - It does **not** modify project source code.
 - It does **not** push secrets or telemetry anywhere — all writes are local.

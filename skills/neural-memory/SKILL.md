@@ -52,7 +52,7 @@ Without this skill, each project is an island. With it, a caching pattern discov
 - `/topia brain-health` — check neural memory health + maintenance
 - `/topia hypothesize <question>` — start hypothesis tracking
 
-For unified cross-source recall (`.topia/`, `.remember/`, MCP), use **`Topia:recall`** instead.
+For unified cross-source recall (`.topia/`, `.remember/`, MCP), use **`topia:recall`** instead.
 
 ## Calls (outbound)
 
@@ -125,7 +125,7 @@ Call `nmem_gaps(action="detect")` if working in a domain with sparse memories.
 
 ### Mode 2: Capture (After Task Completion)
 
-When triggered after `Topia:journal` writes an ADR: read the ADR file, extract decision + rejected alternatives. If journal already called agora `store_learning`, tag `source: journal-adr` and skip duplicate `store_learning`.
+When triggered after `topia:journal` writes an ADR: read the ADR file, extract decision + rejected alternatives. If journal already called agora `store_learning`, tag `source: journal-adr` and skip duplicate `store_learning`.
 
 
 Extract learnable patterns from completed work and save to neural memory.

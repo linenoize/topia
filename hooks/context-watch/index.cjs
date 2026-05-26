@@ -1,5 +1,5 @@
 // Topia Context Watch Hook
-// Lightweight tool call counter — detects context pressure and suggests Topia:context-engine
+// Lightweight tool call counter — detects context pressure and suggests topia:context-engine
 // Runs as PreToolUse hook on Edit/Write (high-cost operations)
 //
 // H3 Intelligence: also tracks tool type distribution and session start timestamp
@@ -22,13 +22,13 @@ function buildWarning(count) {
   if (count >= CRITICAL_THRESHOLD) {
     return (
       `[Topia context-watch] ${count} tool calls — context likely RED (>85%). ` +
-      'RECOMMENDED: Invoke Topia:context-engine for state save + /compact.'
+      'RECOMMENDED: Invoke topia:context-engine for state save + /compact.'
     );
   }
   if (count >= FIRST_WARNING) {
     return (
       `[Topia context-watch] ${count} tool calls — context filling up. ` +
-      'Consider Topia:context-engine or /compact at the next boundary.'
+      'Consider topia:context-engine or /compact at the next boundary.'
     );
   }
   return null;

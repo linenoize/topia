@@ -20,7 +20,7 @@ metadata:
 Deploy applications to target platforms. Handles the full deployment flow — environment configuration, build, push, verification, and rollback if needed. Supports Vercel, Netlify, AWS, GCP, DigitalOcean, and custom VPS via SSH.
 
 <HARD-GATE>
-- Tests MUST pass (via `Topia:verification`) before deploy runs
+- Tests MUST pass (via `topia:verification`) before deploy runs
 - Sentinel MUST pass (no CRITICAL issues) before deploy runs
 - Both are non-negotiable. Failure = stop + report, never skip
 </HARD-GATE>
@@ -52,13 +52,13 @@ Deploy applications to target platforms. Handles the full deployment flow — en
 
 ### Step 1 — Pre-deploy checks (HARD-GATE)
 
-Call `Topia:verification` to run the full test suite and build.
+Call `topia:verification` to run the full test suite and build.
 
 ```
 If verification fails → STOP. Do NOT proceed. Report failure with test output.
 ```
 
-Call `Topia:guardian` to run security scan.
+Call `topia:guardian` to run security scan.
 
 ```
 If sentinel returns CRITICAL issues → STOP. Do NOT proceed. Report issues.
@@ -154,11 +154,11 @@ curl -o /dev/null -s -w "%{http_code}" <deployed-url>
 
 If status is not 200 → flag as WARNING, do not treat as hard failure unless 5xx.
 
-If `Topia:browser-pilot` is available, call it to take a screenshot of the deployed URL for visual confirmation.
+If `topia:browser-pilot` is available, call it to take a screenshot of the deployed URL for visual confirmation.
 
 ### Step 5 — Monitor
 
-Call `Topia:watchdog` to set up post-deploy monitoring alerts on the deployed URL.
+Call `topia:watchdog` to set up post-deploy monitoring alerts on the deployed URL.
 
 ### Step 6 — Report
 

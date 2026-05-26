@@ -100,7 +100,7 @@ Analyze the plan for security weaknesses BEFORE any code exists.
 - **Injection surfaces**: Does the plan involve dynamic queries, template rendering, or shell commands?
 - **Dependency risk**: Does the plan introduce new dependencies? Are they well-maintained and trusted?
 
-If any auth, crypto, or payment logic is in the plan: MUST call `Topia:guardian` for deep analysis.
+If any auth, crypto, or payment logic is in the plan: MUST call `topia:guardian` for deep analysis.
 
 ```
 SECURITY_TEMPLATE:
@@ -122,7 +122,7 @@ Project the plan forward — what happens at 10x and 100x scale?
 - **State growth**: Does the plan accumulate state (in-memory, database, file system) without cleanup?
 - **External service limits**: Does the plan account for rate limits on third-party APIs?
 
-If bottleneck patterns detected: call `Topia:perf` for quantitative analysis.
+If bottleneck patterns detected: call `topia:perf` for quantitative analysis.
 
 ```
 SCALE_TEMPLATE:
@@ -157,7 +157,7 @@ ERROR_TEMPLATE:
 
 Check for conflicts with existing code and architecture.
 
-- Use `Topia:recon` to find all files the plan will modify or depend on
+- Use `topia:recon` to find all files the plan will modify or depend on
 - **Breaking changes**: Does the plan modify shared interfaces, types, or APIs that other code depends on?
 - **Migration gaps**: Does the plan require database migrations? Are they reversible?
 - **Configuration drift**: Does the plan add new environment variables, feature flags, or config files?

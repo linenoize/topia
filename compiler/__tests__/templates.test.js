@@ -26,7 +26,7 @@ describe('parseTemplate', () => {
       '## Phases',
       '',
       '### Phase 1: Setup',
-      '**Skills**: `Topia:idea`',
+      '**Skills**: `topia:idea`',
     ].join('\n');
 
     const parsed = parseTemplate(content);
@@ -89,7 +89,7 @@ describe('parseTemplate', () => {
       '',
       '# Template',
       '',
-      'Uses `Topia:idea` and `Topia:plan` for setup.',
+      'Uses `topia:idea` and `topia:plan` for setup.',
     ].join('\n');
 
     const parsed = parseTemplate(content);

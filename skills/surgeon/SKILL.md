@@ -57,7 +57,7 @@ Honor the payload. If the payload's `adapters_planned` lists only 1 adapter, pus
 
 ### Step 1 — Pre-surgery scan
 
-Call `Topia:recon` targeting the module to refactor. Ask scout to return:
+Call `topia:recon` targeting the module to refactor. Ask scout to return:
 - All files the module imports (dependencies)
 - All files that import the module (consumers)
 - Total file count touched (blast radius check)
@@ -68,9 +68,9 @@ If count > 5 → STOP. Split surgery into smaller sessions.
 Report which files are in scope and which must wait for a later session.
 ```
 
-Confirm that `Topia:safeguard` has already run for this module (check for `tests/char/<module>.test.ts` and `Topia-safeguard-<module>` git tag).
+Confirm that `topia:safeguard` has already run for this module (check for `tests/char/<module>.test.ts` and `Topia-safeguard-<module>` git tag).
 
-If safeguard has NOT run, call `Topia:safeguard` now before continuing. Do not skip this.
+If safeguard has NOT run, call `topia:safeguard` now before continuing. Do not skip this.
 
 ### Step 2 — Select refactoring pattern
 
@@ -92,7 +92,7 @@ Use `Edit` for all code changes. Rules:
 - Changes MUST be small and reversible
 - Never rewrite a file from scratch — use targeted edits
 - Never change more than 5 files total in this session
-- If a change reveals a hidden bug, stop and call `Topia:debug` before continuing
+- If a change reveals a hidden bug, stop and call `topia:debug` before continuing
 
 **Multi-layer refactors**: when the deepening or extraction touches 2+ layers within the module (e.g., types + logic + interface), decompose into **vertical-slice tracer-bullet edits** rather than horizontal layer passes. Each slice = one end-to-end edit chain that produces a verifiable outcome (one Edit per layer, immediately tested). See `plan/references/vertical-slice.md` for slice rules and granularity. Horizontal "all-types-then-all-logic-then-all-interface" passes are forbidden inside surgeon — they break the "test after each Edit" discipline (Step 4) by leaving intermediate states untestable.
 
@@ -106,20 +106,20 @@ For **Extract & Simplify**: Extract sub-functions one at a time. Each extraction
 
 ### Step 4 — Test after each change
 
-After every `Edit`, call `Topia:test` targeting:
+After every `Edit`, call `topia:test` targeting:
 1. The characterization tests from `tests/char/<module>.test.ts`
 2. Any existing unit tests for the module
 3. Any consumer tests affected by this change
 
 ```
 If any test fails → STOP. Do NOT continue with more edits.
-Call Topia:debug to investigate. Fix before next edit.
+Call topia:debug to investigate. Fix before next edit.
 The code MUST stay in a working state after every single change.
 ```
 
 ### Step 5 — Review
 
-After all edits for this session are complete and tests pass, call `Topia:review` on the changed files.
+After all edits for this session are complete and tests pass, call `topia:review` on the changed files.
 
 Address any CRITICAL or HIGH issues raised by review before committing.
 
@@ -136,7 +136,7 @@ The commit message MUST describe which pattern was used and what changed. Each c
 
 ### Step 7 — Update journal
 
-Call `Topia:journal` to record:
+Call `topia:journal` to record:
 - Module operated on
 - Pattern used
 - Files changed
@@ -178,10 +178,10 @@ EXTRACT & SIMPLIFY      — For complex functions (cyclomatic > 10)
 
 ### Remaining (if partial)
 - [what's left for next surgery session]
-- Recommended: re-run Topia:surgeon targeting [module] — session 2
+- Recommended: re-run topia:surgeon targeting [module] — session 2
 
 ### Next Step
-[if complete]: Run Topia:autopsy to update health scores
+[if complete]: Run topia:autopsy to update health scores
 [if partial]: Commit this checkpoint, then start new surgeon session for remaining work
 ```
 

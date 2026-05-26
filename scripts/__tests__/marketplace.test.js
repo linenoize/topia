@@ -6,13 +6,13 @@ import assert from 'node:assert/strict';
 const ROOT = join(import.meta.dirname, '../..');
 
 describe('marketplace.json', () => {
-  test('exists and lists Topia at repo root', () => {
+  test('exists and lists topia at repo root', () => {
     const raw = readFileSync(join(ROOT, '.claude-plugin', 'marketplace.json'), 'utf8');
     const marketplace = JSON.parse(raw);
     assert.equal(marketplace.name, 'linenoize');
     assert.ok(Array.isArray(marketplace.plugins));
-    const entry = marketplace.plugins.find((p) => p.name === 'Topia');
-    assert.ok(entry, 'Topia plugin entry required (must match plugin.json name)');
+    const entry = marketplace.plugins.find((p) => p.name === 'topia');
+    assert.ok(entry, 'topia plugin entry required (must match plugin.json name; lowercase as of v3.0.0)');
     assert.equal(entry.source, './');
   });
 
@@ -26,7 +26,7 @@ describe('marketplace.json', () => {
     );
     assert.equal(marketplace.version, pkg.version);
     assert.equal(plugin.version, pkg.version);
-    const entry = marketplace.plugins.find((p) => p.name === 'Topia');
+    const entry = marketplace.plugins.find((p) => p.name === 'topia');
     assert.equal(entry.version, pkg.version);
   });
 });

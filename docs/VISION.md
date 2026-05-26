@@ -190,7 +190,7 @@ Topia operates on three time horizons. The roadmap is intentionally non-prescrip
 - Internal L4 extension packs: documented contribution process, review criteria
 - Plugin versioning: semver for skill APIs so callers don't break on updates
 - Skill testing framework: automated validation of graph connections and output format contracts
-- `Topia:onboard` generates project-specific L4 suggestions based on detected stack
+- `topia:onboard` generates project-specific L4 suggestions based on detected stack
 
 **Constraint:** Growth happens in L4 packs. Core graph (L1-L3) expansions require Skill Addition Filter approval.
 

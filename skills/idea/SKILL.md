@@ -21,7 +21,7 @@ Idea Elicitation agent — the ROOT FIX for "Claude works a lot but produces not
 
 <HARD-GATE>
 idea produces WHAT, not HOW. Never write code. Never plan implementation.
-Output is a Requirements Document → hand off to Topia:plan for implementation planning.
+Output is a Requirements Document → hand off to topia:plan for implementation planning.
 </HARD-GATE>
 
 ## Triggers
@@ -60,10 +60,10 @@ Output is a Requirements Document → hand off to Topia:plan for implementation 
 
 ### Step 1.2 — Neural Memory Retrieval (SEARCH)
 
-Before eliciting new information, search `Topia:neural-memory` for related concepts, prior versions of this idea, or similar features built in other projects.
+Before eliciting new information, search `topia:neural-memory` for related concepts, prior versions of this idea, or similar features built in other projects.
 
 1.  **Extract keywords**: Identify core concepts from the user's initial prompt (e.g., "auth", "payment", "RAG").
-2.  **Search Memory**: Query `Topia:neural-memory` with these keywords.
+2.  **Search Memory**: Query `topia:neural-memory` with these keywords.
 3.  **Optional — agora-code recall**: if the `agora-memory` MCP server is registered, also call its `recall_learnings` tool with the same keywords. Findings from agora-code reflect prior cross-session learnings (decisions, gotchas, rejected approaches) — merge with neural-memory results. Skip silently if MCP unavailable. See `docs/mcp-integrations/agora-code.md`.
 4.  **Synthesize Findings**:
     *   If a similar idea exists: *"I found a related idea in memory: [Concept]. We previously decided [Decision]. Should we leverage those patterns or is this a different direction?"*
@@ -84,7 +84,7 @@ Read the user's request. Classify the requirement type:
 If Bug Fix → skip idea, route to build/debug directly.
 If Refactor → light version (Step 1 + Step 4 only). Skip Steps 2, 2.5, 3, 5, 6.
 
-If existing codebase → invoke `Topia:recon` for context before proceeding.
+If existing codebase → invoke `topia:recon` for context before proceeding.
 
 ### Step 1.4 — Synthesis Trigger Check
 <MUST-READ path="references/synthesis-mode.md" trigger="when prior conversation already contains rich requirement context (pasted spec, > 1000 words discussion, continuation session, filled issue template)"/>
@@ -574,7 +574,7 @@ Created: [date] | idea session: [summary]
 [from Step 3.6 — verbatim, for audit trail]
 
 ## Next Step
-→ Hand off to Topia:plan (consumes all 3 artifacts)
+→ Hand off to topia:plan (consumes all 3 artifacts)
 ```
 
 #### Artifact 2: requirements.mermaid
@@ -668,11 +668,11 @@ Format reference: [references/context-md-format.md](references/context-md-format
 
 ### Step 8 — Neural Memory Persistence (SAVE)
 
-Once the user approves the Requirements Document, persist the "Idea Artifact" to `Topia:neural-memory`.
+Once the user approves the Requirements Document, persist the "Idea Artifact" to `topia:neural-memory`.
 
 1.  **Format Memory**: Create a high-signal summary of the idea, core stakeholders, and key strategic decisions.
 2.  **Tag**: Use `[idea, requirements, feature-name]`.
-3.  **Persist**: Call `Topia:neural-memory` in Capture Mode.
+3.  **Persist**: Call `topia:neural-memory` in Capture Mode.
 4.  **Emit**: `idea.captured` signal.
 
 ## Output Format

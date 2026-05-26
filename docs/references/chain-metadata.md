@@ -26,7 +26,7 @@ Every L1/L2 skill MUST append a `chain_metadata` block to its final output repor
 
 ```yaml
 chain_metadata:
-  skill: "Topia:<skill-name>"
+  skill: "topia:<skill-name>"
   version: "<skill version>"
   status: "DONE | DONE_WITH_CONCERNS | BLOCKED | NEEDS_CONTEXT"
   domain: "<area worked on — e.g., auth, payments, compiler>"
@@ -35,7 +35,7 @@ chain_metadata:
   exports:
     <key>: <value>  # structured data for downstream consumption
   suggested_next:
-    - skill: "Topia:<skill>"
+    - skill: "topia:<skill>"
       reason: "<why — based on THIS output's data, not generic>"
       consumes: ["<export_key>"]  # which exports the suggested skill would use
 ```
@@ -43,7 +43,7 @@ chain_metadata:
 ## Field Definitions
 
 ### `skill` (required)
-The skill that produced this output. Format: `Topia:<name>`.
+The skill that produced this output. Format: `topia:<name>`.
 
 ### `version` (required)
 Skill version at time of execution. Enables compatibility checks.
@@ -182,7 +182,7 @@ When a skill is invoked and chain_metadata exists from a prior skill:
 ### build → review (data-driven)
 ```yaml
 chain_metadata:
-  skill: "Topia:build"
+  skill: "topia:build"
   version: "2.2.0"
   status: "DONE"
   domain: "auth"
@@ -195,10 +195,10 @@ chain_metadata:
     test_results: { passed: 42, failed: 0, coverage: 85 }
     quality_gates: { preflight: "PASS", sentinel: "WARN", review: "PASS" }
   suggested_next:
-    - skill: "Topia:guardian"
+    - skill: "topia:guardian"
       reason: "Sentinel returned WARN on auth middleware — deeper security review recommended"
       consumes: ["quality_gates"]
-    - skill: "Topia:test"
+    - skill: "topia:test"
       reason: "Coverage at 85% — auth edge cases (expired tokens, concurrent refresh) not covered"
       consumes: ["test_results"]
 ```
@@ -206,7 +206,7 @@ chain_metadata:
 ### debug → fix (handoff)
 ```yaml
 chain_metadata:
-  skill: "Topia:debug"
+  skill: "topia:debug"
   version: "1.0.0"
   status: "DONE"
   domain: "payments"
@@ -216,10 +216,10 @@ chain_metadata:
     severity: "critical"
     confidence: "high"
   suggested_next:
-    - skill: "Topia:fix"
+    - skill: "topia:fix"
       reason: "Critical bug identified with high confidence — fix immediately"
       consumes: ["root_cause"]
-    - skill: "Topia:guardian"
+    - skill: "topia:guardian"
       reason: "Security-related bug — check for similar patterns across codebase"
       consumes: ["root_cause"]
 ```
@@ -227,7 +227,7 @@ chain_metadata:
 ### review → fix (findings handoff)
 ```yaml
 chain_metadata:
-  skill: "Topia:review"
+  skill: "topia:review"
   version: "0.7.0"
   status: "DONE"
   domain: "api"
@@ -239,10 +239,10 @@ chain_metadata:
       - { severity: "high", file: "src/api/users.ts", line: 45, message: "N+1 query in user list endpoint" }
     verdict: "REQUEST_CHANGES"
   suggested_next:
-    - skill: "Topia:fix"
+    - skill: "topia:fix"
       reason: "2 HIGH findings require remediation before merge"
       consumes: ["findings"]
-    - skill: "Topia:perf"
+    - skill: "topia:perf"
       reason: "N+1 query detected — performance analysis recommended"
       consumes: ["findings"]
 ```

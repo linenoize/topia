@@ -134,7 +134,7 @@ Parse the output to extract:
 
 For each package with a **major** version bump (e.g. v2 → v3):
 
-Use `Topia:docs-seeker` to look up migration guides if available, or note:
+Use `topia:docs-seeker` to look up migration guides if available, or note:
 - "Breaking change analysis required before updating [package] from v[X] to v[Y]"
 
 Do not blindly recommend major updates without flagging migration risk.
@@ -209,7 +209,7 @@ When health score < 60 OR CRITICAL/SECURITY items exist, dependency-doctor can o
 2. CHECKPOINT → Save current lock file state: `cp package-lock.json .topia/dep-backup/`
 3. PER-PACKAGE LOOP (CRITICAL → SECURITY → PATCH → MINOR, skip MAJOR):
    a. Upgrade one package at a time: `npm install pkg@latest`
-   b. Call `Topia:verification` — run tests + build
+   b. Call `topia:verification` — run tests + build
    c. If PASS → commit: `feat(deps): upgrade {pkg} {old} → {new}`
    d. If FAIL → rollback package: `npm install pkg@{old}`, log as BLOCKED
 4. MAJOR BUMPS → present to user: breaking change notes + migration guide link. Never auto-upgrade.

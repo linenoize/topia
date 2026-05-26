@@ -60,7 +60,7 @@ Skip this step for local-only projects with no remote.
 
 ### Step 1 — Structure scan
 
-Call `Topia:recon` with a request for a full project map. Ask scout to return:
+Call `topia:recon` with a request for a full project map. Ask scout to return:
 - All source files with LOC counts
 - Entry points and main modules
 - Import/dependency graph (who imports who)
@@ -172,7 +172,7 @@ Generated: [date]
 - [action 2]
 ```
 
-Call `Topia:journal` to record that autopsy ran, the overall health score, and the surgery queue.
+Call `topia:journal` to record that autopsy ran, the overall health score, and the surgery queue.
 
 ### Step 6 — Report
 
@@ -182,7 +182,7 @@ Output a summary of the findings:
 - Count of critical, at-risk, watch, and healthy modules
 - Top 3 worst modules with scores and recommended patterns
 - Confirm RESCUE-REPORT.md was saved
-- Recommended next step: call `Topia:safeguard` on the top-priority module
+- Recommended next step: call `topia:safeguard` on the top-priority module
 
 ## Confidence Scoring
 
@@ -239,7 +239,7 @@ DEAD CODE       — unused exports, unreachable branches
 1. [module] — [primary finding] — Recommended pattern: [pattern]
 
 ### Next Step
-Run Topia:safeguard on [top-priority module] before any refactoring.
+Run topia:safeguard on [top-priority module] before any refactoring.
 ```
 
 ## Constraints

@@ -39,7 +39,7 @@ Characterization tests MUST pass on the current (unmodified) code before any ref
 
 ### Step 1 — Identify module boundaries
 
-Call `Topia:recon` targeting the specific module. Ask scout to return:
+Call `topia:recon` targeting the specific module. Ask scout to return:
 - All public functions, classes, and exported symbols
 - All files that import from this module (consumers)
 - All files this module imports from (dependencies)
@@ -117,7 +117,7 @@ Replace `<module>` with the actual module name. Confirm the tag was created.
 
 ### Step 6 — Verify
 
-Call `Topia:verification` and explicitly pass the characterization test file path.
+Call `topia:verification` and explicitly pass the characterization test file path.
 
 ```
 If characterization tests fail on the CURRENT (unchanged) code → STOP.
@@ -151,7 +151,7 @@ Only after verification passes, declare the safety net complete.
 - [list of locked config files in .topia/]
 
 ### Next Step
-Safe to proceed with: `Topia:surgeon` targeting [module]
+Safe to proceed with: `topia:surgeon` targeting [module]
 ```
 
 ## Constraints

@@ -34,7 +34,7 @@ Install like any other Claude Code plugin — no clone required for the plugin i
 
 ```text
 /plugin marketplace add linenoize/topia
-/plugin install Topia@linenoize
+/plugin install topia@linenoize
 ```
 
 Then wire global discipline hooks (one-time per machine). The npm package is **not** required for a private repo — use `node` against a clone or the Claude plugin cache (see [`docs/INSTALL-CLAUDE-CODE.md`](docs/INSTALL-CLAUDE-CODE.md)):
@@ -43,7 +43,7 @@ Then wire global discipline hooks (one-time per machine). The npm package is **n
 cd topia && node compiler/bin/topia.js setup --global --preset gentle
 ```
 
-Restart Claude Code, then use `/topia build` or `/Topia:build`. Full guide: [`docs/INSTALL-CLAUDE-CODE.md`](docs/INSTALL-CLAUDE-CODE.md). Team repos can merge [`docs/templates/team-claude-settings.json`](docs/templates/team-claude-settings.json) into `.claude/settings.json` to prompt the marketplace on folder trust.
+Restart Claude Code, then use `/topia build` or `/topia:build`. Full guide: [`docs/INSTALL-CLAUDE-CODE.md`](docs/INSTALL-CLAUDE-CODE.md). Team repos can merge [`docs/templates/team-claude-settings.json`](docs/templates/team-claude-settings.json) into `.claude/settings.json` to prompt the marketplace on folder trust.
 
 Validate the catalog before release: `claude plugin validate .`
 
@@ -61,7 +61,7 @@ Optional stable location: `~/.claude/skills/topia` (see [`docs/INSTALL-CLAUDE-CO
 `topia install` is a one-shot orchestrator. In order, it:
 
 1. **Pre-flights rune-kit conflicts.** If [rune-kit](https://github.com/Rune-kit/rune) is detected on your machine, the installer halts and asks: migrate `.rune/` state into `.topia/` and disable rune-kit, abort so you can remove rune-kit manually, or skip (with a warning that the two plugins will fight over skill names).
-2. **Registers the plugin** via the linenoize marketplace (`marketplace add` + `plugin install Topia@linenoize`), falling back to `claude plugin add .` if needed.
+2. **Registers the plugin** via the linenoize marketplace (`marketplace add` + `plugin install topia@linenoize`), falling back to `claude plugin add .` if needed.
 3. **Wires discipline hooks** globally: `readiness` (logic gates), `guardian` (secrets/OWASP), `completion-gate` (claims-vs-evidence), `quarantine` (untrusted-input advisory).
 4. **Installs the agora-code MCP** for persistent memory if Python 3.10+ is on your machine. Registers `agora-memory` in your project's `.mcp.json`. Skip with `--skip-agora`. (No Python? You get a one-line notice, install continues without persistent memory.)
 5. **Runs `topia doctor`** to verify the install.

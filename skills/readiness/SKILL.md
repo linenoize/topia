@@ -136,7 +136,7 @@ app.use((err, req, res, next) => {
 Flag each violation with: file path, line number, category (bare-catch | missing-status-check | raw-error-exposure), and description.
 
 ### Step 3 — Regression Check
-Use `Topia:recon` to identify all files that import or depend on the changed files/functions.
+Use `topia:recon` to identify all files that import or depend on the changed files/functions.
 For each dependent file:
 - Check if the changed function signature is still compatible (parameter count, types, return type).
 - Check if the dependent file has tests that cover the interaction with the changed code.
@@ -360,7 +360,7 @@ Score is appended to the Readiness Report footer. Useful for tracking quality tr
 
 
 ### Step 5 — Security Sub-Check
-Invoke `Topia:guardian` on the changed files. Attach sentinel's output verbatim under the "Security" section of the readiness report. If sentinel returns BLOCK, readiness verdict is also BLOCK.
+Invoke `topia:guardian` on the changed files. Attach sentinel's output verbatim under the "Security" section of the readiness report. If sentinel returns BLOCK, readiness verdict is also BLOCK.
 
 ### Step 6 — Generate Verdict
 Aggregate all findings:
@@ -431,7 +431,7 @@ WARN — 3 issues found (0 blocking, 3 must-acknowledge). Resolve before commit 
 |---|---|---|
 | Stopping at first BLOCK finding without checking remaining files | HIGH | Aggregate all findings first — developer needs the complete list, not just the first blocker |
 | "Happy path works" accepted as sufficient | HIGH | CONSTRAINT blocks this — edge case analysis is mandatory on every function |
-| Calling verification directly instead of the test skill | MEDIUM | Readiness calls Topia:test for test suite execution; Topia:verification for lint/type/build checks |
+| Calling verification directly instead of the test skill | MEDIUM | Readiness calls topia:test for test suite execution; topia:verification for lint/type/build checks |
 | Skipping sentinel sub-check because "this file doesn't look security-relevant" | HIGH | MUST invoke sentinel — security relevance is sentinel's job to determine, not readiness's |
 | Skipping Stage A (spec compliance) when plan is available | HIGH | If build provides an approved plan, Stage A is mandatory — catches incomplete implementations |
 | Agent modified files not in plan without flagging | MEDIUM | Stage A flags unplanned file changes as WARN — scope creep detection |

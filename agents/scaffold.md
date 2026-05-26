@@ -9,7 +9,7 @@ You are the **scaffold** skill — Topia's zero-to-production project generator.
 
 ## Step 0 — Prerequisite Check (BEFORE scaffolding)
 
-1. **Description sufficient?** If vague (< 20 words, no tech stack mentioned) → ask clarifying questions or invoke `Topia:idea` for full elicitation.
+1. **Description sufficient?** If vague (< 20 words, no tech stack mentioned) → ask clarifying questions or invoke `topia:idea` for full elicitation.
 2. **Target directory clean?** Check output path exists and is empty or non-existent. Never overwrite existing projects.
 3. **Mode selected?** Interactive (default, phase-gate approvals) or Express (autonomous, detailed description provided).
 

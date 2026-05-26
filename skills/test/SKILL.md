@@ -34,7 +34,7 @@ ROLE BOUNDARY: Test writes TEST FILES only. NEVER modify source/implementation f
 - Do NOT "quickly fix" a broken import in source to make tests run
 - Do NOT refactor source code to be "more testable"
 - Do NOT add missing exports to source files
-- If source needs changes → hand off to `Topia:fix`. Test's job ends at the test file.
+- If source needs changes → hand off to `topia:fix`. Test's job ends at the test file.
 This separation ensures test never writes code biased toward passing its own tests.
 
 VERTICAL SLICING (Iron Law extension): one test → GREEN → one test → GREEN. Never bulk.
@@ -177,13 +177,13 @@ Use `Bash` to run ONLY the newly created test files (not full suite):
 
 ### Phase 5: After Implementation — Verify Tests PASS (GREEN)
 
-After `Topia:fix` writes implementation code, run the same test command again:
+After `topia:fix` writes implementation code, run the same test command again:
 
 1. ALL tests in the new test files MUST pass
 2. Run the full test suite with `Bash` to check for regressions:
    - `npm test`, `pytest`, `cargo test`, `go test ./...`
 3. If any test fails: report clearly which test, what was expected, what was received
-4. If an existing test now fails (regression): escalate to `Topia:debug`
+4. If an existing test now fails (regression): escalate to `topia:debug`
 
 **Verification gate**: 100% of new tests pass AND 0 regressions in existing tests.
 
@@ -508,7 +508,7 @@ If you catch yourself with ANY of these, delete implementation code and restart 
 7. MUST NOT say "tests pass" without showing actual test runner output
 8. MUST delete implementation code written before tests — Iron Law, no exceptions
 9. MUST show RED phase output (actual failure) — "I confirmed they fail" without output is REJECTED
-10. MUST NOT modify source/implementation files — test writes test files ONLY, hand off source changes to Topia:fix
+10. MUST NOT modify source/implementation files — test writes test files ONLY, hand off source changes to topia:fix
 11. MUST NOT write a 2nd test until the 1st test reaches GREEN — vertical slicing only, bulk_test_count <= 1 enforced
 12. MUST emit commit pair per cycle (`test:` then `feat:`) — git log is the audit trail for "I did TDD" claims
 
@@ -599,7 +599,7 @@ Append to Test Report when invoked standalone. Suppress when called as sub-skill
 
 ```yaml
 chain_metadata:
-  skill: "Topia:test"
+  skill: "topia:test"
   version: "1.2.0"
   status: "[DONE]"
   domain: "[area tested]"
@@ -611,11 +611,11 @@ chain_metadata:
     status: "[RED | GREEN]"  # RED = TDD failing (expected), GREEN = all pass
   suggested_next:  # status-aware — pick based on RED or GREEN
     # When GREEN:
-    - skill: "Topia:readiness"
+    - skill: "topia:readiness"
       reason: "[grounded in results — e.g., 'All 15 tests GREEN, check edge case completeness']"
       consumes: ["test_results", "test_files"]
     # When RED (TDD expected):
-    - skill: "Topia:fix"
+    - skill: "topia:fix"
       reason: "[grounded in failures — e.g., '3 tests RED as expected, implement to make them pass']"
       consumes: ["test_results", "test_files"]
 ```
@@ -633,7 +633,7 @@ Known failure modes for this skill. Check these before declaring done.
 | Incomplete mocks missing downstream fields | HIGH | Anti-Pattern 4 iron rule: mock COMPLETE data structure, not just fields your test checks |
 | Coverage below 80% without filling gaps | MEDIUM | Coverage Gate: identify uncovered lines and write additional tests |
 | Introducing a new test framework instead of using existing one | MEDIUM | Constraint 6: detect framework first, use project's existing one always |
-| Modifying source files to make tests work | HIGH | Role boundary: test writes test files ONLY — source changes go to Topia:fix |
+| Modifying source files to make tests work | HIGH | Role boundary: test writes test files ONLY — source changes go to topia:fix |
 | Test-only methods leaking into production code | MEDIUM | Anti-Pattern 2 gate: if method only called by tests → move to test utilities |
 | Bulk test writing before first GREEN (horizontal slicing) | CRITICAL | Phase 3.5 gate — bulk_test_count <= 1, defer additional tests to subsequent cycles |
 | Test names describe shape (`returns boolean`, `has property`) instead of behavior | MEDIUM | Scan names for shape-words; rewrite to behavior verbs (accepts/rejects/produces). See [references/test-quality.md](references/test-quality.md) |

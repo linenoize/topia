@@ -38,14 +38,15 @@ async function main() {
   try {
     const toolInput = hookData.tool_input || hookData.toolInput || {};
     const raw = toolInput.skill || toolInput.name || '';
-    skillName = raw.replace(/^Topia:/, '') || 'unknown';
+    // Case-insensitive: accepts both v3+ `topia:` and legacy `Topia:` prefixes.
+    skillName = raw.replace(/^[Tt]opia:/, '') || 'unknown';
   } catch {
     const toolInput = process.env.CLAUDE_TOOL_INPUT || '';
     try {
       const parsed = JSON.parse(toolInput);
-      skillName = (parsed.skill || parsed.name || '').replace(/^Topia:/, '');
+      skillName = (parsed.skill || parsed.name || '').replace(/^[Tt]opia:/, '');
     } catch {
-      const match = toolInput.match(/(?:Topia:)?([a-z][\w-]*)/i);
+      const match = toolInput.match(/(?:[Tt]opia:)?([a-z][\w-]*)/);
       if (match) skillName = match[1];
     }
   }

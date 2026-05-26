@@ -30,7 +30,7 @@ export function transformSkill(parsedSkill, adapter) {
 
   let body = parsedSkill.body;
 
-  // 1. Rewrite cross-references (Topia:build → platform-native)
+  // 1. Rewrite cross-references (topia:build → platform-native)
   body = transformCrossReferences(body, adapter);
 
   // 2. Rewrite tool names (Read, Edit, Bash → generic)

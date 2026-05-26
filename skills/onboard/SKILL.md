@@ -54,7 +54,7 @@ project/
 ## Executable Steps
 
 ### Step 1 — Full Scan
-Invoke `Topia:recon` on the project root. Collect:
+Invoke `topia:recon` on the project root. Collect:
 - Top-level directory structure (depth 2)
 - All config files: `package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod`, `composer.json`, `.nvmrc`, `.python-version`, `Pipfile.lock`, `poetry.lock`, `uv.lock`
 - Python environment markers: `.venv/`, `venv/`, `conda-meta/`, `.python-version`

@@ -4,6 +4,30 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
+## [3.0.0] — 2026-05-25
+
+### Breaking
+
+- **Plugin renamed to lowercase `topia`** — `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json` now use `"name": "topia"` (was `"Topia"`). This makes the install ID, on-disk cache path, and skill namespace prefix all match the lowercase `linenoize/topia` GitHub slug and the `topia` CLI binary name. `displayName: "Topia"` is preserved so the `/plugin` picker still shows the capitalized brand. Reason: Claude Code plugin lookups are case-sensitive — users routinely typed `/plugin install topia@linenoize` (lowercase) and got "Plugin topia not found in marketplace linenoize".
+- **Skill namespace flipped from `Topia:` to `topia:`** — invocations are now `/topia:build`, `/topia:plan`, etc. The compiler's cross-reference detector is case-insensitive, so legacy `Topia:` references in user-authored SKILL.md / docs continue to be recognized and rewritten correctly.
+
+### Migration
+
+Existing v2.x installs must reinstall under the new lowercase ID:
+
+```text
+/plugin uninstall Topia@linenoize
+/plugin marketplace update linenoize
+/plugin install topia@linenoize
+/reload-plugins
+```
+
+Or edit `~/.claude/settings.json` directly and rename the `"Topia@linenoize"` key to `"topia@linenoize"`, then restart Claude Code.
+
+Already-installed hooks (`Topia-managed: true` marker in cursor/windsurf/antigravity rule files and `.claude/settings.json` entries) keep working — the marker string is unchanged and the resolver checks both `cache/linenoize/topia` (new) and `cache/linenoize/Topia` (legacy) so dispatch hooks continue to find the CLI after upgrade.
+
+---
+
 ## [2.0.8] — 2026-05-25
 
 ### Fixed

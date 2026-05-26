@@ -13,7 +13,7 @@ Route to the appropriate Topia skill, CLI command, or extension pack based on th
 
 ## Finalize install (run from inside Claude — no terminal required)
 
-- `/topia finalize` — **in-Claude one-shot finish-install.** Run after `/plugin install Topia@linenoize` to enable the optional extras (system-wide dispatch hooks, agora-code MCP, project `.gitignore`) without leaving the chat. See [`commands/finalize.md`](finalize.md). Flags: `--strict`, `--skip-agora`, `--all`, `--reset`.
+- `/topia finalize` — **in-Claude one-shot finish-install.** Run after `/plugin install topia@linenoize` to enable the optional extras (system-wide dispatch hooks, agora-code MCP, project `.gitignore`) without leaving the chat. See [`commands/finalize.md`](finalize.md). Flags: `--strict`, `--skip-agora`, `--all`, `--reset`.
 
 ## CLI commands (run from terminal)
 
@@ -212,8 +212,8 @@ L4 packs provide domain-specific patterns. When invoked, read the pack's PACK.md
 When the user runs `/topia <action>`:
 
 1. **CLI command?** (install, setup, init, doctor, build, status, visualize, analytics, hooks, migrate-from-rune) → route to the CLI binary (`node compiler/bin/topia.js <action>`).
-2. **Core skill?** (any name in L0/L1/L2/L3 above) → invoke `Topia:<action>` via the Skill tool, passing arguments as the prompt.
+2. **Core skill?** (any name in L0/L1/L2/L3 above) → invoke `topia:<action>` via the Skill tool, passing arguments as the prompt.
 3. **L4 pack command?** → read the corresponding `extensions/<pack>/PACK.md`, locate the matching skill section, follow its workflow.
 4. **No action provided?** → show this help menu.
 
-For ambiguous routing (the user described intent without naming a skill), defer to `Topia:skill-router` for canonical resolution.
+For ambiguous routing (the user described intent without naming a skill), defer to `topia:skill-router` for canonical resolution.

@@ -23,7 +23,7 @@
 
 ```text
 /plugin marketplace add linenoize/topia
-/plugin install Topia@linenoize
+/plugin install topia@linenoize
 node compiler/bin/topia.js setup --global --preset gentle
 ```
 

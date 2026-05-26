@@ -16,11 +16,11 @@ metadata:
 
 ## Purpose
 
-Apply code changes. Fix receives a plan, debug finding, or review finding and writes the actual code. It does NOT investigate root causes — that is Topia:debug's job. Fix is the action hub: locate, change, verify, report.
+Apply code changes. Fix receives a plan, debug finding, or review finding and writes the actual code. It does NOT investigate root causes — that is topia:debug's job. Fix is the action hub: locate, change, verify, report.
 
 <HARD-GATE>
 Never change test files to make tests pass unless the tests themselves are provably wrong (wrong expected value, wrong test setup, testing a removed API). The rule: fix the CODE, not the TESTS.
-If unsure whether the test is wrong or the implementation is wrong → call `Topia:debug` to investigate.
+If unsure whether the test is wrong or the implementation is wrong → call `topia:debug` to investigate.
 </HARD-GATE>
 
 ## Triggers
@@ -69,7 +69,7 @@ Read and fully understand the fix request before touching any file.
 
 - Read the incoming request: debug report, plan spec, or review finding
 - Identify what is broken or missing and what the expected behavior should be
-- If the request is ambiguous or root cause is unclear → call `Topia:debug` before proceeding
+- If the request is ambiguous or root cause is unclear → call `topia:debug` before proceeding
 - Note the scope: single function, single file, or multi-file change
 
 ### Step 1b: Recovery Policy Matrix
@@ -84,7 +84,7 @@ Before locating code, classify the incoming error/task into a recovery category 
 | `POLICY_BLOCKED` — security gate, lint rule, contract violation | **ABORT** | Do NOT work around the policy. Report to caller with the specific rule that blocked. |
 | `PERMISSION_DENIED` — auth failure, file access, API scope | **PROMPT_USER** | Cannot fix permissions programmatically. Report exact permission needed. |
 | `DEPENDENCY_ERROR` — missing package, version conflict, broken dep | **AUTO_FIX** | Install missing dep, resolve version conflict, or suggest alternative package. |
-| `LOGIC_ERROR` — wrong output, incorrect calculation, bad algorithm | **INVESTIGATE** | Do NOT auto-fix. Call `Topia:debug` — logic errors need root cause analysis. |
+| `LOGIC_ERROR` — wrong output, incorrect calculation, bad algorithm | **INVESTIGATE** | Do NOT auto-fix. Call `topia:debug` — logic errors need root cause analysis. |
 | `ENVIRONMENT_ERROR` — wrong Node/Python version, missing system dep | **PROMPT_USER** | Report exact version/tool needed. Agent cannot change system environment. |
 
 **Decision flow**:
@@ -99,7 +99,7 @@ Before locating code, classify the incoming error/task into a recovery category 
 
 Find the exact files and lines to change.
 
-- Use `Topia:recon` to locate the relevant files, functions, and surrounding code
+- Use `topia:recon` to locate the relevant files, functions, and surrounding code
 - Use `Read` to examine the specific file:line identified in the debug report or plan
 - Use `Glob` to find related files: types, tests, config that may also need updating
 - Map all touch points before writing a single line of code
@@ -121,7 +121,7 @@ Confirm the change works and nothing is broken.
 
 - Use `Bash` to run the relevant tests: the specific failing test first, then the full suite
 - If tests fail after the fix:
-  - Investigate with `Topia:debug` (max 3 debug loops before escalating)
+  - Investigate with `topia:debug` (max 3 debug loops before escalating)
   - Do NOT change test files to make tests pass — fix the implementation code
 - If project has a type-check command, run it via `Bash`
 - If project has a lint command, run it via `Bash`
@@ -169,7 +169,7 @@ Apply this when: the bug was caused by invalid data flowing through multiple lay
 
 ### Step 5b: Preserve Debug Instrumentation
 
-If `Topia:debug` left `#region agent-debug` markers in the code:
+If `topia:debug` left `#region agent-debug` markers in the code:
 
 1. **During fix**: DO NOT remove these markers — they capture the investigation trail
 2. **After fix verified** (tests pass, lint pass): scan for `#region agent-debug` markers
@@ -182,9 +182,9 @@ If `Topia:debug` left `#region agent-debug` markers in the code:
 
 Verify correctness of the changes just made.
 
-- Call `Topia:hallucination-guard` to verify all imports introduced or modified are real and correctly named
-- Call `Topia:docs-seeker` if any external API, library method, or SDK call was added or changed
-- For complex or risky fixes (auth, data mutation, async logic): call `Topia:review` for a full quality check
+- Call `topia:hallucination-guard` to verify all imports introduced or modified are real and correctly named
+- Call `topia:docs-seeker` if any external API, library method, or SDK call was added or changed
+- For complex or risky fixes (auth, data mutation, async logic): call `topia:review` for a full quality check
 
 ### Step 6b: Capture Fix Pattern
 
@@ -203,7 +203,7 @@ Produce a structured summary of all changes made.
 1. MUST NOT change test files to make tests pass — fix the CODE, not the TESTS
 2. MUST have a diagnosis (from debug or clear error) before applying fixes
 3. MUST run tests after each fix attempt — never batch multiple untested changes
-4. MUST NOT exceed 3 fix attempts — if 3 fixes fail, re-diagnose via Topia:debug (which will classify: wrong approach → brainstorm rescue, wrong design → plan redesign)
+4. MUST NOT exceed 3 fix attempts — if 3 fixes fail, re-diagnose via topia:debug (which will classify: wrong approach → brainstorm rescue, wrong design → plan redesign)
 5. MUST follow project conventions found by scout — don't invent new patterns
 6. MUST NOT add unplanned features while fixing — fix only what was diagnosed
 7. MUST track fix attempt number — this feeds debug's 3-Fix Escalation classification
@@ -225,7 +225,7 @@ If fix requires touching >3 files not in the diagnosis → re-diagnose. You're p
 
 | Gate | Requires | If Missing |
 |------|----------|------------|
-| Evidence Gate | Debug report OR clear error description before fixing | Run Topia:debug first |
+| Evidence Gate | Debug report OR clear error description before fixing | Run topia:debug first |
 | Test Gate | Tests run after each fix attempt | Run tests before claiming fix works |
 
 ## Output Format
@@ -282,7 +282,7 @@ Append to Fix Report when invoked standalone. Suppress when called as sub-skill 
 
 ```yaml
 chain_metadata:
-  skill: "Topia:fix"
+  skill: "topia:fix"
   version: "1.0.0"
   status: "[DONE | DONE_WITH_CONCERNS | NEEDS_CONTEXT | BLOCKED]"
   domain: "[area fixed]"
@@ -293,7 +293,7 @@ chain_metadata:
     verification: { lint: "[PASS/FAIL]", types: "[PASS/FAIL]", tests: "[PASS/FAIL]" }
     commit_hash: "[hash if committed]"
   suggested_next:
-    - skill: "Topia:test"
+    - skill: "topia:test"
       reason: "[grounded in changes — e.g., 'Modified 3 files in auth module, edge cases need coverage']"
       consumes: ["fix_applied", "verification"]
 ```

@@ -56,11 +56,14 @@ export function resolveTopiaRoot(explicit, opts = {}) {
   if (opts.skipPluginCache) return null;
 
   const home = os.homedir();
+  // v3.0.0+ uses lowercase `topia` (plugin.json `name` field). v2.x used `Topia`.
+  // Prefer lowercase first so a fresh install wins when both directories exist
+  // on a user who upgraded without cleaning up the old plugin cache.
   const cacheCandidates = [
-    path.join(home, '.claude', 'plugins', 'cache', 'linenoize', 'Topia'),
     path.join(home, '.claude', 'plugins', 'cache', 'linenoize', 'topia'),
-    path.join(home, '.claude', 'plugins', 'cache', 'Topia'),
+    path.join(home, '.claude', 'plugins', 'cache', 'linenoize', 'Topia'),
     path.join(home, '.claude', 'plugins', 'cache', 'topia'),
+    path.join(home, '.claude', 'plugins', 'cache', 'Topia'),
   ];
 
   for (const base of cacheCandidates) {

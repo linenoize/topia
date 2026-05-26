@@ -38,7 +38,7 @@ Every Cook Report MUST end with a `chain_metadata` YAML block. This enables down
 
 ```yaml
 chain_metadata:
-  skill: "Topia:build"
+  skill: "topia:build"
   version: "2.2.0"
   status: "[same as Cook Report status]"
   domain: "[area worked on — e.g., auth, payments, compiler]"

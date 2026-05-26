@@ -29,22 +29,22 @@ const claudeAdapter = {
 // --- Cross-reference transform ---
 
 describe('transformCrossReferences', () => {
-  test('rewrites backticked Topia:build reference', () => {
-    const input = 'Use `Topia:build` for features.';
+  test('rewrites backticked topia:build reference', () => {
+    const input = 'Use `topia:build` for features.';
     const result = transformCrossReferences(input, mockAdapter);
     assert.ok(result.includes('`@Topia-build.mdc`'));
-    assert.ok(!result.includes('Topia:build'));
+    assert.ok(!result.includes('topia:build'));
   });
 
-  test('rewrites bare Topia:plan reference', () => {
-    const input = 'Delegate to Topia:plan for planning.';
+  test('rewrites bare topia:plan reference', () => {
+    const input = 'Delegate to topia:plan for planning.';
     const result = transformCrossReferences(input, mockAdapter);
     assert.ok(result.includes('@Topia-plan.mdc'));
-    assert.ok(!result.includes('Topia:plan'));
+    assert.ok(!result.includes('topia:plan'));
   });
 
   test('handles multiple refs in same line', () => {
-    const input = 'Use `Topia:build` then `Topia:test` then `Topia:fix`.';
+    const input = 'Use `topia:build` then `topia:test` then `topia:fix`.';
     const result = transformCrossReferences(input, mockAdapter);
     assert.ok(result.includes('@Topia-build.mdc'));
     assert.ok(result.includes('@Topia-test.mdc'));

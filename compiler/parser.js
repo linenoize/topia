@@ -20,7 +20,9 @@
  *  - Frontmatter is YAML-like; only the keys the compiler knows about are extracted.
  *    Unknown keys land in `frontmatter` verbatim and pass through.
  *  - `emit` / `listen` are always arrays (comma-split). Empty if missing.
- *  - Cross-refs are case-sensitive on the canonical form `Topia:<name>`.
+ *  - Cross-refs use canonical lowercase form `topia:<name>` (v3.0.0+).
+ *    Detection is case-insensitive so legacy `Topia:` references in older
+ *    SKILL.md / docs are still recognized and rewritten.
  *  - Missing sections produce empty values, never throw — doctor.js detects gaps.
  */
 
@@ -30,7 +32,7 @@ const COMMA_LIST_FIELDS = new Set(['emit', 'listen']);
 
 // Canonical patterns. CROSS_REF + TOOL_REF are used by extract* — keep in sync
 // with adapters/* if a platform changes its reference syntax.
-const CROSS_REF_PATTERN = /`?Topia:([a-z][\w-]*)`?/g;
+const CROSS_REF_PATTERN = /`?[Tt]opia:([a-z][\w-]*)`?/g;
 const TOOL_REF_PATTERN = /`(Read|Write|Edit|Glob|Grep|Bash|TodoWrite|Skill|Agent)`/g;
 const HARD_GATE_PATTERN = /<HARD-GATE>([\s\S]*?)<\/HARD-GATE>/g;
 const _SECTION_PATTERN = /^## (.+)$/gm;
@@ -123,7 +125,7 @@ function parseFrontmatter(content) {
 }
 
 /**
- * Extract all Topia:<name> cross-references from body
+ * Extract all topia:<name> cross-references from body
  */
 export function extractCrossRefs(body) {
   const refs = [];

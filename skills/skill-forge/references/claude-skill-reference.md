@@ -179,4 +179,4 @@ When creating Topia skills (vs generic Claude Code skills):
 | Model | haiku (scan), sonnet (code), opus (architecture) |
 | Version | semver — bump on enrichment |
 | References | Store in `references/` subdirectory |
-| Cross-references | Use `Topia:skill-name` syntax |
+| Cross-references | Use `topia:skill-name` syntax |

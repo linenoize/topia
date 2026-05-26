@@ -237,7 +237,7 @@ Each approach must be meaningfully different — not just variations of the same
 - **Effort**: low (< 1 day) | medium (1–3 days) | high (> 3 days)
 - **Risk**: low | medium | high + one-line explanation of the main risk
 
-If the domain is unfamiliar or data is needed, invoke `Topia:research` before generating options. For product/market context, invoke `Topia:trend-scout`.
+If the domain is unfamiliar or data is needed, invoke `topia:research` before generating options. For product/market context, invoke `topia:trend-scout`.
 
 ### Step 2.5 — Constraint Matrix Spawn (Design-It-Twice Mode only)
 
@@ -271,11 +271,11 @@ Each subagent returns a YAML block: interface, usage example, what's hidden, dep
 - **First Principles** — strip to fundamentals, rebuild without the assumption that caused failure
 
 Additionally in Rescue Mode:
-- Invoke `Topia:research` to search for how others solved similar problems (repos, articles, workarounds)
+- Invoke `topia:research` to search for how others solved similar problems (repos, articles, workarounds)
 - At least 1 approach must be "hacky/unconventional" — wrappers, reverse engineering, browser automation, proxy layers, debug mode abuse, etc.
 - Label each approach with its **category tag** to prove diversity: `[Direct API]`, `[Wrapper]`, `[Reverse-Engineer]`, `[Proxy]`, `[Extension]`, `[Alternative Tool]`, etc.
 
-For approaches with many interacting variables, invoke `Topia:sequential-thinking` to reason through trade-offs systematically.
+For approaches with many interacting variables, invoke `topia:sequential-thinking` to reason through trade-offs systematically.
 
 ### Step 3.5 — Diversity Gate (Design-It-Twice Mode only)
 
@@ -357,7 +357,7 @@ Option D (Hybrid C1 + C4):
 The hybrid is the recommended default in many cases. Be opinionated.
 
 ### Step 5 — Return to Plan
-Pass the recommended approach back to `Topia:plan` for structuring into an executable implementation plan. Include:
+Pass the recommended approach back to `topia:plan` for structuring into an executable implementation plan. Include:
 - The chosen option name
 - Key constraints to honor in the plan
 - Any risks identified that the plan must mitigate
@@ -408,7 +408,7 @@ Option A — [one-line primary reason].
 Choose Option B if [specific hedge condition].
 
 ### Next Step
-Proceeding to Topia:plan with Option A. Constraints to honor: [list].
+Proceeding to topia:plan with Option A. Constraints to honor: [list].
 ```
 
 ## Returns
@@ -452,4 +452,4 @@ Known failure modes for this skill. Check these before declaring done.
 
 ~2000-5000 tokens input, ~1000-2500 tokens output. Opus for creative reasoning depth. Runs infrequently — only when creative exploration is needed.
 
-**Scope guardrail:** Brainstorm produces options and a recommendation — never implementation code or an execution plan. All code and planning begins only after user approves an approach and `Topia:plan` is invoked.
+**Scope guardrail:** Brainstorm produces options and a recommendation — never implementation code or an execution plan. All code and planning begins only after user approves an approach and `topia:plan` is invoked.

@@ -37,7 +37,7 @@ Comprehensive project health audit across 8 dimensions (7 project + 1 nexus anal
 - `journal` (L3): record audit date, overall score, and verdict
 - `constraint-check` (L3): audit HARD-GATE compliance across project skills
 - `sast` (L3): Phase 2 — deep static analysis (Semgrep, Bandit, ESLint security rules)
-- `retro` (L2): Phase 6 — engineering velocity and health dimension (Topia:retro)
+- `retro` (L2): Phase 6 — engineering velocity and health dimension (topia:retro)
 - `browser-pilot` (L3): DX Review Mode — real browser testing of docs, setup guides, error pages
 
 ## Called By (inbound)
@@ -50,7 +50,7 @@ Comprehensive project health audit across 8 dimensions (7 project + 1 nexus anal
 
 ### Phase 0: Project Discovery
 
-Call `Topia:recon` for a full project map. Then use `Read` on:
+Call `topia:recon` for a full project map. Then use `Read` on:
 - `README.md`, `CLAUDE.md`, `CONTRIBUTING.md`, `.editorconfig` (if they exist)
 
 Determine:
@@ -534,7 +534,7 @@ After all phases complete:
 
 Use `Write` to save `AUDIT-REPORT.md` to the project root with the full findings from all phases.
 
-Call `Topia:journal` to record: audit date, overall health score, verdict, and CRITICAL count.
+Call `topia:journal` to record: audit date, overall health score, verdict, and CRITICAL count.
 
 ## Weighted Composite Scoring
 
@@ -645,8 +645,8 @@ Report saved to: AUDIT-REPORT.md
 | Gate | Requires | If Missing |
 |------|----------|------------|
 | Discovery Gate | Phase 0 project profile completed before Phase 1 | Run recon and read config files first |
-| Security Gate | guardian report received before assembling final report | Invoke Topia:guardian — do not skip |
-| Deps Gate | dependency-doctor report received before assembling final report | Invoke Topia:dependency-doctor — do not skip |
+| Security Gate | guardian report received before assembling final report | Invoke topia:guardian — do not skip |
+| Deps Gate | dependency-doctor report received before assembling final report | Invoke topia:dependency-doctor — do not skip |
 | Report Gate | All 8 phases completed before writing AUDIT-REPORT.md | Complete all phases, note skipped ones |
 
 ## Returns
@@ -657,7 +657,7 @@ Report saved to: AUDIT-REPORT.md
 | 8-dimension health score | Markdown table | `AUDIT-REPORT.md` + inline |
 | Weighted composite score + grade | Markdown | inline + `AUDIT-REPORT.md` |
 | Nexus analytics section | Markdown table | inline + `AUDIT-REPORT.md` |
-| Journal entry | Text | `.topia/adr/` (via `Topia:journal`) |
+| Journal entry | Text | `.topia/adr/` (via `topia:journal`) |
 
 ## Sharp Edges
 

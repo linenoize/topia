@@ -16,15 +16,15 @@ metadata:
 
 ## Purpose
 
-Root cause analysis ONLY. Debug investigates — it does NOT fix. It traces errors through code, analyzes stack traces, forms and tests hypotheses, and identifies the exact cause before handing off to Topia:fix.
+Root cause analysis ONLY. Debug investigates — it does NOT fix. It traces errors through code, analyzes stack traces, forms and tests hypotheses, and identifies the exact cause before handing off to topia:fix.
 
 <HARD-GATE>
 Do NOT fix the code. Debug investigates only. Any code change is out of scope.
 If root cause cannot be identified after 3 hypothesis cycles:
 - Emit `agent.stuck` signal — `scout` zoom-out mode surfaces broader module map (structural pivot); `adversary` oracle-mode dispatches a stateless second-model pass (semantic pivot); both fire in parallel
 - If `oracle.response` arrives with confidence=high and cites file:line, treat as new hypothesis H_oracle and test directly (skip 3-cycle gate — it's externally validated)
-- Otherwise, escalate to `Topia:problem-solver` for structured 5-Whys or Fishbone analysis
-- Or escalate to `Topia:sequential-thinking` for multi-variable analysis
+- Otherwise, escalate to `topia:problem-solver` for structured 5-Whys or Fishbone analysis
+- Or escalate to `topia:sequential-thinking` for multi-variable analysis
 - Report escalation in the Debug Report with all evidence gathered so far
 </HARD-GATE>
 
@@ -98,7 +98,7 @@ After reproducing the error, **lock edits to the narrowest affected directory** 
 - Cannot determine affected area from initial evidence
 - User explicitly says "investigate everything"
 
-**Why:** Debugging naturally expands scope as you trace root causes. Without a boundary, Topia:fix receives recommendations touching 10+ files across unrelated modules. The scope lock forces discipline: fix at the source, not at every symptom site.
+**Why:** Debugging naturally expands scope as you trace root causes. Without a boundary, topia:fix receives recommendations touching 10+ files across unrelated modules. The scope lock forces discipline: fix at the source, not at every symptom site.
 
 
 ### Step 2: Gather Evidence
@@ -108,8 +108,8 @@ Use tools to collect facts — do NOT guess yet.
 - Use `Grep` to search codebase for the exact error string or related error codes
 - Use `Read` to examine stack trace files, log files, or the specific file:line mentioned
 - Use `Glob` to find related files (config, types, tests) that may be involved
-- Use `Topia:browser-pilot` if the issue is UI-related (console errors, network failures, visual bugs)
-- Use `Topia:recon` to trace imports and identify all modules touched by the affected code path
+- Use `topia:browser-pilot` if the issue is UI-related (console errors, network failures, visual bugs)
+- Use `topia:recon` to trace imports and identify all modules touched by the affected code path
 
 #### Backward Tracing (for deep stack errors)
 
@@ -136,7 +136,7 @@ When the root cause is invalid data flowing through multiple layers, recommend f
 | Layer 3: Environment Guards | Prevent dangerous operations in specific contexts | Refuse destructive ops outside allowed dirs |
 | Layer 4: Debug Instrumentation | Capture context for forensics | Stack trace logging before dangerous operations |
 
-All four layers are necessary. During testing, each layer catches bugs the others miss — different code paths bypass single validation points. When recommending a fix via `Topia:fix`, explicitly call out which layers need validation added.
+All four layers are necessary. During testing, each layer catches bugs the others miss — different code paths bypass single validation points. When recommending a fix via `topia:fix`, explicitly call out which layers need validation added.
 
 #### Multi-Component Instrumentation (for systems with 3+ layers)
 
@@ -165,7 +165,7 @@ Language-appropriate equivalents:
 - Rust: `// region agent-debug` / `// endregion agent-debug`
 
 **Why preserved markers matter:**
-- `Topia:fix` will preserve these markers until the bug is fully resolved and tests pass
+- `topia:fix` will preserve these markers until the bug is fully resolved and tests pass
 - If the bug recurs, markers show exactly what was previously instrumented
 - Cleaning up debug traces before the fix is verified prevents learning from failure history
 - After fix is verified + tests pass → fix will clean up markers in a final pass
@@ -242,7 +242,7 @@ Test each hypothesis systematically using tools.
 
 - Use `Read` to inspect the suspected file/function for each hypothesis
 - Use `Bash` to run targeted tests: a single failing test, a type check, a linter on the file
-- Use `Topia:browser-pilot` for UI hypotheses (inspect DOM, network, console)
+- Use `topia:browser-pilot` for UI hypotheses (inspect DOM, network, console)
 - For each hypothesis: mark CONFIRMED / RULED OUT with evidence
 - If all 3 hypotheses are ruled out → go back to Step 2 to gather more evidence
 - Maximum 3 hypothesis cycles. If still unresolved after 3 cycles → escalate (see Hard-Gate)
@@ -268,8 +268,8 @@ If the SAME bug has been "fixed" 3 times and keeps returning:
    - **Same category of blocker each time** (e.g., API doesn't support X, platform limitation) → the APPROACH is wrong, not just the code
    - **Different bugs each time** (e.g., race condition, then null pointer, then type error) → the MODULE needs redesign
 3. **Route based on classification**:
-   - Approach is wrong → Escalate to `Topia:brainstorm(mode="rescue")` for category-diverse alternatives
-   - Module needs redesign → Escalate to `Topia:plan` for redesign of the affected module
+   - Approach is wrong → Escalate to `topia:brainstorm(mode="rescue")` for category-diverse alternatives
+   - Module needs redesign → Escalate to `topia:plan` for redesign of the affected module
 4. Report all 3 fix attempts and why each failed in the escalation.
 "Try a 4th fix" is NOT acceptable. After 3 failures, question the design OR the approach.
 </HARD-GATE>
@@ -296,10 +296,10 @@ When 3+ **distinct** fixes fail (not retries of the same fix), STOP treating it 
 
 ### Step 7: Report
 
-Produce structured output and hand off to Topia:fix.
+Produce structured output and hand off to topia:fix.
 
 - Write the Debug Report (see Output Format below)
-- Call `Topia:fix` with the full report if fix is needed
+- Call `topia:fix` with the full report if fix is needed
 - Do NOT apply any code changes — report only
 
 ## Analysis Paralysis Guard
@@ -395,7 +395,7 @@ ALL of these mean: STOP. Return to Step 2 (Gather Evidence).
 
 ### Suggested Fix
 [Description of what needs to change — no code, just direction]
-[If attempt 3: "ESCALATION: 3-fix rule triggered. Recommending redesign via Topia:plan."]
+[If attempt 3: "ESCALATION: 3-fix rule triggered. Recommending redesign via topia:plan."]
 
 ### Related Code
 - `path/to/related.ts` — [why it's relevant]
@@ -427,7 +427,7 @@ Append to Debug Report when invoked standalone. Suppress when called as sub-skil
 
 ```yaml
 chain_metadata:
-  skill: "Topia:debug"
+  skill: "topia:debug"
   version: "1.2.0"
   status: "[DONE | DONE_WITH_CONCERNS | NEEDS_CONTEXT | BLOCKED]"
   domain: "[area debugged]"
@@ -438,7 +438,7 @@ chain_metadata:
     confidence: "[high | medium | low]"
     fix_recommendation: "[direction for fix skill]"
   suggested_next:
-    - skill: "Topia:fix"
+    - skill: "topia:fix"
       reason: "[grounded in root cause — e.g., 'Critical race condition found in auth.ts:42']"
       consumes: ["root_cause", "fix_recommendation"]
 ```
@@ -450,7 +450,7 @@ chain_metadata:
 | Forming hypothesis from error message alone without evidence | HIGH | Evidence-first rule: read files and grep logs BEFORE hypothesizing |
 | Modifying code while "investigating" | CRITICAL | HARD-GATE: any code change during debug = out of scope — hand off to fix |
 | Marking hypothesis CONFIRMED without file:line proof | HIGH | CONFIRMED requires specific evidence cited — "it makes sense" is not evidence |
-| Exceeding 3 hypothesis cycles without escalation | MEDIUM | After 3 cycles: escalate to Topia:problem-solver or Topia:sequential-thinking |
+| Exceeding 3 hypothesis cycles without escalation | MEDIUM | After 3 cycles: escalate to topia:problem-solver or topia:sequential-thinking |
 | Same bug "fixed" 3+ times without questioning architecture | CRITICAL | 3-Fix Escalation Rule: classify failure → same blocker category = brainstorm(rescue), different bugs = plan redesign |
 | Escalating to plan when the APPROACH is wrong (not the module) | HIGH | If all 3 fixes hit the same category of blocker (API limit, platform gap), the approach needs pivoting via brainstorm(rescue), not re-planning |
 | Not tracking fix attempt number for recurring bugs | HIGH | Debug Report MUST include Fix Attempt counter — enables escalation gate |
@@ -474,7 +474,7 @@ chain_metadata:
 - If `DONE_WITH_CONCERNS`: caveats documented with impact assessment
 - If `NEEDS_CONTEXT`: specific questions + two likely answers provided
 - If `BLOCKED`: all 3 hypothesis cycles documented + escalation target identified
-- No code changes made — Topia:fix called with the report if fix is needed
+- No code changes made — topia:fix called with the report if fix is needed
 
 ## Cost Profile
 

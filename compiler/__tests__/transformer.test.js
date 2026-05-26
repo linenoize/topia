@@ -11,7 +11,7 @@ describe('transformSkill', () => {
     layer: 'L2',
     group: 'workflow',
     description: 'Apply code fixes',
-    body: '# fix\n\nUse `Topia:build` for orchestration.\n\nUse `Read` to check files.\n\n## Steps\n\n1. Analyze\n2. Fix\n3. Verify',
+    body: '# fix\n\nUse `topia:build` for orchestration.\n\nUse `Read` to check files.\n\n## Steps\n\n1. Analyze\n2. Fix\n3. Verify',
     crossRefs: ['build'],
     toolRefs: ['Read'],
     hardGates: [],
@@ -31,7 +31,7 @@ describe('transformSkill', () => {
     const cursor = getAdapter('cursor');
     const result = transformSkill(mockSkill, cursor);
     assert.ok(result.body.includes('@Topia-build.mdc'));
-    assert.ok(!result.body.includes('Topia:build'));
+    assert.ok(!result.body.includes('topia:build'));
   });
 
   test('result has header, body, and footer', () => {

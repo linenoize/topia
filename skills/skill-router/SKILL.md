@@ -1,6 +1,6 @@
 ---
 name: skill-router
-description: "Meta-enforcement layer that routes EVERY agent action through the correct skill. MUST check this routing table before ANY response involving code, files, or technical decisions. Default: route to Topia:build for code tasks. Prevents rationalization, enforces check-before-act discipline."
+description: "Meta-enforcement layer that routes EVERY agent action through the correct skill. MUST check this routing table before ANY response involving code, files, or technical decisions. Default: route to topia:build for code tasks. Prevents rationalization, enforces check-before-act discipline."
 user-invocable: false
 metadata:
   author: skill-topia
@@ -136,14 +136,14 @@ These 5 skills are the main interface. Most user intents route here first:
 
 | User Intent | Route To | When |
 |---|---|---|
-| Build / implement / build / add feature / fix bug | `Topia:build` | Any code change request |
-| Large multi-part task / parallel work | `Topia:team` | 5+ files or 3+ modules |
-| Deploy + launch + marketing | `Topia:launch` | Ship to production |
-| Legacy code / rescue / modernize | `Topia:rescue` | Old/messy codebase |
-| Check project health / full audit | `Topia:audit` | Quality assessment |
-| New project / bootstrap / scaffold | `Topia:scaffold` | Greenfield project creation |
+| Build / implement / build / add feature / fix bug | `topia:build` | Any code change request |
+| Large multi-part task / parallel work | `topia:team` | 5+ files or 3+ modules |
+| Deploy + launch + marketing | `topia:launch` | Ship to production |
+| Legacy code / rescue / modernize | `topia:rescue` | Old/messy codebase |
+| Check project health / full audit | `topia:audit` | Quality assessment |
+| New project / bootstrap / scaffold | `topia:scaffold` | Greenfield project creation |
 
-**Default route**: If unclear, route to `Topia:build`. Build handles 70% of all requests.
+**Default route**: If unclear, route to `topia:build`. Build handles 70% of all requests.
 
 #### Power User Skills (Direct Invocation)
 
@@ -151,28 +151,28 @@ For users who know exactly what they want:
 
 | User Intent | Route To | Priority |
 |---|---|---|
-| Plan / design / architect | `Topia:plan` | L2 — requires opus |
-| Brainstorm / explore ideas | `Topia:brainstorm` | L2 — before plan |
-| Review code / check quality | `Topia:review` | L2 |
-| Write tests | `Topia:test` | L2 — TDD |
-| Refactor | `Topia:surgeon` | L2 — incremental |
-| Deploy (without marketing) | `Topia:deploy` | L2 |
-| Security concern | `Topia:guardian` | L2 — opus for critical |
-| Performance issue | `Topia:perf` | L2 |
-| Database change | `Topia:db` | L2 |
-| Received code review / PR feedback | `Topia:review-intake` | L2 |
-| Protect / audit / document business logic | `Topia:logic-guardian` | L2 |
-| Create / edit a Topia skill | `Topia:skill-forge` | L2 — requires opus |
-| Incident / outage | `Topia:incident` | L2 |
-| UI/UX design | `Topia:design` | L2 |
-| Fix bug / debug only (no fix) | `Topia:debug` → `Topia:fix` | L2 chain |
-| Marketing assets only | `Topia:marketing` | L2 |
-| Initial concept intake / Idea elicitation / Memory retrieval | `Topia:idea` | L2 — requires opus |
-| Generate / update docs | `Topia:docs` | L2 |
-| Generate leadership package / Jira CSV / User Stories | `Topia:documentation` | L2 |
-| Build MCP server | `Topia:mcp-builder` | L2 |
-| Red-team / challenge a plan / stress-test | `Topia:adversary` | L2 — requires opus |
-| Port / graft from repo / copy from external repo | `Topia:integrate` | L2 — challenge gate before code |
+| Plan / design / architect | `topia:plan` | L2 — requires opus |
+| Brainstorm / explore ideas | `topia:brainstorm` | L2 — before plan |
+| Review code / check quality | `topia:review` | L2 |
+| Write tests | `topia:test` | L2 — TDD |
+| Refactor | `topia:surgeon` | L2 — incremental |
+| Deploy (without marketing) | `topia:deploy` | L2 |
+| Security concern | `topia:guardian` | L2 — opus for critical |
+| Performance issue | `topia:perf` | L2 |
+| Database change | `topia:db` | L2 |
+| Received code review / PR feedback | `topia:review-intake` | L2 |
+| Protect / audit / document business logic | `topia:logic-guardian` | L2 |
+| Create / edit a Topia skill | `topia:skill-forge` | L2 — requires opus |
+| Incident / outage | `topia:incident` | L2 |
+| UI/UX design | `topia:design` | L2 |
+| Fix bug / debug only (no fix) | `topia:debug` → `topia:fix` | L2 chain |
+| Marketing assets only | `topia:marketing` | L2 |
+| Initial concept intake / Idea elicitation / Memory retrieval | `topia:idea` | L2 — requires opus |
+| Generate / update docs | `topia:docs` | L2 |
+| Generate leadership package / Jira CSV / User Stories | `topia:documentation` | L2 |
+| Build MCP server | `topia:mcp-builder` | L2 |
+| Red-team / challenge a plan / stress-test | `topia:adversary` | L2 — requires opus |
+| Port / graft from repo / copy from external repo | `topia:integrate` | L2 — challenge gate before code |
 
 #### Internal Skills (Called by Other Skills)
 
@@ -180,23 +180,23 @@ These are rarely invoked directly — they're called by higher-level skills:
 
 | Skill | Called By | Purpose |
 |---|---|---|
-| `Topia:recon` | build, plan, team | Codebase scanning |
-| `Topia:fix` | debug, build | Apply code changes |
-| `Topia:readiness` | build | Quality gate |
-| `Topia:verification` | build, fix | Run lint/test/build |
-| `Topia:hallucination-guard` | build, fix | Verify imports |
-| `Topia:completion-gate` | build | Validate claims |
-| `Topia:guardian-env` | build, scaffold, onboard | Environment pre-flight |
-| `Topia:research` / `Topia:docs-seeker` | any | Look up docs |
-| `Topia:session-bridge` | build, team | Save context (in-session state handoff) |
-| `Topia:journal` | build, team | Persistent work log within a session |
-| `Topia:neural-memory` | build, team, any L1/L2 | Cross-session cognitive persistence via Neural Memory MCP — semantic complement to session-bridge and journal |
-| `Topia:recall` | build, plan, recon, session-start | Unified read-only recall across `.topia/`, `.remember/`, neural-memory, agora-memory |
-| `Topia:git` | build, scaffold, team, launch | Semantic commits, PRs, branches |
-| `Topia:doc-processor` | docs, marketing | PDF/DOCX/XLSX/PPTX generation |
-| "Done" / "ship it" / "xong" | — | `Topia:verification` → commit |
-| "recall", "what did we do", "session context", "pick up where we left off" | `Topia:recall` | Unified cross-source memory read |
-| "remember", "brain", "nmem", "cross-project memory", "store learning" | `Topia:neural-memory` | Persist or query semantic graph memory |
+| `topia:recon` | build, plan, team | Codebase scanning |
+| `topia:fix` | debug, build | Apply code changes |
+| `topia:readiness` | build | Quality gate |
+| `topia:verification` | build, fix | Run lint/test/build |
+| `topia:hallucination-guard` | build, fix | Verify imports |
+| `topia:completion-gate` | build | Validate claims |
+| `topia:guardian-env` | build, scaffold, onboard | Environment pre-flight |
+| `topia:research` / `topia:docs-seeker` | any | Look up docs |
+| `topia:session-bridge` | build, team | Save context (in-session state handoff) |
+| `topia:journal` | build, team | Persistent work log within a session |
+| `topia:neural-memory` | build, team, any L1/L2 | Cross-session cognitive persistence via Neural Memory MCP — semantic complement to session-bridge and journal |
+| `topia:recall` | build, plan, recon, session-start | Unified read-only recall across `.topia/`, `.remember/`, neural-memory, agora-memory |
+| `topia:git` | build, scaffold, team, launch | Semantic commits, PRs, branches |
+| `topia:doc-processor` | docs, marketing | PDF/DOCX/XLSX/PPTX generation |
+| "Done" / "ship it" / "xong" | — | `topia:verification` → commit |
+| "recall", "what did we do", "session context", "pick up where we left off" | `topia:recall` | Unified cross-source memory read |
+| "remember", "brain", "nmem", "cross-project memory", "store learning" | `topia:neural-memory` | Persist or query semantic graph memory |
 
 #### Domain Extension Packs (L4)
 
@@ -232,12 +232,12 @@ When the routed skill produces file changes, the **owner skill's constraints** a
 
 | File Pattern | Owner Skill | Constraints Applied |
 |---|---|---|
-| `*.test.*`, `*.spec.*`, `__tests__/` | `Topia:test` | Test patterns, assertions, no `test.skip`, coverage rules |
-| `migrations/`, `schema.*`, `*.prisma` | `Topia:db` | Migration safety, rollback script, parameterized queries |
-| `Dockerfile`, `*.yml` (CI/CD), `terraform/` | `Topia:deploy` | Deployment checklist, no hardcoded secrets |
-| `docs/*.md`, `README.md`, `CHANGELOG.md` | `Topia:docs` | Documentation patterns, no stale references |
-| `SKILL.md`, `PACK.md` | `Topia:skill-forge` | Skill template compliance, frontmatter validation |
-| `.env*`, `*secret*`, `*credential*` | `Topia:guardian` | Security scan mandatory, never commit secrets |
+| `*.test.*`, `*.spec.*`, `__tests__/` | `topia:test` | Test patterns, assertions, no `test.skip`, coverage rules |
+| `migrations/`, `schema.*`, `*.prisma` | `topia:db` | Migration safety, rollback script, parameterized queries |
+| `Dockerfile`, `*.yml` (CI/CD), `terraform/` | `topia:deploy` | Deployment checklist, no hardcoded secrets |
+| `docs/*.md`, `README.md`, `CHANGELOG.md` | `topia:docs` | Documentation patterns, no stale references |
+| `SKILL.md`, `PACK.md` | `topia:skill-forge` | Skill template compliance, frontmatter validation |
+| `.env*`, `*secret*`, `*credential*` | `topia:guardian` | Security scan mandatory, never commit secrets |
 | `*.css`, `*.scss`, `tailwind.config.*` | `@Topia/ui` | Design system patterns (if L4 pack installed) |
 
 **Ownership rules:**
@@ -255,13 +255,13 @@ Priority: L1 > L2 > L3
 Within same layer: process skills > implementation skills
 
 Example: "Add auth and deploy it"
-  → Topia:build (add auth) FIRST
-  → Topia:deploy SECOND (after build completes)
+  → topia:build (add auth) FIRST
+  → topia:deploy SECOND (after build completes)
 
 Example: "Fix the login bug and add tests"
-  → Topia:debug (diagnose) FIRST
-  → Topia:fix (apply fix) SECOND
-  → Topia:test (add tests) THIRD
+  → topia:debug (diagnose) FIRST
+  → topia:fix (apply fix) SECOND
+  → topia:test (add tests) THIRD
 
 L4 integration: If build is the primary route AND a domain pack matches,
 build handles orchestration while the L4 pack provides domain patterns.
@@ -286,7 +286,7 @@ The agent MUST NOT bypass routing with these excuses:
 ### Step 4 — Execute
 
 Once routed:
-1. Announce: "Using `Topia:<skill>` to [purpose]"
+1. Announce: "Using `topia:<skill>` to [purpose]"
 2. Invoke the skill via Skill tool
 3. Follow the skill's workflow exactly
 4. If the skill has a checklist/phases, track via TodoWrite
@@ -295,7 +295,7 @@ Once routed:
 
 After ANY L1 or L2 workflow completes (build, team, launch, rescue, scaffold, plan, design, debug, fix, review, deploy, guardian, readiness, perf, db, idea, docs, mcp-builder, integrate, etc.):
 
-1. Trigger `Topia:neural-memory` in **Capture Mode** automatically
+1. Trigger `topia:neural-memory` in **Capture Mode** automatically
 2. Save 2–5 memories covering: key decisions made, bugs fixed, patterns applied, architectural choices
 3. Use rich cognitive language (causal, temporal, decisional) — NOT flat facts
 4. Tag memories with [project-name, skill-used, topic]
@@ -332,7 +332,7 @@ When a previous skill's output contains a `chain_metadata` block in the conversa
 
 **Announcement format with chain_metadata:**
 ```
-Suggested next: `Topia:<skill>` — <chain_metadata.suggested_next.reason>
+Suggested next: `topia:<skill>` — <chain_metadata.suggested_next.reason>
 Available data: <list of export keys the suggested skill would consume>
 Run it? (skip to continue)
 ```
@@ -383,7 +383,7 @@ When routing a request through L1/L2 skills, skill-router SHOULD detect domain s
 
 **Rules:**
 - Hard limit: 1 hop. NEVER chain recommendations (fix→test→readiness→...). Suggest ONE, let the user decide.
-- Announcement format: "Suggested next: `Topia:<skill>` — [1-line reason]. Run it? (skip to continue)"
+- Announcement format: "Suggested next: `topia:<skill>` — [1-line reason]. Run it? (skip to continue)"
 - User can disable with "no suggestions" or "just do what I asked"
 - Inside `build` orchestration: skip recommendations — build already manages transitions
 
@@ -395,7 +395,7 @@ When routing a request through L1/L2 skills, skill-router SHOULD detect domain s
 Every response that involves code changes MUST begin with a routing proof line:
 
 ```
-> Routed: Topia:<skill> | Type: CODE_CHANGE | Confidence: HIGH
+> Routed: topia:<skill> | Type: CODE_CHANGE | Confidence: HIGH
 ```
 
 This is NOT optional formatting. It is evidence that routing occurred. If this line is missing from a code response, the response violated skill-router compliance. For LITE enforcement (QUESTION, EXPLORE), the proof line is optional.

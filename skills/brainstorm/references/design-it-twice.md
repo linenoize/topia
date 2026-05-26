@@ -62,7 +62,7 @@ Output (YAML):
     flexibility: <1-5 + 1-line justification>
     common_case_simplicity: <1-5 + 1-line justification>
 
-Vocabulary: use the controlled terms from Topia:improve-architecture/references/language.md
+Vocabulary: use the controlled terms from topia:improve-architecture/references/language.md
   (module, interface, seam, adapter, leverage, locality)
   Do NOT use "boundary", "component", "service", or "layer" in narrative.
 
@@ -144,7 +144,7 @@ Hybrid synthesis is **opt-in**. If no two designs have clear complementary stren
 
 ```yaml
 chain_metadata:
-  skill: "Topia:brainstorm"
+  skill: "topia:brainstorm"
   mode: "design-it-twice"
   exports:
     designs: [<yaml-per-design>]

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * gather-memories.js — Read file-based memory sources for Topia:recall.
+ * gather-memories.js — Read file-based memory sources for topia:recall.
  *
  * Usage:
  *   node skills/recall/scripts/gather-memories.js --root <project> [--json] [--topic <text>]

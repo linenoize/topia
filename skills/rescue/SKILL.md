@@ -82,7 +82,7 @@ Call `neural-memory` (Recall Mode) for past refactoring patterns in similar code
 **0a. Full health assessment.**
 
 ```
-REQUIRED SUB-SKILL: Topia:autopsy
+REQUIRED SUB-SKILL: topia:autopsy
 → Invoke `autopsy` with scope: "full".
 → autopsy returns:
     - health_score: number (0-100)
@@ -96,14 +96,14 @@ REQUIRED SUB-SKILL: Topia:autopsy
 ```
 Check: does CLAUDE.md exist in project root?
   If NO:
-    REQUIRED SUB-SKILL: Topia:onboard
+    REQUIRED SUB-SKILL: topia:onboard
     → Invoke `onboard` to generate CLAUDE.md with project conventions.
 ```
 
 **0c. Audit dependencies.**
 
 ```
-REQUIRED SUB-SKILL: Topia:dependency-doctor
+REQUIRED SUB-SKILL: topia:dependency-doctor
 → Invoke `dependency-doctor` to identify: outdated packages, security vulnerabilities, unused deps.
 → Capture: dependency report (used in surgeon prompts).
 ```
@@ -111,7 +111,7 @@ REQUIRED SUB-SKILL: Topia:dependency-doctor
 **0d. Save initial state.**
 
 ```
-REQUIRED SUB-SKILL: Topia:journal
+REQUIRED SUB-SKILL: topia:journal
 → Invoke `journal` to write RESCUE-STATE.md with:
     - health_score_baseline: [autopsy score]
     - modules_to_rescue: [ordered list from autopsy, worst-first]
@@ -119,7 +119,7 @@ REQUIRED SUB-SKILL: Topia:journal
     - sessions_used: 1
     - dependency_report: [summary]
 
-REQUIRED SUB-SKILL: Topia:session-bridge
+REQUIRED SUB-SKILL: topia:session-bridge
 → Invoke `session-bridge` to snapshot state for cross-session resume.
 
 Bash: git tag Topia-rescue-baseline
@@ -145,7 +145,7 @@ Mark todo[1] `in_progress`. This phase runs once before any surgery.
 **1a. Characterization tests.**
 
 ```
-REQUIRED SUB-SKILL: Topia:safeguard
+REQUIRED SUB-SKILL: topia:safeguard
 → Invoke `safeguard` with action: "characterize".
 → safeguard writes tests that capture CURRENT behavior (even buggy behavior).
 → These tests are the rollback oracle — if they break, surgery went wrong.
@@ -155,7 +155,7 @@ REQUIRED SUB-SKILL: Topia:safeguard
 **1b. Add boundary markers.**
 
 ```
-REQUIRED SUB-SKILL: Topia:safeguard
+REQUIRED SUB-SKILL: topia:safeguard
 → Invoke `safeguard` with action: "mark".
 → safeguard adds inline markers to legacy code:
     @legacy     — old implementation to be replaced
@@ -166,7 +166,7 @@ REQUIRED SUB-SKILL: Topia:safeguard
 **1c. Config freeze + rollback point.**
 
 ```
-REQUIRED SUB-SKILL: Topia:safeguard
+REQUIRED SUB-SKILL: topia:safeguard
 → Invoke `safeguard` with action: "freeze".
 → safeguard commits current state as checkpoint.
 
@@ -203,7 +203,7 @@ Blast radius check:
 **Sb. Execute surgery.**
 
 ```
-REQUIRED SUB-SKILL: Topia:surgeon
+REQUIRED SUB-SKILL: topia:surgeon
 → Invoke `surgeon` with:
     - module: [module name and path]
     - pattern: [recommended_pattern from autopsy]
@@ -223,7 +223,7 @@ surgeon returns: modified files list, refactoring summary, test results.
 **Sc. Review surgery output.**
 
 ```
-REQUIRED SUB-SKILL: Topia:review
+REQUIRED SUB-SKILL: topia:review
 → Invoke `review` with: modified files, surgeon summary.
 → review checks: code quality, pattern adherence, no regressions introduced.
 → Capture: review verdict (pass | fail | warnings).
@@ -252,12 +252,12 @@ If tests fail:
 Bash: git add [modified-files]
 Bash: git commit -m "refactor([module]): [pattern] — [brief description]"
 
-REQUIRED SUB-SKILL: Topia:journal
+REQUIRED SUB-SKILL: topia:journal
 → Update RESCUE-STATE.md:
     - module [name]: status=complete, health_before=[X], health_after=[Y]
     - sessions_used: [increment]
 
-REQUIRED SUB-SKILL: Topia:session-bridge
+REQUIRED SUB-SKILL: topia:session-bridge
 → Save updated state for next session resume.
 ```
 
@@ -325,7 +325,7 @@ If tests fail:
 ```
 
 ```
-REQUIRED SUB-SKILL: Topia:autopsy
+REQUIRED SUB-SKILL: topia:autopsy
 → Invoke `autopsy` again with scope: "full".
 → Capture: health_score_final.
 ```
@@ -345,7 +345,7 @@ Report:
 ```
 
 ```
-REQUIRED SUB-SKILL: Topia:journal
+REQUIRED SUB-SKILL: topia:journal
 → Final RESCUE-STATE.md update: status=complete, health_final=[score].
 
 Bash: git tag Topia-rescue-complete
@@ -401,8 +401,8 @@ Rollback point: git tag Topia-rescue-baseline (set in Phase 0)
 
 | Gate | Requires | If Missing |
 |------|----------|------------|
-| Autopsy Gate | autopsy report with health score before planning | Run Topia:autopsy first |
-| Safety Gate | safeguard characterization tests passing before surgery | Run Topia:safeguard first |
+| Autopsy Gate | autopsy report with health score before planning | Run topia:autopsy first |
+| Safety Gate | safeguard characterization tests passing before surgery | Run topia:safeguard first |
 | Surgery Gate | Each edit verified individually (tests pass) | Revert last edit, fix, re-verify |
 
 ## Output Format
@@ -422,7 +422,7 @@ Rollback point: git tag Topia-rescue-baseline (set in Phase 0)
 | Artifact | Format | Location |
 |----------|--------|----------|
 | Rescue state | Markdown | `RESCUE-STATE.md` (updated each session) |
-| Characterization tests | Source files | Written by `Topia:safeguard` per module |
+| Characterization tests | Source files | Written by `topia:safeguard` per module |
 | Refactored modules | Source files | Modified in-place, committed per surgery session |
 | Health score comparison | Inline (Rescue Report) | Baseline vs final autopsy scores |
 | Rescue Report | Markdown (inline) | Emitted at session end (per module and final) |

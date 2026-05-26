@@ -57,7 +57,9 @@ function rewriteContent(text) {
   }
   const ordered = Object.entries(V1_SKILL_MAP).sort((a, b) => b[0].length - a[0].length);
   for (const [from, to] of ordered) {
-    out = out.replaceAll(`Topia:${from}`, `Topia:${to}`);
+    // v1 used `Topia:`; v3+ uses lowercase `topia:`. Translate both forms to canonical lowercase.
+    out = out.replaceAll(`Topia:${from}`, `topia:${to}`);
+    out = out.replaceAll(`topia:${from}`, `topia:${to}`);
     out = out.replaceAll(`\`${from}\``, `\`${to}\``);
     out = out.replaceAll(`skills/${from}`, `skills/${to}`);
     out = out.replaceAll(`/${from}/`, `/${to}/`);

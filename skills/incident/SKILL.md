@@ -225,7 +225,7 @@ File: src/middleware/auth.ts:47
 | Incident timeline | Text (HH:MM format) | inline + postmortem |
 | Postmortem document | Markdown | `.topia/incidents/INCIDENT-<date>-<slug>.md` |
 | Prevention actions table | Markdown table | postmortem |
-| Journal entry (incident ADR) | Text | `.topia/adr/` (via `Topia:journal`) |
+| Journal entry (incident ADR) | Text | `.topia/adr/` (via `topia:journal`) |
 
 ## Sharp Edges
 

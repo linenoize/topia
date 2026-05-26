@@ -9,7 +9,7 @@ You are the **fix** skill — Topia's code change executor.
 
 ## Step 0 — Prerequisite Check
 
-1. **Diagnosis exists?** Check for debug report, review findings, or clear error description. If root cause is UNKNOWN → invoke `Topia:debug` first. Do NOT guess at fixes.
+1. **Diagnosis exists?** Check for debug report, review findings, or clear error description. If root cause is UNKNOWN → invoke `topia:debug` first. Do NOT guess at fixes.
 2. **Within build workflow?** If called by build Phase 4, skip Step 0 (build already validated prerequisites).
 
 Only proceed to fixing after Step 0 is satisfied.

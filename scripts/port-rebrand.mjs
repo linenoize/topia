@@ -24,8 +24,11 @@
  *   • Marketplace: name "protopia" → "linenoize" (in .claude-plugin/marketplace.json
  *                  and consuming source — install.js MARKETPLACE_ID,
  *                  resolve-topia-root.js cache lookup).
- *   • Plugin id:   Topia@protopia → Topia@linenoize (install instructions).
- *   • Cache paths: ~/.claude/plugins/cache/protopia/Topia → cache/linenoize/Topia
+ *   • Plugin id:   Topia@protopia → topia@linenoize (install instructions).
+ *                  As of v3.0.0 our fork uses lowercase `topia` for the plugin
+ *                  `name` field so install/skill-namespace are case-consistent.
+ *   • Skill ns:    Topia:build → topia:build (skill prefix follows plugin name).
+ *   • Cache paths: ~/.claude/plugins/cache/protopia/Topia → cache/linenoize/topia
  *   • Marketing:   "Protopia marketplace" → "linenoize marketplace"
  *
  * WHAT THIS DOES NOT TOUCH
@@ -68,11 +71,14 @@ const REPLACEMENTS = [
   // Bare org/repo slug (markdown references)
   ['protopia/skill-topia', 'linenoize/topia'],
 
-  // Plugin install id (Claude Code surface)
-  ['Topia@protopia', 'Topia@linenoize'],
+  // Plugin install id (Claude Code surface) — lowercase as of v3.0.0
+  ['Topia@protopia', 'topia@linenoize'],
+
+  // Skill namespace prefix (follows plugin `name`) — lowercase as of v3.0.0
+  ['Topia:', 'topia:'],
 
   // Plugin cache paths (resolve-topia-root.js + docs/install.js fallbacks)
-  ['cache/protopia/Topia', 'cache/linenoize/Topia'],
+  ['cache/protopia/Topia', 'cache/linenoize/topia'],
   ['plugins/cache/protopia/skill-topia', 'plugins/cache/linenoize/topia'],
 
   // Marketing/brand strings tied to the marketplace concept (NOT brand voice)
@@ -101,6 +107,20 @@ const SCOPED = [
     file: 'docs/templates/team-claude-settings.json',
     pairs: [
       ['"protopia": {', '"linenoize": {'],
+    ],
+  },
+  // Plugin `name` field — upstream ships "Topia"; our fork uses lowercase "topia".
+  // Targeted to plugin manifest files only so prose mentions of "Topia" aren't touched.
+  {
+    file: '.claude-plugin/plugin.json',
+    pairs: [
+      ['"name": "Topia"', '"name": "topia"'],
+    ],
+  },
+  {
+    file: '.claude-plugin/marketplace.json',
+    pairs: [
+      ['"name": "Topia"', '"name": "topia"'],
     ],
   },
 ];

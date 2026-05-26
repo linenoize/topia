@@ -34,7 +34,7 @@ node compiler/bin/topia.js doctor
 That's it. 66 skills are now active in your AI assistant.
 
 > **Pro Tip**: For Claude Code, use the linenoize marketplace (no compilation):
-> `/plugin marketplace add linenoize/topia` then `/plugin install Topia@linenoize`.
+> `/plugin marketplace add linenoize/topia` then `/plugin install topia@linenoize`.
 > See [`docs/INSTALL-CLAUDE-CODE.md`](../INSTALL-CLAUDE-CODE.md).
 
 ---

@@ -132,11 +132,11 @@ High-level multi-feature planning — organize features into milestones.
 
 ### Step 1 — Gather Context
 
-Check for `.topia/features/*/requirements.md` via `Glob`. If a Requirements Document exists (from `Topia:idea`), read it — it contains user stories, acceptance criteria, scope, constraints. Do NOT re-gather what idea already elicited.
+Check for `.topia/features/*/requirements.md` via `Glob`. If a Requirements Document exists (from `topia:idea`), read it — it contains user stories, acceptance criteria, scope, constraints. Do NOT re-gather what idea already elicited.
 
 If `project.onboarded` signal was received, scout output is already available in session context — skip re-invoking scout.
 
-Invoke `Topia:recon` if not already done — plans without context produce wrong file paths. Invoke `Topia:neural-memory` (Recall Mode) to surface past architecture decisions before making new ones.
+Invoke `topia:recon` if not already done — plans without context produce wrong file paths. Invoke `topia:neural-memory` (Recall Mode) to surface past architecture decisions before making new ones.
 
 **Feature Map**: Check for `.topia/features.md` via `Glob`. If it exists, read it — understand the existing feature landscape, dependencies, and known gaps BEFORE planning. Cross-reference: does the new feature overlap, conflict with, or depend on existing features? If `.topia/features.md` does not exist, note this — Step 6.5 will create it.
 
@@ -355,7 +355,7 @@ Append to plan output when invoked standalone. Suppress when called as sub-skill
 
 ```yaml
 chain_metadata:
-  skill: "Topia:plan"
+  skill: "topia:plan"
   version: "1.6.0"
   status: "[DONE | DONE_WITH_CONCERNS | NEEDS_CONTEXT | BLOCKED]"
   domain: "[area planned]"
@@ -367,10 +367,10 @@ chain_metadata:
     estimated_complexity: "[low | medium | high]"
     risk_areas: ["[domains with identified risks]"]
   suggested_next:
-    - skill: "Topia:adversary"
+    - skill: "topia:adversary"
       reason: "[grounded in plan — e.g., 'Plan touches auth + payments — stress-test assumptions']"
       consumes: ["plan_file", "risk_areas"]
-    - skill: "Topia:build"
+    - skill: "topia:build"
       reason: "Plan ready for execution"
       consumes: ["plan_file", "phase_count"]
 ```

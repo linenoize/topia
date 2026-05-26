@@ -9,9 +9,9 @@ You are the **launch** skill — Topia's deployment and marketing pipeline.
 
 ## Step 0 — Prerequisite Check (BEFORE launching)
 
-1. **Code complete?** Is the feature fully implemented and committed? If uncommitted changes exist → invoke `Topia:build` to finalize first.
-2. **Tests pass?** Check last verification result. If stale or missing → invoke `Topia:verification`.
-3. **Security clean?** Check last sentinel result. If stale or missing → invoke `Topia:guardian`.
+1. **Code complete?** Is the feature fully implemented and committed? If uncommitted changes exist → invoke `topia:build` to finalize first.
+2. **Tests pass?** Check last verification result. If stale or missing → invoke `topia:verification`.
+3. **Security clean?** Check last sentinel result. If stale or missing → invoke `topia:guardian`.
 
 Only proceed after ALL Step 0 checks pass. Launch is the FINAL step — everything must be green.
 

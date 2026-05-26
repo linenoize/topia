@@ -213,12 +213,12 @@ A policy document can disable entire Topia skills, not just code patterns.
 ```yaml
 # .topia/guardian/disabled-skills.yaml
 disabled:
-  - skill: Topia:deploy
+  - skill: topia:deploy
     reason: "Code freeze in effect — Security Policy v4, Section 2.3"
     policy_source: "compliance-soc2.yaml"
     expires: "2026-04-15T00:00:00Z"  # optional
 
-  - skill: Topia:db
+  - skill: topia:db
     reason: "Production database access restricted to SRE team only"
     policy_source: "security-baseline.yaml"
     expires: null  # permanent until policy updated
@@ -226,7 +226,7 @@ disabled:
 
 **Refusal message format (returned to agent):**
 ```
-Skill Topia:deploy is currently disabled.
+Skill topia:deploy is currently disabled.
 Reason: Code freeze in effect — Security Policy v4, Section 2.3
 Source: compliance-soc2.yaml
 To re-enable: update or remove the policy, or wait for expiry (2026-04-15).

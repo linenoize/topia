@@ -94,7 +94,7 @@ Auto-detected from idea output. Template selection informs Phase 3 (Plan) archit
 
 ### Phase 1 — idea (Requirement Elicitation)
 
-Invoke `Topia:idea` with the user's project description.
+Invoke `topia:idea` with the user's project description.
 
 **Interactive Mode**: idea asks 5 questions, discovers hidden requirements, produces Requirements Document.
 
@@ -106,7 +106,7 @@ Gate: In Interactive mode, user must approve requirements before proceeding.
 
 ### Phase 2 — RESEARCH (Best Practices & Templates)
 
-Invoke `Topia:research` to find:
+Invoke `topia:research` to find:
 - Best practices for the detected project type
 - Recommended libraries (compare 2-3 options for each concern)
 - Starter templates or skeleton projects to reference
@@ -116,7 +116,7 @@ Do NOT clone templates blindly. Use them as REFERENCE for architecture decisions
 
 ### Phase 3 — PLAN (Architecture & Implementation)
 
-Invoke `Topia:plan` with the Requirements Document from Phase 1 and research from Phase 2.
+Invoke `topia:plan` with the Requirements Document from Phase 1 and research from Phase 2.
 
 Plan must include:
 - Directory structure (exact paths)
@@ -130,7 +130,7 @@ Gate: In Interactive mode, user must approve plan before proceeding.
 ### Phase 4 — DESIGN (Design System — Frontend Only)
 
 If project has frontend (Web App, Mobile App, Chrome Extension):
-- Invoke `Topia:design` to generate design system
+- Invoke `topia:design` to generate design system
 - Output: `.topia/design-system.md` with tokens, components, patterns
 
 If backend-only or CLI → skip this phase.
@@ -146,7 +146,7 @@ Execute the plan from Phase 3. For each planned file:
 5. Generate UI layer (pages, components) if applicable
 6. Generate configuration (env, docker, CI)
 
-**Parallelization**: If plan has 3+ independent modules → invoke `Topia:team` to implement in parallel using worktrees.
+**Parallelization**: If plan has 3+ independent modules → invoke `topia:team` to implement in parallel using worktrees.
 
 **Quality during generation**:
 - Follow project conventions from research
@@ -157,7 +157,7 @@ Execute the plan from Phase 3. For each planned file:
 
 ### Phase 6 — TEST (Test Suite Generation)
 
-Invoke `Topia:test` to generate tests based on acceptance criteria from Phase 1:
+Invoke `topia:test` to generate tests based on acceptance criteria from Phase 1:
 
 - Unit tests for each module/function
 - Integration tests for API endpoints
@@ -168,7 +168,7 @@ Each acceptance criterion from idea → at least one test case.
 
 ### Phase 7 — DOCS (Documentation)
 
-Invoke `Topia:docs init` to generate:
+Invoke `topia:docs init` to generate:
 
 - `README.md` — Quick Start, Features, Tech Stack, Commands
 - `ARCHITECTURE.md` — if project has 10+ files
@@ -177,7 +177,7 @@ Invoke `Topia:docs init` to generate:
 
 ### Phase 8 — GIT (Initial Commit)
 
-Invoke `Topia:git commit` to create initial commit:
+Invoke `topia:git commit` to create initial commit:
 
 - Stage all generated files (except .env, node_modules, __pycache__)
 - Commit message: `feat: scaffold <project-name> with <template> template`
@@ -185,16 +185,16 @@ Invoke `Topia:git commit` to create initial commit:
 
 ### Phase 9 — VERIFY (Quality Gate)
 
-Invoke `Topia:verification` to run ALL checks:
+Invoke `topia:verification` to run ALL checks:
 
 1. **Lint**: ESLint/Ruff/Clippy — zero errors
 2. **Types**: tsc --noEmit / mypy — zero errors
 3. **Tests**: npm test / pytest — all pass
 4. **Build**: npm run build / python -m build — succeeds
-5. **Security**: `Topia:guardian` quick scan — no critical issues
+5. **Security**: `topia:guardian` quick scan — no critical issues
 
 <HARD-GATE>
-If ANY check fails → fix the issue (invoke Topia:fix) and re-verify.
+If ANY check fails → fix the issue (invoke topia:fix) and re-verify.
 Do NOT present broken scaffold to user.
 Max 3 fix-verify loops. If still failing after 3 → report failures to user with context.
 </HARD-GATE>

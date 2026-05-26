@@ -77,18 +77,18 @@ Bugs MUST attempt reproduction before being marked `ready-for-agent`. A confirme
 
 Process:
 1. Read the reporter's repro steps
-2. Trace the relevant code via `Topia:recon` / `Topia:debug`
+2. Trace the relevant code via `topia:recon` / `topia:debug`
 3. If the repro is a HTTP request / CLI invocation / browser flow → run it
 4. Report outcome:
    - **Confirmed repro** with code path → strong `ready-for-agent` signal
    - **Failed repro** → likely `needs-info` (ask for env, version, exact steps)
    - **Insufficient detail** → `needs-info` with specific questions
 
-If the bug is multi-component or intermittent, route to `Topia:debug` Step 0 (build a feedback loop) instead of guessing.
+If the bug is multi-component or intermittent, route to `topia:debug` Step 0 (build a feedback loop) instead of guessing.
 
 ### Step T5 — Grill (if vague)
 
-If the issue lacks specifics for both bug and enhancement paths, run a grilling pass via `Topia:idea` synthesis-mode (Step 1.4):
+If the issue lacks specifics for both bug and enhancement paths, run a grilling pass via `topia:idea` synthesis-mode (Step 1.4):
 - Synthesis-mode reads the issue body + comments as the "rich context"
 - Asks targeted follow-ups ONLY on dimensions with genuine gaps
 - Produces a Requirements Document the agent-brief can cite
@@ -99,7 +99,7 @@ Match state to action:
 
 | State | Action |
 |-------|--------|
-| `ready-for-agent` | Post AGENT-BRIEF comment on issue (use `Topia:context-pack` agent-brief variant — see `context-pack/references/agent-brief.md`). Apply `ready-for-agent` label. |
+| `ready-for-agent` | Post AGENT-BRIEF comment on issue (use `topia:context-pack` agent-brief variant — see `context-pack/references/agent-brief.md`). Apply `ready-for-agent` label. |
 | `ready-for-human` | Post AGENT-BRIEF + explicit "why this can't be delegated" reason (judgment call, external access, design decision, manual testing). Apply `ready-for-human` label. |
 | `needs-info` | Post triage notes (template below). Apply `needs-info` label. |
 | `wontfix` (bug) | Post a polite explanation comment, then close. **No `.out-of-scope/` write** — bug rejections (already fixed, not reproducible, not a bug) get a comment, not a KB file. |

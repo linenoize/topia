@@ -145,7 +145,7 @@ Why: Every menu option dilutes commitment. A single confident default gets commi
 
 These rules apply regardless of domain, mood, or platform. Every generated design system MUST comply.
 
-**Enforcement**: `Topia:review` v1.1.0+ reads `.topia/design-system.md` § Scale Minimums and flags violations of all 3 rules below as MEDIUM/HIGH findings. Design defines, review enforces — this is the contract.
+**Enforcement**: `topia:review` v1.1.0+ reads `.topia/design-system.md` § Scale Minimums and flags violations of all 3 rules below as MEDIUM/HIGH findings. Design defines, review enforces — this is the contract.
 
 #### Rule 1 — Scale Minimums
 

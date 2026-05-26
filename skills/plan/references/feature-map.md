@@ -10,7 +10,7 @@ Living document that grows with each plan invocation. Provides bird's-eye view o
 
 ```markdown
 # Feature Map
-<!-- Auto-maintained by Topia:plan. Do not edit manually. -->
+<!-- Auto-maintained by topia:plan. Do not edit manually. -->
 <!-- Last updated: YYYY-MM-DD -->
 
 ## Features

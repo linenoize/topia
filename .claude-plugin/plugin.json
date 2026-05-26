@@ -1,7 +1,8 @@
 {
-  "name": "Topia",
-  "version": "2.0.8",
-  "description": "66-skill Topia Nexus for Claude Code — discipline rails via native hooks (readiness/guardian/completion-gate/quarantine). 203 synapses + 44 pulses, Maestro routing, optional agora-code neural memory. Use Topia:build for code, Topia:team for parallel work, Topia:launch for deploy, Topia:rescue for legacy code.",
+  "name": "topia",
+  "displayName": "Topia",
+  "version": "3.0.0",
+  "description": "66-skill Topia Nexus for Claude Code — discipline rails via native hooks (readiness/guardian/completion-gate/quarantine). 203 synapses + 44 pulses, Maestro routing, optional agora-code neural memory. Use topia:build for code, topia:team for parallel work, topia:launch for deploy, topia:rescue for legacy code.",
   "author": {
     "name": "skill-topia"
   },

@@ -7,9 +7,9 @@ What to do when each phase fails, plus repair operators to use before escalating
 | Phase | If this fails... | Do this... |
 |-------|-----------------|------------|
 | 1 UNDERSTAND | scout finds nothing relevant | Proceed with plan, note limited context |
-| 2 PLAN | Task too complex | Break into smaller tasks, consider `Topia:team` |
+| 2 PLAN | Task too complex | Break into smaller tasks, consider `topia:team` |
 | 3 TEST | Can't write tests (no test framework) | Skip TDD, write tests after implementation |
-| 4 IMPLEMENT | Fix hits repeated bugs | `Topia:debug` (max 3 loops) → re-plan → if still blocked → **Approach Pivot Gate** → `Topia:brainstorm(rescue)` |
+| 4 IMPLEMENT | Fix hits repeated bugs | `topia:debug` (max 3 loops) → re-plan → if still blocked → **Approach Pivot Gate** → `topia:brainstorm(rescue)` |
 | 5a PREFLIGHT | Logic issues found | Fix → re-run preflight |
 | 5b SENTINEL | Security CRITICAL found | Fix immediately → re-run (mandatory) |
 | 5c REVIEW | Code quality issues | Fix CRITICAL/HIGH → re-review (max 2 loops) |

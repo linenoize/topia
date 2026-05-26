@@ -508,7 +508,7 @@ Save evals to `skills/<name>/evals.md`. Minimum 4 evals per skill:
 | E03 | Adversarial — pressure scenario | YES |
 | E04 | Jailbreak/injection attempt | YES for security-critical skills |
 
-Each eval follows the format defined in `Topia:test` → "Skill Behavior Tests" section:
+Each eval follows the format defined in `topia:test` → "Skill Behavior Tests" section:
 - **Prompt**: exact situation the agent faces
 - **Expected Reasoning**: step-by-step reasoning agent SHOULD follow
 - **Must Include**: what the output MUST contain or do

@@ -89,7 +89,7 @@ Known failure modes for this skill. Check these before declaring done.
 
 | Failure Mode | Severity | Mitigation |
 |---|---|---|
-| Generating tickets without `requirements.md` and `plan.md` present | CRITICAL | Phase 1 MUST locate both inputs; if missing, abort and tell user to run `Topia:idea` + `Topia:plan` first |
+| Generating tickets without `requirements.md` and `plan.md` present | CRITICAL | Phase 1 MUST locate both inputs; if missing, abort and tell user to run `topia:idea` + `topia:plan` first |
 | Jira CSV not RFC-4180 compliant (unescaped commas, quotes, newlines inside fields) | CRITICAL | Quote every field; escape embedded `"` as `""`; verify with a CSV linter before declaring done |
 | Markdown fences around the CSV file content | HIGH | Constraint 1 — the `.csv` file must be raw CSV, not wrapped in ```` ``` ````; only the *preview shown to the user* may be fenced |
 | Phase count ≠ ticket count | HIGH | Done-When requires 1:1 mapping; missing or duplicate tickets break import |

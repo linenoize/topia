@@ -351,7 +351,7 @@ If no files found: suggest running `/topia onboard` to initialize the project. E
 Before loading state files, invoke `integrity-check` (L3) to verify `.topia/` files haven't been tampered:
 
 ```
-REQUIRED SUB-SKILL: Topia:integrity-check
+REQUIRED SUB-SKILL: topia:integrity-check
 → Invoke integrity-check on all .topia/*.md files found in Step 1.
 → Capture: status (CLEAN | SUSPICIOUS | TAINTED), findings list.
 ```

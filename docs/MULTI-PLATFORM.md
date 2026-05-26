@@ -15,7 +15,7 @@
 
 | Platform | Output Dir | File Format | Cross-Ref Mechanism | Subagent Support | Hook Support |
 |----------|-----------|-------------|---------------------|-----------------|--------------|
-| Claude Code | passthrough (no compile) | SKILL.md | `Skill("Topia:<name>")` | `context: fork`, `agent:` | hooks.json (JS) |
+| Claude Code | passthrough (no compile) | SKILL.md | `Skill("topia:<name>")` | `context: fork`, `agent:` | hooks.json (JS) |
 | Cursor | `.cursor/rules/` | `Topia-<name>.mdc` | `@file:Topia-<name>.mdc` | None | None (inline MUST) |
 | Windsurf | `.windsurf/rules/` | `Topia-<name>.md` | Prose: "Follow Topia-<name> rule" | None | None (inline MUST) |
 | Antigravity | `.agent/rules/` | `Topia-<name>.md` | File reference | None | None (inline MUST) |
@@ -48,14 +48,14 @@ interface ParsedSkill {
   contextFork: boolean;            // context: fork present?
   agentType: string | null;        // agent: general-purpose, etc.
   body: string;                    // full markdown body
-  crossRefs: CrossRef[];           // extracted Topia:<name> references
+  crossRefs: CrossRef[];           // extracted topia:<name> references
   toolRefs: ToolRef[];             // extracted tool name references
   hardGates: string[];             // <HARD-GATE> blocks
   sections: Map<string, string>;   // ## Section Name -> content
 }
 
 interface CrossRef {
-  raw: string;       // "Topia:recon", "Topia:build"
+  raw: string;       // "topia:recon", "topia:build"
   skillName: string; // "scout", "build"
   line: number;      // line number in source
   context: string;   // surrounding text for rewrite
@@ -74,7 +74,7 @@ Transforms are composable middleware functions. Order matters.
 
 ```
 1. stripFrontmatterDirectives  — remove context:fork, agent:, or rewrite for platform
-2. rewriteCrossReferences      — Topia:build → platform-native reference
+2. rewriteCrossReferences      — topia:build → platform-native reference
 3. rewriteToolNames            — `Read` → platform equivalent or generic term
 4. rewriteModelHints           — model: opus → remove or convert to comment
 5. inlineHookConstraints       — hook behaviors → embedded MUST/NEVER rules
@@ -106,7 +106,7 @@ interface PlatformAdapter {
   fileExtension: string;
 
   /**
-   * Transform a cross-reference like "Topia:build" into platform-native format.
+   * Transform a cross-reference like "topia:build" into platform-native format.
    * @param skillName - e.g., "build"
    * @param context - surrounding sentence for contextual rewrite
    * @returns replacement string
@@ -176,9 +176,9 @@ module.exports = {
   fileExtension: ".mdc",
 
   transformReference(skillName, context) {
-    // Topia:build → @Topia-build.mdc (Cursor file reference)
+    // topia:build → @Topia-build.mdc (Cursor file reference)
     return context
-      .replace(/`Topia:${skillName}`/g, `\`@Topia-${skillName}.mdc\``)
+      .replace(/`topia:${skillName}`/g, `\`@Topia-${skillName}.mdc\``)
       .replace(/topia:${skillName}/g, `@Topia-${skillName}.mdc`);
   },
 
@@ -243,7 +243,7 @@ module.exports = {
   transformReference(skillName, context) {
     // Prose reference: "Follow the Topia-<name> rule"
     return context
-      .replace(/`Topia:${skillName}`/g, `the \`Topia-${skillName}\` rule file`)
+      .replace(/`topia:${skillName}`/g, `the \`Topia-${skillName}\` rule file`)
       .replace(/topia:${skillName}/g, `the Topia-${skillName} rule file`);
   },
 
@@ -317,30 +317,30 @@ The toolkit is Topia's core value. Here is how it works per platform:
 ### 5.1 Reference Patterns in Source
 
 ```
-Pattern 1: `Topia:build`                     — backtick-wrapped reference
-Pattern 2: Topia:build                        — bare reference
-Pattern 3: Use `Topia:recon`                 — instruction to invoke
-Pattern 4: REQUIRED SUB-SKILL: Use `Topia:X` — hard requirement
-Pattern 5: invoke `Topia:debug`              — conditional invocation
-Pattern 6: → invoke `Topia:plan`             — flow arrow reference
+Pattern 1: `topia:build`                     — backtick-wrapped reference
+Pattern 2: topia:build                        — bare reference
+Pattern 3: Use `topia:recon`                 — instruction to invoke
+Pattern 4: REQUIRED SUB-SKILL: Use `topia:X` — hard requirement
+Pattern 5: invoke `topia:debug`              — conditional invocation
+Pattern 6: → invoke `topia:plan`             — flow arrow reference
 ```
 
 ### 5.2 Resolution Strategy
 
-The parser uses a regex to find all `Topia:<name>` patterns and records them as `CrossRef` entries. The transformer then rewrites each based on the platform adapter.
+The parser uses a regex to find all `topia:<name>` patterns and records them as `CrossRef` entries. The transformer then rewrites each based on the platform adapter. The regex is case-insensitive so legacy `Topia:` references (pre-v3.0.0) are still recognized.
 
 ```javascript
-// Cross-reference regex (handles both backtick-wrapped and bare)
-const CROSS_REF_PATTERN = /`?Topia:([a-z][\w-]*)`?/g;
+// Cross-reference regex (handles both backtick-wrapped and bare; case-insensitive)
+const CROSS_REF_PATTERN = /`?[Tt]opia:([a-z][\w-]*)`?/g;
 ```
 
 ### 5.3 Platform-Specific Output
 
 | Source | Claude Code | Cursor | Windsurf / Antigravity |
 |--------|------------|--------|------------------------|
-| `Use Topia:recon` | `Use Topia:recon` (unchanged) | `Use @Topia-scout.mdc` | `Follow the Topia-scout rule file` |
-| `REQUIRED SUB-SKILL: Use Topia:plan` | unchanged | `REQUIRED: Follow @Topia-plan.mdc` | `REQUIRED: Follow the Topia-plan rule file` |
-| `invoke Topia:debug` | unchanged | `follow @Topia-debug.mdc` | `follow the Topia-debug rule file` |
+| `Use topia:recon` | `Use topia:recon` (unchanged) | `Use @Topia-scout.mdc` | `Follow the Topia-scout rule file` |
+| `REQUIRED SUB-SKILL: Use topia:plan` | unchanged | `REQUIRED: Follow @Topia-plan.mdc` | `REQUIRED: Follow the Topia-plan rule file` |
+| `invoke topia:debug` | unchanged | `follow @Topia-debug.mdc` | `follow the Topia-debug rule file` |
 
 ### 5.4 Nexus Integrity Check
 

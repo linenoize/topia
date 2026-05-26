@@ -178,9 +178,9 @@ if (hasTopiaState) {
 
     console.log('');
   console.log('[Topia: Memory checklist]');
-  console.log('  1. Invoke Topia:recall (unified .topia/ + .remember/ + MCP)');
+  console.log('  1. Invoke topia:recall (unified .topia/ + .remember/ + MCP)');
   console.log('  2. If agora-memory MCP registered: recall_learnings before large reads');
-  console.log('  3. After decisions: Topia:journal then neural-memory Capture');
+  console.log('  3. After decisions: topia:journal then neural-memory Capture');
 
 if (loaded.length > 0) {
     console.log(`\n[Topia: injected project state from ${loaded.join(', ')}]`);

@@ -38,7 +38,8 @@ import { ensureTopiaGitignore } from '../lib/ensure-gitignore.js';
 const MARKETPLACE_ID = 'linenoize';
 /** Plugin entry id inside the marketplace catalog. */
 /** Must match `.claude-plugin/plugin.json` → `name` (UI update uses this id). */
-const MARKETPLACE_PLUGIN = 'Topia';
+/** Lowercase as of v3.0.0 — see CHANGELOG. */
+const MARKETPLACE_PLUGIN = 'topia';
 
 function prompt(question) {
   const rl = createInterface({ input: process.stdin, output: process.stdout });

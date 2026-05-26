@@ -125,7 +125,7 @@ If command returns empty/error → **BLOCK** (package does not exist on registry
 ```
 JavaScript: Bash: npm view <package-name> 'dist-tags.latest' 'time.modified' 2>/dev/null
 → If last modified > 2 years ago AND weekly downloads < 100: SUSPICIOUS
-Python:     Use Topia:research to check PyPI page for download stats
+Python:     Use topia:research to check PyPI page for download stats
 ```
 
 Low-popularity packages with names similar to popular ones = **SUSPICIOUS** (potential slopsquatting attack).
@@ -144,7 +144,7 @@ Flag any match with edit distance ≤ 2 from these known pairs.
 
 ### Step 4 — Verify API calls
 
-For any API endpoint or SDK method call found in the diff, use `Topia:docs-seeker` (Context7) to confirm:
+For any API endpoint or SDK method call found in the diff, use `topia:docs-seeker` (Context7) to confirm:
 - The method/function exists in the library's documented API
 - The parameter signature matches usage in code
 

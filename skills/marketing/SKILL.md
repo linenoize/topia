@@ -38,7 +38,7 @@ Create marketing assets and execute launch strategy. Marketing generates landing
 
 ### Step 1 — Understand the product
 
-Call `Topia:recon` to scan the codebase. Ask scout to extract:
+Call `topia:recon` to scan the codebase. Ask scout to extract:
 - Feature list (what the product actually does)
 - README summary
 - Target audience signals (from code, comments, config)
@@ -48,12 +48,12 @@ Read any existing `marketing/`, `docs/`, or `landing/` directories if present.
 
 ### Step 2 — Research market
 
-Call `Topia:trend-scout` with the product category to identify:
+Call `topia:trend-scout` with the product category to identify:
 - Top 3 competitors and their positioning
 - Current market trends relevant to this product
 - Differentiators to emphasize
 
-Call `Topia:research` for:
+Call `topia:research` for:
 - SEO keyword opportunities (volume vs. competition)
 - Competitor messaging patterns to avoid or counter
 
@@ -252,18 +252,18 @@ Fix critical SEO issues (missing titles, broken heading hierarchy) in the implem
 
 ### Step 6 — Visual assets
 
-Call `Topia:asset-creator` to generate:
+Call `topia:asset-creator` to generate:
 - OG image (1200x630px) — product name, tagline, brand colors
 - Twitter card image (1200x628px)
 - Product Hunt thumbnail (240x240px)
 
-Call `Topia:video-creator` to produce:
+Call `topia:video-creator` to produce:
 - 60-second demo video script (screen recording plan)
 - Shot list with timestamps
 
-Call `Topia:slides` to generate presentation decks for launch demos, sprint reviews, or investor pitches.
+Call `topia:slides` to generate presentation decks for launch demos, sprint reviews, or investor pitches.
 
-If `Topia:browser-pilot` is available, capture screenshots of the running app to use as real product imagery.
+If `topia:browser-pilot` is available, capture screenshots of the running app to use as real product imagery.
 
 ### Step 7 — Present for approval
 

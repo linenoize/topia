@@ -252,7 +252,7 @@ IF ANY check fails → fix before reporting done.
 
 ```yaml
 chain_metadata:
-  skill: "Topia:improve-architecture"
+  skill: "topia:improve-architecture"
   version: "0.1.0"
   status: "[DONE]"
   domain: "[module path scored]"
@@ -261,14 +261,14 @@ chain_metadata:
     candidates: [{ module, depth, leverage, locality, verdict }]
     proposal_payloads: [<yaml-per-candidate>]
   suggested_next:
-    - skill: "Topia:brainstorm"
+    - skill: "topia:brainstorm"
       mode: "design-it-twice"
       reason: "Top candidate has multiple credible interface shapes — need diverse exploration before commit"
       consumes: ["proposal_payloads"]
-    - skill: "Topia:surgeon"
+    - skill: "topia:surgeon"
       reason: "User picked candidate; interface shape is obvious; ready for deepening session"
       consumes: ["proposal_payloads"]
-    - skill: "Topia:journal"
+    - skill: "topia:journal"
       reason: "User rejected candidate with load-bearing reason; record ADR (score >=11)"
       consumes: ["candidates", "rejection_reason"]
 ```

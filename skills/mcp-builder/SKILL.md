@@ -278,7 +278,7 @@ Claude Code installation snippet:
 
 ### Step 6 — Verify
 
-Invoke `Topia:verification`:
+Invoke `topia:verification`:
 - TypeScript: `tsc --noEmit` + `npm test`
 - Python: `mypy src/` + `pytest`
 - Ensure all tools respond correctly

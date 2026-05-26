@@ -44,13 +44,13 @@ describe('full pipeline: build skill', () => {
         // Claude: passthrough, no header/footer
         assert.strictEqual(result.header, '');
         assert.strictEqual(result.footer, '');
-        // Should still have original cross-refs
-        assert.ok(result.body.includes('Topia:'), `claude: should preserve Topia: cross-refs`);
+        // Should still have original cross-refs (canonical lowercase as of v3.0.0)
+        assert.ok(result.body.includes('topia:'), `claude: should preserve topia: cross-refs`);
       } else {
         // Non-Claude: should have transformed cross-refs
         assert.ok(
-          !result.body.includes('`Topia:build`'),
-          `${platform}: should not have backticked Topia:build cross-ref`,
+          !result.body.includes('`topia:build`'),
+          `${platform}: should not have backticked topia:build cross-ref`,
         );
 
         // Should have footer with branding

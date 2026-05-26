@@ -1,6 +1,6 @@
 # Interface Design
 
-When the user picks a deepening candidate whose interface shape is non-obvious — multiple credible designs, no clear winner — hand off to `Topia:brainstorm` in `design-it-twice` mode (brainstorm v0.6+) for parallel-subagent exploration.
+When the user picks a deepening candidate whose interface shape is non-obvious — multiple credible designs, no clear winner — hand off to `topia:brainstorm` in `design-it-twice` mode (brainstorm v0.6+) for parallel-subagent exploration.
 
 This file documents what `improve-architecture` provides to brainstorm and what it expects back, so the two skills compose without duplication.
 

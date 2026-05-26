@@ -69,7 +69,7 @@ Auto-generate changelog from git commit history.
 
 #### Step 1 — Scan Codebase
 
-Invoke `Topia:recon` to extract:
+Invoke `topia:recon` to extract:
 - Project name, description, tech stack
 - Directory structure and key files
 - Entry points (main, index, app)
@@ -173,7 +173,7 @@ Never silently remove doc content. If code was deleted, mark the doc section as 
 
 #### Step 3 — Generate Changelog Entry
 
-Delegate to `Topia:git changelog` to produce a changelog entry from commits since last docs update.
+Delegate to `topia:git changelog` to produce a changelog entry from commits since last docs update.
 
 #### Step 4 — Cross-Doc Consistency Pass
 
@@ -264,7 +264,7 @@ Save to `docs/API.md` or project-specific location. If OpenAPI requested, genera
 
 #### Step 1 — Delegate to Git
 
-Invoke `Topia:git changelog` to group commits by type and format as Keep a Changelog.
+Invoke `topia:git changelog` to group commits by type and format as Keep a Changelog.
 
 #### Step 2 — Enhance
 

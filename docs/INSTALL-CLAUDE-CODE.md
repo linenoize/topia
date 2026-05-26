@@ -10,14 +10,14 @@ Paste these into a Claude Code session:
 
 ```text
 /plugin marketplace add linenoize/topia
-/plugin install Topia@linenoize
+/plugin install topia@linenoize
 ```
 
-Restart Claude Code if `/Topia:build` does not appear.
+Restart Claude Code if `/topia:build` does not appear.
 
 **That is the complete install.** When the plugin loads you get:
 
-- All 66 skills (`/Topia:build`, `/Topia:plan`, …) and the `/topia` router command
+- All 66 skills (`/topia:build`, `/topia:plan`, …) and the `/topia` router command
 - All 64 subagents
 - All 11 discipline hooks — session-start, secrets-scan, quarantine, auto-format, typecheck, metrics-collector, pre-tool-guard, intent-router, context-watch, pre-compact, post-session-reflect
 - File-based memory in `.topia/`
@@ -59,10 +59,10 @@ See [`commands/finalize.md`](../commands/finalize.md) for the full behavior cont
 
 | Surface | Example |
 |---------|---------|
-| Plugin namespace (skills) | `/Topia:build`, `/Topia:plan` |
+| Plugin namespace (skills) | `/topia:build`, `/topia:plan` |
 | Router command | `/topia build`, `/topia doctor` |
 
-Both work when the plugin is enabled. The `Topia` prefix comes from `.claude-plugin/plugin.json` → `"name": "Topia"`.
+Both work when the plugin is enabled. The `topia` prefix comes from `.claude-plugin/plugin.json` → `"name": "topia"`. The `displayName: "Topia"` controls how the plugin appears in `/plugin` lists; the lowercase `name` field controls install ID, skill namespace, and on-disk cache path.
 
 ---
 
@@ -70,7 +70,7 @@ Both work when the plugin is enabled. The `Topia` prefix comes from `.claude-plu
 
 | Step | Action |
 |------|--------|
-| Onboard | `/topia onboard` or `/Topia:onboard` |
+| Onboard | `/topia onboard` or `/topia:onboard` |
 | Rune migration | If `.rune/` exists: `/topia migrate-from-rune` (or run the CLI from a clone) |
 | Verify | `/topia doctor` (or `node <skill-topia>/compiler/bin/topia.js doctor` from a clone) |
 
@@ -88,7 +88,7 @@ cd skill-topia && npm install
 node compiler/bin/topia.js install
 ```
 
-This is the equivalent of `/plugin install Topia@linenoize` + `/topia finalize` from the terminal.
+This is the equivalent of `/plugin install topia@linenoize` + `/topia finalize` from the terminal.
 
 Stable clone location (optional convention):
 
@@ -120,7 +120,7 @@ node compiler/bin/topia.js setup --global --preset gentle
 
 ```bash
 claude plugin marketplace add linenoize/topia
-claude plugin install Topia@linenoize
+claude plugin install topia@linenoize
 node compiler/bin/topia.js install --yes --skip-agora     # finalize non-interactively
 ```
 
@@ -149,7 +149,7 @@ Claude Code only offers an update when the **published catalog version** is newe
 
 ```text
 /plugin marketplace update protopia
-/plugin update Topia@linenoize
+/plugin update topia@linenoize
 /reload-plugins
 ```
 
@@ -161,7 +161,7 @@ Restart Claude Code if skills or hooks still look stale after `/reload-plugins`.
 
 | What | Needed after update? |
 |------|----------------------|
-| Skills (`/Topia:*`, `/topia …`) | No — picked up from the new plugin tree after reload/restart. |
+| Skills (`/topia:*`, `/topia …`) | No — picked up from the new plugin tree after reload/restart. |
 | Plugin hooks (session-start, secrets-scan, quarantine, …) | No — they use `${CLAUDE_PLUGIN_ROOT}` and follow the installed plugin automatically. |
 | Dispatch hooks (`readiness`, `guardian`, `completion-gate`, `dependency-doctor` from `topia setup --global`) | **Re-run setup once** — `~/.claude/settings.json` stores a fixed path to `topia.js` in the plugin cache; a new version folder may leave dispatch hooks pointing at the old copy. |
 
@@ -219,6 +219,7 @@ claude plugin validate .
 | Hooks not firing | Re-run `node …/topia.js setup --global`; `node …/topia.js doctor --hooks` |
 | `npm 404` on `@linenoize/topia` | Expected if unpublished — use `node …/topia.js` from clone or plugin cache, not `npx` |
 | Relative path install fails | Add marketplace via **git** (`linenoize/topia`), not a raw URL to `marketplace.json` only |
-| Update: Plugin "Topia" not found | Marketplace id must match `plugin.json` → use `Topia@linenoize`. Run `/plugin marketplace update linenoize` then `/plugin update Topia@linenoize`. |
+| Update: Plugin "topia" not found | Marketplace id must match `plugin.json` (case-sensitive) → use lowercase `topia@linenoize`. Run `/plugin marketplace update linenoize` then `/plugin update topia@linenoize`. |
+| Update: Plugin "Topia" not found (capital T) | You installed v2.x — upgrade path is `/plugin uninstall Topia@linenoize` then `/plugin install topia@linenoize`. As of v3.0.0 the plugin id is lowercase. |
 
 See [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md).

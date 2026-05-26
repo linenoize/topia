@@ -184,7 +184,7 @@ npx @linenoize/topia init
 
 Topia is a **nexus** — skills call each other bidirectionally, forming resilient workflows. If one skill fails, the nexus routes around it.
 
-Use \`Topia:build\` for any code task, \`Topia:team\` for parallel work, \`Topia:launch\` for deploy, \`Topia:rescue\` for legacy code.
+Use \`topia:build\` for any code task, \`topia:team\` for parallel work, \`topia:launch\` for deploy, \`topia:rescue\` for legacy code.
 
 ## Architecture
 

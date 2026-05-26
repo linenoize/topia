@@ -22,7 +22,7 @@ LOW:     Glob (broad search), WebSearch (external docs)
 2. Run tests after every meaningful change
 3. If stuck for >2 iterations on the same error, switch strategy:
    - Try a different approach rather than debugging deeper
-   - Use `Topia:debug` for structured root cause analysis
+   - Use `topia:debug` for structured root cause analysis
 4. Keep explanations to 1-2 sentences between code blocks
 5. Commit working increments — don't batch everything into one giant change
 

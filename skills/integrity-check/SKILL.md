@@ -26,7 +26,7 @@ Based on "Agents of Chaos" (arXiv:2602.20021) threat model: agents that read per
 - Called by `team` before merging build reports (Phase 3a)
 - Called by `session-bridge` on load mode (Step 1.5)
 - `/topia integrity` — manual integrity scan of `.topia/` directory
-- Signal: `quarantine.notice.emitted` (from `Topia:quarantine`) — bias toward stricter scanning of any state file that incorporated quarantined external content
+- Signal: `quarantine.notice.emitted` (from `topia:quarantine`) — bias toward stricter scanning of any state file that incorporated quarantined external content
 
 ## Calls (outbound)
 

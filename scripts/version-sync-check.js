@@ -58,11 +58,11 @@ if (existsSync(marketplacePath)) {
       `marketplace.json version=${marketplace.version} vs package.json=${pkg.version}`,
     );
   }
-  const entry = marketplace.plugins?.find((p) => p.name === 'Topia');
+  const entry = marketplace.plugins?.find((p) => p.name === plugin.name);
   if (!entry) {
-    fail('marketplace.json: missing plugins[] entry "Topia"');
+    fail(`marketplace.json: missing plugins[] entry "${plugin.name}"`);
   } else if (entry.version && entry.version !== pkg.version) {
-    fail(`marketplace plugins[Topia].version=${entry.version} vs package.json=${pkg.version}`);
+    fail(`marketplace plugins[${plugin.name}].version=${entry.version} vs package.json=${pkg.version}`);
   } else if (entry.version === pkg.version) {
     pass('marketplace plugin entry version matches package.json');
   }

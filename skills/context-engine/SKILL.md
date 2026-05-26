@@ -108,7 +108,7 @@ Identify the next safe boundary (end of current loop iteration, end of current f
 
 ### Step 5 — If RED
 
-Immediately trigger state save via `Topia:session-bridge` (Save Mode) before any compaction occurs. If caveman mode was not already active from ORANGE, emit `output.density.set` with `mode=caveman, scope=session, source=context-red` now.
+Immediately trigger state save via `topia:session-bridge` (Save Mode) before any compaction occurs. If caveman mode was not already active from ORANGE, emit `output.density.set` with `mode=caveman, scope=session, source=context-red` now.
 
 Pass to session-bridge:
 - Current task and phase description

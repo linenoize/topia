@@ -16,7 +16,7 @@ metadata:
 
 ## Purpose
 
-Code quality analysis. Review finds bugs, bad patterns, security issues, and untested code. It does NOT fix anything — it reports findings and delegates: bugs go to Topia:fix, untested code goes to Topia:test, security-critical code goes to Topia:guardian.
+Code quality analysis. Review finds bugs, bad patterns, security issues, and untested code. It does NOT fix anything — it reports findings and delegates: bugs go to topia:fix, untested code goes to topia:test, security-critical code goes to topia:guardian.
 
 <HARD-GATE>
 A review that says "LGTM" or "code looks good" without specific file:line references is NOT a review.
@@ -74,7 +74,7 @@ Determine what to review.
 
 - If triggered by a commit or PR: use `Bash` with `git diff main...HEAD` or `git diff HEAD~1` to see exactly what changed
 - If triggered by a specific file or feature: use `Read` on each named file
-- If context is unclear: use `Topia:recon` to identify all files touched by the change
+- If context is unclear: use `topia:recon` to identify all files touched by the change
 - List every file in scope before proceeding — do not review files outside the stated scope
 
 ### Step 1.5: Blast Radius Assessment
@@ -91,7 +91,7 @@ Use Grep to count direct callers/importers of each modified symbol:
 | 1-5 callers | Low | Standard review |
 | 6-20 callers | Medium | Check all callers for compatibility |
 | 21-50 callers | High | Thorough review + regression test check |
-| 50+ callers | Critical | MUST escalate to adversarial analysis (Topia:adversary) even in quick triage |
+| 50+ callers | Critical | MUST escalate to adversarial analysis (topia:adversary) even in quick triage |
 
 <HARD-GATE>
 Modifying a symbol with 50+ callers + HIGH severity change (logic, types, behavior) → adversarial analysis REQUIRED. Quick review is NOT sufficient for high-blast-radius changes.
@@ -180,7 +180,7 @@ Check for security-relevant issues.
 - Scan for: unvalidated user input passed to queries, file paths, or shell commands
 - Scan for: missing authentication checks on new routes or functions
 - Scan for: XSS vectors (unsanitized HTML output), CSRF exposure, open redirects
-- If any security-sensitive code found (auth logic, input handling, crypto, payment): call `Topia:guardian` for deep scan
+- If any security-sensitive code found (auth logic, input handling, crypto, payment): call `topia:guardian` for deep scan
 - Sentinel escalation is mandatory — do not skip it for auth or crypto code
 
 ### Step 4.5: API Pit-of-Success Check
@@ -230,7 +230,7 @@ Identify gaps in test coverage.
 - Use `Bash` to check if a test file exists for each changed file
 - Use `Glob` to find test files: `**/*.test.ts`, `**/*.spec.ts`, `**/__tests__/**`
 - Read the test file and verify: are the new functions covered? are edge cases tested?
-- If untested code found: call `Topia:test` with specific instructions on what to test
+- If untested code found: call `topia:test` with specific instructions on what to test
 - Flag as HIGH if business logic is untested, MEDIUM if utility code is untested
 
 #### Per-Function Test Gap Analysis
@@ -327,7 +327,7 @@ Classify each finding as **AUTO-FIX** or **ASK** before reporting:
 | Style/convention disagreement | ASK | "Project uses camelCase but this file uses snake_case" |
 
 **After classification:**
-- Apply AUTO-FIX findings directly via `Topia:fix` — include all in a single batch
+- Apply AUTO-FIX findings directly via `topia:fix` — include all in a single batch
 - Collect ASK findings into ONE `AskUserQuestion` — not 5 separate questions
 - Report both: "Auto-fixed 4 issues. 2 findings need your input: [...]"
 
@@ -353,9 +353,9 @@ After reviewing code, compare **stated intent** vs **actual diff**:
 **This is informational, not blocking.** Scope drift is common and sometimes intentional — but making it visible prevents silent creep.
 
 After reporting:
-- If any CRITICAL findings: call `Topia:fix` immediately with the finding details
-- If any HIGH findings: call `Topia:fix` with the finding details
-- If untested code: call `Topia:test` with specific coverage gaps identified
+- If any CRITICAL findings: call `topia:fix` immediately with the finding details
+- If any HIGH findings: call `topia:fix` with the finding details
+- If untested code: call `topia:test` with specific coverage gaps identified
 - Call `neural-memory` (Capture Mode) to save any novel code quality patterns or recurring issues found.
 
 ## Framework-Specific Checks
@@ -385,7 +385,7 @@ Apply **only** when `.tsx`, `.jsx`, `.svelte`, `.vue`, or `.html` files are in t
 These are the **"AI UI signature"** — patterns that make AI-generated frontends visually identifiable as non-human-designed. Flag each as MEDIUM severity.
 
 **Preamble — load design contract first:**
-If `.topia/design-system.md` exists, read it first. Pull the project's **Scale Minimums** block (if authored by `Topia:design` v0.5.0+) and apply those thresholds instead of the defaults below. Missing design-system.md → use defaults and add a LOW finding: "Project has no design-system.md — run `Topia design` to lock visual decisions." Never enforce stale defaults against a project that has already declared stricter/looser minimums.
+If `.topia/design-system.md` exists, read it first. Pull the project's **Scale Minimums** block (if authored by `topia:design` v0.5.0+) and apply those thresholds instead of the defaults below. Missing design-system.md → use defaults and add a LOW finding: "Project has no design-system.md — run `Topia design` to lock visual decisions." Never enforce stale defaults against a project that has already declared stricter/looser minimums.
 
 **AI_ANTIPATTERN — Purple/indigo default accent with no domain justification:**
 ```tsx
@@ -602,7 +602,7 @@ When `build` or `ship` checks review status: compare review commit hash with cur
 4. MUST check: correctness, security, performance, conventions, test coverage
 5. MUST categorize findings: CRITICAL (blocks commit) / HIGH / MEDIUM / LOW
 6. MUST escalate to sentinel if auth/crypto/secrets code is touched
-7. MUST flag untested code paths and recommend tests via Topia:test
+7. MUST flag untested code paths and recommend tests via topia:test
 
 ## Returns
 
@@ -620,7 +620,7 @@ Append to Code Review Report when invoked standalone. Suppress when called as su
 
 ```yaml
 chain_metadata:
-  skill: "Topia:review"
+  skill: "topia:review"
   version: "1.0.0"
   status: "[DONE | DONE_WITH_CONCERNS]"
   domain: "[area reviewed]"
@@ -632,7 +632,7 @@ chain_metadata:
     verdict: "[APPROVE | REQUEST_CHANGES | NEEDS_DISCUSSION]"
     quality_score: [0-100]  # when mode: "scored"
   suggested_next:
-    - skill: "Topia:fix"
+    - skill: "topia:fix"
       reason: "[grounded in findings — e.g., '2 HIGH findings in api/users.ts need remediation']"
       consumes: ["findings"]
 ```
@@ -644,7 +644,7 @@ chain_metadata:
 | Finding flood — 20+ findings overwhelm developer | MEDIUM | Confidence filter: only >80% confidence, consolidate similar issues per file |
 | "LGTM" without file:line evidence | HIGH | HARD-GATE blocks this — cite at least one specific item per changed file |
 | Expanding review scope beyond the diff | MEDIUM | Limit to `git diff` scope — do not creep into adjacent unchanged files |
-| Security finding without sentinel escalation | HIGH | Any auth/crypto/payment code touched → MUST call Topia:guardian |
+| Security finding without sentinel escalation | HIGH | Any auth/crypto/payment code touched → MUST call topia:guardian |
 | Skipping UI anti-pattern checks for frontend changes | MEDIUM | Any .tsx/.jsx/.svelte/.vue in diff → MUST run UI/UX Anti-Pattern Checks section |
 | Skipping spec compliance check (Step 5.5 Stage 1) | HIGH | Code quality without spec check ships clean code that does the wrong thing — always load the plan/ticket before reviewing quality |
 | Treating purple/indigo accent as "just a color choice" | MEDIUM | It is a documented AI-generated UI signature — always flag for domain justification |

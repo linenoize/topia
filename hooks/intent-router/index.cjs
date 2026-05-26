@@ -97,7 +97,7 @@ process.stdin.on('end', () => {
   const alternates = scores.slice(1, 3).map((s) => s.skill).join(', ');
 
   // Output routing suggestion
-  console.log(`\n🧭 [Topia intent-router] Suggested: Topia:${top.skill} (${top.layer}, ${top.model})`);
+  console.log(`\n🧭 [Topia intent-router] Suggested: topia:${top.skill} (${top.layer}, ${top.model})`);
   console.log(`   Chain: ${chainDisplay}`);
   if (alternates) {
     console.log(`   Also consider: ${alternates}`);

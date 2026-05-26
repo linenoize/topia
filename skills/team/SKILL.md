@@ -140,7 +140,7 @@ Mark todo[0] `in_progress`.
 **1a. Map module boundaries.**
 
 ```
-REQUIRED SUB-SKILL: Topia:recon
+REQUIRED SUB-SKILL: topia:recon
 → Invoke `recon` with the full task description.
 → Scout returns: module list, file ownership map, dependency graph.
 → Capture: which modules are independent vs. coupled.
@@ -149,7 +149,7 @@ REQUIRED SUB-SKILL: Topia:recon
 **1b. Break into workstreams.**
 
 ```
-REQUIRED SUB-SKILL: Topia:plan
+REQUIRED SUB-SKILL: topia:plan
 → Invoke `plan` with recon output + task description.
 → Plan returns: ordered list of workstreams, each with:
     - stream_id: "A" | "B" | "C" (max 3)
@@ -292,7 +292,7 @@ Mark todo[1] `completed`.
 
 Mark todo[2] `in_progress`.
 
-**3a-pre0. Output density honoring.** During Phase 2 dispatch, any worker that hits context ORANGE / RED has emitted `output.density.set` with `mode=caveman, scope=workstream` (auto from `Topia:context-engine`). Coordination output respects per-workstream density: when summarizing a caveman-active worker's report into the merge plan, preserve its terse format rather than re-expanding to verbose. If 3+ workers are caveman-active simultaneously, the team-level summary itself should adopt caveman until merge completes (announce to user once: "Team output in caveman mode — N workers under context pressure"). Reverts to normal after Phase 5.
+**3a-pre0. Output density honoring.** During Phase 2 dispatch, any worker that hits context ORANGE / RED has emitted `output.density.set` with `mode=caveman, scope=workstream` (auto from `topia:context-engine`). Coordination output respects per-workstream density: when summarizing a caveman-active worker's report into the merge plan, preserve its terse format rather than re-expanding to verbose. If 3+ workers are caveman-active simultaneously, the team-level summary itself should adopt caveman until merge completes (announce to user once: "Team output in caveman mode — N workers under context pressure"). Reverts to normal after Phase 5.
 
 **3a-pre. Oracle reattach sweep.** Before merge coordination, glob `.topia/oracle-pending/*.json`. For any worker stream that emitted `oracle.dispatched` during Phase 2, invoke `session-bridge --reattach <sessionId>`. Worker streams with `status=pending` past their `timeoutAt` are unblocked via `oracle.failed` so coordination can proceed. Workers with `status=complete` consume the response before merge.
 
@@ -310,7 +310,7 @@ If overlapping files detected between completed worktrees:
 **3a.5. Verify build report integrity.**
 
 ```
-REQUIRED SUB-SKILL: Topia:integrity-check
+REQUIRED SUB-SKILL: topia:integrity-check
 → Invoke integrity-check on each build report text.
 → If any report returns TAINTED:
     BLOCK this stream from merge.
@@ -404,7 +404,7 @@ Mark todo[3] `completed`.
 Mark todo[4] `in_progress`.
 
 ```
-REQUIRED SUB-SKILL: Topia:verification
+REQUIRED SUB-SKILL: topia:verification
 → Invoke `verification` on the merged main branch.
 → verification runs: type check, lint, unit tests, integration tests.
 → Capture: passed count, failed count, coverage %.

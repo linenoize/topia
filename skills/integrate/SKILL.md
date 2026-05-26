@@ -159,7 +159,7 @@ Output a brief analysis (not full report — save context for later steps).
 
 ### Step 3 — Scan Local Codebase
 
-Invoke `Topia:recon` (or use cached output if `codebase.scanned` signal received):
+Invoke `topia:recon` (or use cached output if `codebase.scanned` signal received):
 - Local tech stack and version
 - Naming conventions (camelCase vs snake_case, file structure)
 - Existing patterns that overlap with target feature
@@ -232,8 +232,8 @@ Present plan to user. Wait for approval (unless `--auto`).
 
 **Copy/Port/Improve modes**:
 1. Create/modify files per adaptation plan
-2. For port/improve: invoke `Topia:fix` for complex rewrites
-3. For improve: invoke `Topia:review` on integrated code
+2. For port/improve: invoke `topia:fix` for complex rewrites
+3. For improve: invoke `topia:review` on integrated code
 4. Run project verification (lint, type-check, test if applicable)
 5. Clean up temp clone dir
 
@@ -311,7 +311,7 @@ integrate.complete:
 | Gate | Requires | If Missing |
 |------|----------|------------|
 | Challenge Gate | 5-dimension score with 0-1 ❌ | BLOCK if 2+ ❌, WARN if 1 ❌ |
-| Recon Gate | Local codebase scanned | Invoke `Topia:recon` first |
+| Recon Gate | Local codebase scanned | Invoke `topia:recon` first |
 | Scope Gate | Target feature ≤15 files | WARN user, suggest narrowing |
 
 ## Sharp Edges
@@ -367,4 +367,4 @@ If this skill is added to the repo (first time):
 
 ~2000-4000 tokens input (SKILL.md + 1-2 references), ~3000-8000 tokens output (analysis + adaptation + code). Sonnet for execution. Heaviest when port mode rewrites significant code — but that's where the value is highest.
 
-**Scope guardrail**: Do not become a general-purpose code review tool. Integrate analyzes external code for adoption purposes only — use `Topia:review` for reviewing your own code, `Topia:research` for general technology research.
+**Scope guardrail**: Do not become a general-purpose code review tool. Integrate analyzes external code for adoption purposes only — use `topia:review` for reviewing your own code, `topia:research` for general technology research.

@@ -123,9 +123,9 @@ describe('nexus integrity', () => {
   });
 
   test('no true orphan skills (every skill is referenced by at least one other)', () => {
-    // Collect all names referenced via crossRefs OR mentioned in body text as Topia:name
+    // Collect all names referenced via crossRefs OR mentioned in body text as topia:name
     const referenced = new Set();
-    const refPattern = /Topia:([a-z][\w-]*)/g;
+    const refPattern = /[Tt]opia:([a-z][\w-]*)/g;
     for (const skill of allParsed) {
       // From parsed crossRefs
       for (const ref of skill.crossRefs) {
@@ -137,7 +137,7 @@ describe('nexus integrity', () => {
         referenced.add(match[1]);
       }
     }
-    // Skills that are dispatched dynamically by skill-router (not via explicit Topia:X refs)
+    // Skills that are dispatched dynamically by skill-router (not via explicit topia:X refs)
     const dynamicDispatch = new Set(['constraint-check', 'context-engine', 'sast', 'scope-guard', 'worktree']);
     // A skill is orphan only if it's never referenced and not dynamically dispatched
     const orphans = allParsed.filter(

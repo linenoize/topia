@@ -50,7 +50,7 @@ Common issues and how to fix them.
 - `build` gets stuck in a loop (e.g., test → debug → fix → test → debug...).
 
 **Fixes:**
-- **Mental Break**: Use `Topia:brainstorm` to challenge the current approach.
+- **Mental Break**: Use `topia:brainstorm` to challenge the current approach.
 - **Manual Intervention**: Stop the agent, fix the environment issue (e.g., missing dependency) that's causing the test failure, and resume.
 - **Limit Depth**: Topia has built-in loop prevention (max 2 visits per skill), but some complex cycles can still emerge.
 
