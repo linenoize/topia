@@ -167,6 +167,12 @@ export function checkGitignore(projectRoot) {
       detail: `${tracked.length} path(s) should be untracked`,
     });
     for (const p of tracked) results.warnings.push(`Tracked but should be ignored: ${p}`);
+    // Surface the fix command so users don't have to figure it out.
+    // .gitignore can't untrack already-committed files — only `git rm --cached` can.
+    const quoted = tracked.map((p) => (/[\s"]/.test(p) ? `"${p.replace(/"/g, '\\"')}"` : p)).join(' ');
+    results.warnings.push(
+      `Fix: git rm --cached ${quoted} && git commit -m "chore: untrack .topia/ session state"`,
+    );
     results.healthy = false;
   } else {
     results.checks.push({ name: 'Tracked Topia local files', status: 'pass' });

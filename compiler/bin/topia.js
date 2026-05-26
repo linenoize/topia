@@ -282,9 +282,12 @@ async function cmdDoctor(projectRoot, args) {
   }
 
   if (!config) {
-    // No config = CI or fresh clone. Run source-only checks (split packs).
+    // No config = CI / fresh clone / Claude-only install. Run source-only checks.
+    // Claude Code reads SKILL.md directly so the config is not needed; it is only
+    // written when `topia init` is run for a non-Claude IDE (Cursor, Windsurf, …).
     log('');
-    log('  ℹ No topia.config.json found — running source-only checks.');
+    log('  ℹ No topia.config.json — source-only mode (normal for Claude Code installs).');
+    log('     To compile for Cursor / Windsurf / Antigravity, run: topia init --platform <name>');
     const results = await runDoctor({
       outputRoot: projectRoot,
       adapter: getAdapter('claude'),

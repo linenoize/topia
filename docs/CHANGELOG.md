@@ -4,6 +4,15 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
+## [3.1.1] — 2026-05-25
+
+### Changed
+
+- **Doctor: clearer "no config" copy for Claude Code installs** — the message used to read `No topia.config.json found — running source-only checks`, which downstream users reported as alarming. It now reads `No topia.config.json — source-only mode (normal for Claude Code installs)` and surfaces the `topia init --platform <name>` command for users who want to compile for Cursor / Windsurf / Antigravity. The per-check skip line is reworded to `Not required for Claude Code (reads SKILL.md directly)`. Behavior unchanged — the file is still never auto-written for Claude-only projects because Claude reads `SKILL.md` directly.
+- **Doctor: print the `git rm --cached` fix command when tracked `.topia/` files are detected.** The warning previously listed offending files without telling the user how to untrack them (`.gitignore` cannot retroactively untrack already-committed files). The fix command is now appended to the warnings, with paths shell-quoted when they contain spaces.
+
+---
+
 ## [3.1.0] — 2026-05-25
 
 Ports upstream `protopia/skill-topia` v2.1.0 (`abf71b3`). Rebrand to `linenoize/topia` (lowercase plugin name preserved from v3.0.0) applied via `scripts/port-rebrand.mjs`.
