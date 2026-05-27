@@ -5,7 +5,7 @@ description: One-shot finalize-install. Run inside Claude Code after `/plugin in
 
 # /topia finalize
 
-The marketplace install (`/plugin install topia@linenoize`) is already complete for the core experience: all 66 skills, all 64 subagents, the 11 plugin hooks (session-start, secrets-scan, quarantine, metrics-collector, …), and file-based `.topia/` memory all work the moment the plugin is enabled.
+The marketplace install (`/plugin install topia@linenoize`) is already complete for the core experience: all 69 skills, all 66 subagents, the 15 plugin hooks (session-start, secrets-scan, quarantine, metrics-collector, …), and file-based `.topia/` memory all work the moment the plugin is enabled.
 
 This command finalizes the **optional** extras:
 

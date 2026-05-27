@@ -31,7 +31,7 @@ claude
 node compiler/bin/topia.js doctor
 ```
 
-That's it. 66 skills are now active in your AI assistant.
+That's it. 69 skills are now active in your AI assistant.
 
 > **Pro Tip**: For Claude Code, use the linenoize marketplace (no compilation):
 > `/plugin marketplace add linenoize/topia` then `/plugin install topia@linenoize`.
@@ -56,7 +56,7 @@ node compiler/bin/topia.js init
 
   -> Detected: cursor
   -> Created topia.config.json
-  -> Built 66 skills + 10 extensions to .cursor/rules/
+  -> Built 69 skills + 10 extensions to .cursor/rules/
 ```
 
 **Flags**:
@@ -84,7 +84,7 @@ node compiler/bin/topia.js build
   [transform] Platform: cursor
   [transform] Resolved 142 cross-references
   [transform] Resolved 87 tool-name references
-  [emit]      66 skills + 10 extensions
+  [emit]      69 skills + 10 extensions
 
   -> Built 67 files to .cursor/rules/
 ```

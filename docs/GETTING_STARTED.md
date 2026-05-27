@@ -52,7 +52,7 @@ Verify install:
 node compiler/bin/topia.js doctor
 ```
 
-You should see: `✓ 66 skills, 10 packs, nexus valid`.
+You should see: `✓ 69 skills, 10 packs, nexus valid`.
 
 ---
 
@@ -123,7 +123,7 @@ node compiler/bin/topia.js doctor       # validate install + nexus integrity
 ```
 
 Read next:
-- [`SKILLS.md`](SKILLS.md) — all 66 skills, categorized by intent
+- [`SKILLS.md`](SKILLS.md) — all 69 skills, categorized by intent
 - [`ARCHITECTURE.md`](ARCHITECTURE.md) — 5-layer architecture reference
 - [`PULSES.md`](PULSES.md) — how skills auto-trigger each other
 - [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) — stuck? common fixes here

@@ -17,9 +17,9 @@ Restart Claude Code if `/topia:build` does not appear.
 
 **That is the complete install.** When the plugin loads you get:
 
-- All 66 skills (`/topia:build`, `/topia:plan`, …) and the `/topia` router command
-- All 64 subagents
-- All 11 discipline hooks — session-start, secrets-scan, quarantine, auto-format, typecheck, metrics-collector, pre-tool-guard, intent-router, context-watch, pre-compact, post-session-reflect
+- All 69 skills (`/topia:build`, `/topia:plan`, …) and the `/topia` router command
+- All 66 subagents
+- All 15 discipline hooks — session-start, secrets-scan, quarantine, auto-format, typecheck, metrics-collector, pre-tool-guard, intent-router, context-watch, pre-compact, post-compact, post-session-reflect, token-meter, tool-collector, git-push-checkpoint
 - File-based memory in `.topia/`
 
 Nothing else is required.

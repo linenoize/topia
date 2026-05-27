@@ -23,7 +23,7 @@ The scope determines **which plugins are loaded** in a given Claude Code session
 - Where `.topia/` state files live (always per-project, in the repo working dir)
 - Where dispatch hooks fire (controlled by the separate `topia setup --global` vs `--here` flag, not the install scope)
 - Where the agora-code MCP is registered (per-project in `.mcp.json` or per-user in `~/.claude/.mcp.json`)
-- Which skills are available (all of them — every install scope ships the full 67-skill nexus)
+- Which skills are available (all of them — every install scope ships the full 69-skill nexus)
 
 So the picker question "install at user / project / local" is really just **"which sessions should be able to invoke `/topia:*`?"** Everything else is a separate decision made by `/topia finalize` or the relevant CLI command.
 

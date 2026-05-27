@@ -1,6 +1,6 @@
 {
   "name": "linenoize",
-  "description": "Topia skill toolkit — 66 interconnected skills, discipline hooks, optional agora-code memory",
+  "description": "Topia skill toolkit — 69 interconnected skills, discipline hooks, optional agora-code memory",
   "version": "3.2.2",
   "owner": {
     "name": "linenoize"
@@ -10,7 +10,7 @@
       "name": "topia",
       "displayName": "Topia",
       "source": { "source": "url", "url": "https://github.com/linenoize/topia.git" },
-      "description": "66-skill Topia Nexus for Claude Code — TDD rails, readiness/guardian/completion-gate hooks, Maestro routing, optional agora-code neural memory",
+      "description": "69-skill Topia Nexus for Claude Code — TDD rails, readiness/guardian/completion-gate hooks, Maestro routing, optional agora-code neural memory",
       "version": "3.2.2",
       "author": {
         "name": "skill-topia"

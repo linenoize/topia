@@ -76,7 +76,7 @@ Render this list to the user. For each entry, show: what it is, where it lives, 
 
 - `INSTALL-CLAUDE-CODE.md` — install guide
 - `INSTALL-SCOPES.md` — user vs project vs local scope, cache versioning, upgrade safety
-- `HOOKS.md` — the 11 plugin hooks + how to extend
+- `HOOKS.md` — the 15 plugin hooks + how to extend
 - `ARCHITECTURE.md` — the nexus structure, layers, synapses, pulses
 - `MULTI-PLATFORM.md` — how the compiler targets Cursor / Windsurf / Antigravity / Codex
 - `TROUBLESHOOTING.md` — common issues
