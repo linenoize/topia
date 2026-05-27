@@ -29,11 +29,19 @@ Upstream files **not** vendored (project governance, IDE-specific hooks, screens
 
 Per Apache License 2.0 section 4:
 
-- This is a **redistribution** of agora-code with no modifications.
+- This is a **redistribution** of agora-code with the local patches listed below.
 - The full text of the Apache License 2.0 is preserved at [`LICENSE`](./LICENSE).
 - Original copyright notices in `agora_code/**.py` are preserved.
 - No NOTICE file exists in upstream; none is added here.
-- If you modify any file in `agora_code/`, mark the file as "Modified" per Apache 2.0 section 4(b).
+- Modified files are marked with a "Modified (Topia fork, <date>)" comment per Apache 2.0 section 4(b).
+
+## Local patches (must be re-applied on every upstream sync)
+
+| File | What | Why |
+|---|---|---|
+| `agora_code/memory_server.py` :: `serve_memory()` | Read stdin via thread executor on Windows (`sys.platform == "win32"`); leave non-Windows path identical. | Upstream uses `asyncio.connect_read_pipe(sys.stdin)`, which fails on Windows with `OSError [WinError 6] "The handle is invalid"` because IOCP can't register console handles or the non-overlapped pipes that Node.js parents (Claude Code, Cursor) create with `CreatePipe()`. On Python 3.13 the error path triggers an `AttributeError` on `_empty_waiter` (CPython regression in `asyncio.proactor_events`). The patch lets `agora-code memory-server` run cleanly on every Windows + Python combination. |
+
+The `rsync` invocation below blows these away on every upstream sync — re-apply manually after each refresh, or move the patches into a separate fork branch on the upstream repo.
 
 ## How Topia uses it
 

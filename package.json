@@ -1,6 +1,6 @@
 {
   "name": "@linenoize/topia",
-  "version": "3.2.1",
+  "version": "3.2.2",
   "description": "67-skill Topia Nexus for AI coding assistants — runtime discipline rails via native hooks, 5-layer architecture, 203 synapses + 44 pulses, optional agora-code neural memory, multi-platform compiler.",
   "type": "module",
   "bin": {

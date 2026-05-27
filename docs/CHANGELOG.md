@@ -4,6 +4,23 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
+## [3.2.2] — 2026-05-26
+
+Fixes `agora-code memory-server` crashing on Windows + Python 3.13 — downstream user reported `OSError [WinError 6] "The handle is invalid"` followed by an `AttributeError` on `_empty_waiter`.
+
+### Fixed
+
+- **`mcp-servers/agora-code/agora_code/memory_server.py` :: `serve_memory()`** — read stdin via a thread executor (`loop.run_in_executor(None, sys.stdin.readline)`) on Windows. Upstream uses `asyncio.connect_read_pipe(sys.stdin)`, which requires an IOCP-compatible (overlapped) handle. Windows console handles aren't IOCP-compatible, and the non-overlapped pipes that Node.js parents (Claude Code, Cursor) create with `CreatePipe()` aren't either — so `connect_read_pipe` raises `WinError 6`. On Python 3.13 the failure is masked by an `AttributeError` on `_empty_waiter` (CPython regression in `asyncio.proactor_events`). The patched path works on both interactive console handles and inherited non-overlapped pipes, and is identical to upstream on non-Windows.
+
+### Notes
+
+- Topia fork patch — marked with a "Modified (Topia fork, 2026-05-26)" comment in the source per Apache 2.0 §4(b).
+- Documented in [`mcp-servers/agora-code/NOTICE-TOPIA.md`](../mcp-servers/agora-code/NOTICE-TOPIA.md) under "Local patches" so future upstream syncs preserve it. The `rsync` snippet in NOTICE-TOPIA blows the patch away on every refresh — re-apply manually after each.
+- Non-Windows users see no change.
+- Three workarounds we previously suggested (downgrade to Python 3.11/3.12, use WSL, hand-patch) are no longer needed for users who reinstall `agora-code` from this version's vendored copy: `pip install --force-reinstall ~/.claude/plugins/cache/linenoize/topia/<version>/mcp-servers/agora-code`.
+
+---
+
 ## [3.2.1] — 2026-05-26
 
 Critical install fix driven by downstream user report: `/plugin install topia@linenoize` failed with `git@github.com: Permission denied (publickey)` for any user without GitHub SSH keys configured.
