@@ -6,7 +6,11 @@ All notable changes to Topia will be documented in this file.
 
 ## [3.2.2] — 2026-05-26
 
-Fixes `agora-code memory-server` crashing on Windows + Python 3.13 — downstream user reported `OSError [WinError 6] "The handle is invalid"` followed by an `AttributeError` on `_empty_waiter`.
+Fixes `agora-code memory-server` crashing on Windows + Python 3.13 — downstream user reported `OSError [WinError 6] "The handle is invalid"` followed by an `AttributeError` on `_empty_waiter`. Also adds tag-driven npm publishing via CI.
+
+### Added
+
+- **`.github/workflows/npm-publish.yml`** — pushing a `v*` tag (e.g. `git tag v3.2.2 && git push origin v3.2.2`) runs `npm ci` → `npm test` → tag/version guard → `npm publish --access public --provenance`. Removes the manual `npm publish` + 2FA OTP step; CI authenticates with an npm **Automation** token stored as the `NPM_TOKEN` repo secret. A `workflow_dispatch` dry-run path validates packing without writing to the registry. See [`docs/VERSIONING.md`](VERSIONING.md#release-process-npm-publish-via-ci).
 
 ### Fixed
 
