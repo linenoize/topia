@@ -2,7 +2,7 @@
 name: neural-memory
 description: "Cross-session cognitive persistence via Neural Memory MCP. Captures decisions, patterns, errors, and insights with rich semantic links. Provides recall, hypothesis tracking, and evidence-based reasoning across projects."
 metadata:
-  author: skill-topia
+  author: topia
   version: 0.1.0
   layer: L3
   model: haiku

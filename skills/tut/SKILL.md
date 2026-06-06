@@ -2,7 +2,7 @@
 name: tut
 description: "Re-shows the structured first-run menu (finalize / onboard / doctor / faq / help) on demand, with current completion status. Use when the user wants to revisit the tutorial, asks 'what should I do next?', or types `/topia:tut`. This is the explicit re-entry point for the menu that auto-shows on session-start until completed."
 metadata:
-  author: skill-topia
+  author: topia
   version: "1.0.0"
   layer: L3
   model: haiku
@@ -75,6 +75,7 @@ Print the same shape as session-start, but unconditionally (the user explicitly 
     {ONBOARDED} /topia onboard   — scan this repo, write CLAUDE.md +
                           .topia/ context so future sessions start hydrated
     [ ] /topia doctor    — verify install health and surface any fixes
+    [ ] /topia:org-config — team policy in .topia/org/org.md (commit for teams)
     [ ] /topia:faq       — list bundled docs + visualizer entry points
     [ ] /topia --help    — full command reference
 
@@ -92,6 +93,7 @@ After the menu, add a 1-sentence "what does this do?" for any item the user is u
 - **finalize** — opt-in extras. Wires dispatch hooks system-wide, optionally installs the agora-code MCP for persistent memory, adds `.topia/` to your repo's `.gitignore`. Reversible.
 - **onboard** — analyzes this repository (stack, conventions, test framework, recent commits) and writes a CLAUDE.md plus `.topia/` context files so future sessions don't have to re-discover the project from scratch.
 - **doctor** — sanity-check: nexus integrity, gitignore coverage, tracked-state-files audit, hook health. Surfaces any fixes.
+- **org-config** — interview-driven setup for `.topia/org/org.md`; guardian and readiness enforce your team's rules at commit time.
 - **faq** — the docs/visualization entry-point listing.
 
 ### Step 4 — Ask if they want to start
@@ -109,6 +111,7 @@ If they pick one, dispatch to it via the corresponding slash command. Do NOT sil
     [x] /topia finalize  — system-wide discipline hooks + persistent memory
     [ ] /topia onboard   — scan this repo, write CLAUDE.md + .topia/ context
     [ ] /topia doctor    — verify install health and surface any fixes
+    [ ] /topia:org-config — team policy in .topia/org/org.md (commit for teams)
     [ ] /topia:faq       — list bundled docs + visualizer entry points
     [ ] /topia --help    — full command reference
 
@@ -121,6 +124,7 @@ If they pick one, dispatch to it via the corresponding slash command. Do NOT sil
 
 - `topia:faq` (L3): when the user picks "show me the docs" from the menu (Step 4).
 - `topia:onboard` (L3): when the user picks "set up this repo" (Step 4).
+- `topia:org-config` (L2): when the user picks "configure team policy" from the menu (Step 4).
 - `topia:finalize` (slash-command, not a skill but listed as an option): when the user picks system-wide setup.
 - `topia:doctor` (router command): when the user picks "verify install health".
 

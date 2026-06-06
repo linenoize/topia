@@ -53,6 +53,12 @@ import { appendTopiaPathChecks } from '../lib/topia-paths.js';
 import { buildAll } from '../emitter.js';
 import { collectStats, detectMemoryHealth, renderStatus, renderStatusJson } from '../status.js';
 import { collectGraphData, generateNexusHTML } from '../visualizer.js';
+import {
+  activateL4PacksForProject,
+  packIdToDirName,
+} from '../../skills/onboard/scripts/detect-l4-packs.js';
+import { runMemorySeed } from '../commands/memory-seed.js';
+import { resolveTopiaRoot } from '../commands/hooks/resolve-topia-root.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -114,6 +120,62 @@ async function prompt(question) {
  * No-op for Claude (native plugin loads source directly).
  * Side effects: writes topia.config.json + <outputDir>/*
  */
+async function cmdMemorySeed(projectRoot, args) {
+  const dryRun = Boolean(args['dry-run']);
+  const force = Boolean(args.force);
+  const result = runMemorySeed(projectRoot, { dryRun, force });
+  log('');
+  if (result.skipped && result.reason === 'no-seedable-files') {
+    logStep('—', 'Nothing to seed — run /topia onboard or add .topia/ state files first.');
+  } else if (result.skipped && result.reason === 'already-seeded') {
+    logStep('—', `Already seeded (${result.count} items). Use --force to re-import.`);
+  } else if (result.skipped && result.reason === 'no-agora-cli') {
+    logStep('!', 'agora-code not on PATH — install via topia install or pip install ./mcp-servers/agora-code');
+  } else if (result.dryRun) {
+    logStep('·', `[dry-run] Would seed ${result.count} finding(s).`);
+  } else if (result.ok) {
+    logStep('✓', `Seeded ${result.count} learning(s) into agora-memory.`);
+    if (result.errors?.length) {
+      logStep('!', `${result.errors.length} item(s) failed (see stderr).`);
+    }
+  }
+  log('');
+}
+
+async function cmdPacksDetect(projectRoot, args) {
+  const dryRun = Boolean(args['dry-run']);
+  const force = Boolean(args.force);
+  const result = activateL4PacksForProject(projectRoot, { dryRun, force, source: 'cli' });
+  log('');
+  if (result.detected.length > 0) {
+    logStep('✓', `Detected ${result.detected.length} pack(s):`);
+    for (const { pack, reason } of result.detected) {
+      log(`      ${pack} — ${reason}`);
+    }
+  } else {
+    logStep('—', 'No packs matched project signals (all packs still available with Topia).');
+  }
+  if (!dryRun && result.merged) {
+    logStep('✓', `Wrote ${result.path}`);
+    if (result.topiaConfig?.updated) {
+      logStep('✓', `Updated ${result.topiaConfig.path}`);
+    }
+  }
+  log('');
+}
+
+async function cmdWhere() {
+  const cliPath = path.join(TOPIA_ROOT, 'compiler', 'bin', 'topia.js');
+  const resolved = resolveTopiaRoot(TOPIA_ROOT) || TOPIA_ROOT;
+  log('');
+  log(`  Topia root:  ${resolved}`);
+  log(`  CLI entry:   ${cliPath}`);
+  log('');
+  log('  Example (from your project directory):');
+  log(`    node "${cliPath}" init --platform cursor`);
+  log('');
+}
+
 async function cmdInit(projectRoot, args) {
   log('');
   log('  ╭─────────╮');
@@ -142,8 +204,15 @@ async function cmdInit(projectRoot, args) {
     return;
   }
 
-  // Extension pack selection
-  const extensions = args.extensions ? args.extensions.split(',') : null; // null = all
+  // Extension pack selection — auto-detect from repo unless CLI override
+  let extensions = args.extensions ? args.extensions.split(',') : null;
+  const l4 = activateL4PacksForProject(projectRoot, { source: 'init' });
+  if (!args.extensions && l4.detected.length > 0) {
+    extensions = l4.enabled.map((p) => packIdToDirName(p));
+    logStep('✓', `Detected L4 packs: ${l4.enabled.join(', ')}`);
+  } else if (!args.extensions) {
+    logStep('→', 'No stack-specific L4 packs detected — compiling all extension packs.');
+  }
 
   // Build config
   const config = {
@@ -676,7 +745,18 @@ async function main() {
     return;
   }
 
+  if (command === undefined && args.platform) {
+    log('');
+    log(`  ✗ --platform requires a command. Did you mean:`);
+    log(`    node "${path.join(TOPIA_ROOT, 'compiler', 'bin', 'topia.js')}" init --platform ${args.platform}`);
+    log('');
+    process.exit(1);
+  }
+
   switch (command) {
+    case 'where':
+      await cmdWhere();
+      break;
     case 'init':
       await cmdInit(projectRoot, args);
       break;
@@ -722,7 +802,23 @@ async function main() {
       });
       break;
     case 'install':
-      await runInstall({ TopiaRoot: TOPIA_ROOT, projectRoot, args });
+      await runInstall({ topiaRoot: TOPIA_ROOT, projectRoot, args });
+      break;
+    case 'packs':
+      if (subcommand === 'detect') {
+        await cmdPacksDetect(projectRoot, args);
+      } else {
+        log('  ✗ Unknown packs subcommand. Use: topia packs detect [--dry-run] [--force]');
+        process.exit(1);
+      }
+      break;
+    case 'memory':
+      if (subcommand === 'seed') {
+        await cmdMemorySeed(projectRoot, args);
+      } else {
+        log('  ✗ Unknown memory subcommand. Use: topia memory seed [--dry-run] [--force]');
+        process.exit(1);
+      }
       break;
     case 'version':
     case '--version':
@@ -761,6 +857,12 @@ async function main() {
       log('               hooks status [--platform <name>|all]');
       log('    migrate-from-rune   Pull .rune/ memories into .topia/, disable rune-kit plugin');
       log('               [--dry-run] [--force] [--skip] [--yes]');
+      log('    packs detect      Auto-detect L4 extension packs → .topia/active-packs.json');
+      log('               [--dry-run] [--force]');
+      log('    memory seed       Import .topia/ decisions/ADRs into agora-memory');
+      log('               [--dry-run] [--force]');
+      log('    install           One-shot setup (see --skip-l4-detect, --skip-agora)');
+      log('    where             Print resolved Topia root + CLI path for scripting');
       log('');
       log('  Options:');
       log(

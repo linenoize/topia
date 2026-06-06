@@ -1,10 +1,10 @@
 ---
-name: skill-topia
-description: "Internal team / org configuration for the skill-topia project. Fill in the fields below; `guardian` and `readiness` consume this at compile time and enforce its rules as runtime gates."
+name: topia
+description: "Internal team / org configuration for the topia project. Fill in the fields below; `guardian` and `readiness` consume this at compile time and enforce its rules as runtime gates."
 version: "1.0.0"
 ---
 
-# Organization: skill-topia
+# Organization: topia
 
 > **What is this file?** Your team's policies, roles, approval flows, and
 > governance level — read at compile time by `guardian` and `readiness` and

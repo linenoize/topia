@@ -9,9 +9,23 @@ Topia ships a vendored copy of [agora-code](https://github.com/thebnbrkr/agora-c
 | Session decisions | `.topia/decisions.md` (markdown append) | SQLite-backed, semantic-recall via embeddings |
 | File context | Re-read on every session | Symbol index — function/class locations cached by line |
 | Past learnings | Scan `.topia/*.md` files | `recall_learnings` with vector search |
-| Large file reads | Read in full, burn context | Auto-summarize before Read fires (via hooks) |
+| Large file reads | Read in full, burn context | Explicit `agora-code summarize` from skills when needed |
 
 agora-code is not a replacement — it's a **back-end upgrade** that 4 Topia skills can call when available.
+
+## When memory is populated (Topia lifecycle)
+
+| Lifecycle event | Topia action | agora effect |
+|-----------------|--------------|--------------|
+| `topia install` / `/topia finalize` | `topia memory seed` if `.topia/` exists | Imports prior markdown state into SQLite |
+| Session start | `.topia/` inject + `agora-code inject` (Topia SessionStart hook) | Prior checkpoints + learnings in context |
+| Session start | `topia:recall` (**required** when agora-memory registered) | Merges file + MCP recall |
+| ADR / `journal` | `store_learning` | New row in DB |
+| `build` / `idea` start | `recall_learnings` | Semantic search before work |
+| Session end | `complete_session` via `journal` | Archives session |
+| Git commit (opt-in) | `agora-learn-commit` hook if `.topia/agora-commit-learn.flag` | `learn-from-commit` |
+
+`.topia/` remains the human-readable source of truth; agora is the searchable cross-session index. `topia memory seed` bridges them once; `journal` keeps them aligned after.
 
 ## Install (one-time)
 
@@ -108,9 +122,11 @@ Topia's runtime layer (preflight, sentinel, completion-gate, quarantine) is the 
 | Topia's preflight / sentinel / completion-gate / quarantine | **Keep** (install via `topia hooks install`) |
 | agora-code's `install-hooks --claude-code` | **Skip** |
 | agora-code's MCP tools (`store_learning`, `recall_learnings`, etc.) | **Use** via skill cross-refs (already wired in `journal`, `build`, `idea`, `neural-memory`) |
-| agora-code's `agora-code inject` / `summarize` CLI | **Available**, but invoke explicitly from skills, not as a hook |
+| agora-code's `inject` on SessionStart | **Topia session-start hook** runs `agora-code inject --quiet` when MCP registered |
+| agora-code's `summarize` CLI | **Available** — invoke from skills when reading large files |
+| agora-code's `learn-from-commit` | **Opt-in** — `PostToolUse` hook when `.topia/agora-commit-learn.flag` or `TOPIA_AGORA_COMMIT_LEARN=1` |
 
-You lose agora-code's automatic large-file summarization and auto-context injection. You gain a predictable, single-owner hook chain. Recall happens through deliberate `recall_learnings` calls from skill `## Triggers` instead of a global PreToolUse interception.
+You avoid agora's full `install-hooks` chain (PreToolUse/PostToolUse collision with Topia discipline hooks). Session context injection and `.topia/` seeding are orchestrated by Topia instead.
 
 ## Caveats
 

@@ -21,7 +21,14 @@
 
 ### L4 — Extension Packs (Activation Protocol)
 
-L4 packs are domain-specific instruction sets stored as `extensions/*/PACK.md` files. They are activated (read) in two ways:
+L4 packs are domain-specific instruction sets stored as `extensions/*/PACK.md` files. **All packs ship with the Topia plugin** — activation records workspace preference and runtime loading, not a separate install.
+
+They are activated (read) in three ways:
+
+**0. Workspace config** — `topia install`, `topia init` (non-Claude), or `/topia onboard` run `detect-l4-packs.js`
+   - Writes `.topia/active-packs.json` with `enabled[]` for this repo
+   - `build` Phase 1.5 unions `enabled[]` with signal-matched packs (cap 2 per build)
+   - Cursor/Codex: `topia.config.json` → `extensions.enabled` filters compiled pack rules
 
 **1. Explicit invocation** — User runs `/topia <pack-skill>` (e.g., `/topia rag-patterns`)
    - `skill-router` detects the L4 trigger in Tier 4 routing table

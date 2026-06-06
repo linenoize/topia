@@ -18,12 +18,12 @@ import { WIRED_SKILLS } from './presets.js';
 
 /**
  * @param {string} projectRoot
- * @param {string} TopiaRoot
+ * @param {string} topiaRoot
  * @param {{platform?: string|string[]}} args
  */
-export async function hookStatus(projectRoot, TopiaRoot, args = {}) {
+export async function hookStatus(projectRoot, topiaRoot, args = {}) {
   const platforms = resolvePlatforms(projectRoot, args.platform);
-  const missingInRepo = findMissingSkills(TopiaRoot, WIRED_SKILLS);
+  const missingInRepo = findMissingSkills(topiaRoot, WIRED_SKILLS);
 
   if (platforms.length === 0) {
     return {
@@ -66,7 +66,7 @@ function resolvePlatforms(projectRoot, requested) {
   return Array.from(new Set(expanded));
 }
 
-function findMissingSkills(TopiaRoot, skills) {
-  const skillsDir = path.join(TopiaRoot, 'skills');
+function findMissingSkills(topiaRoot, skills) {
+  const skillsDir = path.join(topiaRoot, 'skills');
   return skills.filter((skill) => !existsSync(path.join(skillsDir, skill, 'SKILL.md')));
 }

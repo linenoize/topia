@@ -2,7 +2,7 @@
 name: debug
 description: "Root cause analysis for bugs and unexpected behavior. Traces errors through code, uses structured reasoning, and hands off to fix when cause is found. Core of the debug↔fix chain."
 metadata:
-  author: skill-topia
+  author: topia
   version: "1.2.0"
   layer: L2
   model: sonnet

@@ -21,7 +21,6 @@ description: "Trading patterns"
 metadata:
   version: "0.2.0"
   layer: L4
-  price: free
   target: Traders
 ---
 
@@ -71,7 +70,6 @@ description: "Backend patterns"
 metadata:
   version: "0.3.0"
   layer: L4
-  price: free
   target: Backend developers
   format: split
 ---
@@ -239,7 +237,7 @@ describe('buildAll split pack auto-discovery', () => {
     try {
       const outputRoot = path.join(tmp, 'out');
       const adapter = getAdapter('cursor');
-      const stats = await buildAll({ TopiaRoot: tmp, outputRoot, adapter });
+      const stats = await buildAll({ topiaRoot: tmp, outputRoot, adapter });
 
       assert.strictEqual(stats.packCount, 1, 'should build 1 pack');
 
@@ -265,9 +263,9 @@ describe('buildAll split pack auto-discovery', () => {
     }
 
     const tmp = path.join(tmpdir(), `Topia-aiml-test-${Date.now()}`);
-    const TopiaRoot = path.resolve(__dirname, '../..');
+    const topiaRoot = path.resolve(__dirname, '../..');
     const adapter = getAdapter('cursor');
-    await buildAll({ TopiaRoot, outputRoot: tmp, adapter });
+    await buildAll({ topiaRoot, outputRoot: tmp, adapter });
 
     try {
       const packOutput = await readFile(path.join(tmp, adapter.outputDir, 'Topia-ext-ai-ml.mdc'), 'utf-8');

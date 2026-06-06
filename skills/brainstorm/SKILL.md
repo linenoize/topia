@@ -2,7 +2,7 @@
 name: brainstorm
 description: "Creative ideation and solution exploration. Generates multiple approaches with trade-offs, uses structured frameworks (SCAMPER, First Principles), and hands off to plan for structuring."
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.6.0"
   layer: L2
   model: opus

@@ -47,11 +47,9 @@ export function buildDispatchCommand(topiaRoot, opts = {}) {
 }
 
 /**
- * Historical regex — matches `${TOPIA_*_ROOT}` env-var substitutions left
- * over from the removed Pro/Business tiers. Kept defensively so that pre-1.0
- * installs with tier-emitted entries still get recognised as Topia-managed
- * and cleaned up by uninstall. Safe to delete once no tier-era settings
- * files remain in the wild.
+ * Historical regex — matches legacy `${TOPIA_*_ROOT}` hook path placeholders.
+ * Kept so pre-1.0 settings.json entries are still recognised as Topia-managed
+ * and cleaned up by uninstall.
  */
 const Topia_TIER_RE = /\$\{TOPIA_[A-Z][A-Z0-9_]*_ROOT\}/;
 

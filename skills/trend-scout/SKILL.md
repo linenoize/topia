@@ -2,7 +2,7 @@
 name: trend-scout
 description: "Scan market trends, competitor activity, and emerging patterns. Monitors Product Hunt, GitHub Trending, HackerNews, and social platforms."
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.2.0"
   layer: L3
   model: haiku

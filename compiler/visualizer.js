@@ -94,6 +94,17 @@ export async function collectGraphData(TopiaRoot) {
     }
   }
 
+  // L2 orchestrators → L4 packs (domain context via build Phase 1.5)
+  const l4Orchestrators = ['build', 'deploy', 'plan'];
+  for (const node of nodes) {
+    if (node.layer !== 'L4' || !node.id.startsWith('pack:')) continue;
+    for (const hub of l4Orchestrators) {
+      if (nodes.some((n) => n.id === hub)) {
+        synapseEdges.push({ source: hub, target: node.id, label: 'domain' });
+      }
+    }
+  }
+
   // Build signal edges from signal map
   for (const [sigName, { emitters, listeners }] of Object.entries(signalMap)) {
     for (const emitter of emitters) {
@@ -553,7 +564,11 @@ function showDetail(node) {
 
   let html = '<h2>' + esc(node.id.replace('pack:', '')) + '</h2>';
   html += '<span class="layer-badge" style="background:' + layerColor + '22;color:' + layerColor + '">' + node.layer + '</span>';
-  if (node.description) html += '<p class="desc">' + esc(node.description) + '</p>';
+  if (node.layer === 'L4') {
+    html += '<p class="desc">Bundled extension pack (always shipped with Topia). Loaded by build Phase 1.5 and skill-router when domain signals match.</p>';
+  } else if (node.description) {
+    html += '<p class="desc">' + esc(node.description) + '</p>';
+  }
 
   if (connections.length > 0) {
     html += '<h3>Connections (' + connections.length + ')</h3><ul class="conn-list">';

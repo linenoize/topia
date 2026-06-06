@@ -3,7 +3,7 @@ name: integrity-check
 description: "Verify integrity of persisted state, skill outputs, and context bus data. Use when validating .topia/ files or sub-agent outputs against prompt injection, memory poisoning, identity spoofing, or adversarial payloads. Called by sentinel, team, session-bridge."
 user-invocable: false
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.2.0"
   layer: L3
   model: haiku

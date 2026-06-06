@@ -3,7 +3,7 @@ name: skill-router
 description: "Meta-enforcement layer that routes EVERY agent action through the correct skill. MUST check this routing table before ANY response involving code, files, or technical decisions. Default: route to topia:build for code tasks. Prevents rationalization, enforces check-before-act discipline."
 user-invocable: false
 metadata:
-  author: skill-topia
+  author: topia
   version: "1.4.0"
   layer: L0
   model: haiku
@@ -356,25 +356,21 @@ When NO chain_metadata is present (skill didn't emit one, or legacy invocation),
 
 When routing a request through L1/L2 skills, skill-router SHOULD detect domain signals and suggest relevant L4 packs the user may not know they have:
 
-| Domain Signal Detected | Suggest Pack | Announcement |
-|----------------------|-------------|--------------|
-| Frontend / UI work (React, Vue, Tailwind, design tokens) | `@Topia/ui` | "You have `@Topia/ui` with frontend patterns + design system. Use `/topia ui` to access." |
-| Backend / API work (Express, Fastify, REST, GraphQL) | `@Topia/backend` | "You have `@Topia/backend` with API, auth, and DB patterns. Use `/topia backend` to access." |
-| Mobile work (React Native, Flutter, native bridges) | `@Topia/mobile` | "You have `@Topia/mobile` with cross-platform mobile patterns. Use `/topia mobile` to access." |
-| DevOps / infra (Docker, CI/CD, IaC, monitoring) | `@Topia/devops` | "You have `@Topia/devops` with infra and deploy patterns. Use `/topia devops` to access." |
-| Security work (OWASP, secrets, compliance) | `@Topia/security` | "You have `@Topia/security` with security audit patterns. Use `/topia security` to access." |
-| Fintech (real-time data, charts, trading) | | "You have with fintech patterns. Use `/topia trading` to access." |
-| SaaS (multi-tenant, billing, subscriptions) | | "You have with multi-tenant patterns. Use `/topia saas` to access." |
-| E-commerce (Shopify, cart, payments, inventory) | `@Topia/ecommerce` | "You have `@Topia/ecommerce` with commerce patterns. Use `/topia ecommerce` to access." |
-| AI/ML (LLM, RAG, embeddings, fine-tuning) | `@Topia/ai-ml` | "You have `@Topia/ai-ml` with LLM patterns. Use `/topia ai-ml` to access." |
-| Game dev (Three.js, WebGL, game loops) | | "You have with game patterns. Use `/topia gamedev` to access." |
-| Content / CMS (blog, MDX, i18n, SEO) | `@Topia/content` | "You have `@Topia/content` with content patterns. Use `/topia content` to access." |
-| Analytics (tracking, A/B testing, funnels) | `@Topia/analytics` | "You have `@Topia/analytics` with analytics patterns. Use `/topia analytics` to access." |
-| Chrome extension (manifest v3, content scripts) | `@Topia/chrome-ext` | "You have `@Topia/chrome-ext` with extension patterns. Use `/topia chrome-ext` to access." |
-| Zalo platform (OA messaging, mini-app, ZNS) | | "You have with Zalo platform patterns. Use `/topia zalo` to access." |
+| Domain Signal Detected | Pack | Announcement |
+|----------------------|------|--------------|
+| Frontend / UI work (React, Vue, Tailwind, design tokens) | `@Topia/ui` | "`@Topia/ui` is enabled for this workspace — `build` loads frontend patterns automatically, or invoke a pack skill directly." |
+| Backend / API work (Express, Fastify, REST, GraphQL) | `@Topia/backend` | "`@Topia/backend` is enabled — `build` applies API/auth patterns when the stack matches." |
+| Mobile work (React Native, Flutter, native bridges) | `@Topia/mobile` | "`@Topia/mobile` is enabled — use during mobile tasks or explicit pack skills." |
+| DevOps / infra (Docker, CI/CD, IaC, monitoring) | `@Topia/devops` | "`@Topia/devops` is enabled — infra patterns apply during deploy/CI work." |
+| Security work (OWASP, secrets, compliance) | `@Topia/security` | "`@Topia/security` is enabled — security patterns supplement `build`/`audit`." |
+| E-commerce (Shopify, cart, payments, inventory) | `@Topia/ecommerce` | "`@Topia/ecommerce` is enabled for commerce-domain tasks." |
+| AI/ML (LLM, RAG, embeddings, fine-tuning) | `@Topia/ai-ml` | "`@Topia/ai-ml` is enabled for LLM/ML integration work." |
+| Content / CMS (blog, MDX, i18n, SEO) | `@Topia/content` | "`@Topia/content` is enabled for content and SEO workflows." |
+| Analytics (tracking, A/B testing, funnels) | `@Topia/analytics` | "`@Topia/analytics` is enabled for analytics and funnel work." |
+| Chrome extension (manifest v3, content scripts) | `@Topia/chrome-ext` | "`@Topia/chrome-ext` is enabled for MV3 extension work." |
 
 **Auto-suggest rules:**
-1. Only suggest if the pack's PACK.md **exists on disk** — `Glob` for the pack path first. If not installed, skip silently.
+1. Only suggest if the pack's PACK.md **exists on disk** — `Glob` for the pack path first. If missing, skip silently.
 2. Read `.topia/active-packs.json` if present — **do not** re-suggest packs already listed in `enabled` (onboard activated them).
 3. Suggest ONCE per session per pack — do not repeat after user has seen the suggestion.
 4. Format: brief inline note, not a blocking prompt. User can ignore and continue.

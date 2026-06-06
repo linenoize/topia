@@ -2,7 +2,7 @@
 name: idea
 description: "Idea Elicitation agent. Use when starting a new feature requiring requirements elicitation BEFORE plan or build. Asks probing questions, identifies hidden requirements, maps stakeholders, defines scope boundaries, and produces a structured Requirements Document that plan and build consume."
 metadata:
-  author: skill-topia
+  author: topia
   version: "1.0.0"
   layer: L2
   model: opus

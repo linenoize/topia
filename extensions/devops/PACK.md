@@ -2,10 +2,9 @@
 name: "@Topia/devops"
 description: DevOps patterns — Docker, CI/CD pipelines, monitoring setup, server configuration, SSL/domain management, edge/serverless deployment, and infrastructure-as-code.
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.3.0"
   layer: L4
-  price: "$12"
   target: DevOps engineers
   format: split
 ---

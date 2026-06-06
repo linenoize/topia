@@ -2,7 +2,7 @@
 name: docs-seeker
 description: "Find documentation for APIs, libraries, and error messages. Looks up official docs, changelog entries, and migration guides."
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.2.0"
   layer: L3
   model: haiku

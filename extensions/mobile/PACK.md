@@ -2,10 +2,9 @@
 name: "@Topia/mobile"
 description: Mobile development patterns — React Native, Flutter, deep linking, push notifications, OTA updates, app store preparation, native bridge integration, iOS build pipeline, and App Store Connect automation.
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.3.0"
   layer: L4
-  price: "$15"
   target: Mobile developers
   format: split
 ---

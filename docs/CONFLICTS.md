@@ -1,8 +1,8 @@
-# Skill-Topia Differentiators (vs Rune-kit)
+# Topia Differentiators (vs Rune-kit)
 
 > **Status: implemented in v2.0.0** (2026-05-19). See [CHANGELOG.md](CHANGELOG.md) and [docs/migration/v1-to-v2.md](docs/migration/v1-to-v2.md).
 
-This document recorded the gap between `skill-topia` and fork-parent `rune-kit`. The v2.0 release addressed the recommendations below.
+This document recorded the gap between `topia` and fork-parent `rune-kit`. The v2.0 release addressed the recommendations below.
 
 ## Resolution summary
 

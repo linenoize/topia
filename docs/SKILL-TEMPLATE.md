@@ -2,7 +2,7 @@
 name: skill-name
 description: One-line description of what this skill does and when to use it.
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.1.0"
   layer: L1|L2|L3
   model: haiku|sonnet|opus

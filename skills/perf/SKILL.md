@@ -2,7 +2,7 @@
 name: perf
 description: "Performance regression gate. Detects N+1 queries, sync-in-async, missing indexes, memory leaks, and bundle bloat before they reach production."
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.3.0"
   layer: L2
   model: sonnet

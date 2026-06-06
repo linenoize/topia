@@ -3,7 +3,7 @@ name: completion-gate
 description: "Validates agent claims against evidence trail. Use when verifying an agent has actually done what it claims — auto-fires at workflow end. Catches 'done' without proof, 'tests pass' without output, 'fixed' without verification. Called by build and team."
 user-invocable: false
 metadata:
-  author: skill-topia
+  author: topia
   version: "1.8.0"
   layer: L3
   model: haiku

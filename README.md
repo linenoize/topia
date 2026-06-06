@@ -4,7 +4,7 @@
 
 <p align="center">
   <strong>Topia — internal skill toolkit for AI coding assistants.</strong><br>
-  69 skills · 203 synapses · 44 pulses · 10 extension packs · optional persistent memory via agora-code MCP
+  70 skills · 203 synapses · 44 pulses · 10 extension packs · optional persistent memory via agora-code MCP
 </p>
 
 <p align="center">
@@ -26,114 +26,123 @@ One source of truth (`skills/`) compiles to six IDE rule formats — switch IDEs
 
 ---
 
-## Install
+## Install (Claude Code)
 
-### Claude Code (recommended — plugin marketplace)
+Full guide: [`docs/INSTALL.md`](docs/INSTALL.md). **Teams:** see [Team policy](#team-policy-orgmd) below.
 
-Install like any other Claude Code plugin — no clone required for the plugin itself:
+### Step 1 — Install the plugin (in chat, no terminal)
 
 ```text
 /plugin marketplace add linenoize/topia
 /plugin install topia@linenoize
 ```
 
-**Plugin id is lowercase `topia` as of v3.0.0.** If your client refuses with "Plugin topia not found in marketplace linenoize", run `/plugin marketplace update linenoize` first so the local catalog is refreshed.
+Restart Claude Code if `/topia:build` does not appear.
 
-#### Which install paths work
+| Marketplace path | Works? |
+|------------------|--------|
+| `linenoize/topia` (recommended) | ✓ |
+| Git URL to the repo | ✓ |
+| Direct URL to `marketplace.json` | ✓ (v3.1.2+) |
+| Local clone path | ✓ |
 
-| Path | Command | Works? |
-|------|---------|--------|
-| GitHub shorthand (recommended) | `/plugin marketplace add linenoize/topia` | ✓ |
-| Git URL | `/plugin marketplace add https://github.com/linenoize/topia` | ✓ |
-| Direct URL to `marketplace.json` | `/plugin marketplace add https://raw.githubusercontent.com/linenoize/topia/main/.claude-plugin/marketplace.json` | ✓ (v3.1.2+) |
-| Local clone | `/plugin marketplace add /path/to/clone` | ✓ |
+**Plugin id is lowercase `topia`.** If install fails, run `/plugin marketplace update linenoize` first.
 
-Before v3.1.2, the direct-URL path failed because our plugin used a relative-path source (`"./"`) that only resolves when the marketplace is git-cloned. v3.1.2 switched to an explicit GitHub source, so all four paths now work.
+**After Step 1 you have:** all `/topia:*` skills, plugin hooks (session-start, secrets-scan, quarantine, …), and file-based `.topia/` memory — but **not** machine-wide dispatch hooks, team `org.md` policy, or agora-code MCP until Step 2.
 
-After install, restart Claude Code (or `/reload-plugins`). On the first session you'll see a structured menu offering `/topia finalize` (system-wide discipline hooks + persistent memory), `/topia onboard` (set up this repo), and `/topia doctor` (verify install).
+### Step 2 — Finalize (in chat, recommended)
 
-Then wire global discipline hooks (one-time per machine). The npm package is **not** required for a private repo — use `node` against a clone or the Claude plugin cache (see [`docs/INSTALL-CLAUDE-CODE.md`](docs/INSTALL-CLAUDE-CODE.md)):
-
-```bash
-cd skill-topia && node compiler/bin/topia.js setup --global --preset gentle
+```text
+/topia finalize
 ```
 
-Restart Claude Code, then use `/topia build` or `/topia:build`. Full guide: [`docs/INSTALL-CLAUDE-CODE.md`](docs/INSTALL-CLAUDE-CODE.md). Team repos can merge [`docs/templates/team-claude-settings.json`](docs/templates/team-claude-settings.json) into `.claude/settings.json` to prompt the marketplace on folder trust.
+**Run this once per machine** (and again when you want to change hooks or org policy). It enables:
 
-Validate the catalog before release: `claude plugin validate .`
+| What finalize adds | Why it matters |
+|--------------------|----------------|
+| **Dispatch hooks** (`readiness`, `guardian`, `completion-gate`, `dependency-doctor`) | Auto-fire on edits and shell commands **in every repo**, even when the plugin is not loaded |
+| **Team org policy** (interview → `.topia/org/org.md`) | `guardian` and `readiness` enforce *your* review, security, and deploy rules — not the template |
+| **agora-code MCP** (optional) | Cross-session semantic memory |
+| **Project `.gitignore`** (optional) | Keeps `.topia/` session state out of git (except `org/`) |
 
-### Clone + one-shot installer (contributors / offline)
+**If you skip Step 2:** skills still work when you invoke them; discipline gates only run when you remember to call them or when plugin hooks fire in that session. Cross-repo consistency and team policy injection are the main gaps.
+
+Details: [`docs/INSTALL-CLAUDE-CODE.md`](docs/INSTALL-CLAUDE-CODE.md) · [`commands/finalize.md`](commands/finalize.md)
+
+### Per project (each repo you work in)
+
+Run in **that project's** Claude Code session:
+
+| Step | Command | What you get |
+|------|---------|--------------|
+| 1 | `/topia onboard` | `CLAUDE.md` + `.topia/` context so every session starts with codebase knowledge |
+| 2 | `/topia org-config` | Team policy in `.topia/org/org.md` (also offered during finalize) |
+| 3 | `/topia doctor` | Verify install and nexus health |
+
+**Teams:** commit `.topia/org/` to git so every teammate and agent shares the same gates. See [`docs/ORG-CONFIG.md`](docs/ORG-CONFIG.md).
+
+### Team policy (`org.md`)
+
+[`.topia/org/org.md`](.topia/org/org.md) is where your team defines roles, reviewers, security SLAs, deploy windows, and governance level. Topia compiles it into `guardian` and `readiness` hooks — so "we require two reviewers on security files" becomes an actual gate, not a wiki page.
+
+- **Set up in chat:** `/topia org-config` (structured interview) or during `/topia finalize`
+- **Edit later:** change `org.md`, then refresh hooks (`/topia finalize` or `topia setup --global`)
+
+### Other IDEs (Cursor, Codex, Windsurf, …)
+
+The Claude plugin does **not** compile Cursor/Codex rules. One-time terminal compile from your project root:
+
+```bash
+node "<path-to-topia>/compiler/bin/topia.js" init --platform cursor
+```
+
+→ [`docs/INSTALL-NON-CLAUDE.md`](docs/INSTALL-NON-CLAUDE.md) (secondary path; Claude install above is primary)
+
+### Contributors / terminal install
 
 ```bash
 git clone https://github.com/linenoize/topia.git
-cd skill-topia
-npm install
+cd topia && npm install
 node compiler/bin/topia.js install
 ```
 
-Optional stable location: `~/.claude/skills/skill-topia` (see [`docs/INSTALL-CLAUDE-CODE.md`](docs/INSTALL-CLAUDE-CODE.md)).
-
-`topia install` is a one-shot orchestrator. In order, it:
-
-1. **Pre-flights rune-kit conflicts.** If [rune-kit](https://github.com/Rune-kit/rune) is detected on your machine, the installer halts and asks: migrate `.rune/` state into `.topia/` and disable rune-kit, abort so you can remove rune-kit manually, or skip (with a warning that the two plugins will fight over skill names).
-2. **Registers the plugin** via the linenoize marketplace (`marketplace add` + `plugin install topia@linenoize`), falling back to `claude plugin add .` if needed.
-3. **Wires discipline hooks** globally: `readiness` (logic gates), `guardian` (secrets/OWASP), `completion-gate` (claims-vs-evidence), `quarantine` (untrusted-input advisory).
-4. **Installs the agora-code MCP** for persistent memory if Python 3.10+ is on your machine. Registers `agora-memory` in your project's `.mcp.json`. Skip with `--skip-agora`. (No Python? You get a one-line notice, install continues without persistent memory.)
-5. **Runs `topia doctor`** to verify the install.
-
-> **Restart Claude Code after install** so it picks up the newly-registered plugin. Until you restart, `/topia <skill>` commands won't be available.
-
-Then edit [`.topia/org/org.md`](.topia/org/org.md) to set team policies and approval flows — `guardian` and `readiness` read this. See [`docs/ORG-CONFIG.md`](docs/ORG-CONFIG.md) for what each section drives.
-
-Explore the skill graph:
+Optional stable location: `~/.claude/skills/topia`. `topia install` registers the plugin, wires hooks, installs agora-code MCP (if Python 3.10+), and runs doctor. Restart Claude Code after install.
 
 ```bash
-node compiler/bin/topia.js visualize   # writes .topia/nexus.html and opens in browser
+node compiler/bin/topia.js install --dry-run        # preview every step
+node compiler/bin/topia.js install --here           # hooks per-project instead of global
+node compiler/bin/topia.js install --preset strict  # blocking gates (default: gentle)
+node compiler/bin/topia.js install --skip-agora     # skip Python MCP
+node compiler/bin/topia.js install --yes            # non-interactive (CI-friendly)
 ```
 
-### Verify
+### Verify (terminal)
+
+From a Topia clone or plugin cache path:
 
 ```bash
 node compiler/bin/topia.js doctor
-# ✓ 69 skills, 203 synapses, 44 pulses — nexus is healthy
+# ✓ 70 skills, 203 synapses, 44 pulses — nexus is healthy
 ```
 
-### Non-Claude IDEs
-
-```bash
-node compiler/bin/topia.js init --platform cursor       # also: codex, antigravity, opencode, openclaw, generic
-```
-
-Compiles all 69 skills to the target IDE's rule format.
-
-### Install flags
-
-```bash
-node compiler/bin/topia.js install --dry-run        # preview every step, no writes
-node compiler/bin/topia.js install --here           # hooks per-project instead of global
-node compiler/bin/topia.js install --preset strict  # blocking gates (default: gentle / advisory)
-node compiler/bin/topia.js install --skip-agora     # don't install Python MCP
-node compiler/bin/topia.js install --yes            # non-interactive (CI-friendly; aborts on rune-kit)
-```
+Claude-only users can use `/topia doctor` in chat instead.
 
 ### About agora-code MCP
 
-Topia ships a vendored copy of [agora-code](https://github.com/thebnbrkr/agora-code) at [`mcp-servers/agora-code/`](mcp-servers/agora-code/). It provides SQLite-backed memory, symbol indexing, and semantic recall via the MCP protocol. Four Topia skills (`journal`, `build`, `idea`, `neural-memory`) detect it automatically and route recall / learning through it. Without it, those skills fall back to file-based `.topia/` persistence.
+Topia ships a vendored copy of [agora-code](https://github.com/thebnbrkr/agora-code) at [`mcp-servers/agora-code/`](mcp-servers/agora-code/). Four skills (`journal`, `build`, `idea`, `neural-memory`) detect it automatically. Without it, skills fall back to file-based `.topia/` persistence.
 
-Integration details: [`docs/mcp-integrations/agora-code.md`](docs/mcp-integrations/agora-code.md). Upstream README (vendored verbatim): [`mcp-servers/agora-code/README.md`](mcp-servers/agora-code/README.md).
-
-> **Do NOT** run `agora-code install-hooks --claude-code`. Topia's hooks are canonical — running both installers produces a fragile dual-owner hook chain. The `topia install` command above sets up agora-code as an **MCP server only**, never installs its hooks. See the integration doc for the full rationale.
+Integration: [`docs/mcp-integrations/agora-code.md`](docs/mcp-integrations/agora-code.md). **Do NOT** run `agora-code install-hooks --claude-code` — Topia's hooks are canonical.
 
 ### Coming from rune-kit?
 
-`topia install` handles this for you. If you'd rather migrate explicitly outside the installer:
+`topia install` handles migration. Manual path:
 
 ```bash
-node compiler/bin/topia.js migrate-from-rune --dry-run    # preview
-node compiler/bin/topia.js migrate-from-rune              # interactive
+node compiler/bin/topia.js migrate-from-rune --dry-run
+node compiler/bin/topia.js migrate-from-rune
 ```
 
-This copies `.rune/` state files (decisions, ADRs, conventions, learnings) into `.topia/` and renames `~/.claude/plugins/cache/rune-kit/` → `.disabled` so the two plugins stop fighting over skill names. Reversible: see [`docs/migration/from-rune.md`](docs/migration/from-rune.md).
+See [`docs/migration/from-rune.md`](docs/migration/from-rune.md).
 
 ---
 
@@ -328,7 +337,7 @@ Only the `org/` tree is intended for commit; all other `.topia/*` (including `ac
 
 ### L4 packs: shipped vs activated
 
-All `@Topia/*` packs ship with the plugin. **Onboard** writes `.topia/active-packs.json` locally so each workspace declares which packs to lean on — not a separate install step.
+All `@Topia/*` packs ship with the plugin. **Onboard**, **`topia install`**, and **`topia init`** (non-Claude) run stack detection and write `.topia/active-packs.json` so each workspace declares which packs to lean on — not a separate install step. Re-run anytime with `topia packs detect`.
 
 The `org/` tree holds stable team and policy configuration. `guardian` and `readiness` consume it at compile time and inject an `<ORG-POLICY>` block into their runtime hooks. See [`.topia/org/org.md`](.topia/org/org.md) for the template.
 
@@ -338,6 +347,9 @@ The `org/` tree holds stable team and policy configuration. `guardian` and `read
 
 | Doc | Contents |
 |---|---|
+| [`docs/INSTALL.md`](docs/INSTALL.md) | Install hub — Claude, Cursor, hybrid |
+| [`docs/INSTALL-CLAUDE-CODE.md`](docs/INSTALL-CLAUDE-CODE.md) | Claude Code plugin install |
+| [`docs/INSTALL-NON-CLAUDE.md`](docs/INSTALL-NON-CLAUDE.md) | Cursor, Codex, Windsurf, etc. |
 | [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md) | First 5 minutes |
 | [`docs/SKILLS.md`](docs/SKILLS.md) | Full skill catalog with invocation markers |
 | [`docs/SKILL-CATEGORIES.md`](docs/SKILL-CATEGORIES.md) | Skill taxonomy reference |

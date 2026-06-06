@@ -2,7 +2,7 @@
 name: journal
 description: "Persistent state tracking and Architecture Decision Records across sessions. Use when recording a decision, ADR, or progress that must survive session boundaries. Manages progress state, module health, dependency graphs, and ADRs for any workflow."
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.4.0"
   layer: L3
   model: haiku

@@ -4,7 +4,9 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const { execFileSync } = require('child_process');
 const { isCursorRuntime, writeHookResponse } = require('../lib/cursor-io.cjs');
+const { isAgoraMemoryRegistered, agoraCodeOnPath } = require('../lib/agora-detect.cjs');
 const { resolveTopiaDir, topiaDirForWrite } = require('../lib/topia-paths.cjs');
 
 const hookLines = [];
@@ -149,12 +151,12 @@ function detectFinalizeNudge() {
   // Structured first-run menu. Each line indicates state with [ ] / [x] so
   // the user sees what's left. Dismissible at any time.
   console.log('\n  ╭───────────────────────────────────────────────────────────╮');
-  console.log('  │  Topia is installed. Pick your next step:                 │');
+  console.log('  │  Topia Step 1 done. Complete install:                     │');
   console.log('  ╰───────────────────────────────────────────────────────────╯');
-  console.log(`    [${finalized ? 'x' : ' '}] /topia finalize  — system-wide discipline hooks +`);
-  console.log('                          agora-code persistent memory (one-time per machine)');
-  console.log(`    [${onboarded ? 'x' : ' '}] /topia onboard   — scan this repo, write CLAUDE.md +`);
-  console.log('                          .topia/ context so future sessions start hydrated');
+  console.log(`    [${finalized ? 'x' : ' '}] /topia finalize  — Step 2: dispatch hooks + team org.md`);
+  console.log('                          (recommended; without it, gates may not auto-fire everywhere)');
+  console.log(`    [${onboarded ? 'x' : ' '}] /topia onboard   — per-repo: CLAUDE.md + .topia/ context`);
+  console.log('    [ ] /topia org-config — per-repo/team: .topia/org/org.md (commit for teams)');
   console.log('    [ ] /topia doctor    — verify install health and surface any fixes');
   console.log('    [ ] /topia:faq       — list bundled docs + visualizer entry points');
   console.log('    [ ] /topia:tut       — replay this menu later with current status');
@@ -213,16 +215,10 @@ if (hasTopiaState) {
     try {
       const ap = JSON.parse(fs.readFileSync(activePacksPath, 'utf-8'));
       if (Array.isArray(ap.enabled) && ap.enabled.length > 0) {
-        console.log(`[topia: active L4 packs: ${ap.enabled.join(', ')}]`);
+        console.log(`[topia: active L4 packs: ${ap.enabled.join(', ')} — shipped with Topia, not a separate install]`);
       }
     } catch { /* non-critical */ }
   }
-
-    console.log('');
-  console.log('[topia: Memory checklist]');
-  console.log('  1. Invoke topia:recall (unified .topia/ + .remember/ + MCP)');
-  console.log('  2. If agora-memory MCP registered: recall_learnings before large reads');
-  console.log('  3. After decisions: topia:journal then neural-memory Capture');
 
 if (loaded.length > 0) {
     console.log(`\n[topia: injected project state from ${loaded.join(', ')}]`);
@@ -233,96 +229,30 @@ if (loaded.length > 0) {
   console.log('[topia: No .topia/ directory found. Run /topia onboard to set up project context.]');
 }
 
-// Tier detection hint — historical Pro/Business plugin paths; tiers no longer ship
-// and aren't auto-loaded like the Free plugin. If detected at sibling / env /
-// well-known path AND tier hooks aren't already wired in settings.json, nudge
-// user toward `Topia setup`. Self-suppressing — once wired, the check fails and
-// the hint stops firing.
-detectTierHint();
-
-function detectTierHint() {
-  const envVars = { pro: 'Topia_PRO_ROOT', business: 'Topia_BUSINESS_ROOT' };
-  const wellKnown = {
-    pro: [
-      'D:/Project/Topia/Pro',
-      path.join(os.homedir(), 'Topia-pro'),
-      path.join(os.homedir(), 'Project', 'Topia', 'Pro'),
-    ],
-    business: [
-      'D:/Project/Topia/Business',
-      path.join(os.homedir(), 'Topia-business'),
-      path.join(os.homedir(), 'Project', 'Topia', 'Business'),
-    ],
-  };
-
-  const detected = [];
-  for (const tier of ['pro', 'business']) {
-    let manifest = null;
-    let source = null;
-
-    const fromEnv = process.env[envVars[tier]];
-    if (fromEnv) {
-      const m = path.join(fromEnv, 'hooks', 'manifest.json');
-      if (fs.existsSync(m)) {
-        manifest = m;
-        source = `$${envVars[tier]}`;
-      }
+if (isAgoraMemoryRegistered(cwd) && agoraCodeOnPath()) {
+  try {
+    const agoraCtx = execFileSync('agora-code', ['inject', '--quiet'], {
+      cwd,
+      encoding: 'utf-8',
+      stdio: ['pipe', 'pipe', 'pipe'],
+    }).trim();
+    if (agoraCtx) {
+      console.log(`\n=== agora-code session context ===\n${agoraCtx}`);
     }
-    if (!manifest) {
-      const m = path.join(cwd, '..', tier === 'pro' ? 'Pro' : 'Business', 'hooks', 'manifest.json');
-      if (fs.existsSync(m)) {
-        manifest = m;
-        source = 'sibling';
-      }
-    }
-    if (!manifest) {
-      for (const root of wellKnown[tier]) {
-        const m = path.join(root, 'hooks', 'manifest.json');
-        if (fs.existsSync(m)) {
-          manifest = m;
-          source = 'well-known';
-          break;
-        }
-      }
-    }
-
-    if (manifest) {
-      detected.push({ tier, source, version: readManifestVersion(manifest) });
-    }
-  }
-
-  if (detected.length === 0) return;
-
-  // Suppress hint if any tier hook already wired (project-local OR global)
-  const tierEnvRe = /\$\{Topia_[A-Z][A-Z0-9_]*_ROOT\}/;
-  const settingsPaths = [path.join(cwd, '.claude', 'settings.json'), path.join(os.homedir(), '.claude', 'settings.json')];
-  for (const settingsPath of settingsPaths) {
-    if (!fs.existsSync(settingsPath)) continue;
-    try {
-      const content = fs.readFileSync(settingsPath, 'utf-8');
-      if (tierEnvRe.test(content)) return;
-    } catch {
-      // ignore unreadable settings.json — fall through to print hint
-    }
-  }
-
-  console.log('\n=== Topia Tier Hint ===');
-  for (const { tier, source, version } of detected) {
-    const cap = tier.charAt(0).toUpperCase() + tier.slice(1);
-    console.log(`${cap} detected: ${source} (v${version})`);
-  }
-  const tierFlag = detected.map((d) => d.tier).join(',');
-  console.log('Wire dispatch hooks: `node <topia>/compiler/bin/topia.js setup --global --preset gentle`');
-  console.log('(See docs/INSTALL-CLAUDE-CODE.md — do not use npx unless @linenoize/topia is on npm.)');
-  console.log('(adds tier-specific hooks: autopilot circuit-breaker, context-sense, statusline)');
+  } catch { /* non-critical */ }
 }
 
-function readManifestVersion(manifestPath) {
-  try {
-    return JSON.parse(fs.readFileSync(manifestPath, 'utf-8')).version || 'unknown';
-  } catch {
-    return 'unknown';
-  }
+const agoraOn = isAgoraMemoryRegistered(cwd);
+console.log('');
+console.log('[topia: Memory checklist]');
+if (agoraOn) {
+  console.log('  1. MUST invoke topia:recall before large reads or architecture work (first user turn if not done)');
+  console.log('  2. agora-memory is registered — recall merges .topia/ + MCP learnings');
+  console.log('  3. After decisions: topia:journal then neural-memory Capture');
+} else {
+  console.log('  1. Invoke topia:recall (unified .topia/ + .remember/ + MCP)');
+  console.log('  2. If agora-memory MCP registered: recall_learnings before large reads');
+  console.log('  3. After decisions: topia:journal then neural-memory Capture');
 }
 
 const sessionText = hookLines.join('\n').trim();

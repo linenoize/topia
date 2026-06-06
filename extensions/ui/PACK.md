@@ -2,10 +2,9 @@
 name: "@Topia/ui"
 description: Frontend UI patterns — React health scoring, Core Web Vitals auditing, design systems, color palettes, typography, component architecture, landing page sections, accessibility audits, animation patterns, and design decision mapping.
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.3.0"
   layer: L4
-  price: "$12"
   target: Frontend developers
   format: split
 ---

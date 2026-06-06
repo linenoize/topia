@@ -1,6 +1,6 @@
 # Topia Nexus Glossary
 
-Canonical terminology for Skill-Topia v2. Use these terms in docs, CLI output, and skills.
+Canonical terminology for Topia v2. Use these terms in docs, CLI output, and skills.
 
 ## Core graph
 

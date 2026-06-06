@@ -2,7 +2,7 @@
 name: watchdog
 description: "Post-deploy monitoring. Use when verifying a deployed app is healthy after deploy or launch — auto-fires from launch/deploy. Checks HTTP status, response times, error detection, and smoke test report."
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.2.0"
   layer: L3
   model: sonnet

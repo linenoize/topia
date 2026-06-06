@@ -3,7 +3,7 @@ name: worktree
 description: "Git worktree lifecycle management. Use when team needs parallel isolated workspaces for multi-stream development, or when an experiment must not touch the main working tree. Creates isolated workspaces, manages branches, handles cleanup. Called by team and build."
 user-invocable: false
 metadata:
-  author: skill-topia
+  author: topia
   version: "1.1.0"
   layer: L3
   model: haiku

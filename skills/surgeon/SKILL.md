@@ -2,7 +2,7 @@
 name: surgeon
 description: "Incremental refactorer. Use within a rescue workflow after safeguard has set up safety nets. Refactors ONE module per session using proven patterns — Strangler Fig, Branch by Abstraction, Expand-Migrate-Contract."
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.2.0"
   layer: L2
   model: sonnet

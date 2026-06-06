@@ -2,7 +2,7 @@
 name: sequential-thinking
 description: "Step-by-step complex reasoning for multi-variable problems. Breaks interconnected decisions into ordered logical steps with bias detection, reversibility classification, and second-order effect tracking."
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.3.0"
   layer: L3
   model: sonnet

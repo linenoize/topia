@@ -2,7 +2,7 @@
 name: scaffold
 description: "Autonomous project bootstrapper. Generates complete project from a description — structure, code, tests, docs, config. Orchestrates idea → plan → design → fix → test → docs → git in one pipeline. The \"0 to production-ready\" skill."
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.1.0"
   layer: L1
   model: sonnet

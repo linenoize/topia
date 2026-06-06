@@ -3,7 +3,7 @@ name: incident
 description: "Structured incident response. Use when user reports an outage, production error, or says 'incident', 'something is down', 'users are affected'. Triage severity, contain blast radius, root-cause, document timeline, generate postmortem."
 disable-model-invocation: true
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.2.0"
   layer: L2
   model: sonnet

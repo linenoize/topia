@@ -2,7 +2,7 @@
 name: integrate
 description: "Clone, port, or convert features from any GitHub repo into your project. Use when stealing patterns from external repos or porting proven code. Understand before copy, challenge before implement. 4 modes: port (rewrite), compare (analysis), copy (transplant), improve (copy + optimize)."
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.2.0"
   layer: L2
   model: sonnet

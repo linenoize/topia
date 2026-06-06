@@ -5,7 +5,7 @@ context: fork
 agent: general-purpose
 disable-model-invocation: true
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.3.0"
   layer: L1
   model: sonnet

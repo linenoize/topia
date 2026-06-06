@@ -2,7 +2,7 @@
 name: review-intake
 description: "Use when receiving external input that needs structured intake before action — PR review feedback, code review comments, OR issue tracker items (bug reports, feature requests). PR Review Mode (default) verifies suggestions before implementing. Issue Triage Mode classifies issues into a state machine (ready-for-agent / ready-for-human / needs-info / wontfix) and emits AGENT-BRIEFs for AFK execution. Prevents blind implementation, enforces verification-first discipline."
 metadata:
-  author: skill-topia
+  author: topia
   version: "1.3.0"
   layer: L2
   model: sonnet

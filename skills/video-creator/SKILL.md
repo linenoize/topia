@@ -2,7 +2,7 @@
 name: video-creator
 description: "Video content planning. Writes narration scripts, storyboards, shot lists, and asset checklists. Saves plan to marketing/video-plan.md."
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.2.0"
   layer: L3
   model: sonnet

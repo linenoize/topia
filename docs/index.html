@@ -40,7 +40,7 @@
       <canvas id="nexus-canvas"></canvas>
     </div>
     <div class="hero-content">
-      <p class="hero-badge">v3.2.2 &middot; 69 skills &middot; linenoize marketplace · agora-code memory</p>
+      <p class="hero-badge">v3.3.0 &middot; 69 skills &middot; linenoize marketplace · agora-code memory</p>
       <h1>AI coding agents are smart.<br><span class="accent">Topia makes them disciplined.</span></h1>
       <p class="hero-sub">A workflow toolkit for Claude Code, Cursor, Codex, and other AI coding IDEs. Plan before code. Tests before commits. Decisions persist across sessions. Hooks block bad work before it lands.</p>
       <div class="hero-actions">
@@ -437,26 +437,27 @@ Fri: <span class="text-profit">get_file_symbols("auth")</span>
   <section class="section" id="install">
     <div class="container">
       <h2>Install</h2>
-      <p class="section-sub">Two lines inside Claude Code. No terminal. No clone. Optional extras finalize from the chat.</p>
+      <p class="section-sub">Step 1: plugin in chat. Step 2: <code>/topia finalize</code> (recommended). Per repo: onboard + org-config for teams.</p>
       <div class="install-grid">
         <div class="install-card">
           <h3>Claude Code</h3>
-          <p class="install-badge">2-line install &middot; in-chat</p>
-          <pre class="code-block"><code># Paste into Claude Code — done.
+          <p class="install-badge">Step 1 + Step 2 &middot; in-chat</p>
+          <pre class="code-block"><code># Step 1 — plugin
 /plugin marketplace add linenoize/topia
-/plugin install topia@linenoize</code></pre>
-          <p>That's the whole install. All 69 skills, 66 subagents, 15 discipline hooks (secrets-scan, quarantine, metrics, auto-format, …), and <code>.topia/</code> memory are live the moment Claude reloads.</p>
-          <details style="margin-top:1rem;">
-            <summary style="cursor:pointer;color:var(--text-muted);font-size:0.9rem;">Optional: finalize extras (still no terminal)</summary>
-            <pre class="code-block" style="margin-top:0.75rem;"><code># Inside Claude — picks dispatch hooks, agora-code MCP,
-# project .gitignore. Idempotent. Writes .topia/.finalized.
-/topia finalize</code></pre>
-            <p style="font-size:0.85rem;color:var(--text-muted);">Adds system-wide <code>readiness</code> / <code>guardian</code> / <code>completion-gate</code> dispatch and (optionally) persistent memory. Skippable forever — the plugin works fully without it.</p>
-          </details>
+/plugin install topia@linenoize
+
+# Step 2 — finalize (recommended)
+/topia finalize
+
+# Per repo
+/topia onboard
+/topia org-config   # teams: commit .topia/org/</code></pre>
+          <p>Step 1 gives skills + plugin hooks. Step 2 adds dispatch hooks everywhere, team <code>org.md</code> policy, and optional agora-code. Without Step 2, gates may not auto-fire in every repo.</p>
+          <p style="font-size:0.85rem;color:var(--text-muted);"><a href="INSTALL.html">Install guide</a> &middot; <a href="ORG-CONFIG.html">Team org.md</a></p>
           <details style="margin-top:0.5rem;">
             <summary style="cursor:pointer;color:var(--text-muted);font-size:0.9rem;">Prefer the terminal? Clone install</summary>
             <pre class="code-block" style="margin-top:0.75rem;"><code>git clone https://github.com/linenoize/topia.git
-cd skill-topia &amp;&amp; npm install
+cd topia &amp;&amp; npm install
 node compiler/bin/topia.js install</code></pre>
           </details>
           <p style="margin-top:0.75rem;">Skills invoke as <code>/topia:build</code> or <code>/topia build</code>. Details: <a href="INSTALL-CLAUDE-CODE.html"><code>INSTALL-CLAUDE-CODE.md</code></a>.</p>
@@ -464,10 +465,11 @@ node compiler/bin/topia.js install</code></pre>
         <div class="install-card">
           <h3>Cursor / Codex / Antigravity</h3>
           <p class="install-badge">Compiled rules</p>
-          <pre class="code-block"><code>node compiler/bin/topia.js init --platform cursor
-node compiler/bin/topia.js init --platform codex
-node compiler/bin/topia.js init --platform antigravity</code></pre>
-          <p>Compiles all 69 skills into the target IDE's rule format. Same workflows, different rule files.</p>
+          <pre class="code-block"><code># From your project — use clone or plugin cache path
+node "/path/to/topia/compiler/bin/topia.js" init --platform cursor
+node "/path/to/topia/compiler/bin/topia.js" init --platform codex
+node "/path/to/topia/compiler/bin/topia.js" init --platform antigravity</code></pre>
+          <p>Compiles all 69 skills into the target IDE's rule format. See <a href="INSTALL-NON-CLAUDE.html"><code>INSTALL-NON-CLAUDE.md</code></a>.</p>
         </div>
         <div class="install-card">
           <h3>Persistent memory (optional)</h3>

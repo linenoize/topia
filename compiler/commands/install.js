@@ -12,12 +12,14 @@
  *   2. setup --global --preset gentle — wire discipline hooks globally
  *   3. agora-code MCP — detect Python 3.10+, pip install, register in .mcp.json
  *   4. project .gitignore — prompt once for Topia ignore rules
+ *   4b. L4 pack detection — write .topia/active-packs.json when project root detected
  *   5. doctor — verify nexus integrity
  *   6. Print "restart Claude Code" + edit `.topia/org/org.md` hints
  *
  * Flags:
  *   --yes              non-interactive (auto-accept defaults, skip rune-kit migration)
  *   --skip-agora       don't attempt to install the agora-code MCP
+ *   --skip-l4-detect   skip automatic L4 pack detection for this workspace
  *   --skip-rune-check  don't check for rune-kit (for CI)
  *   --here             install hooks per-project instead of --global
  *   --preset <name>    gentle | strict | off (default: gentle)
@@ -33,6 +35,11 @@ import { migrateFromRune, planMigration as planRuneMigration } from './migrate-f
 import { resolveTopiaRoot } from './hooks/resolve-topia-root.js';
 import { runSetup } from './setup.js';
 import { ensureTopiaGitignore } from '../lib/ensure-gitignore.js';
+import {
+  activateL4PacksForProject,
+  isProjectRepoRoot,
+} from '../../skills/onboard/scripts/detect-l4-packs.js';
+import { runMemorySeed } from './memory-seed.js';
 
 /** Claude Code marketplace id (`.claude-plugin/marketplace.json` → `name`). */
 const MARKETPLACE_ID = 'linenoize';
@@ -163,11 +170,11 @@ async function preflightRune({ cwd, autoYes, skipRuneCheck }) {
   return { proceeded: false, reason: 'unrecognised choice; re-run install' };
 }
 
-function hasMarketplaceCatalog(TopiaRoot) {
-  return existsSync(path.join(TopiaRoot, '.claude-plugin', 'marketplace.json'));
+function hasMarketplaceCatalog(topiaRoot) {
+  return existsSync(path.join(topiaRoot, '.claude-plugin', 'marketplace.json'));
 }
 
-function registerPlugin({ TopiaRoot, dryRun }) {
+function registerPlugin({ topiaRoot, dryRun }) {
   if (!which('claude')) {
     step('!', 'claude CLI not on PATH — skipping plugin registration.');
     step(' ', `Install Claude Code, then:  /plugin marketplace add linenoize/topia`);
@@ -175,22 +182,22 @@ function registerPlugin({ TopiaRoot, dryRun }) {
     return { ok: false, skipped: true };
   }
 
-  const useMarketplace = hasMarketplaceCatalog(TopiaRoot);
+  const useMarketplace = hasMarketplaceCatalog(topiaRoot);
   const installSpec = `${MARKETPLACE_PLUGIN}@${MARKETPLACE_ID}`;
 
   if (dryRun) {
     if (useMarketplace) {
-      step('·', `[dry-run] would: claude plugin marketplace add ${TopiaRoot}`);
+      step('·', `[dry-run] would: claude plugin marketplace add ${topiaRoot}`);
       step('·', `[dry-run] would: claude plugin install ${installSpec}`);
     } else {
-      step('·', `[dry-run] would: claude plugin add ${TopiaRoot}`);
+      step('·', `[dry-run] would: claude plugin add ${topiaRoot}`);
     }
     return { ok: true, dryRun: true };
   }
 
   if (useMarketplace) {
     try {
-      execFileSync('claude', ['plugin', 'marketplace', 'add', TopiaRoot], {
+      execFileSync('claude', ['plugin', 'marketplace', 'add', topiaRoot], {
         stdio: ['pipe', 'pipe', 'pipe'],
       });
       execFileSync('claude', ['plugin', 'install', installSpec], { stdio: ['pipe', 'pipe', 'pipe'] });
@@ -203,7 +210,7 @@ function registerPlugin({ TopiaRoot, dryRun }) {
   }
 
   try {
-    execFileSync('claude', ['plugin', 'add', TopiaRoot], { stdio: ['pipe', 'pipe', 'pipe'] });
+    execFileSync('claude', ['plugin', 'add', topiaRoot], { stdio: ['pipe', 'pipe', 'pipe'] });
     step('✓', 'Plugin registered with Claude Code (local path).');
     return { ok: true, via: 'plugin-add' };
   } catch (err) {
@@ -214,14 +221,14 @@ function registerPlugin({ TopiaRoot, dryRun }) {
   }
 }
 
-async function wireHooks({ projectRoot, TopiaRoot, args, dryRun, here, preset }) {
+async function wireHooks({ projectRoot, topiaRoot, args, dryRun, here, preset }) {
   if (dryRun) {
     step('·', `[dry-run] would: setup ${here ? '--here' : '--global'} --preset ${preset}`);
     return { ok: true, dryRun: true };
   }
   const result = await runSetup({
     projectRoot,
-    TopiaRoot,
+    topiaRoot,
     args: { ...args, global: !here, here, preset },
   });
   if (result.written) {
@@ -232,7 +239,7 @@ async function wireHooks({ projectRoot, TopiaRoot, args, dryRun, here, preset })
   return { ok: false, result };
 }
 
-function installAgoraCode({ TopiaRoot, projectRoot, dryRun }) {
+function installAgoraCode({ topiaRoot, projectRoot, dryRun }) {
   const py = detectPython();
   if (!py) {
     step('—', 'Python 3.10+ not detected — agora-code MCP not installed.');
@@ -244,7 +251,7 @@ function installAgoraCode({ TopiaRoot, projectRoot, dryRun }) {
     step('—', `pip not available alongside ${py.cmd} — agora-code MCP not installed.`);
     return { ok: false, reason: 'no-pip' };
   }
-  const agoraDir = path.join(TopiaRoot, 'mcp-servers', 'agora-code');
+  const agoraDir = path.join(topiaRoot, 'mcp-servers', 'agora-code');
   if (!existsSync(agoraDir)) {
     step('!', `agora-code source not found at ${agoraDir}`);
     return { ok: false, reason: 'no-source' };
@@ -292,13 +299,28 @@ function installAgoraCode({ TopiaRoot, projectRoot, dryRun }) {
   return { ok: true, mcpRegistered: true };
 }
 
-function runDoctorBriefly({ TopiaRoot, dryRun }) {
+function seedAgoraMemory({ projectRoot, dryRun, skipAgora }) {
+  if (skipAgora || dryRun) return { skipped: true };
+  const seed = runMemorySeed(projectRoot, { dryRun: false });
+  if (seed.skipped && seed.reason === 'no-seedable-files') {
+    step('—', 'No .topia/ state to seed into agora-memory yet.');
+  } else if (seed.skipped && seed.reason === 'already-seeded') {
+    step('—', 'agora-memory already seeded for current .topia/ content.');
+  } else if (seed.skipped && seed.reason === 'no-agora-cli') {
+    step('—', 'agora-code CLI not on PATH — skip memory seed.');
+  } else if (seed.ok && seed.count > 0) {
+    step('✓', `Seeded ${seed.count} learning(s) into agora-memory from .topia/.`);
+  }
+  return seed;
+}
+
+function runDoctorBriefly({ topiaRoot, dryRun }) {
   if (dryRun) {
     step('·', '[dry-run] would: topia doctor');
     return { ok: true, dryRun: true };
   }
   try {
-    const doctorPath = path.join(TopiaRoot, 'compiler', 'bin', 'topia.js');
+    const doctorPath = path.join(topiaRoot, 'compiler', 'bin', 'topia.js');
     execFileSync('node', [doctorPath, 'doctor'], { stdio: ['pipe', 'pipe', 'pipe'] });
     step('✓', 'topia doctor — nexus healthy.');
     return { ok: true };
@@ -308,7 +330,7 @@ function runDoctorBriefly({ TopiaRoot, dryRun }) {
   }
 }
 
-export async function runInstall({ TopiaRoot, projectRoot = process.cwd(), args = {} } = {}) {
+export async function runInstall({ topiaRoot, projectRoot = process.cwd(), args = {} } = {}) {
   const dryRun = Boolean(args['dry-run']);
   const autoYes = Boolean(args.yes);
   const skipAgora = Boolean(args['skip-agora']);
@@ -332,15 +354,19 @@ export async function runInstall({ TopiaRoot, projectRoot = process.cwd(), args 
   }
 
   header('Step 1 — Register plugin with Claude Code');
-  const plugin = registerPlugin({ TopiaRoot, dryRun });
+  const plugin = registerPlugin({ topiaRoot, dryRun });
 
   header('Step 2 — Wire discipline hooks');
-  const hooks = await wireHooks({ projectRoot, TopiaRoot, args, dryRun, here, preset });
+  const hooks = await wireHooks({ projectRoot, topiaRoot, args, dryRun, here, preset });
 
   let agora = { ok: false, skipped: true };
   if (!skipAgora) {
     header('Step 3 — agora-code MCP (optional persistent memory)');
-    agora = installAgoraCode({ TopiaRoot, projectRoot, dryRun });
+    agora = installAgoraCode({ topiaRoot, projectRoot, dryRun });
+    if (agora.ok && !dryRun) {
+      header('Step 3b — Seed agora-memory from .topia/');
+      seedAgoraMemory({ projectRoot, dryRun, skipAgora });
+    }
   } else {
     step('—', 'agora-code skipped (--skip-agora).');
   }
@@ -353,8 +379,26 @@ export async function runInstall({ TopiaRoot, projectRoot = process.cwd(), args 
     log: (icon, msg) => step(icon === 'ok' ? '✓' : icon === '.' ? '·' : icon === '-' ? '—' : '!', msg),
   });
 
+  const skipL4 = Boolean(args['skip-l4-detect']);
+  if (skipL4) {
+    header('Step 4b — L4 extension packs');
+    step('—', 'L4 detection skipped (--skip-l4-detect).');
+  } else if (isProjectRepoRoot(projectRoot)) {
+    header('Step 4b — L4 extension packs');
+    if (dryRun) {
+      step('·', '[dry-run] would: detect L4 packs from project stack');
+    } else {
+      const l4 = activateL4PacksForProject(projectRoot, { source: 'install' });
+      if (l4.detected.length > 0) {
+        step('✓', `Active L4 packs: ${l4.enabled.join(', ')}`);
+      } else {
+        step('—', 'No stack-specific L4 packs detected (all packs still ship with Topia).');
+      }
+    }
+  }
+
   header('Step 5 — Verify install');
-  const doctor = runDoctorBriefly({ TopiaRoot, dryRun });
+  const doctor = runDoctorBriefly({ topiaRoot, dryRun });
 
   // ─── Final summary ───
   console.log('');
@@ -369,7 +413,7 @@ export async function runInstall({ TopiaRoot, projectRoot = process.cwd(), args 
   console.log(`    Nexus health       : ${doctor.ok ? '✓' : '✗'}`);
 
   console.log('');
-  const resolvedRoot = resolveTopiaRoot(TopiaRoot);
+  const resolvedRoot = resolveTopiaRoot(topiaRoot);
   const setupCli = resolvedRoot
     ? `node ${JSON.stringify(path.join(resolvedRoot, 'compiler', 'bin', 'topia.js'))}`
     : 'node <path-to-topia>/compiler/bin/topia.js';

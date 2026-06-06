@@ -22,6 +22,6 @@ You are the **doc-processor** skill — Topia's document format utility.
 
 **Pure L3 utility** — receives content, produces formatted output. No business logic.
 
-**Called by:** docs (PDF/DOCX export), marketing (PDF reports, PPTX decks), Pro packs (business documents).
+**Called by:** docs (PDF/DOCX export), marketing (PDF reports, PPTX decks), extension packs (domain documents).
 
 Read `skills/doc-processor/SKILL.md` for the full specification including format options.

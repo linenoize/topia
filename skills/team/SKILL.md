@@ -4,7 +4,7 @@ description: "Multi-agent meta-orchestrator. Use when task spans 5+ files or 3+ 
 context: fork
 agent: general-purpose
 metadata:
-  author: skill-topia
+  author: topia
   version: "1.0.0"
   layer: L1
   model: opus

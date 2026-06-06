@@ -2,7 +2,7 @@
 name: marketing
 description: "Create marketing assets and execute launch strategy. Generates landing copy, social banners, SEO meta, blog posts, and video scripts."
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.6.0"
   layer: L2
   model: sonnet

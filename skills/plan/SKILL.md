@@ -2,7 +2,7 @@
 name: plan
 description: "Create structured implementation plans from requirements. Produces master plan + phase files for enterprise-scale project management. Master plan = overview (<80 lines). Phase files = execution detail (<150 lines each). Each session handles 1 phase. Uses opus for deep reasoning."
 metadata:
-  author: skill-topia
+  author: topia
   version: "1.6.0"
   layer: L2
   model: opus

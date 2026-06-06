@@ -3,7 +3,7 @@ name: constraint-check
 description: "Meta-validator for HARD-GATEs. Use when auditing whether a skill's mandatory constraints were actually followed during a workflow (not just claimed). Called by build, team, and audit for discipline compliance."
 user-invocable: false
 metadata:
-  author: skill-topia
+  author: topia
   version: "1.1.0"
   layer: L3
   model: haiku

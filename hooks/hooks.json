@@ -93,6 +93,16 @@
         ]
       },
       {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cjs\" agora-learn-commit",
+            "async": true
+          }
+        ]
+      },
+      {
         "matcher": "Skill",
         "hooks": [
           {

@@ -171,7 +171,7 @@ export default {
 ## Install
 
 \`\`\`
-clawhub install skill-topia
+clawhub install topia
 \`\`\`
 
 Or via npm:

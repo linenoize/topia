@@ -4,7 +4,7 @@ description: "Feature implementation orchestrator. ALWAYS use this skill for ANY
 context: fork
 agent: general-purpose
 metadata:
-  author: skill-topia
+  author: topia
   version: "2.5.0"
   layer: L1
   model: sonnet
@@ -39,7 +39,7 @@ Build supports predefined workflow chains for common task types. Use these as sh
 /topia build security   → Full pipeline + guardian@opus + sast (all phases, security-escalated)
 /topia build hotfix     → Production Hotfix Protocol: contain → fix → verify → deploy → watchdog → postmortem (see below)
 /topia build nano       → Trivial: do → verify → done (no phases, ≤3 steps)
-/topia build --template <name> → Load pre-built workflow template from installed Pro/Business packs
+/topia build --template <name> → Load a workflow template from extensions/*/templates/ when present
 ```
 
 ### Production Hotfix Protocol
@@ -67,23 +67,11 @@ HARD-GATES:
 
 **Minimal hotfix chain (non-incident, dev-time):** Phase 4 → 6 → 7 (fix → verify → commit). User provides context, skip recon.
 
-### Template Workflows (Pro/Business)
+### Template Workflows (optional)
 
-When `--template <name>` is provided, build loads a pre-built workflow template instead of auto-detecting:
+When `--template <name>` is provided, build loads a pre-built workflow template instead of auto-detecting — **only if** a matching file exists under `extensions/<pack>/templates/<name>.md` in the installed repo or project.
 
-```
-/topia build --template product-discovery   → Pro: stakeholder interviews → problem framing → competitive → spec → validation
-/topia build --template product-launch      → Pro: spec lock → implement → quality gates → staged rollout → announcement
-/topia build --template product-iteration   → Pro: metrics review → feedback synthesis → re-prioritize → implement → measure
-/topia build --template data-exploration    → Pro: data profiling → hypotheses → statistical testing → visualization → report
-/topia build --template data-pipeline       → Pro: schema design → ETL → quality gates → deploy → monitoring
-/topia build --template sales-outreach-campaign → Pro: prospect research → messaging → sequence → A/B test → launch
-/topia build --template sales-deal-review   → Pro: account deep-dive → risk assessment → competitive strategy → action plan
-/topia build --template support-incident-response → Pro: triage → diagnose → fix → verify → postmortem → KB update
-/topia build --template support-kb-refresh  → Pro: audit → gap analysis → draft → review → publish
-```
-
-**Template resolution**: Templates are `.md` files in `extensions/pro-*/templates/` or `extensions/business-*/templates/`. Each template defines: phases, skill connections, mesh signals, and acceptance criteria. The compiler includes templates in pack output during build.
+**Template resolution**: Each template defines phases, skill connections, signals, and acceptance criteria. The compiler appends discovered templates to pack output during `topia install`.
 
 **When --template is used**:
 1. Skip Phase 1.5 (auto-detection) — template pre-selects domain and pack
@@ -245,7 +233,12 @@ Skip if: bug fix with clear repro steps | user said "just do it" | fast mode + <
 
 <MUST-READ path="references/pack-detection.md" trigger="Phase 1.5 — before checking L4 pack mapping"/>
 
-After recon completes, check if the detected tech stack or task description matches any L4 extension pack. This phase is lightweight — a Read + pattern match. It does NOT replace Phase 1 (recon) or Phase 2 (plan). If 0 packs match: skip silently.
+After recon completes:
+
+1. If `.topia/active-packs.json` exists, `Read` it first (workspace-enabled packs from onboard/install).
+2. Match scout output and the task description against the pack-detection signal table; **union** with `enabled[]`, dedupe, **cap at 2 packs** (see pack-detection.md).
+
+This phase is lightweight — Read + pattern match. It does NOT replace Phase 1 (recon) or Phase 2 (plan). If 0 packs match after union: skip silently.
 
 ## Phase 1.7: WORKFLOW ORCHESTRATION (Multi-Skill Sequences)
 
@@ -928,4 +921,4 @@ All applicable phases complete + Self-Validation passed:
 
 ## Cost Profile
 
-~$0.05-0.15 per feature. Haiku for scanning (Phase 1), sonnet for coding (Phase 3-4), opus for complex planning (Phase 2 when needed).
+Haiku for scanning (Phase 1), sonnet for coding (Phases 3–4), opus for complex planning (Phase 2 when needed). Token use scales with scope and model defaults in your IDE.

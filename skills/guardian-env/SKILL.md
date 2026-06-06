@@ -2,7 +2,7 @@
 name: guardian-env
 description: "Environment-aware pre-flight check. Use when starting work in a new environment, switching machines, or when 'works on my machine' bugs surface. Validates OS, runtime versions, installed tools, port availability, env vars, and disk space BEFORE coding starts. Like sentinel but for the environment, not the code."
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.3.0"
   layer: L3
   model: haiku

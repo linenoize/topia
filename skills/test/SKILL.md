@@ -2,7 +2,7 @@
 name: test
 description: "TDD test writer. Writes failing tests FIRST (red), then verifies they pass after implementation (green). Covers unit, integration, and e2e tests."
 metadata:
-  author: skill-topia
+  author: topia
   version: "1.3.0"
   layer: L2
   model: sonnet

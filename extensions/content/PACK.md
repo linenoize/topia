@@ -2,10 +2,9 @@
 name: "@Topia/content"
 description: Content platform patterns — blog systems, CMS integration, MDX authoring, internationalization, SEO, video repurposing pipelines, and content scoring.
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.3.0"
   layer: L4
-  price: "$9"
   target: Content creators
   format: split
 ---

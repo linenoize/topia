@@ -2,7 +2,7 @@
 name: guardian
 description: "Automated security gatekeeper. Blocks unsafe code before commit — secret scanning, OWASP top 10, dependency audit, permission checks. A GATE, not a suggestion."
 metadata:
-  author: skill-topia
+  author: topia
   version: "1.0.0"
   layer: L2
   model: sonnet
@@ -254,7 +254,7 @@ The injected block has this shape:
 
 5. Aggregate violations into a single `### Organization Policy` section of the report, ordered by severity.
 
-If `.topia/org/org.md` does not exist (no `<ORG-POLICY>` block was injected), skip and log INFO: "no org config, organization policy check skipped".
+If `.topia/org/org.md` does not exist (no `<ORG-POLICY>` block was injected), skip and log INFO: "no org config, organization policy check skipped". Suggest `/topia:org-config` to configure team policy.
 
 ### Step 4.87 — Config Leak Threshold Detection
 

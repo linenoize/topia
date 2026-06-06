@@ -3,7 +3,7 @@
  *
  * Two public entry points:
  *
- *   runDoctor({ outputRoot, adapter, config, TopiaRoot }) → results
+ *   runDoctor({ outputRoot, adapter, config, topiaRoot }) → results
  *     Checks compiled platform output: config exists, output dir exists,
  *     skill files present, cross-references resolve, index file present,
  *     split-pack skill files exist, injection rules valid.
@@ -34,7 +34,7 @@
  * relevant skill (idea / journal / surgeon, etc.).
  */
 
-import { existsSync } from 'node:fs';
+import { existsSync, statSync } from 'node:fs';
 import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { extractSynapseSkillsFromSection } from './lib/synapse-tables.js';
@@ -50,10 +50,10 @@ import { parsePack, parseTemplate } from './parser.js';
  *  - Other adapters: verify outputDir exists, contains expected skill files,
  *    cross-refs resolve, index file present, split packs intact.
  *
- * @param {{outputRoot:string, adapter:object, config:object, TopiaRoot:string}} opts
+ * @param {{outputRoot:string, adapter:object, config:object, topiaRoot:string}} opts
  * @returns {Promise<{platform, checks, warnings, errors, healthy}>}
  */
-export async function runDoctor({ outputRoot, adapter, config, TopiaRoot }) {
+export async function runDoctor({ outputRoot, adapter, config, topiaRoot }) {
   const results = {
     platform: adapter.name,
     checks: [],
@@ -98,11 +98,20 @@ export async function runDoctor({ outputRoot, adapter, config, TopiaRoot }) {
   }
 
   // Check 3: Count skill files
-  const files = await readdir(outputDir);
-  const skillFiles = files.filter((f) => f.startsWith('Topia-') && f !== `Topia-index${adapter.fileExtension}`);
+  const dirEntries = await readdir(outputDir);
+  const indexFile = `Topia-index${adapter.fileExtension}`;
+  const skillFiles = dirEntries.filter((f) => {
+    if (!f.startsWith('Topia-') || f === indexFile) return false;
+    const fp = path.join(outputDir, f);
+    try {
+      return statSync(fp).isFile();
+    } catch {
+      return false;
+    }
+  });
 
   // Dynamic expected count: scan source skills/ directory
-  const sourceSkillsDir = path.join(TopiaRoot, 'skills');
+  const sourceSkillsDir = path.join(topiaRoot, 'skills');
   let sourceSkillCount = 0;
   if (existsSync(sourceSkillsDir)) {
     const entries = await readdir(sourceSkillsDir, { withFileTypes: true });
@@ -133,8 +142,7 @@ export async function runDoctor({ outputRoot, adapter, config, TopiaRoot }) {
   }
 
   // Check 5: Index file exists
-  const indexFile = `Topia-index${adapter.fileExtension}`;
-  if (files.includes(indexFile)) {
+  if (dirEntries.includes(indexFile)) {
     results.checks.push({ name: 'Index file', status: 'pass' });
   } else {
     results.checks.push({ name: 'Index file', status: 'warn', detail: 'Missing index file' });
@@ -148,7 +156,7 @@ export async function runDoctor({ outputRoot, adapter, config, TopiaRoot }) {
   }
 
   // Check 7: Split pack integrity (validate skill manifest files exist)
-  const extensionsDir = path.join(TopiaRoot, 'extensions');
+  const extensionsDir = path.join(topiaRoot, 'extensions');
   if (existsSync(extensionsDir)) {
     const splitPackErrors = await checkSplitPacks(extensionsDir);
     if (splitPackErrors.length === 0) {
@@ -164,7 +172,7 @@ export async function runDoctor({ outputRoot, adapter, config, TopiaRoot }) {
   }
 
   // Check 8: Reference injection rule validation
-  const injectionErrors = await checkInjectionRules(TopiaRoot, config);
+  const injectionErrors = await checkInjectionRules(topiaRoot, config);
   if (injectionErrors.length === 0) {
     results.checks.push({ name: 'Injection rules', status: 'pass' });
   } else {
@@ -212,6 +220,7 @@ async function checkCrossRefs(outputDir, files, adapter) {
 async function checkSplitPacks(extensionsDir) {
   const errors = [];
   const entries = await readdir(extensionsDir, { withFileTypes: true });
+  const PACK_PRICE_RE = /^\s*price:\s/m;
 
   for (const entry of entries) {
     if (!entry.isDirectory()) continue;
@@ -219,6 +228,9 @@ async function checkSplitPacks(extensionsDir) {
     if (!existsSync(packFile)) continue;
 
     const content = await readFile(packFile, 'utf-8');
+    if (PACK_PRICE_RE.test(content)) {
+      errors.push(`@Topia/${entry.name}: remove commercial metadata "price:" from PACK.md frontmatter`);
+    }
     const parsed = parsePack(content, packFile);
 
     if (!parsed.isSplit) continue;
@@ -291,7 +303,7 @@ async function checkInjectionRules(TopiaRoot, _config) {
 
 /**
  * Check that template signal references exist in the skill ecosystem.
- * Scans templates/ in Pro/Business extension dirs (relative to TopiaRoot parent).
+ * Scans templates under each extension pack directory when present.
  */
 async function _checkTemplateSignals(TopiaRoot, _config) {
   const errors = [];

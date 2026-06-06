@@ -9,9 +9,7 @@
  * Reporter, NOT a gate — exit 0 always. Operators legitimately edit settings.json
  * (custom user hooks alongside topia hooks). Auto-fix would be hostile.
  *
- * Scope: Free preset only. Tier-emitted entries (`${Topia_PRO_ROOT}` /
- * `${Topia_BUSINESS_ROOT}`) are filtered out — historical filter, kept
- * defensively though tiers no longer exist.
+ * Scope: Free preset only. Legacy `${TOPIA_*_ROOT}` hook entries are filtered out.
  *
  * Use case: diagnostic before users file "skill is broken" issues. Local drift
  * is a common cause of unexplained hook behavior — a check that points at the
@@ -103,8 +101,7 @@ export async function checkHookDrift(projectRoot) {
 
 /**
  * Pull Topia-managed Free-preset commands out of a matcher-group list.
- * Tier-emitted entries (`${Topia_*_ROOT}/...`) are excluded — those are tier-managed,
- * not Free-preset, and have their own check path.
+ * Legacy `${TOPIA_*_ROOT}/...` entries are excluded — not part of the Free preset.
  */
 function collectFreePresetCommands(matcherGroups) {
   const cmds = [];
@@ -113,7 +110,7 @@ function collectFreePresetCommands(matcherGroups) {
     if (!Array.isArray(group?.hooks)) continue;
     for (const entry of group.hooks) {
       if (!isTopiaManaged(entry)) continue;
-      if (TIER_ENV_RE.test(entry.command)) continue; // tier entry — not our concern here
+      if (TIER_ENV_RE.test(entry.command)) continue; // legacy env-root hook — not Free preset
       cmds.push(entry.command);
     }
   }

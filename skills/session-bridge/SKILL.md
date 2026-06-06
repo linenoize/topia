@@ -2,7 +2,7 @@
 name: session-bridge
 description: "Universal context persistence across sessions. Auto-saves decisions, conventions, and progress to .topia/ files. Loads state at session start. Use when any skill makes architectural decisions or establishes patterns that must survive session boundaries."
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.8.0"
   layer: L3
   model: haiku

@@ -2,7 +2,7 @@
 name: problem-solver
 description: "Structured reasoning frameworks for complex problems. 19 analytical frameworks, 12 cognitive bias detectors, 10 decomposition methods, 10 mental models, Cynefin domain classification, ethical dimension check, and 6 communication patterns. McKinsey-grade problem solving for AI coding assistants."
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.4.0"
   layer: L3
   model: sonnet

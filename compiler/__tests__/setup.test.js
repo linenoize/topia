@@ -26,7 +26,7 @@ describe('runSetup (non-interactive)', () => {
     await seedClaude(projectRoot);
     const result = await runSetup({
       projectRoot,
-      TopiaRoot: path.resolve(path.dirname(new URL(import.meta.url).pathname), '..', '..'),
+      topiaRoot: path.resolve(path.dirname(new URL(import.meta.url).pathname), '..', '..'),
       args: { here: true, preset: 'gentle' },
     });
     assert.strictEqual(result.scope, 'current');
@@ -39,7 +39,7 @@ describe('runSetup (non-interactive)', () => {
     await seedClaude(projectRoot);
     const result = await runSetup({
       projectRoot,
-      TopiaRoot: path.resolve(path.dirname(new URL(import.meta.url).pathname), '..', '..'),
+      topiaRoot: path.resolve(path.dirname(new URL(import.meta.url).pathname), '..', '..'),
       args: { here: true, preset: 'gentle', dry: true },
     });
     assert.strictEqual(result.written, false);

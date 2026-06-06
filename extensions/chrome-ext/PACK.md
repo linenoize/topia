@@ -2,10 +2,9 @@
 name: "@Topia/chrome-ext"
 description: Chrome extension development patterns — Manifest V3 scaffolding, service worker lifecycle, message passing, storage patterns, Chrome Web Store compliance, and built-in AI integration.
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.1.0"
   layer: L4
-  price: "free"
   target: Chrome extension developers
   format: split
 ---

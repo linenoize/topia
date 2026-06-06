@@ -2,7 +2,7 @@
 name: recon
 description: "Fast codebase scanner. Use when any skill needs codebase context. Finds files, patterns, dependencies, project structure. Pure read-only — never modifies files."
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.4.0"
   layer: L2
   model: haiku

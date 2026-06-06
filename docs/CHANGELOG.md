@@ -4,6 +4,39 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
+## [3.3.0] — 2026-06-06
+
+Install flow clarity, team org policy skill, and `topia memory seed` for agora-code users.
+
+### Added
+
+- **`topia:org-config`** (L2) + `/topia org-config` command — interview-driven setup for `.topia/org/org.md` (teams, roles, policies, approval flows, governance level). `guardian` and `readiness` inject `<ORG-POLICY>` from this file at compile time.
+- **`topia memory seed`** — imports `.topia/` decisions, ADRs, and conventions into agora-code SQLite (idempotent via `.topia/.agora-seed.json` content hash).
+- **`docs/INSTALL.md`** — unified install guide (Claude Code Step 1 plugin + Step 2 finalize + per-repo onboard/org-config).
+- **`docs/INSTALL-NON-CLAUDE.md`** — Cursor / Windsurf / Antigravity / Codex path via `topia init`.
+- **`hooks/agora-learn-commit`** + **`hooks/lib/agora-detect.cjs`** — post-commit learning hook for agora-code when installed.
+- **`compiler/__tests__/init-cli.test.js`**, **`compiler/__tests__/memory-seed.test.js`** — coverage for init and memory-seed flows.
+
+### Changed
+
+- **README install section** — two-step model: `/plugin install` then `/topia finalize`; per-repo onboard → org-config → doctor; team policy section for `org.md`.
+- **`commands/finalize.md`** — org-config interview as Step 2b; `--skip-org` flag.
+- **`compiler/bin/topia.js`** — `init` subcommand improvements; `memory seed` wired; install/help text updated.
+- **`compiler/commands/install.js`** — expanded orchestration and flags.
+- **`skills/onboard/scripts/detect-l4-packs.js`** — richer L4 pack auto-detection.
+- **Author identity** — `skill-topia` → `topia` across package.json, plugin.json, marketplace.json, LICENSE.
+- **Session-start menu** — lists `/topia org-config` alongside finalize / onboard / doctor / faq / tut.
+
+### Counts
+
+- Skills: 69 → **70** (added `org-config`).
+
+### Tests
+
+- 1119 pass, 0 fail, 3 skipped (1122 total).
+
+---
+
 ## [3.2.2] — 2026-05-26
 
 Fixes `agora-code memory-server` crashing on Windows + Python 3.13 — downstream user reported `OSError [WinError 6] "The handle is invalid"` followed by an `AttributeError` on `_empty_waiter`. Also adds tag-driven npm publishing via CI.
@@ -298,7 +331,7 @@ Already-installed hooks (`Topia-managed: true` marker in cursor/windsurf/antigra
 ### Changed
 - **`compiler/bin/topia.js`** — new `migrate-from-rune` subcommand wired with `--dry-run` / `--force` / `--skip` / `--yes` flags.
 - **Doctor: `Required sections` extended** — now requires `Purpose` and `Constraints` in addition to `Sharp Edges`, `Done When`, `Cost Profile`. Added `## Purpose` headings to `scout`, `test`, `verification` SKILL.md files where the intro paragraph existed without the heading.
-- **Repo URLs updated** — moved from `github.com/skill-topia/Topia` to `github.com/linenoize/topia`; npm package `@skill-topia/topia` → `@linenoize/topia`; landing page links + install instructions + hook-detection regexes updated across ~32 files. CLI command stays `topia`; author identity stays `skill-topia`.
+- **Repo URLs updated** — moved from `github.com/skill-topia/Topia` to `github.com/linenoize/topia`; npm package `@skill-topia/topia` → `@linenoize/topia`; landing page links + install instructions + hook-detection regexes updated across ~32 files. CLI command stays `topia`; author identity is `topia`.
 - **Docs trimmed** — deleted `docs/USER-GUIDE-CYCLE.md` and `docs/DEVELOPER-CYCLE.md` (163 lines of content redundant with `docs/index.html` "How it works" + "Scenarios" sections and `docs/GETTING_STARTED.md`).
 
 ---
@@ -345,4 +378,4 @@ Initial internal release of Topia — an interconnected skill ecosystem for AI c
 
 ### Internal-only
 - No marketplace distribution. Install by cloning the repo and pointing Claude Code at the directory.
-- Author: `skill-topia`. License: MIT.
+- Author: `topia`. License: MIT.

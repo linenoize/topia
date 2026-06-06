@@ -2,7 +2,7 @@
 name: doc-processor
 description: "Generate and parse office documents — PDF, DOCX, XLSX, PPTX, CSV. Use when creating reports, exporting tabular data, or processing uploaded office files. NOT for project documentation (use docs)."
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.2.0"
   layer: L3
   model: sonnet

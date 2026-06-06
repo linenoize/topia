@@ -6,8 +6,6 @@ import { collectGraphData, generateNexusHTML } from '../visualizer.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const Topia_ROOT = path.resolve(__dirname, '../..');
-const PRO_DIR = path.resolve(Topia_ROOT, '../../Pro/extensions');
-const BIZ_DIR = path.resolve(Topia_ROOT, '../../Business/extensions');
 
 // ─── collectGraphData ───
 
@@ -87,40 +85,8 @@ describe('collectGraphData', () => {
     assert.strictEqual(data.stats.signalCount, data.signals.length);
   });
 
-  test('includes Pro pack nodes when tier provided', async () => {
-    const data = await collectGraphData(Topia_ROOT, { pro: PRO_DIR });
-    const proNodes = data.nodes.filter((n) => n.tier === 'pro');
-    if (proNodes.length > 0) {
-      assert.ok(proNodes.length >= 4, `Expected >= 4 pro nodes`);
-      for (const n of proNodes) {
-        assert.strictEqual(n.layer, 'L4');
-        assert.ok(n.id.startsWith('pack:'));
-      }
-    }
-  });
-
-  test('includes Business pack nodes when tier provided', async () => {
-    const data = await collectGraphData(Topia_ROOT, { business: BIZ_DIR });
-    const bizNodes = data.nodes.filter((n) => n.tier === 'business');
-    if (bizNodes.length > 0) {
-      assert.ok(bizNodes.length >= 4);
-      for (const n of bizNodes) {
-        assert.strictEqual(n.layer, 'L4');
-      }
-    }
-  });
-
-  test('handles non-existent tier paths', async () => {
-    const data = await collectGraphData(Topia_ROOT, {
-      pro: '/nonexistent',
-      business: '/nonexistent',
-    });
-    const proNodes = data.nodes.filter((n) => n.tier === 'pro');
-    assert.strictEqual(proNodes.length, 0);
-  });
-
   test('no duplicate node IDs', async () => {
-    const data = await collectGraphData(Topia_ROOT, { pro: PRO_DIR, business: BIZ_DIR });
+    const data = await collectGraphData(Topia_ROOT);
     const ids = data.nodes.map((n) => n.id);
     const unique = new Set(ids);
     assert.strictEqual(ids.length, unique.size, 'Duplicate node IDs found');

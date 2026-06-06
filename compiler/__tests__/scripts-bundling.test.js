@@ -148,7 +148,7 @@ describe('buildAll with scripts', () => {
     try {
       const outputRoot = path.join(tmp, 'out');
       const adapter = getAdapter('cursor');
-      const stats = await buildAll({ TopiaRoot: tmp, outputRoot, adapter });
+      const stats = await buildAll({ topiaRoot: tmp, outputRoot, adapter });
 
       // Scripts copied
       assert.ok(stats.scriptsCopied >= 2, `expected 2+ scripts copied, got ${stats.scriptsCopied}`);
@@ -178,7 +178,7 @@ describe('buildAll with scripts', () => {
     try {
       const outputRoot = path.join(tmp, 'out');
       const adapter = getAdapter('codex');
-      const stats = await buildAll({ TopiaRoot: tmp, outputRoot, adapter });
+      const stats = await buildAll({ topiaRoot: tmp, outputRoot, adapter });
 
       assert.ok(stats.scriptsCopied >= 2);
 
@@ -201,7 +201,7 @@ describe('buildAll with scripts', () => {
     try {
       const outputRoot = path.join(tmp, 'out');
       const adapter = getAdapter('windsurf');
-      const stats = await buildAll({ TopiaRoot: tmp, outputRoot, adapter });
+      const stats = await buildAll({ topiaRoot: tmp, outputRoot, adapter });
 
       // Should still build both skills
       assert.strictEqual(stats.skillCount, 2);
@@ -218,7 +218,7 @@ describe('buildAll with scripts', () => {
     try {
       const outputRoot = path.join(tmp, 'out');
       const adapter = getAdapter('generic');
-      const stats = await buildAll({ TopiaRoot: tmp, outputRoot, adapter });
+      const stats = await buildAll({ topiaRoot: tmp, outputRoot, adapter });
 
       assert.strictEqual(typeof stats.scriptsCopied, 'number');
       assert.strictEqual(stats.scriptsCopied, 2);
@@ -232,7 +232,7 @@ describe('buildAll with scripts', () => {
     try {
       const outputRoot = path.join(tmp, 'out');
       const adapter = getAdapter('claude');
-      const stats = await buildAll({ TopiaRoot: tmp, outputRoot, adapter });
+      const stats = await buildAll({ topiaRoot: tmp, outputRoot, adapter });
 
       // Claude is passthrough — no build
       assert.strictEqual(stats.platform, 'claude');
@@ -247,7 +247,7 @@ describe('buildAll with scripts', () => {
     try {
       const outputRoot = path.join(tmp, 'out');
       const adapter = getAdapter('cursor');
-      await buildAll({ TopiaRoot: tmp, outputRoot, adapter });
+      await buildAll({ topiaRoot: tmp, outputRoot, adapter });
 
       const original = await readFile(path.join(tmp, 'skills', 'test-slide', 'scripts', 'build-deck.js'), 'utf-8');
       const copied = await readFile(
@@ -266,14 +266,14 @@ describe('buildAll with scripts', () => {
       // Cursor (flat)
       const cursorOut = path.join(tmp, 'out-cursor');
       const cursorAdapter = getAdapter('cursor');
-      await buildAll({ TopiaRoot: tmp, outputRoot: cursorOut, adapter: cursorAdapter });
+      await buildAll({ topiaRoot: tmp, outputRoot: cursorOut, adapter: cursorAdapter });
       const cursorMdc = await readFile(path.join(cursorOut, '.cursor/rules/Topia-test-slide.mdc'), 'utf-8');
       assert.ok(cursorMdc.includes('.cursor/rules/Topia-test-slide-scripts/'), 'cursor path');
 
       // Codex (directory)
       const codexOut = path.join(tmp, 'out-codex');
       const codexAdapter = getAdapter('codex');
-      await buildAll({ TopiaRoot: tmp, outputRoot: codexOut, adapter: codexAdapter });
+      await buildAll({ topiaRoot: tmp, outputRoot: codexOut, adapter: codexAdapter });
       const codexMd = await readFile(path.join(codexOut, '.codex/skills/Topia-test-slide/SKILL.md'), 'utf-8');
       assert.ok(codexMd.includes('.codex/skills/Topia-test-slide/scripts/'), 'codex path');
     } finally {

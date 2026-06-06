@@ -1,16 +1,34 @@
 # Topia CLI
 
-The Topia CLI compiles 66 AI coding skills into any IDE platform. One skill toolkit, every editor.
+The Topia CLI compiles 69 AI coding skills into any IDE platform. One skill toolkit, every editor.
+
+Install hub: [`docs/INSTALL.md`](../INSTALL.md) · Non-Claude guide: [`docs/INSTALL-NON-CLAUDE.md`](../INSTALL-NON-CLAUDE.md)
+
+---
+
+## Finding the CLI
+
+Terminal commands need the **absolute path** to `compiler/bin/topia.js`. It is not on your PATH unless you cloned Topia and ran `npm link`.
+
+| Source | How to run |
+|--------|------------|
+| Git clone | `node /path/to/topia/compiler/bin/topia.js <command>` |
+| Claude plugin cache | `node ~/.claude/plugins/cache/linenoize/topia/<version>/compiler/bin/topia.js <command>` |
+| Either | `node "<path>/compiler/bin/topia.js" where` — prints root + example |
+
+**Do not** run `node /path/to/topia/compiler/bin/topia.js` from your application repo — that relative path only exists inside the Topia repo.
+
+Claude Code users: `/topia:*` skills and `/topia finalize` work **without** the CLI. You only need these commands for Cursor/Codex compile, contributors, and CI.
 
 ---
 
 ## Quick Start
 
-**Step 1** -- Install and initialize in your project:
+**Step 1** -- Install and initialize in your project (use your Topia clone or cache path):
 
 ```bash
 cd your-project
-node compiler/bin/topia.js init
+node /path/to/topia/compiler/bin/topia.js init
 ```
 
 Topia auto-detects your platform (Cursor, Windsurf, Antigravity) and compiles skills into the correct format.
@@ -28,7 +46,7 @@ claude
 **Step 3** -- Verify the setup:
 
 ```bash
-node compiler/bin/topia.js doctor
+node /path/to/topia/compiler/bin/topia.js doctor
 ```
 
 That's it. 69 skills are now active in your AI assistant.
@@ -41,12 +59,12 @@ That's it. 69 skills are now active in your AI assistant.
 
 ## Commands
 
-### `Topia init`
+### `topia init`
 
 Interactive setup. Detects your platform, creates `topia.config.json`, and compiles all skills in one step.
 
 ```bash
-node compiler/bin/topia.js init
+node /path/to/topia/compiler/bin/topia.js init
 ```
 
 ```
@@ -63,20 +81,20 @@ node compiler/bin/topia.js init
 
 | Flag | Description | Example |
 |------|-------------|---------|
-| `--platform <name>` | Override auto-detection | `Topia init --platform windsurf` |
-| `--extensions <list>` | Enable specific extension packs | `Topia init --extensions @Topia/ui,@Topia/backend` |
-| `--disable <skills>` | Disable specific skills | `Topia init --disable video-creator,asset-creator` |
+| `--platform <name>` | Override auto-detection | `topia init --platform windsurf` |
+| `--extensions <list>` | Enable specific extension packs | `topia init --extensions @Topia/ui,@Topia/backend` |
+| `--disable <skills>` | Disable specific skills | `topia init --disable video-creator,asset-creator` |
 
 If Claude Code is detected (`.claude-plugin/` exists), init exits early with a message -- no compilation needed.
 
 ---
 
-### `Topia build`
+### `topia build`
 
 Recompile skills using existing config. Run after updating Topia or changing `topia.config.json`.
 
 ```bash
-node compiler/bin/topia.js build
+node /path/to/topia/compiler/bin/topia.js build
 ```
 
 ```
@@ -93,9 +111,9 @@ node compiler/bin/topia.js build
 
 | Flag | Description | Example |
 |------|-------------|---------|
-| `--platform <name>` | Override config platform | `Topia build --platform windsurf` |
-| `--output <dir>` | Override output directory | `Topia build --output ../other-project` |
-| `--disable <skills>` | Disable specific skills | `Topia build --disable trend-scout` |
+| `--platform <name>` | Override config platform | `topia build --platform windsurf` |
+| `--output <dir>` | Override output directory | `topia build --output ../other-project` |
+| `--disable <skills>` | Disable specific skills | `topia build --disable trend-scout` |
 
 > **Pro Tip**: Use `--output` to compile Topia into multiple projects from a single source.
 
@@ -106,7 +124,7 @@ node compiler/bin/topia.js build
 Validate compiled output. Checks that all skill files exist, cross-references resolve, and config is valid.
 
 ```bash
-node compiler/bin/topia.js doctor
+node /path/to/topia/compiler/bin/topia.js doctor
 ```
 
 Exits with code 0 if healthy, code 1 if issues found. Useful in CI pipelines.
@@ -124,7 +142,7 @@ Exits with code 0 if healthy, code 1 if issues found. Useful in CI pipelines.
 Show available commands and flags.
 
 ```bash
-node compiler/bin/topia.js help
+node /path/to/topia/compiler/bin/topia.js help
 ```
 
 ---
@@ -167,7 +185,7 @@ Skills load directly from `skills/*/SKILL.md`. The CLI detects `.claude-plugin/`
 Skills compile to `.cursor/rules/*.mdc` (Cursor's rule format).
 
 ```bash
-node compiler/bin/topia.js init --platform cursor
+node /path/to/topia/compiler/bin/topia.js init --platform cursor
 ```
 
 Output: `.cursor/rules/Topia-build.mdc`, `.cursor/rules/Topia-plan.mdc`, etc.
@@ -179,7 +197,7 @@ Each skill file gets a Cursor-compatible header with `alwaysApply: false` frontm
 Skills compile to `.windsurf/rules/*.md`.
 
 ```bash
-node compiler/bin/topia.js init --platform windsurf
+node /path/to/topia/compiler/bin/topia.js init --platform windsurf
 ```
 
 Output: `.windsurf/rules/Topia-build.md`, `.windsurf/rules/Topia-plan.md`, etc.
@@ -189,7 +207,7 @@ Output: `.windsurf/rules/Topia-build.md`, `.windsurf/rules/Topia-plan.md`, etc.
 Skills compile to `.agent/rules/*.md` (Google Antigravity format).
 
 ```bash
-node compiler/bin/topia.js init --platform antigravity
+node /path/to/topia/compiler/bin/topia.js init --platform antigravity
 ```
 
 Output: `.agent/rules/Topia-build.md`, `.agent/rules/Topia-plan.md`, etc.
@@ -199,7 +217,7 @@ Output: `.agent/rules/Topia-build.md`, `.agent/rules/Topia-plan.md`, etc.
 Fallback for any AI IDE that reads markdown rules from a directory.
 
 ```bash
-node compiler/bin/topia.js init --platform generic
+node /path/to/topia/compiler/bin/topia.js init --platform generic
 ```
 
 Output: `.ai/rules/Topia-build.md`, `.ai/rules/Topia-plan.md`, etc.
@@ -209,7 +227,7 @@ Output: `.ai/rules/Topia-build.md`, `.ai/rules/Topia-plan.md`, etc.
 Skills compile to an OpenClaw plugin structure with manifest, TypeScript entry point, and skill files.
 
 ```bash
-node compiler/bin/topia.js init --platform openclaw
+node /path/to/topia/compiler/bin/topia.js init --platform openclaw
 ```
 
 Output structure:
@@ -251,7 +269,7 @@ The generated `src/index.ts` registers a `before_agent_start` hook that injects 
 
 ## Auto-Detection
 
-When you run `Topia init` without `--platform`, Topia checks for these markers in order:
+When you run `topia init` without `--platform`, Topia checks for these markers in order:
 
 | Priority | Marker | Platform |
 |----------|--------|----------|
@@ -267,7 +285,7 @@ If no marker is found, Topia shows the available platforms and asks you to choos
 
 ## Configuration
 
-`Topia init` creates a `topia.config.json` in your project root:
+`topia init` creates a `topia.config.json` in your project root:
 
 ```json
 {
@@ -295,7 +313,7 @@ If no marker is found, Topia shows the available platforms and asks you to choos
 | `extensions.enabled` | string[] or null | Extension packs to include (`null` = all) |
 | `output.index` | boolean | Generate index file listing all compiled skills |
 
-Edit this file directly, then run `Topia build` to recompile.
+Edit this file directly, then run `topia build` to recompile.
 
 > **Pro Tip**: Commit `topia.config.json` to your repo so teammates get the same skill configuration.
 
@@ -325,13 +343,13 @@ Topia ships 14 free extension packs (L4 layer). Each adds domain-specific skills
 **Enable specific packs**:
 
 ```bash
-node compiler/bin/topia.js init --extensions @Topia/ui,@Topia/backend
+node /path/to/topia/compiler/bin/topia.js init --extensions @Topia/ui,@Topia/backend
 ```
 
 **Enable all packs** (default):
 
 ```bash
-node compiler/bin/topia.js init
+node /path/to/topia/compiler/bin/topia.js init
 # extensions.enabled = null means all packs are included
 ```
 
@@ -349,42 +367,42 @@ node compiler/bin/topia.js init
 
 ## Pro Tips
 
-**CI Integration** -- Add Topia build to your CI pipeline to keep skills in sync:
+**CI Integration** -- Add topia build to your CI pipeline to keep skills in sync:
 
 ```yaml
 # .github/workflows/topia.yml
 - name: Compile Topia skills
-  run: node compiler/bin/topia.js build
+  run: node /path/to/topia/compiler/bin/topia.js build
 - name: Validate output
-  run: node compiler/bin/topia.js doctor
+  run: node /path/to/topia/compiler/bin/topia.js doctor
 ```
 
 **Monorepo Setup** -- Compile to multiple packages from one Topia source:
 
 ```bash
-node compiler/bin/topia.js build --output packages/frontend --platform cursor
-node compiler/bin/topia.js build --output packages/backend --platform generic
+node /path/to/topia/compiler/bin/topia.js build --output packages/frontend --platform cursor
+node /path/to/topia/compiler/bin/topia.js build --output packages/backend --platform generic
 ```
 
 **Selective Skills** -- Disable skills you don't need to reduce noise:
 
 ```bash
-node compiler/bin/topia.js init --disable video-creator,asset-creator,trend-scout
+node /path/to/topia/compiler/bin/topia.js init --disable video-creator,asset-creator,trend-scout
 ```
 
 **Keep Updated** -- Pull latest skills and recompile:
 
 ```bash
 cd /path/to/topia && git pull
-cd /your/project && node compiler/bin/topia.js build
+cd /your/project && node /path/to/topia/compiler/bin/topia.js build
 ```
 
 ---
 
 ## Troubleshooting
 
-**"No platform configured"** when running `Topia build`:
-- Run `Topia init` first to create `topia.config.json`.
+**"No platform configured"** when running `topia build`:
+- Run `topia init` first to create `topia.config.json`.
 
 **"Unknown platform"** during init:
 - Check available platforms: `cursor`, `windsurf`, `antigravity`, `generic`.
@@ -400,7 +418,7 @@ cd /your/project && node compiler/bin/topia.js build
 - Check that your editor version supports the rules feature.
 
 **"No topia.config.json found"** when running `Topia doctor`:
-- Run `Topia init` to generate the config file.
+- Run `topia init` to generate the config file.
 
 **Build errors on specific skills**:
 - Check the error output for the skill name and issue.

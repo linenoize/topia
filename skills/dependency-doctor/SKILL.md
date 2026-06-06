@@ -2,7 +2,7 @@
 name: dependency-doctor
 description: "Dependency health management. Detects package manager, checks outdated packages and vulnerabilities, and produces a prioritized update plan."
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.2.0"
   layer: L3
   model: haiku

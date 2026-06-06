@@ -14,7 +14,7 @@ The Topia plugin uses semantic versioning (`MAJOR.MINOR.PATCH`):
 | **MINOR** (`1.N.0`) | New features, new connections, new sections added | Adding a new `## Done When` condition, new nexus synapse |
 | **MAJOR** (`N.0.0`) | Breaking change to skill interface or output contract | Renaming a skill, changing output format structure, removing a section |
 
-**Current version:** `3.2.2`
+**Current version:** `3.3.0`
 
 ---
 

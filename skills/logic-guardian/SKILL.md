@@ -2,7 +2,7 @@
 name: logic-guardian
 description: "Protects complex business logic from accidental deletion or overwrite. Use when editing payment, trading, state-machine, or other load-bearing business logic where a single deleted line can cause silent data corruption. Maintains a logic manifest, enforces pre-edit gates, validates post-edit diffs."
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.3.0"
   layer: L2
   model: sonnet

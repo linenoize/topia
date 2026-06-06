@@ -2,7 +2,7 @@
 name: recall
 description: "Unified cross-source memory recall: .remember/, .topia/, neural-memory, and agora-memory. Use at session start or before architecture decisions. Read-only orchestrator — writes stay on neural-memory Capture and session-bridge Save."
 metadata:
-  author: skill-topia
+  author: topia
   version: "1.0.0"
   layer: L3
   model: haiku
@@ -22,7 +22,8 @@ Use at session start, before architecture decisions, or when resuming work after
 
 - `/topia recall [topic]` — primary user trigger
 - `/topia:recall [topic]` — platform alias (Cursor/Windsurf colon syntax)
-- Auto-suggested at session start (see session-start hook checklist)
+- **Required** at session start when `agora-memory` MCP is registered (session-start hook — invoke before large reads or architecture work)
+- Auto-suggested at session start when agora is not registered (see session-start hook checklist)
 - Before `plan` architecture decisions when prior context may exist
 
 ## Calls (outbound)

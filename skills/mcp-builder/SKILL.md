@@ -2,7 +2,7 @@
 name: mcp-builder
 description: "Build Model Context Protocol servers from specifications. Use when creating an MCP server for a tool, resource, or service that AI agents should access. Generates tool definitions, resource handlers, and test suites in TypeScript or Python (FastMCP)."
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.5.0"
   layer: L2
   model: sonnet

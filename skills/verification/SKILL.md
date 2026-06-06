@@ -2,7 +2,7 @@
 name: verification
 description: "Universal verification runner. Runs lint, type-check, tests, and build. Use after any code change to verify nothing is broken."
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.5.0"
   layer: L3
   model: haiku

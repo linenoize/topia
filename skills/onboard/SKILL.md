@@ -2,7 +2,7 @@
 name: onboard
 description: "Auto-generate project context for AI sessions. Use when starting on a new repo for the first time, or when CLAUDE.md / .topia/ context is missing or stale. Scans codebase and creates the setup so every future session starts with full context."
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.4.0"
   layer: L2
   model: sonnet
@@ -237,18 +237,15 @@ If `.topia/DEVELOPER-GUIDE.md` already exists, skip and log **INFO**: "Skipped e
 
 Based on the detected tech stack from Step 2, **activate** (not merely suggest) matching L4 packs. Packs are already shipped with the Topia plugin — this step records project preferences for routing.
 
-| Detected Stack | Suggest Pack | Why |
-|----------------|-------------|-----|
+| Detected Stack | Pack | Why |
+|----------------|------|-----|
 | React, Next.js, Vue, Svelte, SvelteKit | `@Topia/ui` | Frontend component patterns, design system, accessibility audit |
 | Express, Fastify, FastAPI, Django, NestJS, Go HTTP | `@Topia/backend` | API patterns, auth flows, middleware, rate limiting |
 | Docker, GitHub Actions, Kubernetes, Terraform, CI/CD config | `@Topia/devops` | Container patterns, deployment pipelines, infrastructure as code |
 | React Native, Expo, Flutter, SwiftUI | `@Topia/mobile` | Mobile architecture, navigation patterns, offline sync |
 | Security-focused codebase (auth, payments, HIPAA/PCI markers) | `@Topia/security` | Threat modeling, OWASP flows, compliance patterns |
-| Trading, finance, pricing, portfolio, market data | | Market data validation, risk calculation, backtesting patterns |
-| Subscription billing, tenant isolation, feature flags | | Multi-tenancy, billing integration, feature flag patterns |
 | Cart, checkout, product catalog, inventory, payments | `@Topia/ecommerce` | Cart patterns, payment flows, inventory management |
 | ML models, training pipelines, embeddings, LLM integration | `@Topia/ai-ml` | Model evaluation, prompt patterns, inference optimization |
-| Game loop, physics, entity systems, multiplayer | | Game architecture, ECS patterns, netcode |
 | CMS, blog, newsletter, SEO, content workflows | `@Topia/content` | Content modeling, SEO patterns, editorial workflows |
 | Analytics, dashboards, metrics, data pipelines, BI | `@Topia/analytics` | Data modeling, visualization patterns, pipeline architecture |
 
@@ -263,7 +260,7 @@ If ≥1 packs match:
 node skills/onboard/scripts/detect-l4-packs.js --root <project-root> --framework "<framework>" --language "<language>" --signals "<extra signals>"
 ```
 2. Merge `claudeSection` from JSON output into `CLAUDE.md` under `## Topia — Active L4 packs`
-3. If `topia.config.json` exists, script updates `extensions.enabled` — tell user to run `topia build`
+3. If `topia.config.json` exists, script updates `extensions.enabled`. For Cursor/other IDEs: `topia init` already compiles detected packs; run `topia build` only after changing the enabled list manually.
 4. Report under `### Active L4 Packs` (not "Suggested") — list packs written to `.topia/active-packs.json`
 
 ### Step 6d — Context Budget Check (interactive)
@@ -288,6 +285,16 @@ node skills/onboard/scripts/context-budget.js --root <project-root> --apply <ids
 4. Report `### Context Budget` with metrics + `chosen` / `applied` from `.topia/context-budget.json`
 
 **Skip AskQuestion if**: `advisory: false` (MCP ≤80 and CLAUDE.md ≤150 lines).
+
+### Step 6d.1 — Seed agora-memory (when MCP registered)
+
+If `agora-memory` is in the project's MCP config and `agora-code` is on PATH:
+
+```bash
+node compiler/bin/topia.js memory seed
+```
+
+Imports decisions, ADRs, and learnings from `.topia/` into agora's SQLite store (idempotent). Skip silently if agora is not installed — file-based `.topia/` remains source of truth.
 
 ### Step 6e — AI-Driven Interview (Optional, User-Initiated)
 

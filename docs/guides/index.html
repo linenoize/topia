@@ -621,13 +621,13 @@
         <div class="tab-panel" id="install-cursor">
           <p>Cursor uses <code>.mdc</code> rule files. Topia compiles all 69 skills into Cursor's format.</p>
           <div class="code-wrapper">
-            <div class="code-block"><span class="comment"># In your project directory</span>
-<span class="cmd">npx --yes @linenoize/topia init <span class="flag">--platform cursor</span></span>
+            <div class="code-block"><span class="comment"># In your project directory — clone or plugin cache path</span>
+<span class="cmd">node "/path/to/topia/compiler/bin/topia.js" init <span class="flag">--platform cursor</span></span>
 
 <span class="output">  → Detected: cursor</span>
 <span class="output">  ✓ Created topia.config.json</span>
 <span class="output">  ✓ Built 69 skills + 10 extensions to .cursor/rules/</span></div>
-            <button class="copy-btn" data-copy="npx --yes @linenoize/topia init --platform cursor">Copy</button>
+            <button class="copy-btn" data-copy='node "/path/to/topia/compiler/bin/topia.js" init --platform cursor'>Copy</button>
           </div>
           <p>Skills are compiled into <code>.cursor/rules/</code>. Cursor picks them up automatically.</p>
         </div>
@@ -635,10 +635,10 @@
         <div class="tab-panel" id="install-antigravity">
           <p>Google Antigravity (formerly Jules) uses the <code>.agent/</code> directory.</p>
           <div class="code-wrapper">
-            <div class="code-block"><span class="cmd">npx --yes @linenoize/topia init <span class="flag">--platform antigravity</span></span>
+            <div class="code-block"><span class="cmd">node "/path/to/topia/compiler/bin/topia.js" init <span class="flag">--platform antigravity</span></span>
 
 <span class="output">  ✓ Built 69 skills + 10 extensions to .agent/rules/</span></div>
-            <button class="copy-btn" data-copy="npx --yes @linenoize/topia init --platform antigravity">Copy</button>
+            <button class="copy-btn" data-copy='node "/path/to/topia/compiler/bin/topia.js" init --platform antigravity'>Copy</button>
           </div>
           <div class="callout callout-info">
             <strong>Note:</strong> Antigravity is currently in early access. Install it from
@@ -650,11 +650,11 @@
         <div class="tab-panel" id="install-openclaw">
           <p>OpenClaw uses Topia as a unified toolkit package from <strong>ClawHub</strong>.</p>
           <div class="code-wrapper">
-            <div class="code-block"><span class="cmd">clawhub install skill-topia</span>
+            <div class="code-block"><span class="cmd">clawhub install topia</span>
 
 <span class="comment"># All 69 skills installed as one toolkit package</span>
 <span class="comment"># Works with any OpenClaw-compatible agent</span></div>
-            <button class="copy-btn" data-copy="clawhub install skill-topia">Copy</button>
+            <button class="copy-btn" data-copy="clawhub install topia">Copy</button>
           </div>
           <div class="callout callout-info">
             <strong>Note:</strong> Topia is published as a single unified package on ClawHub.
@@ -843,8 +843,8 @@
       </table>
 
       <div class="callout callout-tip">
-        <strong>Cost estimate:</strong> A typical <code>/topia build</code> feature costs ~$0.05-0.15 in API tokens.
-        Most of the work is done by Haiku and Sonnet.
+        <strong>Model routing:</strong> Topia routes each phase to the lightest model that fits — Haiku for scanning,
+        Sonnet for implementation, Opus only when deep reasoning is required.
       </div>
 
       <!-- ═══════════════════════════════════ -->
@@ -996,7 +996,7 @@
       </p>
 
       <div class="code-wrapper">
-        <div class="code-block"><span class="cmd">npx --yes @linenoize/topia init <span class="flag">--platform cursor</span></span>
+        <div class="code-block"><span class="cmd">node "/path/to/topia/compiler/bin/topia.js" init <span class="flag">--platform cursor</span></span>
 
 <span class="comment"># Skills appear in .cursor/rules/Topia/</span>
 <span class="comment"># Cursor auto-loads them for every conversation</span></div>
@@ -1005,7 +1005,7 @@
       <h2 id="ide-antigravity">Antigravity</h2>
 
       <div class="code-wrapper">
-        <div class="code-block"><span class="cmd">npx --yes @linenoize/topia init <span class="flag">--platform antigravity</span></span>
+        <div class="code-block"><span class="cmd">node "/path/to/topia/compiler/bin/topia.js" init <span class="flag">--platform antigravity</span></span>
 
 <span class="comment"># Skills appear in .agent/rules/Topia/</span></div>
       </div>
@@ -1018,7 +1018,7 @@
       </p>
 
       <div class="code-wrapper">
-        <div class="code-block"><span class="cmd">npx --yes @linenoize/topia init <span class="flag">--platform codex</span></span>
+        <div class="code-block"><span class="cmd">node "/path/to/topia/compiler/bin/topia.js" init <span class="flag">--platform codex</span></span>
 
 <span class="comment"># Output structure:</span>
 <span class="output">  .codex/skills/</span>
@@ -1050,10 +1050,10 @@
 
       <div class="code-wrapper">
         <div class="code-block"><span class="comment"># Build Topia skills for OpenCode</span>
-<span class="cmd">node compiler/bin/topia.js build <span class="flag">--platform opencode</span> <span class="flag">--output .</span></span>
+<span class="cmd">node "/path/to/topia/compiler/bin/topia.js" build <span class="flag">--platform opencode</span> <span class="flag">--output .</span></span>
 
 <span class="comment"># Or initialize with auto-detection</span>
-<span class="cmd">node compiler/bin/topia.js init</span>
+<span class="cmd">node "/path/to/topia/compiler/bin/topia.js" init</span>
 
 <span class="comment"># Output structure:</span>
 <span class="output">  .opencode/</span>
@@ -1084,10 +1084,10 @@
       </p>
 
       <div class="code-wrapper">
-        <div class="code-block"><span class="cmd">clawhub install skill-topia</span>
+        <div class="code-block"><span class="cmd">clawhub install topia</span>
 
 <span class="comment"># All 69 skills + 10 extension packs as one toolkit package</span>
-<span class="comment"># Slug: skill-topia on clawhub.ai</span></div>
+<span class="comment"># Slug: topia on clawhub.ai</span></div>
       </div>
 
       <div class="callout callout-warn">
@@ -1107,16 +1107,22 @@
       <h2 id="ext-using">Using Extension Packs</h2>
 
       <p>
-        Extension packs are domain-specific skill bundles. They're included with Topia and auto-detected
-        when your project matches their domain.
+        Extension packs are domain-specific skill bundles bundled with Topia. Claude Code loads them from the plugin;
+        Cursor and other IDEs compile a subset via <code>topia init</code> / <code>topia build</code>.
+        <code>topia packs detect</code> or <code>/topia onboard</code> writes <code>.topia/active-packs.json</code>
+        so <code>build</code> knows which domains to prefer.
       </p>
 
       <div class="code-wrapper">
-        <div class="code-block"><span class="comment"># Packs are auto-loaded by the toolkit. No configuration needed.</span>
-<span class="comment"># When build detects a SaaS project patterns activate automatically.</span>
+        <div class="code-block"><span class="comment"># Auto-detect packs from package.json / stack files</span>
+<span class="cmd">node "/path/to/topia/compiler/bin/topia.js" packs detect</span>
 
-<span class="comment"># To manually compile with specific packs only:</span>
-<span class="cmd">npx --yes @linenoize/topia build <span class="flag">--extensions trading,saas</span></span></div>
+<span class="comment"># Claude Code: packs ship with the plugin (no compile step)</span>
+<span class="comment"># Cursor: init detects packs; compiles all if none match</span>
+<span class="cmd">node "/path/to/topia/compiler/bin/topia.js" init --platform cursor</span>
+
+<span class="comment"># Manually compile with specific packs only:</span>
+<span class="cmd">node "/path/to/topia/compiler/bin/topia.js" build --extensions ui,backend</span></div>
       </div>
 
       <h2 id="ext-list">Available Packs</h2>
@@ -1182,7 +1188,7 @@
 
       <div class="code-wrapper">
         <div class="code-block"><span class="comment"># Via CLI flag</span>
-<span class="cmd">npx --yes @linenoize/topia build <span class="flag">--disable marketing,video-creator</span></span>
+<span class="cmd">node "/path/to/topia/compiler/bin/topia.js" build <span class="flag">--disable marketing,video-creator</span></span>
 
 <span class="comment"># Or in topia.config.json</span>
 "skills": { "disabled": ["marketing", "video-creator"] }</div>
@@ -1203,16 +1209,16 @@
 <span class="comment"># Restart Claude Code to pick up changes</span></div>
       </div>
 
-      <h3>"npx command not found" (Cursor / Codex / Antigravity)</h3>
-      <p>Make sure Node.js 18+ is installed. Or install globally:</p>
+      <h3>"CLI not found" (Cursor / Codex / Antigravity)</h3>
+      <p><code>node compiler/bin/topia.js</code> only works inside a Topia clone or plugin cache — not from your app repo. See <a href="INSTALL.html">INSTALL.md</a> (Finding the CLI) or run <code>node "&lt;path&gt;/compiler/bin/topia.js" where</code>.</p>
       <div class="code-wrapper">
-        <div class="code-block"><span class="cmd">npm install -g @linenoize/topia</span>
-<span class="cmd">Topia init <span class="flag">--platform cursor</span></span></div>
+        <div class="code-block"><span class="comment"># From your project directory</span>
+<span class="cmd">node "/path/to/topia/compiler/bin/topia.js" init <span class="flag">--platform cursor</span></span></div>
       </div>
 
       <h3>"Skills compiled but AI doesn't use them"</h3>
       <p>
-        Restart your IDE after running <code>Topia init</code> or <code>Topia build</code>.
+        Restart your IDE after running <code>topia init</code> or <code>topia build</code>.
         Some IDEs cache rules and need a restart to pick up new files.
       </p>
 
@@ -1221,8 +1227,8 @@
         <div class="code-block"><span class="comment"># Claude Code</span>
 <span class="cmd">claude plugin install linenoize/topia</span>  <span class="comment"># reinstall gets latest</span>
 
-<span class="comment"># Other platforms</span>
-<span class="cmd">npx --yes @linenoize/topia@latest build</span></div>
+<span class="comment"># Other platforms — from project root, using clone or cache path</span>
+<span class="cmd">node "/path/to/topia/compiler/bin/topia.js" build</span></div>
       </div>
 
       <!-- FAQ -->
@@ -1239,10 +1245,10 @@
         Your project-specific rules take precedence.
       </p>
 
-      <h3>How much does it cost in API tokens?</h3>
+      <h3>How are API models chosen?</h3>
       <p>
-        A typical <code>/topia build</code> feature: $0.05-0.15. Topia auto-routes to the cheapest model
-        (Haiku for scanning, Sonnet for code, Opus only for architecture decisions).
+        Topia auto-routes by phase: Haiku for scanning, Sonnet for code, Opus only for architecture and
+        other high-reasoning steps. Use a lighter default model in your IDE when you want lower token use.
       </p>
 
       <h3>Can I create my own skills?</h3>

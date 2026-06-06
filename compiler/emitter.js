@@ -1,7 +1,7 @@
 /**
  * emitter.js — IR → platform-specific files on disk.
  *
- * Public entry: `buildAll({ TopiaRoot, outputRoot, adapter, disabledSkills, enabledPacks })`.
+ * Public entry: `buildAll({ topiaRoot, outputRoot, adapter, disabledSkills, enabledPacks })`.
  * Side effects: writes to `<outputRoot>/<adapter.outputDir>/Topia-*.<ext>`,
  *               `<outputRoot>/CLAUDE.md` (when applicable), `<outputRoot>/AGENTS.md`.
  *
@@ -248,11 +248,11 @@ async function applyInjections(body, rules) {
  * Load org config from .topia/org/org.md if it exists.
  * Returns parsed org config or null if not present.
  *
- * @param {string} TopiaRoot - path to Topia source root
+ * @param {string} topiaRoot - path to Topia source root
  * @returns {Promise<object|null>} parsed org config
  */
-async function loadOrgConfig(TopiaRoot) {
-  const orgPath = path.join(TopiaRoot, '.topia', 'org', 'org.md');
+async function loadOrgConfig(topiaRoot) {
+  const orgPath = path.join(topiaRoot, '.topia', 'org', 'org.md');
   if (!existsSync(orgPath)) return null;
 
   try {
@@ -352,13 +352,13 @@ function outputFileName(skillName, adapter) {
  * Build all skills for a target platform
  *
  * @param {object} options
- * @param {string} options.TopiaRoot - root of the Topia repo
+ * @param {string} options.topiaRoot - root of the Topia repo
  * @param {string} options.outputRoot - where to write output (project root or dist/)
  * @param {object} options.adapter - platform adapter
  * @param {string[]} [options.disabledSkills] - skills to skip
  * @param {string[]} [options.enabledPacks] - extension packs to include (null = all)
  * @returns {Promise<object>} build result stats
- */ export async function buildAll({ TopiaRoot, outputRoot, adapter, disabledSkills = [], enabledPacks = null }) {
+ */ export async function buildAll({ topiaRoot, outputRoot, adapter, disabledSkills = [], enabledPacks = null }) {
   // Claude Code = passthrough, no build needed
   if (adapter.name === 'claude') {
     return {
@@ -370,8 +370,8 @@ function outputFileName(skillName, adapter) {
     };
   }
 
-  const skillsDir = path.join(TopiaRoot, 'skills');
-  const extensionsDir = path.join(TopiaRoot, 'extensions');
+  const skillsDir = path.join(topiaRoot, 'skills');
+  const extensionsDir = path.join(topiaRoot, 'extensions');
   const outputDir = path.join(outputRoot, adapter.outputDir);
 
   // Ensure output directory exists
@@ -400,7 +400,7 @@ function outputFileName(skillName, adapter) {
   const injectionRules = await loadInjectionRules(extensionsDir);
 
   // Load org config from .topia/org/org.md
-  const orgConfig = await loadOrgConfig(TopiaRoot);
+  const orgConfig = await loadOrgConfig(topiaRoot);
 
   // Build skills — collect parsed data for skill-index + openclaw reuse
   const parsedSkills = [];
@@ -612,14 +612,14 @@ function outputFileName(skillName, adapter) {
 
   // OpenClaw adapter: generate manifest + TypeScript entry point
   if (adapter.name === 'openclaw' && adapter.generateManifest && adapter.generateEntryPoint) {
-    const pluginJsonPath = path.join(TopiaRoot, '.claude-plugin', 'plugin.json');
+    const pluginJsonPath = path.join(topiaRoot, '.claude-plugin', 'plugin.json');
     let pluginJson = { version: '0.0.0' };
     if (existsSync(pluginJsonPath)) {
       pluginJson = JSON.parse(await readFile(pluginJsonPath, 'utf-8'));
     }
 
     // Read skill-router content for system prompt injection
-    const routerPath = path.join(TopiaRoot, 'skills', 'skill-router', 'SKILL.md');
+    const routerPath = path.join(topiaRoot, 'skills', 'skill-router', 'SKILL.md');
     let routerContent = '';
     if (existsSync(routerPath)) {
       routerContent = await readFile(routerPath, 'utf-8');

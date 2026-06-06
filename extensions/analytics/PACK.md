@@ -2,10 +2,9 @@
 name: "@Topia/analytics"
 description: Analytics patterns — tracking setup, A/B testing, funnel analysis, and dashboard design.
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.2.0"
   layer: L4
-  price: "$12"
   target: Growth engineers
   format: split
 ---

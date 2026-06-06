@@ -2,7 +2,7 @@
 name: autopsy
 description: "Full codebase health assessment. Use when diagnosing project health or starting a rescue workflow on legacy code. Analyzes complexity, dependencies, dead code, tech debt, and git hotspots. Produces a health score and rescue plan."
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.4.0"
   layer: L2
   model: opus
@@ -300,7 +300,7 @@ When invoked as `/topia autopsy --executive`, generate a board-ready HTML health
    - Critical modules in revenue path → "Revenue infrastructure at risk"
    - Low test coverage on auth → "Security compliance gap"
    - High churn in customer-facing code → "Customer experience degradation risk"
-5. **HTML Render**: Load `report-templates/autopsy-executive.html` from Business pack and populate all `{{placeholder}}` fields:
+5. **HTML Render**: If `report-templates/autopsy-executive.html` exists in the project, load it and populate all `{{placeholder}}` fields:
    - SVG health ring (score → stroke-dasharray calculation: `score / 100 * 440`)
    - Dimension bars (6 dimensions with color coding)
    - Module table (sorted by priority)
@@ -330,6 +330,6 @@ RESCUE-REPORT.md               — Detailed technical report (standard autopsy)
 
 ### Graceful Degradation
 
-- If no Business pack installed: skip executive mode, produce standard RESCUE-REPORT.md only
+- If no executive template at `report-templates/autopsy-executive.html`: skip executive mode, produce standard RESCUE-REPORT.md only
 - If `.topia/org/org.md` missing: skip team mapping, show modules without domain ownership
 - If org teams don't map to code modules: show "Unmapped" in cross-domain table

@@ -2,7 +2,7 @@
 name: skill-forge
 description: "Use when creating new Topia skills, editing existing skills, or verifying skill quality before deployment. Applies TDD discipline to skill authoring — test before write, verify before ship."
 metadata:
-  author: skill-topia
+  author: topia
   version: "1.8.0"
   layer: L2
   model: opus

@@ -11,9 +11,15 @@ Route to the appropriate Topia skill, CLI command, or extension pack based on th
 
 ---
 
-## Finalize install (run from inside Claude — no terminal required)
+## Install (Claude Code — in chat)
 
-- `/topia finalize` — **in-Claude one-shot finish-install.** Run after `/plugin install topia@linenoize` to enable the optional extras (system-wide dispatch hooks, agora-code MCP, project `.gitignore`) without leaving the chat. See [`commands/finalize.md`](finalize.md). Flags: `--strict`, `--skip-agora`, `--all`, `--reset`.
+- **Step 1:** `/plugin marketplace add linenoize/topia` then `/plugin install topia@linenoize`
+- **Step 2:** `/topia finalize` — dispatch hooks, team `org.md` (org-config), optional agora-code. See [`commands/finalize.md`](finalize.md). Flags: `--strict`, `--skip-agora`, `--skip-org`, `--all`, `--reset`, `--dismiss`.
+- **Per repo:** `/topia onboard` → `/topia org-config` → `/topia doctor`
+
+## Team policy
+
+- 👤 `/topia org-config` — interview-driven setup for `.topia/org/org.md` (roles, policies, governance). See [`commands/org-config.md`](org-config.md). Teams should commit `.topia/org/`.
 
 ## CLI commands (run from terminal)
 

@@ -2,7 +2,7 @@
 name: fix
 description: "Apply code changes and fixes. Writes implementation code, applies bug fixes, and verifies changes with tests. Core action hub in the Topia nexus."
 metadata:
-  author: skill-topia
+  author: topia
   version: "1.0.0"
   layer: L2
   model: sonnet

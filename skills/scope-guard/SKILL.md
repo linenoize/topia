@@ -3,7 +3,7 @@ name: scope-guard
 description: "Detects scope creep by quantifying drift percentage. Auto-triggered by L1 orchestrators when files exceed the original plan. Compares git changes against plan, classifies drift into 4 tiers: ON_TRACK, MINOR_DRIFT, SIGNIFICANT_DRIFT, OUT_OF_CONTROL."
 user-invocable: false
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.4.0"
   layer: L3
   model: haiku

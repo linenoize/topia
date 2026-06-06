@@ -1,12 +1,12 @@
 # Install Topia on Claude Code
 
-Two lines inside Claude Code. That's the whole install for 95% of users.
+**Step 1 + Step 2** in chat. No terminal required for the standard path.
+
+Hub: [`INSTALL.md`](INSTALL.md)
 
 ---
 
-## Install (in Claude Code — no terminal needed)
-
-Paste these into a Claude Code session:
+## Step 1 — Install the plugin
 
 ```text
 /plugin marketplace add linenoize/topia
@@ -15,215 +15,102 @@ Paste these into a Claude Code session:
 
 Restart Claude Code if `/topia:build` does not appear.
 
-**That is the complete install.** When the plugin loads you get:
+### What Step 1 gives you
 
-- All 69 skills (`/topia:build`, `/topia:plan`, …) and the `/topia` router command
-- All 66 subagents
-- All 15 discipline hooks — session-start, secrets-scan, quarantine, auto-format, typecheck, metrics-collector, pre-tool-guard, intent-router, context-watch, pre-compact, post-compact, post-session-reflect, token-meter, tool-collector, git-push-checkpoint
-- File-based memory in `.topia/`
+- All 69 skills (`/topia:build`, `/topia:plan`, …) and `/topia` router
+- 66 subagents
+- 15 **plugin** hooks (session-start, secrets-scan, quarantine, metrics, …)
+- File-based memory in `.topia/` after onboard
 
-Nothing else is required.
+### What Step 1 does **not** give you
+
+| Missing until Step 2 | Practical impact |
+|----------------------|------------------|
+| Dispatch hooks in `~/.claude/settings.json` | `readiness` / `guardian` may **not** run automatically in repos where the plugin isn't active |
+| Custom `.topia/org/org.md` | Security and review gates use **no org policy** or the generic template |
+| agora-code MCP | No cross-project semantic memory (file `.topia/` only) |
+
+You can invoke skills manually; you lose **automatic, cross-repo discipline** and **team-specific gates**.
 
 ---
 
-## Optional: `/topia finalize` (still no terminal)
-
-The plugin install covers the core experience. `/topia finalize` is a one-shot, in-chat command that opts you into the **extras**:
+## Step 2 — Finalize (run this next)
 
 ```text
 /topia finalize
 ```
 
-It will ask you which to enable:
+Treat this as **part of install**, not an optional extra. Skip only if you are doing a quick trial and accept the gaps above.
 
-| Extra | What it adds | Default |
-|-------|--------------|---------|
-| **System-wide dispatch hooks** | `readiness`, `guardian`, `completion-gate`, `dependency-doctor` fire even in repos without the plugin (writes to `~/.claude/settings.json`, gentle preset) | recommended |
-| **agora-code MCP** | Persistent cross-project memory (requires Python 3.10+). Skills gracefully degrade to file-based `.topia/` without it | optional |
-| **Project `.gitignore` rules** | Adds Topia-managed entries to `./.gitignore` for the current repo | optional |
+Finalize enables (you choose in the prompt):
 
-Reversible at any time. Idempotent — re-run as often as you like. Writes `.topia/.finalized` so the first-run nudge stops appearing.
+| Option | Default | What it does |
+|--------|---------|--------------|
+| System-wide dispatch hooks | **On (recommended)** | `readiness`, `guardian`, `completion-gate`, `dependency-doctor` globally, gentle preset |
+| Team org policy | **On for teams** | Runs `/topia org-config` → writes `.topia/org/org.md` |
+| agora-code MCP | Off unless you want it | Python 3.10+ persistent memory |
+| Project `.gitignore` | Off unless you want it | Topia ignore rules in current repo |
 
-Flags:
+Flags: `--strict`, `--skip-agora`, `--skip-org`, `--all`, `--reset`, `--dismiss`
 
-- `/topia finalize --strict` — strict preset instead of gentle
-- `/topia finalize --skip-agora` — skip the Python MCP step
-- `/topia finalize --all` — enable everything (still respects `--skip-agora`)
-- `/topia finalize --reset` — re-prompt next session
+Contract: [`commands/finalize.md`](../commands/finalize.md)
 
-See [`commands/finalize.md`](../commands/finalize.md) for the full behavior contract.
+After finalize, **restart Claude Code** so dispatch hooks load.
 
 ---
 
-## Skill names and commands
+## Per project (each repo)
+
+Do this **in every codebase** you work on:
+
+```text
+/topia onboard
+/topia org-config
+/topia doctor
+```
+
+| Command | When | Output |
+|---------|------|--------|
+| `/topia onboard` | First time in repo | `CLAUDE.md`, `.topia/conventions.md`, progress, etc. |
+| `/topia org-config` | Teams (or if skipped in finalize) | `.topia/org/org.md` — **commit this for teams** |
+| `/topia doctor` | After setup or when unsure | Health + nexus report |
+
+If `.rune/` exists: `/topia migrate-from-rune` first.
+
+---
+
+## Teams and `org.md`
+
+[`org.md`](../.topia/org/org.md) is the **committed contract** between your team and Topia's gates:
+
+- Who can override a block?
+- How many reviewers on a PR?
+- CVE and deploy SLAs?
+- Strict vs moderate governance?
+
+`/topia org-config` asks these questions and writes the file. Without it, `guardian` and `readiness` log "no org config" and skip organization enforcement.
+
+Read: [`ORG-CONFIG.md`](ORG-CONFIG.md)
+
+---
+
+## Claude Desktop
+
+Same `/plugin` commands when the marketplace is available. If plugins are unavailable, use Claude Code or [`INSTALL-NON-CLAUDE.md`](INSTALL-NON-CLAUDE.md).
+
+---
+
+## Skill names
 
 | Surface | Example |
 |---------|---------|
-| Plugin namespace (skills) | `/topia:build`, `/topia:plan` |
-| Router command | `/topia build`, `/topia doctor` |
-
-Both work when the plugin is enabled. The `topia` prefix comes from `.claude-plugin/plugin.json` → `"name": "topia"`. The `displayName: "Topia"` controls how the plugin appears in `/plugin` lists; the lowercase `name` field controls install ID, skill namespace, and on-disk cache path.
+| Skills | `/topia:build`, `/topia:org-config` |
+| Router | `/topia build`, `/topia finalize` |
 
 ---
 
-## After install (each application repo)
+## Advanced (terminal)
 
-| Step | Action |
-|------|--------|
-| Onboard | `/topia onboard` or `/topia:onboard` |
-| Rune migration | If `.rune/` exists: `/topia migrate-from-rune` (or run the CLI from a clone) |
-| Verify | `/topia doctor` (or `node <skill-topia>/compiler/bin/topia.js doctor` from a clone) |
+Plugin cache CLI, clone install, CI: see previous sections in this file under **CLI from plugin cache** and **CLI alternative (clone)** — unchanged from v3.2.x docs.
 
----
-
-## Advanced
-
-### CLI alternative (terminal)
-
-For contributors, air-gapped installs, or users who prefer a clone:
-
-```bash
-git clone https://github.com/linenoize/topia.git
-cd skill-topia && npm install
-node compiler/bin/topia.js install
-```
-
-This is the equivalent of `/plugin install topia@linenoize` + `/topia finalize` from the terminal.
-
-Stable clone location (optional convention):
-
-```bash
-mkdir -p ~/.claude/skills
-git clone https://github.com/linenoize/topia.git ~/.claude/skills/skill-topia
-cd ~/.claude/skills/skill-topia && npm install && node compiler/bin/topia.js install
-```
-
-**Windows path pitfall (Git Bash `mkdir -p`):** Never pass Windows absolute paths or `folder:C:\...` hybrids:
-
-| Bad | Stray folder created |
-|-----|----------------------|
-| `mkdir -p C:\CodeBase\tools\proj\screenshots` | `C?CodeBase?tools?...` or `CCodeBasetoolsprojscreenshots` |
-| `mkdir -p alembic:C:\CodeBase\tools\proj\alembic` | `alembic;C`, `app;C`, `tests;C` (empty) |
-
-Use relative dirs from the project root, `node -e "require('fs').mkdirSync('.topia',{recursive:true})"`, or `node path/to/skill-topia/scripts/ensure-dir.mjs .topia`. Scan for damage: `node path/to/skill-topia/scripts/scan-mangled-windows-dirs.js --root .`
-
-On Windows PowerShell, use the version folder name instead of the `*` glob (e.g. `2.0.5`), or run from a clone:
-
-```powershell
-cd path\to\skill-topia
-node compiler/bin/topia.js setup --global --preset gentle
-```
-
-**Do not use `npx @linenoize/topia`** unless the npm package is published to your registry — a private GitHub repo does not make npm work.
-
-### Scriptable / CI
-
-```bash
-claude plugin marketplace add linenoize/topia
-claude plugin install topia@linenoize
-node compiler/bin/topia.js install --yes --skip-agora     # finalize non-interactively
-```
-
-### Private GitHub repo
-
-Set `GITHUB_TOKEN` or `GH_TOKEN` with `repo` scope, then use the same `/plugin` commands. See [Claude plugin marketplaces — private repositories](https://code.claude.com/docs/en/plugin-marketplaces#private-repositories).
-
-### Team auto-install
-
-Merge [`docs/templates/team-claude-settings.json`](templates/team-claude-settings.json) into each repo's `.claude/settings.json` (or your org template). Teammates are prompted to add the linenoize marketplace when they trust the project folder.
-
-### Two hook layers (reference)
-
-1. **Plugin hooks** (`hooks/hooks.json`) — loaded automatically when the plugin is enabled. These are the 11 hooks listed above and need no extra install.
-2. **Dispatch hooks** (added by `/topia finalize` or `topia setup --global`) — writes `node …/compiler/bin/topia.js hook-dispatch` entries into `~/.claude/settings.json` so `readiness`/`guardian`/`completion-gate`/`dependency-doctor` apply system-wide.
-
-Plugin hooks alone cover the essentials. Dispatch hooks are the "extras" that `/topia finalize` enables.
-
----
-
-## Updates
-
-Claude Code only offers an update when the **published catalog version** is newer than your cached plugin. That version comes from `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json` (both must match `package.json` — use `node scripts/bump-version.js X.Y.Z` before you push a release).
-
-### Pull a new release (users)
-
-```text
-/plugin marketplace update protopia
-/plugin update topia@linenoize
-/reload-plugins
-```
-
-Restart Claude Code if skills or hooks still look stale after `/reload-plugins`.
-
-**Local clone instead of marketplace:** `git pull` in the skill-topia directory, then `/reload-plugins`.
-
-### After updating
-
-| What | Needed after update? |
-|------|----------------------|
-| Skills (`/topia:*`, `/topia …`) | No — picked up from the new plugin tree after reload/restart. |
-| Plugin hooks (session-start, secrets-scan, quarantine, …) | No — they use `${CLAUDE_PLUGIN_ROOT}` and follow the installed plugin automatically. |
-| Dispatch hooks (`readiness`, `guardian`, `completion-gate`, `dependency-doctor` from `topia setup --global`) | **Re-run setup once** — `~/.claude/settings.json` stores a fixed path to `topia.js` in the plugin cache; a new version folder may leave dispatch hooks pointing at the old copy. |
-
-**Re-wire dispatch hooks** (recommended after every plugin update if you use `setup --global`; always safe):
-
-```bash
-node ~/.claude/plugins/cache/linenoize/topia/*/compiler/bin/topia.js setup --global --preset gentle
-```
-
-If you upgraded from v2.x on a case-insensitive filesystem (Windows / default macOS), your cache directory may still be named `Topia/` (capital T) from the original install — case-insensitive lookup means both paths resolve to the same files, so the lowercase command above still works. On Linux or case-sensitive macOS, fresh v3.x installs always use lowercase.
-
-On Windows, replace `*` with the version folder (e.g. `3.1.2`), or run from your clone:
-
-```powershell
-cd path\to\skill-topia
-node compiler\bin\topia.js setup --global --preset gentle
-```
-
-**Optional checks:**
-
-```bash
-node <path-to-topia>/compiler/bin/topia.js doctor --hooks
-```
-
-**Per application repo** (only when release notes call for it — e.g. `.topia/` path normalization): `/topia onboard` or `node …/skills/onboard/scripts/onboard-invariants.js --root .` in that project. Routine skill updates do not require re-onboard.
-
-### Publish a release (maintainers)
-
-```bash
-node scripts/bump-version.js X.Y.Z    # package.json, plugin.json, marketplace.json, docs/index.html
-# Edit CHANGELOG.md and README "What's New" manually
-node scripts/version-sync-check.js
-claude plugin validate .
-git commit && git push
-```
-
-Users can then run the **Pull a new release** steps above.
-
----
-
-## Validate before publishing changes
-
-From the repo root:
-
-```bash
-claude plugin validate .
-```
-
----
-
-## Troubleshooting
-
-| Symptom | Fix |
-|---------|-----|
-| Plugin not in menu | `/plugin marketplace add linenoize/topia` then install; restart Claude |
-| `/topia` missing | `/reload-plugins` or restart |
-| Hooks not firing | Re-run `node …/topia.js setup --global`; `node …/topia.js doctor --hooks` |
-| `npm 404` on `@linenoize/topia` | Expected if unpublished — use `node …/topia.js` from clone or plugin cache, not `npx` |
-| Relative path install fails (v3.1.1 and earlier) | Upgrade to v3.1.2+ — the marketplace now uses an explicit GitHub source so direct-URL installs work. Or add the marketplace via **git** (`linenoize/topia`). |
-| Update: Plugin "topia" not found | Marketplace id must match `plugin.json` (case-sensitive) → use lowercase `topia@linenoize`. Run `/plugin marketplace update linenoize` then `/plugin update topia@linenoize`. |
-| Update: Plugin "Topia" not found (capital T) | You installed v2.x — upgrade path is `/plugin uninstall Topia@linenoize` then `/plugin install topia@linenoize`. As of v3.0.0 the plugin id is lowercase. |
-
-See [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md).
-
-For the differences between user / project / local install scopes and what fails in each, see [`INSTALL-SCOPES.md`](INSTALL-SCOPES.md).
+**Do not use** `npx @linenoize/topia` unless published to your npm registry.

@@ -2,7 +2,7 @@
 name: sast
 description: "Static analysis tool runner. Wraps ESLint, Semgrep, Bandit, Clippy, and language-specific analyzers with unified severity output. Use when deeper code analysis needed beyond pattern matching."
 metadata:
-  author: skill-topia
+  author: topia
   version: "1.0.0"
   layer: L3
   model: haiku

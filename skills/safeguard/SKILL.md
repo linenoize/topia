@@ -2,7 +2,7 @@
 name: safeguard
 description: "Build safety nets before refactoring. Use when running surgeon or any risky refactor that needs a rollback point. Creates characterization tests, boundary markers, config freezes, and rollback points."
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.2.0"
   layer: L2
   model: sonnet

@@ -2,7 +2,7 @@
 name: db
 description: "Database workflow specialist. Generates migration files with rollback scripts, detects breaking schema changes, and validates query parameterization."
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.2.0"
   layer: L2
   model: sonnet

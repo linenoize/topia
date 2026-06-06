@@ -2,10 +2,9 @@
 name: "@Topia/security"
 description: Deep security analysis — OWASP audit, penetration testing patterns, secret management, compliance checking, supply chain security, and API hardening.
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.3.0"
   layer: L4
-  price: "$15"
   target: Security engineers
   format: split
 tools:

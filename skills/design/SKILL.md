@@ -2,7 +2,7 @@
 name: design
 description: "Design system reasoning. Maps product domain to style, palette, typography, and platform-specific patterns. Generates .topia/design-system.md as the shared design contract for all UI-generating skills."
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.5.0"
   layer: L2
   model: sonnet

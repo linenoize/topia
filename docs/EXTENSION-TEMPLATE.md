@@ -2,14 +2,15 @@
 name: "@Topia/pack-name"
 description: One-line description of what this extension pack provides.
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.1.0"
   layer: L4
-  price: "$9|$12|$15"
   target: Target developer audience
 ---
 
 # @Topia/pack-name
+
+Extension packs are MIT-licensed and internal-only. Do not add commercial metadata (pricing, paid tiers, or marketplace SKUs) to `PACK.md` frontmatter.
 
 ## Purpose
 

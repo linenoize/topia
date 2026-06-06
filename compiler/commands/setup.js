@@ -21,10 +21,10 @@ import { ensureTopiaGitignore } from '../lib/ensure-gitignore.js';
 import { normalizeTopiaDir } from '../lib/topia-paths.js';
 
 /**
- * @param {{ projectRoot: string, TopiaRoot: string, args: object }} opts
+ * @param {{ projectRoot: string, topiaRoot: string, args: object }} opts
  * @returns {Promise<{ scope: string, preset: string, written: boolean, files: string[], notes: string[] }>}
  */
-export async function runSetup({ projectRoot, TopiaRoot, args = {} }) {
+export async function runSetup({ projectRoot, topiaRoot, args = {} }) {
   // Scope resolution
   let scope;
   if (args.global) scope = 'global';
@@ -46,7 +46,7 @@ export async function runSetup({ projectRoot, TopiaRoot, args = {} }) {
     preset,
     platform,
     dry: args.dry,
-    topiaRoot: TopiaRoot,
+    topiaRoot,
   });
 
   if (scope === 'current') {

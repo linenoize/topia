@@ -249,7 +249,7 @@ None
 name: skill-a
 description: "A test skill"
 metadata:
-  author: skill-topia
+  author: topia
   version: "1.0.0"
   layer: L2
   model: sonnet

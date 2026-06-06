@@ -2,7 +2,7 @@
 name: documentation
 description: "Leadership-ready package generator. Produces feature folders, requirements, user stories, and Jira-compliant CSV tickets. Use after /topia plan and before /topia build to get stakeholder approval."
 metadata:
-  author: skill-topia
+  author: topia
   version: "1.0.0"
   layer: L2
   model: sonnet

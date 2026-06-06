@@ -2,7 +2,7 @@
 name: readiness
 description: "Pre-commit quality gate that catches 'almost right' code. Use when about to commit — auto-fires before commit to validate logic correctness, error handling, regressions, and completeness. Goes beyond linting."
 metadata:
-  author: skill-topia
+  author: topia
   version: "1.1.0"
   layer: L2
   model: sonnet

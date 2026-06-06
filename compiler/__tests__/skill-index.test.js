@@ -25,7 +25,7 @@ describe('skill-index.json generation', () => {
     const tmp = path.join(tmpdir(), `Topia-idx-test-${Date.now()}`);
     try {
       const adapter = getAdapter('cursor');
-      await buildAll({ TopiaRoot: Topia_ROOT, outputRoot: tmp, adapter });
+      await buildAll({ topiaRoot: Topia_ROOT, outputRoot: tmp, adapter });
 
       const indexPath = path.join(tmp, adapter.outputDir, 'skill-index.json');
       assert.ok(existsSync(indexPath), 'skill-index.json not found in output');
@@ -49,7 +49,7 @@ describe('skill-index.json generation', () => {
     const tmp = path.join(tmpdir(), `Topia-idx-test-${Date.now()}`);
     try {
       const adapter = getAdapter('cursor');
-      await buildAll({ TopiaRoot: Topia_ROOT, outputRoot: tmp, adapter });
+      await buildAll({ topiaRoot: Topia_ROOT, outputRoot: tmp, adapter });
 
       const index = JSON.parse(await readFile(path.join(tmp, adapter.outputDir, 'skill-index.json'), 'utf-8'));
 
@@ -77,7 +77,7 @@ describe('skill-index.json generation', () => {
     const tmp = path.join(tmpdir(), `Topia-idx-test-${Date.now()}`);
     try {
       const adapter = getAdapter('cursor');
-      await buildAll({ TopiaRoot: Topia_ROOT, outputRoot: tmp, adapter });
+      await buildAll({ topiaRoot: Topia_ROOT, outputRoot: tmp, adapter });
 
       const index = JSON.parse(await readFile(path.join(tmp, adapter.outputDir, 'skill-index.json'), 'utf-8'));
 
@@ -98,7 +98,7 @@ describe('skill-index.json generation', () => {
     const tmp = path.join(tmpdir(), `Topia-idx-test-${Date.now()}`);
     try {
       const adapter = getAdapter('cursor');
-      await buildAll({ TopiaRoot: Topia_ROOT, outputRoot: tmp, adapter });
+      await buildAll({ topiaRoot: Topia_ROOT, outputRoot: tmp, adapter });
 
       const index = JSON.parse(await readFile(path.join(tmp, adapter.outputDir, 'skill-index.json'), 'utf-8'));
 
@@ -165,7 +165,7 @@ describe('skill-index.json generation', () => {
 
     try {
       const adapter = getAdapter('generic');
-      await buildAll({ TopiaRoot: tmp, outputRoot: tmp, adapter });
+      await buildAll({ topiaRoot: tmp, outputRoot: tmp, adapter });
 
       const index = JSON.parse(await readFile(path.join(tmp, adapter.outputDir, 'skill-index.json'), 'utf-8'));
 
@@ -205,7 +205,7 @@ describe('skill-index.json generation', () => {
 
     try {
       const adapter = getAdapter('generic');
-      await buildAll({ TopiaRoot: tmp, outputRoot: tmp, adapter });
+      await buildAll({ topiaRoot: tmp, outputRoot: tmp, adapter });
 
       const index = JSON.parse(await readFile(path.join(tmp, adapter.outputDir, 'skill-index.json'), 'utf-8'));
       assert.strictEqual(index.skillCount, 1);

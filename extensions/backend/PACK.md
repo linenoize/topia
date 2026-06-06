@@ -2,10 +2,9 @@
 name: "@Topia/backend"
 description: Backend patterns — API design, authentication, database patterns, middleware architecture, caching strategies, background job processing, CLI generation, and async processing pipelines.
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.3.0"
   layer: L4
-  price: "free"
   target: Backend developers
   format: split
 ---

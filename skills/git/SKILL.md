@@ -2,7 +2,7 @@
 name: git
 description: "Specialized git operations — semantic commits, PR descriptions, branch management, conflict resolution guidance. Replaces ad-hoc git commands with a dedicated, convention-aware utility."
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.3.0"
   layer: L3
   model: haiku

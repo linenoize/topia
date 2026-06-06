@@ -2,7 +2,7 @@
 name: retro
 description: "Engineering retrospective. Analyzes commit history, work patterns, and code quality metrics with trend tracking. Per-person breakdowns, shipping streaks, and actionable improvements. Use when asked for \"retro\", \"weekly review\", \"what did we ship\", or \"engineering retrospective\"."
 metadata:
-  author: skill-topia
+  author: topia
   version: "1.0.0"
   layer: L2
   model: sonnet

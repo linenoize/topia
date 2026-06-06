@@ -3,6 +3,18 @@
 This file defines the full signal-to-pack mapping used in Phase 1.5 (DOMAIN CONTEXT).
 When a signal in the codebase or task description matches a row below, load the corresponding pack.
 
+## Workspace-enabled packs (priority)
+
+Before the signal table:
+
+1. If `.topia/active-packs.json` exists, `Read` it and collect `enabled[]` (e.g. `@Topia/ui`).
+2. Run the **Signal → Pack Table** below against scout output + task description.
+3. **Union** workspace-enabled packs with signal-matched packs (dedupe by pack id).
+4. **Cap at 2 packs** for this build — prefer packs that match **both** workspace-enabled and signals first, then workspace-only if the task is clearly in that domain, then pure signal matches.
+5. If union is empty after cap logic: skip Phase 1.5 silently.
+
+Packs are **shipped with Topia** — `active-packs.json` records workspace preference from onboard/install, not a separate install step.
+
 ## Split Pack Protocol (context-efficient)
 
 - `Read` the matching PACK.md index (~60-80 lines) — contains triggers, skill table, connections, workflows

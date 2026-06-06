@@ -2,7 +2,7 @@
 name: review
 description: "Code quality review — patterns, security, performance, correctness. Finds bugs, suggests improvements, triggers fix for issues found. Escalates to opus for security-critical code."
 metadata:
-  author: skill-topia
+  author: topia
   version: "1.1.0"
   layer: L2
   model: sonnet

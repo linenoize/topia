@@ -2,7 +2,7 @@
 name: faq
 description: "Lists Topia's HTML entry points (docs, guides, skill index, nexus diagram, live visualizer) with one-shot open-in-browser commands. Use when the user asks 'where are the docs?', 'how do I see the skill graph?', or `/topia:faq`."
 metadata:
-  author: skill-topia
+  author: topia
   version: "1.0.0"
   layer: L3
   model: haiku

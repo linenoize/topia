@@ -6,8 +6,8 @@
  * This is the public linenoize/topia fork. Upstream is protopia/skill-topia
  * (private client). When pulling code from upstream, every URL, plugin slug,
  * marketplace id, and cache path must flip from protopia → linenoize before
- * we commit. The author identity token `skill-topia` is INTENTIONALLY
- * preserved (see package.json `author`, plugin.json `author.name`).
+ * we commit. After porting, run author rebrand if upstream still ships
+ * `author: skill-topia` — this fork uses `topia` (package.json, plugin.json).
  *
  * USAGE
  *   node scripts/port-rebrand.mjs            # apply replacements in place
@@ -32,7 +32,6 @@
  *   • Marketing:   "Protopia marketplace" → "linenoize marketplace"
  *
  * WHAT THIS DOES NOT TOUCH
- *   • `author: "skill-topia"` (string-equal token, never adjacent to a URL).
  *   • Historical CHANGELOG/ROADTODO entries that mention upstream by name in
  *     a non-URL/instruction context.
  *   • References to "Protopia" as a brand metaphor in design discussions
@@ -84,6 +83,10 @@ const REPLACEMENTS = [
   // Marketing/brand strings tied to the marketplace concept (NOT brand voice)
   ['Protopia marketplace', 'linenoize marketplace'],
   ['Protopia Claude Code marketplace', 'linenoize Claude Code marketplace'],
+
+  // Author identity (upstream may still ship skill-topia; this fork uses topia)
+  ['author: skill-topia', 'author: topia'],
+  ['"author": "skill-topia"', '"author": "topia"'],
 ];
 
 // Single-file pinpoint replacements. These are too specific for a tree-wide

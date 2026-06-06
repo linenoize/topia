@@ -2,7 +2,7 @@
 name: audit
 description: "Comprehensive project audit — security, dependencies, code quality, architecture, performance, infra, docs, and nexus analytics. Delegates to specialist skills and generates an 8-dimension health score."
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.4.0"
   layer: L2
   model: sonnet

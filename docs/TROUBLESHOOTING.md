@@ -4,6 +4,29 @@ Common issues and how to fix them.
 
 ---
 
+## 0. CLI Path Errors
+
+**Symptoms:**
+- `node compiler/bin/topia.js` → "Cannot find module" or "No such file"
+- `topia: command not found`
+- `Fatal: The "path" argument must be of type string. Received undefined` on `init` or `build`
+- Ran `--platform cursor` and nothing happened (or only help text)
+
+**Causes:**
+- `node compiler/bin/topia.js` is a **relative path inside the Topia repo or plugin cache**, not your application project.
+- The bare `topia` command is only on PATH after `npm link` or global install from a clone — the Claude plugin does not add it.
+- Passing `--platform` without the `init` subcommand shows help instead of compiling.
+- Older Topia builds had a `topiaRoot` / `TopiaRoot` casing bug in `init` / `build` (fixed in current source).
+
+**Fixes:**
+- **Find the CLI:** from a clone run `node compiler/bin/topia.js where`; from plugin cache see [`INSTALL.md`](INSTALL.md#finding-the-cli).
+- **Full init command:** `node "<path>/compiler/bin/topia.js" init --platform cursor` (not just `--platform cursor`).
+- **Claude-only users:** use `/topia doctor` and `/topia finalize` in chat — no terminal required for core skills.
+- **Cursor with plugin only:** plugin install does not compile Cursor rules — run `init --platform cursor` from your project.
+- **Upgrade Topia** if you hit the undefined `path` error on a recent install.
+
+---
+
 ## 1. Skill Not Found
 
 **Symptoms:**
@@ -11,9 +34,9 @@ Common issues and how to fix them.
 - Claude says "I don't have a skill named <name>"
 
 **Fixes:**
-- **Run `Topia doctor`**: Checks if skills are compiled correctly for your platform.
+- **Run `topia doctor`** (in chat: `/topia doctor`; terminal: see [§0 CLI Path Errors](#0-cli-path-errors)).
 - **Check `.claude/settings.json`**: Ensure the plugin path is correct in `installed_plugins`.
-- **Re-init**: Run `node compiler/bin/topia.js init` to re-generate platform rule files.
+- **Re-init (non-Claude):** `node "<path-to-topia>/compiler/bin/topia.js" init --platform cursor` from your project root.
 - **Pathing**: If using Cursor/Windsurf, ensure you are in the project root where `.cursor/rules` or `.windsurf/rules` live.
 
 ---

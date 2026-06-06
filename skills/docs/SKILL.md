@@ -2,7 +2,7 @@
 name: docs
 description: "Auto-generate and maintain project documentation. Creates README, API docs, architecture docs, changelogs, and keeps them in sync with code changes. The \"docs are never outdated\" skill."
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.3.0"
   layer: L2
   model: sonnet

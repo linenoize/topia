@@ -2,10 +2,9 @@
 name: "@Topia/ai-ml"
 description: AI/ML integration patterns — LLM integration, RAG pipelines, embeddings, fine-tuning workflows, stateful AI agents, code execution sandboxes, web extraction, and deep research loops.
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.4.0"
   layer: L4
-  price: "$15"
   target: AI engineers
   format: split
 ---

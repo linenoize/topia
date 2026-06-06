@@ -2,7 +2,7 @@
 name: slides
 description: "Generate Marp-compatible slide decks from structured JSON schema. Converts context into presentations for tech talks, sprint demos, and tutorials."
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.1.0"
   layer: L3
   model: sonnet

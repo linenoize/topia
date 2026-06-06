@@ -4,7 +4,7 @@ description: "Legacy refactoring orchestrator. Use when user says 'refactor', 'm
 context: fork
 agent: general-purpose
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.4.0"
   layer: L1
   model: sonnet

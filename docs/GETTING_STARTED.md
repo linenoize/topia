@@ -2,8 +2,10 @@
 
 > New to Topia? This guide takes you from zero to your first disciplined feature ship in under 5 minutes.
 
+**Install paths:** [`INSTALL.md`](INSTALL.md) — pick Claude (no terminal) or Cursor/Codex (one-time compile).
+
 **What you'll learn:**
-1. Install Topia in your project
+1. Install Topia for your IDE
 2. Run your first `/topia build` to ship a real feature
 3. Understand what just happened (and why it was different from "vanilla" AI coding)
 
@@ -11,7 +13,7 @@
 
 ## Prerequisites
 
-- **Node.js 18+** (check: `node --version`)
+- **Node.js 18+** (only if you use Cursor, Codex, or other non-Claude IDEs — check: `node --version`)
 - One of: **Claude Code**, **Cursor**, **Google Antigravity**, **OpenAI Codex**, **OpenCode**, or **OpenClaw**
 - A project directory — existing or empty
 
@@ -19,40 +21,68 @@
 
 ## Step 1: Install (30 seconds)
 
-**Claude Code (plugin marketplace):**
+### Claude Code (plugin — no terminal)
+
+**Step 1 — plugin:**
 
 ```text
 /plugin marketplace add linenoize/topia
 /plugin install topia@linenoize
-node compiler/bin/topia.js setup --global --preset gentle
 ```
 
-See [`INSTALL-CLAUDE-CODE.md`](INSTALL-CLAUDE-CODE.md). Restart Claude Code after install.
+**Step 2 — finalize (recommended):**
 
-**Cursor / Codex / other IDEs** — from your project root:
+```text
+/topia finalize
+```
+
+Without finalize, skills work but dispatch hooks and team `org.md` policy may not apply across repos. See [`INSTALL-CLAUDE-CODE.md`](INSTALL-CLAUDE-CODE.md).
+
+**Per repo:** `/topia onboard` → `/topia org-config` (teams) → `/topia doctor`
+
+### Cursor / Codex / other IDEs
+
+One-time compile from **your project root** (not inside the Topia repo):
 
 ```bash
-node compiler/bin/topia.js init
+node "<path-to-topia>/compiler/bin/topia.js" init --platform cursor
 ```
 
-This detects your AI assistant and writes the right config files:
+Find `<path-to-topia>` with a clone or `node "<path>/compiler/bin/topia.js" where`. Full guide: [`INSTALL-NON-CLAUDE.md`](INSTALL-NON-CLAUDE.md).
 
 | Assistant | What Topia writes |
 |-----------|------------------|
-| Claude Code | `.claude/` (plugin), skills invoke via `/topia <name>` |
+| Claude Code | Native plugin — `/topia <name>` in chat |
 | Cursor | `.cursor/rules/*.mdc` |
-| Antigravity | `.antigravity/workflows/*.md` |
+| Antigravity | `.agent/rules/*.md` |
 | Codex | `.codex/skills/` |
 | OpenCode | `.opencode/skills/` |
 | OpenClaw | `.openclaw/skills/` |
 
-Verify install:
+Verify:
 
-```bash
-node compiler/bin/topia.js doctor
-```
+- **Claude:** `/topia doctor` in chat
+- **Other IDEs:** `node "<path-to-topia>/compiler/bin/topia.js" doctor` from your project
 
-You should see: `✓ 69 skills, 10 packs, nexus valid`.
+You should see: nexus healthy, skills compiled (non-Claude).
+
+### L4 extension packs (shipped vs workspace-enabled)
+
+All 10 `@Topia/*` packs ship with Topia — they are not a separate install. What varies by project:
+
+| Mechanism | What it does |
+|-----------|----------------|
+| **Shipped** | Pack files live in the plugin (Claude) or compile output (Cursor via `init`) |
+| **Workspace** | `topia packs detect`, `topia install`, or `/topia onboard` writes `.topia/active-packs.json` |
+| **Runtime** | `build` Phase 1.5 loads matching `PACK.md` when signals or `active-packs.json` align |
+
+### agora-code memory (optional)
+
+If you enabled agora during `/topia finalize` or `topia install`:
+
+- `topia memory seed` imports existing `.topia/` decisions into agora's SQLite store
+- Session start runs `agora-code inject` via Topia's hook (not agora's hook installer)
+- Invoke `topia:recall` when agora-memory is registered — see [agora-code integration](mcp-integrations/agora-code.md)
 
 ---
 
@@ -99,10 +129,16 @@ Compare vanilla AI coding vs topia:
 
 ## Step 4: Turn On Auto-Discipline (optional but recommended)
 
-By default, Topia skills only run when you invoke them. To auto-fire quality gates on every tool use:
+### Claude Code
+
+Run `/topia finalize` in chat (recommended) — no terminal.
+
+### Cursor / other IDEs (terminal)
+
+From a Topia clone or plugin cache path:
 
 ```bash
-node compiler/bin/topia.js hooks install --preset gentle
+node "<path-to-topia>/compiler/bin/topia.js" hooks install --preset gentle --platform cursor
 ```
 
 Presets:
@@ -110,17 +146,21 @@ Presets:
 - `strict` — blocks commits that fail gates
 - `off`    → uninstall
 
-Now `readiness`, `guardian`, and `completion-gate` auto-fire on every file edit. No more "remember to invoke the skill."
+Now `readiness`, `guardian`, and `completion-gate` auto-fire on supported platforms. See [`HOOKS.md`](HOOKS.md) for parity by IDE.
 
 ---
 
 ## Step 5: Explore the Nexus
 
+Terminal (from Topia clone or cache):
+
 ```bash
-node compiler/bin/topia.js status       # project health dashboard (neofetch-style)
-node compiler/bin/topia.js visualize    # interactive nexus graph (Canvas 2D)
+node compiler/bin/topia.js status       # project health dashboard
+node compiler/bin/topia.js visualize    # interactive nexus graph
 node compiler/bin/topia.js doctor       # validate install + nexus integrity
 ```
+
+Claude users: `/topia doctor` and skill invocations cover daily use without these.
 
 Read next:
 - [`SKILLS.md`](SKILLS.md) — all 69 skills, categorized by intent
@@ -136,13 +176,13 @@ Read next:
 A: Both work. `/topia build add login` is explicit. "Add login to the app" works too — `skill-router` picks the right skill. Explicit is faster.
 
 **Q: What if I already have skills/prompts set up?**
-A: Topia writes to its own namespace (`.topia/`, `.claude/plugins/Topia/`, etc.). Your existing setup is untouched. Uninstall cleanly with `Topia hooks uninstall`.
+A: Topia writes to its own namespace (`.topia/`, plugin cache, `.cursor/rules/`, etc.). Your existing setup is untouched. Uninstall cleanly with `topia hooks uninstall`.
 
 **Q: Does Topia work offline?**
 A: Yes. All skills are local Markdown. Only `research`, `docs-seeker`, `trend-scout` need network.
 
 **Q: I hit a bug. Where do I report it?**
-A: Open an issue in the internal git repo. Include the SKILL.md path, the failing command, and the verbose output (`Topia doctor --hooks` is usually a good first attachment).
+A: Open an issue on GitHub. Include the SKILL.md path, the failing command, and verbose output (`topia doctor --hooks` is a good first attachment).
 
 ---
 

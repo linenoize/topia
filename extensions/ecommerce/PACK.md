@@ -2,10 +2,9 @@
 name: "@Topia/ecommerce"
 description: E-commerce patterns — Shopify development, payment integration, subscription billing, shopping cart, inventory management, order lifecycle, and tax compliance.
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.3.0"
   layer: L4
-  price: "$12"
   target: E-commerce developers
   format: split
 ---

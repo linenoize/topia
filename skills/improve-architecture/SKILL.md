@@ -2,7 +2,7 @@
 name: improve-architecture
 description: "Find architectural friction in a codebase and propose deepening opportunities. Use when user wants to improve architecture, find refactor candidates, consolidate shallow modules, or make a codebase more testable. Outputs scored proposals (depth/leverage/locality) that surgeon and review can consume."
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.1.0"
   layer: L2
   model: opus

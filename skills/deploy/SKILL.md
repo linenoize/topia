@@ -3,7 +3,7 @@ name: deploy
 description: "Deploy application to target platform. Use when user explicitly says 'deploy', 'push to production', 'ship it'. Handles Vercel, Netlify, AWS, GCP, DigitalOcean, and VPS with pre-deploy verification and health checks."
 disable-model-invocation: true
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.4.0"
   layer: L2
   model: sonnet

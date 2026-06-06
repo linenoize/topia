@@ -3,7 +3,7 @@ name: context-lifecycle
 description: "Automated context boundary orchestration. Runs at phase ends, pre/post-compact, and after git push. Chunks work across sessions via session-bridge, context-pack, and neural-memory without losing continuity."
 user-invocable: true
 metadata:
-  author: skill-topia
+  author: topia
   version: "1.0.0"
   layer: L3
   model: haiku

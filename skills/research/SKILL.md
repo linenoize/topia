@@ -2,7 +2,7 @@
 name: research
 description: "Web search and external knowledge lookup. Gathers data on technologies, libraries, best practices, and competitor solutions."
 metadata:
-  author: skill-topia
+  author: topia
   version: "0.4.0"
   layer: L3
   model: haiku
