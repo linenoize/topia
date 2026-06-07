@@ -6,9 +6,11 @@ All notable changes to Topia will be documented in this file.
 
 ## [3.3.0] — 2026-06-06
 
-Install flow clarity, team org policy skill, and `topia memory seed` for agora-code users.
+Install flow clarity, team org policy skill, `topia memory seed` for agora-code users, and fork sync tooling for `protopia/skill-topia`.
 
 ### Added
+
+- **Fork sync tooling** — [`docs/FORK-SYNC.md`](FORK-SYNC.md), [`scripts/sync-to-skill-topia.mjs`](../scripts/sync-to-skill-topia.mjs), [`scripts/port-to-protopia.mjs`](../scripts/port-to-protopia.mjs), [`scripts/fork-drift-check.mjs`](../scripts/fork-drift-check.mjs), shared [`scripts/lib/rebrand-pairs.js`](../scripts/lib/rebrand-pairs.js). Normal release direction: merge topia → skill-topia, then rebrand protopia identifiers.
 
 - **`topia:org-config`** (L2) + `/topia org-config` command — interview-driven setup for `.topia/org/org.md` (teams, roles, policies, approval flows, governance level). `guardian` and `readiness` inject `<ORG-POLICY>` from this file at compile time.
 - **`topia memory seed`** — imports `.topia/` decisions, ADRs, and conventions into agora-code SQLite (idempotent via `.topia/.agora-seed.json` content hash).
