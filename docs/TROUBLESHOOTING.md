@@ -48,7 +48,8 @@ Common issues and how to fix them.
 - You run a shell command and `guardian` doesn't run.
 
 **Fixes:**
-- **Re-install hooks**: `node compiler/bin/topia.js hooks install --preset gentle`.
+- **Re-install hooks**: `node compiler/bin/topia.js setup --global --preset gentle` (or `/topia finalize` in chat).
+- **Stale version paths**: If Stop hooks error with `Cannot find module .../plugins/cache/.../topia.js`, your `~/.claude/settings.json` still points at an old plugin cache version. Re-run setup above — current Topia writes `${CLAUDE_PLUGIN_ROOT}/compiler/bin/topia.js` so hooks track the active plugin install after upgrades.
 - **Check Scope**: If you installed with `--global`, check `~/.claude/settings.json`. If local, check `<project>/.claude/settings.json`.
 - **IDE Support**: Remember that only Claude Code has 100% hook parity. Cursor and Windsurf use "best effort" rule injection. See [`HOOKS.md`](HOOKS.md) for the capability matrix.
 

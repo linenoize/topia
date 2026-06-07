@@ -35,6 +35,11 @@ describe('isTopiaManaged', () => {
     const cmd = `node ${JSON.stringify(path.join(REPO_ROOT, 'compiler', 'bin', 'topia.js'))} hook-dispatch readiness --gentle`;
     assert.strictEqual(isTopiaManaged({ command: cmd }), true);
   });
+
+  test('matches CLAUDE_PLUGIN_ROOT hook-dispatch invocation', () => {
+    const cmd = 'node "${CLAUDE_PLUGIN_ROOT}/compiler/bin/topia.js" hook-dispatch completion-gate --gentle';
+    assert.strictEqual(isTopiaManaged({ command: cmd }), true);
+  });
 });
 
 describe('buildPreset', () => {

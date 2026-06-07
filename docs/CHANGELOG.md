@@ -4,6 +4,21 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
+## [3.3.1] — 2026-06-07
+
+Hook dispatch commands use `${CLAUDE_PLUGIN_ROOT}` so discipline hooks survive plugin upgrades without re-running setup.
+
+### Fixed
+
+- **`compiler/commands/hooks/presets.js`** — `.claude/settings.json` dispatch hooks now use `node "${CLAUDE_PLUGIN_ROOT}/compiler/bin/topia.js" hook-dispatch"` instead of version-pinned absolute cache paths (fixes `MODULE_NOT_FOUND` after upgrading from e.g. protopia/Topia/2.0.2).
+- **`compiler/commands/hooks/resolve-topia-root.js`** — also resolves via `CLAUDE_PLUGIN_ROOT` at CLI runtime.
+
+### Changed
+
+- **`docs/HOOKS.md`**, **`docs/TROUBLESHOOTING.md`** — document env-var dispatch pattern and stale-path recovery.
+
+---
+
 ## [3.3.0] — 2026-06-06
 
 Install flow clarity, team org policy skill, `topia memory seed` for agora-code users, and fork sync tooling for `protopia/skill-topia`.

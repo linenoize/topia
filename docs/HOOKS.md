@@ -135,20 +135,20 @@ For each platform, Topia writes artifacts that can be re-run idempotently and re
 
 ### Claude Code (`.claude/settings.json`)
 
-Merges into the `hooks` object, preserving any user-authored entries. Topia entries are identified by the `npx --yes @linenoize/topia hook-dispatch <skill>` command signature — no comment markers needed.
+Merges into the `hooks` object, preserving any user-authored entries. Topia entries are identified by the `node "${CLAUDE_PLUGIN_ROOT}/compiler/bin/topia.js" hook-dispatch <skill>` command signature — no comment markers needed. `${CLAUDE_PLUGIN_ROOT}` is expanded by Claude Code at hook runtime to the **active** plugin install, so hooks survive plugin upgrades without re-running setup.
 
 ```json
 {
   "hooks": {
     "PreToolUse": [
-      { "matcher": "Edit|Write", "hooks": [{ "type": "command", "command": "npx --yes @linenoize/topia hook-dispatch preflight --gentle" }] },
-      { "matcher": "Bash",        "hooks": [{ "type": "command", "command": "npx --yes @linenoize/topia hook-dispatch sentinel --gentle" }] }
+      { "matcher": "Edit|Write", "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/compiler/bin/topia.js\" hook-dispatch readiness --gentle" }] },
+      { "matcher": "Bash",        "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/compiler/bin/topia.js\" hook-dispatch guardian --gentle" }] }
     ],
     "PostToolUse": [
-      { "matcher": "Edit|Write", "hooks": [{ "type": "command", "command": "npx --yes @linenoize/topia hook-dispatch dependency-doctor --gentle" }] }
+      { "matcher": "Edit|Write", "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/compiler/bin/topia.js\" hook-dispatch dependency-doctor --gentle" }] }
     ],
     "Stop": [
-      { "matcher": ".*", "hooks": [{ "type": "command", "command": "npx --yes @linenoize/topia hook-dispatch completion-gate --gentle" }] }
+      { "matcher": ".*", "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/compiler/bin/topia.js\" hook-dispatch completion-gate --gentle" }] }
     ]
   }
 }

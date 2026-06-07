@@ -53,6 +53,9 @@ export function resolveTopiaRoot(explicit, opts = {}) {
   const envRoot = process.env.TOPIA_ROOT;
   if (hasCli(envRoot)) return path.resolve(envRoot);
 
+  const pluginRoot = process.env.CLAUDE_PLUGIN_ROOT;
+  if (hasCli(pluginRoot)) return path.resolve(pluginRoot);
+
   if (opts.skipPluginCache) return null;
 
   const home = os.homedir();

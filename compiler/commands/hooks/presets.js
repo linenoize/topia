@@ -22,28 +22,43 @@ export const SETTINGS_REL_PATH = '.claude/settings.json';
 const NPX_DISPATCH_CMD = 'npx --yes @linenoize/topia hook-dispatch';
 
 /**
- * Regex that matches dispatch invocations Topia writes (npx or local node).
+ * Version-stable dispatch prefix for `.claude/settings.json`.
+ * Claude Code expands `${CLAUDE_PLUGIN_ROOT}` at hook runtime to the active
+ * plugin install — avoids stale absolute paths after plugin upgrades.
+ * Matches the pattern used in plugin `hooks/hooks.json`.
+ */
+export const PLUGIN_DISPATCH_CMD = 'node "${CLAUDE_PLUGIN_ROOT}/compiler/bin/topia.js" hook-dispatch';
+
+/**
+ * Regex that matches dispatch invocations Topia writes (plugin env, npx, or local node).
  */
 const Topia_DISPATCH_RE =
-  /(^|\s)(npx(\s+--yes)?\s+@linenoize\/topia\s+hook-dispatch|node\s+("[^"]*topia\.js"|'[^']*topia\.js'|[^\s]*topia\.js)\s+hook-dispatch)\b/;
+  /(^|\s)(npx(\s+--yes)?\s+@(?:linenoize\/topia|protopia\/skill-topia)\s+hook-dispatch|node\s+("\$\{CLAUDE_PLUGIN_ROOT\}\/[^"]*topia\.js"|"\$\{TOPIA_ROOT\}\/[^"]*topia\.js"|"[^"]*topia\.js"|'[^']*topia\.js'|[^\s]*topia\.js)\s+hook-dispatch)\b/;
 
 /**
  * Build the shell command prefix for hook-dispatch.
- * Prefers `node <absolute>/compiler/bin/topia.js` when Topia root is known
- * (clone, TOPIA_ROOT env, or Claude plugin cache). Falls back to npx only when
- * the package is published and reachable on the npm registry.
+ *
+ * Default (Claude Code settings.json): `${CLAUDE_PLUGIN_ROOT}` — survives plugin
+ * upgrades without re-running setup. Use `preferAbsolute: true` for tests or
+ * non-plugin contexts; `useNpx: true` when npm is the only option.
  *
  * @param {string|null|undefined} topiaRoot
- * @param {{ skipPluginCache?: boolean }} [opts]
+ * @param {{ skipPluginCache?: boolean, preferAbsolute?: boolean, useNpx?: boolean }} [opts]
  * @returns {string}
  */
 export function buildDispatchCommand(topiaRoot, opts = {}) {
-  const root = resolveTopiaRoot(topiaRoot, opts);
-  if (root) {
-    const cli = path.join(root, 'compiler', 'bin', 'topia.js');
-    return `node ${JSON.stringify(cli)} hook-dispatch`;
+  if (opts.useNpx) return NPX_DISPATCH_CMD;
+
+  if (opts.preferAbsolute) {
+    const root = resolveTopiaRoot(topiaRoot, opts);
+    if (root) {
+      const cli = path.join(root, 'compiler', 'bin', 'topia.js');
+      return `node ${JSON.stringify(cli)} hook-dispatch`;
+    }
+    return NPX_DISPATCH_CMD;
   }
-  return NPX_DISPATCH_CMD;
+
+  return PLUGIN_DISPATCH_CMD;
 }
 
 /**
