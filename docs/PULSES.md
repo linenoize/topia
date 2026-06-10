@@ -2,7 +2,7 @@
 
 > **Event-driven skill communication** (async pulses in the Topia Nexus). Skills emit pulses when they finish work; other skills listen and auto-trigger. No central orchestrator required.
 
-**Status:** 44 pulses in core · all emitters have listeners · 0 orphans
+**Status:** 45 pulses in core · all emitters have listeners · 0 orphans
 **Enforced by:** `scripts/validate-signals.js` (run in CI)
 
 ## How Pulses Work
@@ -26,7 +26,8 @@ When `debug` finishes and emits `bug.diagnosed`, the nexus routes the event to e
 
 | Pulse | Emitted by | Listened by | Meaning |
 |--------|-----------|-------------|---------|
-| `codebase.scanned` | recon | brainstorm, plan, integrate | Recon finished reading the codebase |
+| `codebase.scanned` | recon | brainstorm, plan, integrate, architecture-mapper, improve-architecture | Recon finished reading the codebase |
+| `architecture.mapped` | architecture-mapper | improve-architecture | Architecture knowledge base created or refreshed under `docs/architecture/` |
 | `ideas.ready` | brainstorm | build | Brainstorm produced approach options |
 | `plan.ready` | plan | build | Phase plan approved and saved |
 | `phase.complete` | build, team | session-bridge | A phase finished; checkpoint state |
@@ -69,7 +70,7 @@ When `debug` finishes and emits `bug.diagnosed`, the nexus routes the event to e
 | Pulse | Emitted by | Listened by | Meaning |
 |--------|-----------|-------------|---------|
 | `db.migrated` | db | deploy, test | DB migration applied |
-| `docs.updated` | docs | deploy, review | Docs regenerated |
+| `docs.updated` | docs, architecture-mapper | deploy, review | Docs regenerated |
 | `integrate.complete` | integrate | journal | External code ported in |
 
 ### Deploy & incident

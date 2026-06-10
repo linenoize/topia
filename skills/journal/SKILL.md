@@ -40,6 +40,7 @@ Persistent state tracking and Architecture Decision Records across sessions. Jou
 - `retro` (L2): record retrospective insights and decisions
 - `improve-architecture` (L2): record an ADR when the user rejects a deepening candidate with a load-bearing reason
 - `logic-guardian` (L2): record logic changes as ADRs for cross-session persistence
+- `architecture-mapper` (L2): record unknowns / ADRs for genuinely opaque areas discovered during mapping
 
 ## Files Managed
 

@@ -114,6 +114,7 @@ Before decomposing, classify the task into a complexity tier. Each tier defines 
 ## Called By (inbound)
 
 - `scaffold` (L1): decompose scaffolding into parallel workstreams
+- `architecture-mapper` (L2): fan out one mapping stream per repo in polyrepo targets (optional)
 - User: `/topia team <task>` direct invocation only
 
 ---

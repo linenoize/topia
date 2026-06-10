@@ -744,6 +744,7 @@ Mentally track tool call fingerprints. 3 identical calls → WARN. 5 identical c
 | 0.5 | `guardian-env` | L3 | Environment pre-flight (first run only) |
 | 1 | `recon` | L2 | Scan codebase before planning |
 | 1 | `onboard` | L2 | Initialize project context if no CLAUDE.md |
+| 1 | `architecture-mapper` | L2 | Refresh `docs/architecture/` when stale relative to changed code (optional) |
 | 1 | `idea` | L2 | Requirement elicitation for features |
 | 1 | `logic-guardian` | L2 | Conditional: when `.topia/logic-manifest.json` exists — protect complex business logic before any edits |
 | 2 | `plan` | L2 | Create implementation plan |

@@ -163,7 +163,7 @@ node compiler/bin/topia.js doctor       # validate install + nexus integrity
 Claude users: `/topia doctor` and skill invocations cover daily use without these.
 
 Read next:
-- [`SKILLS.md`](SKILLS.md) — all 69 skills, categorized by intent
+- [`SKILLS.md`](SKILLS.md) — all 71 skills, categorized by intent
 - [`ARCHITECTURE.md`](ARCHITECTURE.md) — 5-layer architecture reference
 - [`PULSES.md`](PULSES.md) — how skills auto-trigger each other
 - [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) — stuck? common fixes here

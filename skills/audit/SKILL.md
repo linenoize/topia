@@ -31,6 +31,7 @@ Comprehensive project health audit across 8 dimensions (7 project + 1 nexus anal
 - `dependency-doctor` (L3): Phase 1 — vulnerability scan and outdated dependency check
 - `guardian` (L2): Phase 2 — security audit (OWASP Top 10, secrets, config)
 - `autopsy` (L2): Phase 3 — code quality and complexity assessment
+- `architecture-mapper` (L2): refresh architecture picture when `docs/architecture/` is missing or stale
 - `improve-architecture` (L2): Phase 3.5 — architecture sub-score (depth / leverage / locality across top modules)
 - `perf` (L2): Phase 4 — performance regression check
 - `db` (L2): Phase 5 — database health dimension (schema, migrations, indexes)

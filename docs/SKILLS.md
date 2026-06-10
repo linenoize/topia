@@ -3,7 +3,7 @@
 > **Need a skill?** Invoke via `/topia <skill-name>` in Claude Code, or `@topia:<skill-name>` in Cursor / Codex / Antigravity.
 > Every skill has a `SKILL.md` at `skills/<name>/SKILL.md` — read that for the full spec.
 
-**Total:** 69 skills across 5 layers · 203 synapses + 44 pulses
+**Total:** 71 skills across 5 layers · 203+ synapses + 45 pulses
 **Quick find:** use Ctrl+F on this page
 
 ---
@@ -41,6 +41,7 @@ Each skill is marked by who invokes it in practice:
 | Run a security audit | 👤 [`guardian`](#-sentinel) or 👤 [`audit`](#-audit) |
 | Generate docs | 👤 [`docs`](#-docs) |
 | Onboard an existing codebase | 👤 [`onboard`](#-onboard) |
+| Map / reverse-engineer legacy architecture | 👤 [`architecture-mapper`](#-architecture-mapper) |
 | Recall past decisions | 🔄 [`neural-memory`](#-neural-memory) or 🔄 [`journal`](#-journal) |
 
 ---
@@ -195,9 +196,13 @@ Engineering retrospective. Analyzes commit history, work patterns, code quality 
 Clone, port, or convert features from any GitHub repo into your project. Understand before copy, challenge before implement.
 **Use when:** stealing patterns from other repos. Four modes: port, compare, copy, improve.
 
+### 👤 architecture-mapper
+Reverse-engineer a codebase into a drillable, cross-linked architecture knowledge base under `docs/architecture/`. Stack-neutral passes with per-stack hunt hints. Read-only on application code.
+**Use when:** mapping legacy/unfamiliar repos, steel threads, post-merge architecture doc refresh. Modes: full map, `refresh`, or individual passes (`module-map`, `steel-threads`, `critic`, …).
+
 ### 👤 improve-architecture
 Find architectural friction. Controlled vocabulary (Module / Interface / Implementation / Depth / Seam / Adapter / Leverage / Locality), numeric depth-leverage-locality scoring (1–5 each), 4 dependency categories, structured proposal payloads.
-**Use when:** refactoring for better testability and AI-navigability.
+**Use when:** refactoring for better testability and AI-navigability. Consumes `docs/architecture/` from `architecture-mapper` when available.
 
 ### 🤖 quarantine
 Prompt-injection advisory hook. Treats output from untrusted MCP servers, WebFetch, and upload reads as data, not directives.

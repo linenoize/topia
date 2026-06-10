@@ -238,6 +238,7 @@ Produce structured output for the calling skill. Update TodoWrite to completed.
 - `retro` (L2): scan commit history and codebase for retrospective analysis
 - `integrate` (L2): scan target codebase before integrating code from external repo
 - `docs` (L2): scan codebase structure for documentation generation
+- `architecture-mapper` (L2): scan entry points, routes, models, jobs before mapping passes
 - `logic-guardian` (L2): scan business logic modules for protection mapping
 - `adversary` (L2): scan codebase before red-team analysis
 - `improve-architecture` (L2): re-scan target module + callers when input context is stale

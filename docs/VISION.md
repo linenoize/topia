@@ -24,7 +24,7 @@ Topia is a **skill toolkit** — not a skill collection, not a pipeline, not an 
 
 **Technical definition:**
 
-> **Topia = 69 skills × 203 sync connections × 44 async signals × cross-session memory × multi-platform compiler**
+> **Topia = 71 skills × 203+ sync connections × 45 async signals × cross-session memory × multi-platform compiler**
 
 All three components are equally essential:
 - Remove connections → becomes a collection (The Bloat wins)
@@ -205,7 +205,7 @@ Topia operates on three time horizons. The roadmap is intentionally non-prescrip
 
 **Implementation**: Zero new L1-L3 skills added. 1 new hook (`metrics-collector`), 3 modified hooks, 4 extended skills (`audit`, `build`, `skill-router`, `onboard`), 2 new commands (`/topia metrics`, `/topia pack`).
 
-**Constraint:** Core graph holds at ~69 skills (the v3.2.0 cycle added `faq` and `tut` for install-time discoverability). Further growth happens in L4 packs.
+**Constraint:** Core graph holds at ~71 skills (v3.3.x added `architecture-mapper` for legacy-codebase mapping). Further growth happens in L4 packs.
 
 ### H4 — Runtime Discipline ✅ COMPLETE (v2.12)
 

@@ -228,11 +228,12 @@ Lowercase, dot-separated: `<domain>.<event>` (e.g. `code.changed`, `tests.failed
 | `review.complete` | review | build |
 | `review.issues` | review | fix |
 | `plan.ready` | plan | build |
-| `codebase.scanned` | recon | plan, brainstorm, integrate |
+| `architecture.mapped` | architecture-mapper | improve-architecture |
+| `codebase.scanned` | recon | plan, brainstorm, integrate, architecture-mapper, improve-architecture |
 | `phase.complete` | build, team | session-bridge |
 | `deploy.complete` | deploy | watchdog |
 | `bug.diagnosed` | debug | fix |
-| `docs.updated` | docs | — |
+| `docs.updated` | docs, architecture-mapper | — |
 | `audit.complete` | audit | — |
 | `db.migrated` | db | — |
 | `verification.complete` | verification | build |

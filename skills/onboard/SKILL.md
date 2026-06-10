@@ -28,6 +28,7 @@ Auto-generate project context for AI sessions. Scans the codebase and creates a 
 - `recon` (L2): deep codebase scan — structure, frameworks, patterns, dependencies
 - `guardian-env` (L3): validate developer environment (runtime versions, required tools, env vars) so the onboarded project is actually runnable
 - `autopsy` (L2): when project appears messy or undocumented — health assessment
+- `architecture-mapper` (L2): optional escalation for complex/legacy repos lacking `docs/architecture/` (see Escalation below)
 
 ## Called By (inbound)
 
@@ -50,6 +51,22 @@ project/
     ├── INVARIANTS.md      # Danger zones + cross-file rules, consumed by logic-guardian
     └── DEVELOPER-GUIDE.md # Human-readable onboarding for new developers
 ```
+
+## Optional Escalation — architecture-mapper
+
+Default onboard **does not** run `architecture-mapper`. The standard scan → `CLAUDE.md` + `.topia/` flow is sufficient for most repos.
+
+Escalate to `topia:architecture-mapper` (full map or targeted passes) when **one or more** apply:
+
+- No `docs/architecture/` and the repo is large, legacy, or poorly documented (e.g. autopsy health score low)
+- Polyrepo or unclear service boundaries — user needs a drillable architecture knowledge base
+- User explicitly asks to map, reverse-engineer, or document steel threads / request lifecycles
+
+When escalating:
+
+1. Invoke `topia:architecture-mapper` first (or a subset of passes if scope is narrow)
+2. Continue onboard for `.topia/` artifacts — onboard owns invariants/contract blocks in `CLAUDE.md`; mapper owns architecture sections
+3. Do not let both skills blindly rewrite the same `CLAUDE.md` sections
 
 ## Executable Steps
 

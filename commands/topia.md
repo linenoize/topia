@@ -92,6 +92,9 @@ These are entry-points the user runs in their shell. They do not invoke a skill 
 
 ### Documentation
 - 👤 `/topia docs` — auto-generate + maintain READMEs, API docs, changelogs.
+- 👤 `/topia architecture-mapper` — full architecture map to `docs/architecture/` (run-all pipeline).
+- 👤 `/topia architecture-mapper refresh` — incremental architecture doc update scoped to git diff (post-merge).
+- 👤 `/topia architecture-mapper <pass>` — single pass: `bootstrap`, `module-map`, `steel-threads`, `critic`, `index`, `report`, … (see skill Modes).
 - 👤 `/topia doc-processor <format> <source>` — generate / parse PDF, DOCX, XLSX, PPTX, CSV.
 
 ### Project lifecycle

@@ -173,6 +173,8 @@ For users who know exactly what they want:
 | Build MCP server | `topia:mcp-builder` | L2 |
 | Red-team / challenge a plan / stress-test | `topia:adversary` | L2 — requires opus |
 | Port / graft from repo / copy from external repo | `topia:integrate` | L2 — challenge gate before code |
+| Map architecture / reverse-engineer codebase / steel threads / legacy codebase / how does this repo work | `topia:architecture-mapper` | L2 — read-only mapping to `docs/architecture/` |
+| Refresh architecture docs after merge | `topia:architecture-mapper refresh` | L2 — incremental git-scoped update |
 
 #### Internal Skills (Called by Other Skills)
 
@@ -180,7 +182,8 @@ These are rarely invoked directly — they're called by higher-level skills:
 
 | Skill | Called By | Purpose |
 |---|---|---|
-| `topia:recon` | build, plan, team | Codebase scanning |
+| `topia:recon` | build, plan, team, architecture-mapper | Codebase scanning |
+| `topia:architecture-mapper` | onboard (escalation), audit, improve-architecture, build | Architecture knowledge base mapping |
 | `topia:fix` | debug, build | Apply code changes |
 | `topia:readiness` | build | Quality gate |
 | `topia:verification` | build, fix | Run lint/test/build |

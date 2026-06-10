@@ -9,7 +9,7 @@ metadata:
   group: quality
   tools: "Read, Glob, Grep"
   emit: architecture.shallow.flagged, architecture.deletion.passed
-  listen: codebase.scanned
+  listen: codebase.scanned, architecture.mapped
 ---
 
 # improve-architecture
@@ -43,6 +43,7 @@ These eight terms have precise meanings. Banned aliases: "boundary" (overloaded 
 
 ## Calls (outbound)
 
+- `architecture-mapper` (L2): produce or refresh `docs/architecture/` when no current map exists before scoring
 - `recon` (L2): re-scan target module + callers when input context is stale
 - `brainstorm` (L2): when the deepened module needs a new interface, hand off in `design-it-twice` mode (see brainstorm v0.6+)
 - `journal` (L3): record an ADR if the user rejects a candidate with a load-bearing reason
@@ -66,6 +67,8 @@ These eight terms have precise meanings. Banned aliases: "boundary" (overloaded 
 ## Inputs
 
 - Required: target module path (e.g. `src/auth/`) OR signal `codebase.scanned` from a recent scout pass
+- Optional: `docs/architecture/` from `architecture-mapper` (preferred starting map when present; or invoke mapper when missing)
+- Optional: signal `architecture.mapped` from a recent mapping run
 - Optional: existing `CONTEXT.md` (domain glossary, used to name modules in their domain language)
 - Optional: `docs/adr/` directory (existing ADRs that constrain proposals — do not re-litigate)
 

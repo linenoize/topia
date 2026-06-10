@@ -4,7 +4,7 @@
 
 <p align="center">
   <strong>Topia — internal skill toolkit for AI coding assistants.</strong><br>
-  70 skills · 203 synapses · 44 pulses · 10 extension packs · optional persistent memory via agora-code MCP
+  71 skills · 203+ synapses · 45 pulses · 10 extension packs · optional persistent memory via agora-code MCP
 </p>
 
 <p align="center">
@@ -122,7 +122,7 @@ From a Topia clone or plugin cache path:
 
 ```bash
 node compiler/bin/topia.js doctor
-# ✓ 70 skills, 203 synapses, 44 pulses — nexus is healthy
+# ✓ 71 skills, 203+ synapses, 45 pulses — nexus is healthy
 ```
 
 Claude-only users can use `/topia doctor` in chat instead.
