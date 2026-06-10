@@ -2,7 +2,7 @@
 
 > **Event-driven skill communication** (async pulses in the Topia Nexus). Skills emit pulses when they finish work; other skills listen and auto-trigger. No central orchestrator required.
 
-**Status:** 45 pulses in core · all emitters have listeners · 0 orphans
+**Status:** 49 pulses in core · all emitters have listeners · 0 orphans
 **Enforced by:** `scripts/validate-signals.js` (run in CI)
 
 ## How Pulses Work

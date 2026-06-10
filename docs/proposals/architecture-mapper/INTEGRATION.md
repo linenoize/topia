@@ -119,7 +119,7 @@ re-map. As a Topia mode it becomes `/topia architecture-mapper refresh`.
 5. [x] `node scripts/validate-skills.js && node scripts/validate-nexus.js && npm test`
 6. [x] Bump stats (skill count → 71): `README.md`, `docs/index.html`,
        `.claude-plugin/plugin.json` description, `docs/SKILLS.md`, `docs/PULSES.md`.
-7. [ ] Sync to the fork: `node scripts/sync-to-skill-topia.mjs --target C:/CodeBase/Protopia/skill-topia`
+7. [x] Sync to the fork: `node scripts/sync-to-skill-topia.mjs --target C:/CodeBase/Protopia/skill-topia`
        (this runs `port-to-protopia.mjs` to rebrand, then verify + commit in the fork).
 
 ## Applying the Protopia profile (runtime, not plugin)
