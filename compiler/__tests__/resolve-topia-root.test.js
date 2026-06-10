@@ -29,10 +29,17 @@ describe('resolveTopiaRoot', () => {
 });
 
 describe('buildDispatchCommand', () => {
-  test('defaults to CLAUDE_PLUGIN_ROOT (version-stable)', () => {
+  test('defaults to the stable launcher path (version-stable, survives upgrades)', () => {
     const cmd = buildDispatchCommand(REPO_ROOT);
-    assert.equal(cmd, 'node "${CLAUDE_PLUGIN_ROOT}/compiler/bin/topia.js" hook-dispatch');
+    // ${CLAUDE_PROJECT_DIR} IS expanded in settings.json; ${CLAUDE_PLUGIN_ROOT} is NOT.
+    assert.equal(cmd, 'node "${CLAUDE_PROJECT_DIR}/.claude/topia/hook-dispatch.cjs" hook-dispatch');
+    assert.ok(!cmd.includes('${CLAUDE_PLUGIN_ROOT}'));
     assert.ok(!cmd.includes('@linenoize/topia'));
+  });
+
+  test('honors an explicit launcherRef (e.g. absolute home path for --global)', () => {
+    const cmd = buildDispatchCommand(REPO_ROOT, { launcherRef: '/home/u/.claude/topia/hook-dispatch.cjs' });
+    assert.equal(cmd, 'node "/home/u/.claude/topia/hook-dispatch.cjs" hook-dispatch');
   });
 
   test('preferAbsolute uses node path when Topia root is known', () => {

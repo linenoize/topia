@@ -4,6 +4,28 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
+## [3.3.2] — 2026-06-10
+
+Discipline hooks now route through a stable launcher shim — the v3.3.1 `${CLAUDE_PLUGIN_ROOT}` approach did not actually work in `.claude/settings.json`.
+
+### Fixed
+
+- **`.claude/settings.json` dispatch hooks no longer rot on plugin upgrade.** `${CLAUDE_PLUGIN_ROOT}` is only expanded by Claude Code in a plugin's bundled `hooks/hooks.json`, **not** in user/project `settings.json` ([docs](https://code.claude.com/docs/en/hooks)) — so v3.3.1 replaced a stale absolute path with an unexpanded literal, both producing `Cannot find module …/topia.js`. Hooks now invoke a stable launcher at `<scope>/.claude/topia/hook-dispatch.cjs` (project ref via `${CLAUDE_PROJECT_DIR}`, global via absolute home path) that lives outside the versioned plugin cache and re-resolves the active install at runtime.
+
+### Added
+
+- **`compiler/assets/hook-dispatch-launcher.cjs`** — version-stable launcher; resolves the plugin via env → manifest-walk → newest-by-version cache scan, anchored on `.claude-plugin/plugin.json` (never a cache directory name, so namespace migrations resolve with no code change). Fail-open so a missing install never blocks a session.
+- **`compiler/commands/hooks/launcher.js`** — launcher install + reference helpers.
+- **`hooks/session-start/index.cjs`** — warns when a concrete hook path is stale, pointing users to `/topia finalize` for repair.
+
+### Changed
+
+- **`compiler/commands/hooks/resolve-topia-root.js`** — manifest-anchored resolution (`findPluginRootFromFile`) + generalized, namespace-agnostic cache scan replacing the hardcoded owner list.
+- **`compiler/adapters/hooks/claude.js`**, **`compiler/commands/hooks/presets.js`** — emit + reference the launcher; broadened managed-command matching still strips legacy `topia.js` and `${CLAUDE_PLUGIN_ROOT}` entries for clean migration.
+- **`docs/HOOKS.md`**, **`docs/TROUBLESHOOTING.md`** — document the launcher and corrected stale-path recovery.
+
+---
+
 ## [3.3.1] — 2026-06-07
 
 Hook dispatch commands use `${CLAUDE_PLUGIN_ROOT}` so discipline hooks survive plugin upgrades without re-running setup.

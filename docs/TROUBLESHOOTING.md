@@ -49,7 +49,7 @@ Common issues and how to fix them.
 
 **Fixes:**
 - **Re-install hooks**: `node compiler/bin/topia.js setup --global --preset gentle` (or `/topia finalize` in chat).
-- **Stale version paths**: If Stop hooks error with `Cannot find module .../plugins/cache/.../topia.js`, your `~/.claude/settings.json` still points at an old plugin cache version. Re-run setup above — current Topia writes `${CLAUDE_PLUGIN_ROOT}/compiler/bin/topia.js` so hooks track the active plugin install after upgrades.
+- **Stale version paths**: If Stop/PreToolUse hooks error with `Cannot find module .../plugins/cache/.../topia.js` (or `.../hook-dispatch.cjs`), your `settings.json` points at a plugin path that an upgrade removed. Re-run setup above — current Topia routes hooks through a **stable launcher** at `<scope>/.claude/topia/hook-dispatch.cjs` that lives outside the versioned plugin cache and re-resolves the active install at runtime, so hooks survive upgrades. (Older Topia baked an absolute cache path, or `${CLAUDE_PLUGIN_ROOT}` which Claude Code does **not** expand in `settings.json` — both rot on upgrade.) On the next session, Topia also prints a one-line warning when it detects a stale hook path.
 - **Check Scope**: If you installed with `--global`, check `~/.claude/settings.json`. If local, check `<project>/.claude/settings.json`.
 - **IDE Support**: Remember that only Claude Code has 100% hook parity. Cursor and Windsurf use "best effort" rule injection. See [`HOOKS.md`](HOOKS.md) for the capability matrix.
 

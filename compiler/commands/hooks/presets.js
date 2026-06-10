@@ -11,8 +11,9 @@
  * detect and cleanly replace them without comment markers (settings.json is JSON).
  */
 
-import { resolveTopiaRoot } from './resolve-topia-root.js';
 import path from 'node:path';
+import { PROJECT_LAUNCHER_REF } from './launcher.js';
+import { resolveTopiaRoot } from './resolve-topia-root.js';
 
 export const Topia_MANAGED_SIGNATURE = 'Topia hook-dispatch';
 
@@ -22,28 +23,40 @@ export const SETTINGS_REL_PATH = '.claude/settings.json';
 const NPX_DISPATCH_CMD = 'npx --yes @linenoize/topia hook-dispatch';
 
 /**
- * Version-stable dispatch prefix for `.claude/settings.json`.
- * Claude Code expands `${CLAUDE_PLUGIN_ROOT}` at hook runtime to the active
- * plugin install — avoids stale absolute paths after plugin upgrades.
- * Matches the pattern used in plugin `hooks/hooks.json`.
+ * Default dispatch prefix for `.claude/settings.json`.
+ *
+ * Points at the stable launcher shim (`<scope>/.claude/topia/hook-dispatch.cjs`)
+ * rather than the plugin install directly. This is deliberate: `${CLAUDE_PLUGIN_ROOT}`
+ * is NOT expanded in settings.json hooks (only in plugin-bundled `hooks/hooks.json`),
+ * and absolute plugin-cache paths rot on upgrade. `${CLAUDE_PROJECT_DIR}` IS
+ * expanded in settings.json, and the launcher re-resolves the active plugin at
+ * runtime — so hooks survive upgrades without re-running setup. See
+ * `compiler/commands/hooks/launcher.js`.
  */
-export const PLUGIN_DISPATCH_CMD = 'node "${CLAUDE_PLUGIN_ROOT}/compiler/bin/topia.js" hook-dispatch';
+export const LAUNCHER_DISPATCH_CMD = `node "${PROJECT_LAUNCHER_REF}" hook-dispatch`;
 
 /**
- * Regex that matches dispatch invocations Topia writes (plugin env, npx, or local node).
+ * Regex that matches dispatch invocations Topia writes. Recognizes:
+ *   - the stable launcher (`…/hook-dispatch.cjs hook-dispatch …`)
+ *   - legacy direct `topia.js` forms (absolute, `${CLAUDE_PLUGIN_ROOT}`,
+ *     `${TOPIA_ROOT}`) — kept so upgrade/uninstall still strips them
+ *   - npx forms
+ * Broad enough to catch stale entries from older Topia versions for clean migration.
  */
 const Topia_DISPATCH_RE =
-  /(^|\s)(npx(\s+--yes)?\s+@(?:linenoize\/topia|protopia\/skill-topia)\s+hook-dispatch|node\s+("\$\{CLAUDE_PLUGIN_ROOT\}\/[^"]*topia\.js"|"\$\{TOPIA_ROOT\}\/[^"]*topia\.js"|"[^"]*topia\.js"|'[^']*topia\.js'|[^\s]*topia\.js)\s+hook-dispatch)\b/;
+  /(^|\s)(npx(\s+--yes)?\s+@(?:linenoize\/topia|protopia\/skill-topia)\s+hook-dispatch|node\s+("[^"]*(?:topia\.js|hook-dispatch\.cjs)"|'[^']*(?:topia\.js|hook-dispatch\.cjs)'|[^\s]*(?:topia\.js|hook-dispatch\.cjs))\s+hook-dispatch)\b/;
 
 /**
  * Build the shell command prefix for hook-dispatch.
  *
- * Default (Claude Code settings.json): `${CLAUDE_PLUGIN_ROOT}` — survives plugin
- * upgrades without re-running setup. Use `preferAbsolute: true` for tests or
- * non-plugin contexts; `useNpx: true` when npm is the only option.
+ * Default (Claude Code settings.json): the stable launcher reference — survives
+ * plugin upgrades without re-running setup. Pass `launcherRef` to override the
+ * launcher path (e.g. an absolute home path for `--global` installs).
+ * Use `preferAbsolute: true` for tests / non-plugin contexts; `useNpx: true`
+ * when npm is the only option.
  *
  * @param {string|null|undefined} topiaRoot
- * @param {{ skipPluginCache?: boolean, preferAbsolute?: boolean, useNpx?: boolean }} [opts]
+ * @param {{ skipPluginCache?: boolean, preferAbsolute?: boolean, useNpx?: boolean, launcherRef?: string }} [opts]
  * @returns {string}
  */
 export function buildDispatchCommand(topiaRoot, opts = {}) {
@@ -58,7 +71,8 @@ export function buildDispatchCommand(topiaRoot, opts = {}) {
     return NPX_DISPATCH_CMD;
   }
 
-  return PLUGIN_DISPATCH_CMD;
+  const ref = opts.launcherRef || PROJECT_LAUNCHER_REF;
+  return `node "${ref}" hook-dispatch`;
 }
 
 /**
@@ -72,7 +86,7 @@ const Topia_TIER_RE = /\$\{TOPIA_[A-Z][A-Z0-9_]*_ROOT\}/;
  * Build a preset hooks block for merging into `.claude/settings.json`.
  *
  * @param {'strict'|'gentle'} preset
- * @param {{ topiaRoot?: string|null }} [opts]
+ * @param {{ topiaRoot?: string|null, launcherRef?: string }} [opts]
  * @returns {Object} — { hooks: { PreToolUse: [...], PostToolUse: [...], Stop: [...] } }
  */
 export function buildPreset(preset, opts = {}) {
@@ -81,7 +95,7 @@ export function buildPreset(preset, opts = {}) {
   }
 
   const flag = preset === 'gentle' ? ' --gentle' : '';
-  const dispatchCmd = buildDispatchCommand(opts.topiaRoot);
+  const dispatchCmd = buildDispatchCommand(opts.topiaRoot, opts);
 
   return {
     hooks: {

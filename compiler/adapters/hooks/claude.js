@@ -8,9 +8,16 @@
 
 import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
+import { launcherPathFor, launcherRefFor, launcherSource } from '../../commands/hooks/launcher.js';
 import { appendHookBlock, detectPreset, stripTopiaHooks, summarizeTopiaHooks } from '../../commands/hooks/merge.js';
 import { buildPreset, SETTINGS_REL_PATH, WIRED_SKILLS } from '../../commands/hooks/presets.js';
+
+/** A scope root is "global" when it is the user's home dir (~/.claude/settings.json). */
+function isGlobalScope(scopeRoot) {
+  return path.resolve(scopeRoot) === path.resolve(os.homedir());
+}
 
 export const id = 'claude';
 
@@ -25,6 +32,7 @@ export async function emit({ preset, projectRoot, topiaRoot }) {
   }
 
   const settingsPath = path.join(projectRoot, SETTINGS_REL_PATH);
+  const launcherPath = launcherPathFor(projectRoot);
   const existing = await readJson(settingsPath);
 
   // Strip ONCE up-front — preset layers then merge additively.
@@ -35,20 +43,27 @@ export async function emit({ preset, projectRoot, topiaRoot }) {
     merged = rest;
   }
   const notes = [];
+  const files = [];
 
   if (preset !== 'off') {
-    merged = appendHookBlock(merged, buildPreset(preset, { topiaRoot }));
+    const launcherRef = launcherRefFor(projectRoot, { global: isGlobalScope(projectRoot) });
+    merged = appendHookBlock(merged, buildPreset(preset, { topiaRoot, launcherRef }));
+    // The stable launcher is what settings.json hooks invoke. It lives outside the
+    // versioned plugin cache so it survives upgrades, then re-resolves the active
+    // plugin install at runtime (see commands/hooks/launcher.js).
+    files.push({ path: launcherPath, content: launcherSource() });
+    notes.push(`hook launcher: ${path.relative(projectRoot, launcherPath) || launcherPath}`);
+  } else {
+    // Uninstall semantics — remove the launcher we previously installed.
+    files.push({ path: launcherPath, content: null });
   }
 
-  return {
-    files: [
-      {
-        path: settingsPath,
-        content: `${JSON.stringify(merged, null, 2)}\n`,
-      },
-    ],
-    notes,
-  };
+  files.push({
+    path: settingsPath,
+    content: `${JSON.stringify(merged, null, 2)}\n`,
+  });
+
+  return { files, notes };
 }
 
 export async function uninstall({ projectRoot }) {
@@ -68,6 +83,8 @@ export async function uninstall({ projectRoot }) {
         path: settingsPath,
         content: `${JSON.stringify(stripped, null, 2)}\n`,
       },
+      // Remove the stable launcher shim we installed alongside the hooks.
+      { path: launcherPathFor(projectRoot), content: null },
     ],
     notes: [],
   };

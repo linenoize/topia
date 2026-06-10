@@ -135,20 +135,24 @@ For each platform, Topia writes artifacts that can be re-run idempotently and re
 
 ### Claude Code (`.claude/settings.json`)
 
-Merges into the `hooks` object, preserving any user-authored entries. Topia entries are identified by the `node "${CLAUDE_PLUGIN_ROOT}/compiler/bin/topia.js" hook-dispatch <skill>` command signature — no comment markers needed. `${CLAUDE_PLUGIN_ROOT}` is expanded by Claude Code at hook runtime to the **active** plugin install, so hooks survive plugin upgrades without re-running setup.
+Merges into the `hooks` object, preserving any user-authored entries. Topia entries are identified by their `hook-dispatch <skill>` command signature — no comment markers needed.
+
+Hooks point at a **stable launcher shim** that Topia installs at `<scope>/.claude/topia/hook-dispatch.cjs` (project) or `~/.claude/topia/hook-dispatch.cjs` (global), referenced for project scope via `${CLAUDE_PROJECT_DIR}`. The launcher lives **outside** the versioned plugin cache, so it survives plugin upgrades; at hook runtime it resolves the *active* plugin install — anchored on the plugin manifest (`.claude-plugin/plugin.json`), never a cache directory name — and delegates to `compiler/bin/topia.js hook-dispatch`.
+
+> Why not `${CLAUDE_PLUGIN_ROOT}` directly? Claude Code only expands `${CLAUDE_PLUGIN_ROOT}` for hooks declared in a plugin's bundled `hooks/hooks.json` — **not** in user/project `settings.json` ([docs](https://code.claude.com/docs/en/hooks)). And an absolute plugin-cache path pins to a version directory that upgrades delete (`Cannot find module .../cache/<owner>/topia/<version>/compiler/bin/topia.js`). The launcher avoids both traps.
 
 ```json
 {
   "hooks": {
     "PreToolUse": [
-      { "matcher": "Edit|Write", "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/compiler/bin/topia.js\" hook-dispatch readiness --gentle" }] },
-      { "matcher": "Bash",        "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/compiler/bin/topia.js\" hook-dispatch guardian --gentle" }] }
+      { "matcher": "Edit|Write", "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/topia/hook-dispatch.cjs\" hook-dispatch readiness --gentle" }] },
+      { "matcher": "Bash",        "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/topia/hook-dispatch.cjs\" hook-dispatch guardian --gentle" }] }
     ],
     "PostToolUse": [
-      { "matcher": "Edit|Write", "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/compiler/bin/topia.js\" hook-dispatch dependency-doctor --gentle" }] }
+      { "matcher": "Edit|Write", "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/topia/hook-dispatch.cjs\" hook-dispatch dependency-doctor --gentle" }] }
     ],
     "Stop": [
-      { "matcher": ".*", "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/compiler/bin/topia.js\" hook-dispatch completion-gate --gentle" }] }
+      { "matcher": ".*", "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/topia/hook-dispatch.cjs\" hook-dispatch completion-gate --gentle" }] }
     ]
   }
 }

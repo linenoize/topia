@@ -36,9 +36,22 @@ describe('isTopiaManaged', () => {
     assert.strictEqual(isTopiaManaged({ command: cmd }), true);
   });
 
-  test('matches CLAUDE_PLUGIN_ROOT hook-dispatch invocation', () => {
+  test('matches CLAUDE_PLUGIN_ROOT hook-dispatch invocation (legacy — still stripped)', () => {
     const cmd = 'node "${CLAUDE_PLUGIN_ROOT}/compiler/bin/topia.js" hook-dispatch completion-gate --gentle';
     assert.strictEqual(isTopiaManaged({ command: cmd }), true);
+  });
+
+  test('matches the stable launcher invocation (project + global scope)', () => {
+    const project = 'node "${CLAUDE_PROJECT_DIR}/.claude/topia/hook-dispatch.cjs" hook-dispatch readiness --gentle';
+    const global = 'node "C:\\Users\\mandi\\.claude\\topia\\hook-dispatch.cjs" hook-dispatch guardian';
+    assert.strictEqual(isTopiaManaged({ command: project }), true);
+    assert.strictEqual(isTopiaManaged({ command: global }), true);
+  });
+
+  test('matches a stale absolute plugin-cache path (so upgrades strip it)', () => {
+    const stale =
+      'node "C:\\Users\\mandi\\.claude\\plugins\\cache\\linenoize\\topia\\3.1.1\\compiler\\bin\\topia.js" hook-dispatch completion-gate';
+    assert.strictEqual(isTopiaManaged({ command: stale }), true);
   });
 });
 

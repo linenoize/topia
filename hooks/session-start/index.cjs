@@ -38,6 +38,11 @@ detectRuneMigration();
 // Self-suppresses once .topia/.finalized OR .topia/skip-finalize.flag exists.
 detectFinalizeNudge();
 
+// Stale-hook detection — warn if settings.json hooks point at a plugin path that
+// no longer exists (the classic "Cannot find module .../topia.js" after a plugin
+// upgrade). Repair = re-run /topia finalize, which now writes a stable launcher.
+detectStaleHooks();
+
 function detectRuneMigration() {
   const runeDir = path.join(cwd, '.rune');
   const home = os.homedir();
@@ -115,7 +120,11 @@ function detectFinalizeNudge() {
       const settingsPath = path.join(os.homedir(), '.claude', 'settings.json');
       if (fs.existsSync(settingsPath)) {
         const raw = fs.readFileSync(settingsPath, 'utf-8');
-        if (raw.includes('topia.js hook-dispatch') || raw.includes('Topia-managed')) {
+        if (
+          raw.includes('topia.js hook-dispatch') ||
+          raw.includes('hook-dispatch.cjs') ||
+          raw.includes('Topia-managed')
+        ) {
           try {
             fs.mkdirSync(TopiaDirWrite, { recursive: true });
             fs.writeFileSync(
@@ -164,6 +173,63 @@ function detectFinalizeNudge() {
   console.log('');
   console.log('  Hide this menu permanently:   /topia finalize --dismiss');
   console.log('  (Each completed step auto-checks itself the next session.)');
+}
+
+// Detect Topia hook commands whose concrete script path no longer exists. This
+// is the failure the stable launcher fixes: older installs baked a versioned
+// plugin-cache path into settings.json, which upgrades delete. We only flag
+// CONCRETE paths (skip `${CLAUDE_PROJECT_DIR}`/`${CLAUDE_PLUGIN_ROOT}` — those are
+// resolved by Claude Code, not us) so the check never false-positives.
+function detectStaleHooks() {
+  const candidates = [
+    path.join(os.homedir(), '.claude', 'settings.json'),
+    path.join(cwd, '.claude', 'settings.json'),
+  ];
+  const seen = new Set();
+  const stale = [];
+
+  for (const settingsPath of candidates) {
+    if (seen.has(settingsPath)) continue;
+    seen.add(settingsPath);
+    let settings;
+    try {
+      if (!fs.existsSync(settingsPath)) continue;
+      const raw = fs.readFileSync(settingsPath, 'utf-8');
+      if (!raw.trim()) continue;
+      settings = JSON.parse(raw);
+    } catch {
+      continue; // unreadable / invalid JSON — not our problem to diagnose here
+    }
+    if (!settings || typeof settings.hooks !== 'object') continue;
+
+    for (const groups of Object.values(settings.hooks)) {
+      if (!Array.isArray(groups)) continue;
+      for (const group of groups) {
+        if (!Array.isArray(group?.hooks)) continue;
+        for (const entry of group.hooks) {
+          const cmd = entry && typeof entry.command === 'string' ? entry.command : '';
+          if (!/hook-dispatch/.test(cmd)) continue;
+          // Extract the `node "<path>" …` target.
+          const m = cmd.match(/node\s+"([^"]+\.(?:cjs|js))"/) || cmd.match(/node\s+(\S+\.(?:cjs|js))/);
+          if (!m) continue;
+          const target = m[1];
+          if (target.includes('${')) continue; // variable path — Claude Code resolves it
+          try {
+            if (!fs.existsSync(target)) stale.push({ settingsPath, target });
+          } catch {
+            /* ignore */
+          }
+        }
+      }
+    }
+  }
+
+  if (stale.length === 0) return;
+  console.log('');
+  console.log('  ⚠ topia: some hooks point at a plugin path that no longer exists');
+  console.log(`      (e.g. ${stale[0].target})`);
+  console.log('      This usually means the plugin was upgraded. Repair with:');
+  console.log('        /topia finalize     (rewrites hooks to a version-stable launcher)');
 }
 
 const hasTopiaState = fs.existsSync(TopiaDirRead) || fs.existsSync(TopiaDirWrite);
