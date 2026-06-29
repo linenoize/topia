@@ -149,12 +149,15 @@ export function runMemorySeed(projectRoot, opts = {}) {
     return { ok: true, skipped: true, reason: 'already-seeded', count: prev.count ?? 0, contentHash };
   }
 
-  if (!agoraCodeAvailable()) {
-    return { ok: false, skipped: true, reason: 'no-agora-cli', count: 0 };
-  }
-
+  // A dry run only previews what WOULD be seeded — it never calls the CLI, so it
+  // must not require agora-code to be installed (otherwise it fails in CI / on
+  // machines without the optional MCP).
   if (dryRun) {
     return { ok: true, dryRun: true, count: findings.length, contentHash, findings: findings.map((f) => f.finding) };
+  }
+
+  if (!agoraCodeAvailable()) {
+    return { ok: false, skipped: true, reason: 'no-agora-cli', count: 0 };
   }
 
   let stored = 0;
