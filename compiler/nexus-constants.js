@@ -2,12 +2,14 @@
  * nexus-constants.js — Single source of truth for Topia Nexus terminology and stats.
  *
  * Update counts here when skills/synapses/pulses/packs change.
+ * These MUST match the live `topia doctor` computation — scripts/version-sync-check.js
+ * fails the pre-publish gate if they drift, so this file can't silently rot again.
  */
 
 export const NEXUS_STATS = {
-  skills: 65,
-  synapses: 203,
-  pulses: 44,
+  skills: 71,
+  synapses: 315,
+  pulses: 49,
   packs: 10,
 };
 

@@ -17,7 +17,7 @@ Restart Claude Code if `/topia:build` does not appear.
 
 ### What Step 1 gives you
 
-- All 69 skills (`/topia:build`, `/topia:plan`, …) and `/topia` router
+- All 71 skills (`/topia:build`, `/topia:plan`, …) and `/topia` router
 - 66 subagents
 - 15 **plugin** hooks (session-start, secrets-scan, quarantine, metrics, …)
 - File-based memory in `.topia/` after onboard

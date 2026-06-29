@@ -35,13 +35,22 @@ Per Apache License 2.0 section 4:
 - No NOTICE file exists in upstream; none is added here.
 - Modified files are marked with a "Modified (Topia fork, <date>)" comment per Apache 2.0 section 4(b).
 
-## Local patches (must be re-applied on every upstream sync)
+## Local patches (re-applied automatically by the sync script)
 
-| File | What | Why |
-|---|---|---|
-| `agora_code/memory_server.py` :: `serve_memory()` | Read stdin via thread executor on Windows (`sys.platform == "win32"`); leave non-Windows path identical. | Upstream uses `asyncio.connect_read_pipe(sys.stdin)`, which fails on Windows with `OSError [WinError 6] "The handle is invalid"` because IOCP can't register console handles or the non-overlapped pipes that Node.js parents (Claude Code, Cursor) create with `CreatePipe()`. On Python 3.13 the error path triggers an `AttributeError` on `_empty_waiter` (CPython regression in `asyncio.proactor_events`). The patch lets `agora-code memory-server` run cleanly on every Windows + Python combination. |
+Local modifications live as committed `.patch` files under
+[`patches/`](./patches/) and are re-applied as the **last step** of
+`node scripts/sync-agora-code.js`. The sync **fails loudly** (non-zero exit) on
+any rejected hunk, so upstream drift can never silently drop a patch.
 
-The `rsync` invocation below blows these away on every upstream sync — re-apply manually after each refresh, or move the patches into a separate fork branch on the upstream repo.
+| Patch | File | What | Why |
+|---|---|---|---|
+| `patches/0001-windows-asyncio-stdin.patch` | `agora_code/memory_server.py` :: `serve_memory()` | Read stdin via thread executor on Windows (`sys.platform == "win32"`); leave non-Windows path identical. | Upstream uses `asyncio.connect_read_pipe(sys.stdin)`, which fails on Windows with `OSError [WinError 6] "The handle is invalid"` because IOCP can't register console handles or the non-overlapped pipes that Node.js parents (Claude Code, Cursor) create with `CreatePipe()`. On Python 3.13 the error path triggers an `AttributeError` on `_empty_waiter` (CPython regression in `asyncio.proactor_events`). The patch lets `agora-code memory-server` run cleanly on every Windows + Python combination. |
+
+Verify the vendored tree still matches upstream + patches at any time (offline):
+
+```bash
+node scripts/sync-agora-code.js --check
+```
 
 ## How Topia uses it
 
@@ -51,16 +60,13 @@ See [`docs/mcp-integrations/agora-code.md`](../../docs/mcp-integrations/agora-co
 
 ## Updating
 
-To refresh from upstream:
+To refresh from upstream, run the sync script (clones upstream, mirrors the
+vendored set, re-applies `patches/` as the last step, fails loudly on drift):
 
 ```bash
-cd /tmp
-git clone --depth 1 https://github.com/thebnbrkr/agora-code.git
-# Replace vendored contents (keep this NOTICE-TOPIA.md intact)
-rsync -av --delete \
-  --exclude=NOTICE-TOPIA.md \
-  /tmp/agora-code/{agora_code,LICENSE,pyproject.toml,pytest.ini,.mcp.json,README.md,setup.sh} \
-  mcp-servers/agora-code/
+node scripts/sync-agora-code.js
 ```
 
-Record the new vendored date and upstream commit in this file's "Vendored on" line above.
+`NOTICE-TOPIA.md` and `patches/` are never overwritten by the sync. After a
+successful sync, record the printed upstream SHA and update the "Vendored on"
+line above.

@@ -103,7 +103,7 @@ export default {
       id: 'Topia',
       name: 'Topia',
       kind: 'skills',
-      description: `${skills.length}-skill Topia Nexus for AI coding assistants. Routes all code tasks through specialized skills. 203 synapses + 44 pulses, 10 extension packs.`,
+      description: `${skills.length}-skill Topia Nexus for AI coding assistants. Routes all code tasks through specialized skills. 315 synapses + 49 pulses, 10 extension packs.`,
       version: pluginJson.version || '0.0.0',
       skills: ['./skills'],
       artifactConvention: {
@@ -166,7 +166,7 @@ export default {
 
     return `# Topia
 
-**${skills.length}-skill toolkit** for AI coding assistants — 5-layer architecture, 203 synapses, 10 extension packs.
+**${skills.length}-skill toolkit** for AI coding assistants — 5-layer architecture, 315 synapses, 10 extension packs.
 
 ## Install
 

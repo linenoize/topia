@@ -8,6 +8,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { readdir, readFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
+import { checkNexusIntegrity } from './doctor.js';
 import { LAYER_EMOJI, NEXUS_STATS } from './nexus-constants.js';
 import { parseSkill } from './parser.js';
 
@@ -129,9 +130,18 @@ export async function collectStats(TopiaRoot) {
     pulseCount = allPulses.size;
   }
 
-  let totalSynapses = 0;
-  for (const skill of parsedSkills) {
-    totalSynapses += new Set((skill.crossRefs ?? []).map((r) => r.skillName)).size;
+  // Synapse count comes from the SAME computation as `topia doctor`
+  // (sum of `## Calls` edges) so status and doctor never report different numbers.
+  // Fall back to the local unique-crossref count only if the nexus check fails.
+  let totalSynapses;
+  try {
+    const nexus = await checkNexusIntegrity(TopiaRoot);
+    totalSynapses = nexus.stats.synapses;
+  } catch {
+    totalSynapses = 0;
+    for (const skill of parsedSkills) {
+      totalSynapses += new Set((skill.crossRefs ?? []).map((r) => r.skillName)).size;
+    }
   }
   const avgSynapses = parsedSkills.length > 0 ? (totalSynapses / parsedSkills.length).toFixed(1) : '0';
   const nexusDensity = parsedSkills.length > 0 ? (totalSynapses / parsedSkills.length).toFixed(2) : '0';

@@ -369,10 +369,10 @@ The `org/` tree holds stable team and policy configuration. `guardian` and `read
 ## Numbers
 
 ```
-Skills:            65 (L0:1 · L1:5 · L2:~30 · L3:27)
+Skills:            71 (L0:1 · L1:5 · L2:33 · L3:32)
 Extension Packs:   10
-Synapses:       203 (3.1 avg/skill)
-Pulses:           44 (51 emit/listen edges)
+Synapses:          315 (4.4 avg/skill)
+Pulses:            49 (60 emit/listen edges)
 Platforms:         Claude Code, Cursor, Codex, Antigravity, OpenCode, OpenClaw, Generic
 Tests:             1,035 passing
 ```

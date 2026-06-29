@@ -1,0 +1,31 @@
+name: CI
+
+# Push/PR gate. Runs the full local CI bundle (lint + tests + signal
+# validation + doctor) on both Linux and Windows so the recurring
+# Windows/Cursor hook regressions become pre-merge failures. The conformance
+# harness (compiler/__tests__/hook-conformance.test.js) is the centerpiece.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  conformance:
+    name: ci (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      # No lockfile is committed, so `npm install` (not `npm ci`).
+      - run: npm install
+      - run: npm run ci

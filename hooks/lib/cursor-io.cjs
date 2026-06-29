@@ -65,20 +65,33 @@ function readStdinRaw(stream = processStdin, opts = {}) {
       return;
     }
     let buf = '';
+    let timer = null;
+    // Settle exactly once and ALWAYS clear the fallback timer. Without this the
+    // (uncleared, non-unref'd) timer keeps the Node process alive for the full
+    // timeout after stdin already ended — 30s of zombie process per Cursor hook.
+    const settle = (fn, val) => {
+      if (timer) {
+        clearTimeout(timer);
+        timer = null;
+      }
+      fn(val);
+    };
     stream.setEncoding('utf-8');
     const onData = (chunk) => {
       buf += chunk;
       if (buf.length > MAX_STDIN) {
         stream.removeListener('data', onData);
         stream.destroy();
-        reject(new Error('stdin too large'));
+        settle(reject, new Error('stdin too large'));
       }
     };
     stream.on('data', onData);
-    stream.on('end', () => resolve(buf));
-    stream.on('error', reject);
+    stream.on('end', () => settle(resolve, buf));
+    stream.on('error', (err) => settle(reject, err));
     if (timeoutMs > 0) {
-      setTimeout(() => resolve(buf), timeoutMs);
+      timer = setTimeout(() => settle(resolve, buf), timeoutMs);
+      // Don't let the fallback timer itself hold the event loop open.
+      if (typeof timer.unref === 'function') timer.unref();
     }
   });
 }

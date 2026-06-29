@@ -17,6 +17,8 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { checkNexusIntegrity } from '../compiler/doctor.js';
+import { NEXUS_STATS } from '../compiler/nexus-constants.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
@@ -149,6 +151,29 @@ if (existsSync(skillsDir2)) {
       fail(`${path}: shows ${found} skills, actual is ${actualSkillCount}`);
     }
   }
+}
+
+// 1e. Nexus stat consistency — nexus-constants.js MUST match the live `topia doctor`
+//     computation (sum of `## Calls` synapses, distinct pulses, skill dirs). This is the
+//     guard that stops the 203/315 drift from silently recurring when skills are added.
+try {
+  const nexus = await checkNexusIntegrity(ROOT);
+  const live = {
+    skills: nexus.stats.skills,
+    synapses: nexus.stats.synapses,
+    pulses: nexus.stats.pulses,
+  };
+  for (const key of ['skills', 'synapses', 'pulses']) {
+    if (NEXUS_STATS[key] === live[key]) {
+      pass(`nexus-constants.${key}: ${live[key]} (matches doctor)`);
+    } else {
+      fail(
+        `nexus-constants.${key}=${NEXUS_STATS[key]} but doctor computes ${live[key]} — update compiler/nexus-constants.js`,
+      );
+    }
+  }
+} catch (err) {
+  warn(`Nexus stat check skipped: ${err.message}`);
 }
 
 // 2. npm registry check (non-blocking, just warn)

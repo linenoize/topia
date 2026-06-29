@@ -1,10 +1,11 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { copyFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { mkdtemp, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { describe, test } from 'node:test';
+import flightrec from '../../hooks/lib/flightrec.cjs';
 import {
   LAUNCHER_REL,
   launcherPathFor,
@@ -14,6 +15,22 @@ import {
 } from '../commands/hooks/launcher.js';
 
 const ASSET = path.resolve(import.meta.dirname, '../assets/hook-dispatch-launcher.cjs');
+const FLIGHTREC_SRC = path.resolve(import.meta.dirname, '../../hooks/lib/flightrec.cjs');
+
+/** Build a fake plugin tree with a stub CLI; optionally include flightrec.cjs. */
+function makeFakePlugin(root, { withFlightrec = false } = {}) {
+  const cli = path.join(root, 'compiler', 'bin', 'topia.js');
+  mkdirSync(path.dirname(cli), { recursive: true });
+  mkdirSync(path.join(root, '.claude-plugin'), { recursive: true });
+  writeFileSync(path.join(root, '.claude-plugin', 'plugin.json'), JSON.stringify({ name: 'topia', version: '9.9.9' }));
+  writeFileSync(cli, 'process.exit(0);\n');
+  if (withFlightrec) {
+    const libDir = path.join(root, 'hooks', 'lib');
+    mkdirSync(libDir, { recursive: true });
+    copyFileSync(FLIGHTREC_SRC, path.join(libDir, 'flightrec.cjs'));
+  }
+  return cli;
+}
 
 describe('launcher reference helpers', () => {
   test('project scope ref uses ${CLAUDE_PROJECT_DIR} (expands in settings.json)', () => {
@@ -109,6 +126,53 @@ describe('launcher runtime delegation', () => {
       const res = spawnSync(process.execPath, [launcher, 'hook-dispatch', 'guardian'], { env, encoding: 'utf8' });
       assert.equal(res.status, 0);
       assert.match(res.stderr, /could not locate the Topia plugin/);
+    } finally {
+      await rm(tmp, { recursive: true, force: true });
+    }
+  });
+});
+
+describe('launcher flight recorder', () => {
+  test('records one valid dispatch to <CLAUDE_PROJECT_DIR>/.topia/hook-flightrec.jsonl', async () => {
+    const tmp = await mkdtemp(path.join(os.tmpdir(), 'topia-fr-'));
+    try {
+      const plugin = path.join(tmp, 'plugin');
+      const cli = makeFakePlugin(plugin, { withFlightrec: true });
+      const projectDir = path.join(tmp, 'project');
+      mkdirSync(projectDir, { recursive: true });
+
+      const res = spawnSync(process.execPath, [ASSET, 'hook-dispatch', 'readiness', '--gentle'], {
+        env: { ...process.env, CLAUDE_PLUGIN_ROOT: plugin, TOPIA_ROOT: '', CLAUDE_PROJECT_DIR: projectDir },
+        encoding: 'utf8',
+      });
+      assert.equal(res.status, 0, res.stderr);
+
+      const recPath = path.join(projectDir, '.topia', flightrec.FILE_NAME);
+      const recs = flightrec.parseRecords(readFileSync(recPath, 'utf8'));
+      assert.equal(recs.length, 1);
+      assert.equal(flightrec.validateRecord(recs[0]).valid, true);
+      assert.equal(recs[0].hook, 'readiness');
+      assert.equal(recs[0].target, cli);
+      assert.equal(recs[0].exit, 0);
+    } finally {
+      await rm(tmp, { recursive: true, force: true });
+    }
+  });
+
+  test('fail-open: plugin without flightrec.cjs still exits 0 and writes nothing', async () => {
+    const tmp = await mkdtemp(path.join(os.tmpdir(), 'topia-fr-none-'));
+    try {
+      const plugin = path.join(tmp, 'plugin');
+      makeFakePlugin(plugin, { withFlightrec: false });
+      const projectDir = path.join(tmp, 'project');
+      mkdirSync(projectDir, { recursive: true });
+
+      const res = spawnSync(process.execPath, [ASSET, 'hook-dispatch', 'guardian'], {
+        env: { ...process.env, CLAUDE_PLUGIN_ROOT: plugin, TOPIA_ROOT: '', CLAUDE_PROJECT_DIR: projectDir },
+        encoding: 'utf8',
+      });
+      assert.equal(res.status, 0, res.stderr);
+      assert.equal(existsSync(path.join(projectDir, '.topia', flightrec.FILE_NAME)), false);
     } finally {
       await rm(tmp, { recursive: true, force: true });
     }

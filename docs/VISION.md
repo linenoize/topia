@@ -24,7 +24,7 @@ Topia is a **skill toolkit** — not a skill collection, not a pipeline, not an 
 
 **Technical definition:**
 
-> **Topia = 71 skills × 203+ sync connections × 45 async signals × cross-session memory × multi-platform compiler**
+> **Topia = 71 skills × 315+ sync connections × 49 async signals × cross-session memory × multi-platform compiler**
 
 All three components are equally essential:
 - Remove connections → becomes a collection (The Bloat wins)
@@ -226,7 +226,7 @@ Topia operates on three time horizons. The roadmap is intentionally non-prescrip
 *Topia is successful when these are true. Not when the feature list is long.*
 
 ### Graph Health
-- **Connection density** ≥ 3.0 connections/skill (currently: 2.94 at 203 synapses / 69 skills — slightly below the 3.0 target after v3.2.0 added two utility skills without proportional new synapses; still above the 2.5 floor) — do not let this drop below 2.5
+- **Connection density** ≥ 3.0 connections/skill (currently: 4.44 at 315 synapses / 71 skills — above the 3.0 target) — do not let this drop below 2.5
 - **Dead nodes** = 0 — every skill has ≥1 inbound and ≥1 outbound connection
 - **Max chain depth used** < 6 in practice (ceiling is 8) — if chains regularly hit 8, the toolkit needs restructuring
 - **Bloat Index** = 0.00 — dead nodes / total skills

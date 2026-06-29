@@ -8,6 +8,7 @@ const { execFileSync } = require('child_process');
 const { isCursorRuntime, writeHookResponse } = require('../lib/cursor-io.cjs');
 const { isAgoraMemoryRegistered, agoraCodeOnPath } = require('../lib/agora-detect.cjs');
 const { resolveTopiaDir, topiaDirForWrite } = require('../lib/topia-paths.cjs');
+const autofix = require('../lib/autofix.cjs');
 
 const hookLines = [];
 const origLog = console.log.bind(console);
@@ -33,6 +34,11 @@ try {
 // Rune migration detection — fires before state load so the user sees the
 // prompt prominently. Self-suppressing via flag files in .topia/.
 detectRuneMigration();
+
+// Opt-in auto-finalize — when explicitly enabled, wire global hooks for a
+// never-finalized machine (backed up, additive). Runs before the nudge so a
+// successful wire suppresses it. Default is the nudge below.
+detectAutoFinalize();
 
 // First-run finalize nudge — one-line offer that points at /topia finalize.
 // Self-suppresses once .topia/.finalized OR .topia/skip-finalize.flag exists.
@@ -181,55 +187,73 @@ function detectFinalizeNudge() {
 // CONCRETE paths (skip `${CLAUDE_PROJECT_DIR}`/`${CLAUDE_PLUGIN_ROOT}` — those are
 // resolved by Claude Code, not us) so the check never false-positives.
 function detectStaleHooks() {
-  const candidates = [
-    path.join(os.homedir(), '.claude', 'settings.json'),
-    path.join(cwd, '.claude', 'settings.json'),
-  ];
-  const seen = new Set();
-  const stale = [];
+  const home = os.homedir();
+  const globalSettings = path.join(home, '.claude', 'settings.json');
+  const projectSettings = path.join(cwd, '.claude', 'settings.json');
+  const optOutDirs = [TopiaDirWrite, TopiaDirRead, path.join(home, '.claude', 'topia')];
 
-  for (const settingsPath of candidates) {
-    if (seen.has(settingsPath)) continue;
-    seen.add(settingsPath);
-    let settings;
-    try {
-      if (!fs.existsSync(settingsPath)) continue;
-      const raw = fs.readFileSync(settingsPath, 'utf-8');
-      if (!raw.trim()) continue;
-      settings = JSON.parse(raw);
-    } catch {
-      continue; // unreadable / invalid JSON — not our problem to diagnose here
-    }
-    if (!settings || typeof settings.hooks !== 'object') continue;
+  const globalStale = autofix.staleTargetsIn(globalSettings);
+  const projectStale =
+    projectSettings === globalSettings ? [] : autofix.staleTargetsIn(projectSettings);
+  if (globalStale.length === 0 && projectStale.length === 0) return;
 
-    for (const groups of Object.values(settings.hooks)) {
-      if (!Array.isArray(groups)) continue;
-      for (const group of groups) {
-        if (!Array.isArray(group?.hooks)) continue;
-        for (const entry of group.hooks) {
-          const cmd = entry && typeof entry.command === 'string' ? entry.command : '';
-          if (!/hook-dispatch/.test(cmd)) continue;
-          // Extract the `node "<path>" …` target.
-          const m = cmd.match(/node\s+"([^"]+\.(?:cjs|js))"/) || cmd.match(/node\s+(\S+\.(?:cjs|js))/);
-          if (!m) continue;
-          const target = m[1];
-          if (target.includes('${')) continue; // variable path — Claude Code resolves it
-          try {
-            if (!fs.existsSync(target)) stale.push({ settingsPath, target });
-          } catch {
-            /* ignore */
-          }
-        }
-      }
+  // Auto-repair the GLOBAL file only (the documented rot-on-upgrade case).
+  // Project scope is left to a warn — auto-editing a repo's settings.json is
+  // higher surprise and may be intentionally divergent.
+  if (globalStale.length > 0 && !autofix.repairOptedOut(optOutDirs)) {
+    const preset = autofix.detectPreset(autofix.readSettings(globalSettings)) || 'gentle';
+    const res = autofix.runGlobalSetup(preset);
+    if (res.ok && autofix.staleTargetsIn(globalSettings).length === 0) {
+      console.log('');
+      console.log('  ✓ topia: auto-repaired stale global hooks → stable launcher');
+      console.log(
+        '      Backup saved beside ~/.claude/settings.json · disable via TOPIA_NO_AUTOREPAIR=1',
+      );
+      if (projectStale.length === 0) return;
     }
   }
 
-  if (stale.length === 0) return;
+  // Warn fallback: opted out, repair failed, or project-scope stale.
+  const example = globalStale[0] || projectStale[0];
   console.log('');
   console.log('  ⚠ topia: some hooks point at a plugin path that no longer exists');
-  console.log(`      (e.g. ${stale[0].target})`);
+  console.log(`      (e.g. ${example})`);
   console.log('      This usually means the plugin was upgraded. Repair with:');
   console.log('        /topia finalize     (rewrites hooks to a version-stable launcher)');
+}
+
+// Opt-in (TOPIA_AUTO_FINALIZE=1 or a `.auto-finalize` flag): wire the managed
+// hook set into the GLOBAL settings.json for a never-finalized machine. Purely
+// additive (preserves user hooks), backed up, idempotent. Fail-open — any
+// problem falls through to the normal first-run nudge.
+function detectAutoFinalize() {
+  const home = os.homedir();
+  const globalSettings = path.join(home, '.claude', 'settings.json');
+  const optOutDirs = [TopiaDirWrite, TopiaDirRead, path.join(home, '.claude', 'topia')];
+
+  const finalized =
+    fs.existsSync(path.join(TopiaDirRead, '.finalized')) ||
+    fs.existsSync(path.join(TopiaDirWrite, '.finalized'));
+  if (finalized) return;
+  if (autofix.hasManagedHooks(autofix.readSettings(globalSettings))) return;
+  if (!autofix.autoFinalizeEnabled(optOutDirs)) return;
+
+  const res = autofix.runGlobalSetup('gentle');
+  if (!res.ok || !autofix.hasManagedHooks(autofix.readSettings(globalSettings))) return;
+
+  try {
+    fs.mkdirSync(TopiaDirWrite, { recursive: true });
+    fs.writeFileSync(
+      path.join(TopiaDirWrite, '.finalized'),
+      `auto-finalized: ${new Date().toISOString()}\n`,
+    );
+  } catch {
+    /* non-critical */
+  }
+  console.log('');
+  console.log('  ✓ topia: wired discipline hooks for this machine (first run)');
+  console.log('      Global ~/.claude/settings.json updated · backup saved alongside it');
+  console.log('      Disable auto-finalize with TOPIA_NO_AUTOFINALIZE=1 (or unset TOPIA_AUTO_FINALIZE)');
 }
 
 const hasTopiaState = fs.existsSync(TopiaDirRead) || fs.existsSync(TopiaDirWrite);

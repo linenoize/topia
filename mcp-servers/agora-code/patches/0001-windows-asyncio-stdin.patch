@@ -1,0 +1,49 @@
+diff --git a/agora_code/memory_server.py b/agora_code/memory_server.py
+index 2307103..ff09220 100644
+--- a/agora_code/memory_server.py
++++ b/agora_code/memory_server.py
+@@ -729,7 +729,19 @@ async def _dispatch(req: dict) -> Optional[dict]:
+ 
+ 
+ async def serve_memory() -> None:
+-    """Main loop — reads JSON-RPC from stdin, writes to stdout."""
++    """Main loop — reads JSON-RPC from stdin, writes to stdout.
++
++    Modified (Topia fork, 2026-05-26): added Windows stdin handling. The original
++    upstream path uses asyncio.connect_read_pipe(sys.stdin), which on Windows
++    requires an IOCP-compatible (overlapped) handle. Console handles and the
++    non-overlapped pipes that Node.js parents (Claude Code, Cursor) create with
++    CreatePipe() are not IOCP-compatible, so connect_read_pipe raises
++    OSError [WinError 6] "The handle is invalid". On Python 3.13 the failure
++    is masked by an AttributeError on _empty_waiter (a CPython regression in
++    asyncio.proactor_events). Read stdin in a thread executor on Windows
++    instead — works on both interactive console handles and inherited pipes.
++    Non-Windows behavior is unchanged.
++    """
+     # Emit session banner on startup
+     try:
+         from agora_code.session import load_session_if_recent, _get_git_branch
+@@ -753,6 +765,23 @@ async def serve_memory() -> None:
+     except Exception:
+         pass
+ 
++    if sys.platform == "win32":
++        loop = asyncio.get_running_loop()
++        while True:
++            try:
++                line = await loop.run_in_executor(None, sys.stdin.readline)
++                if not line:
++                    break
++                req = json.loads(line)
++                resp = await _dispatch(req)
++                if resp is not None:
++                    _send(resp)
++            except json.JSONDecodeError:
++                continue
++            except Exception:
++                break
++        return
++
+     loop = asyncio.get_event_loop()
+     reader = asyncio.StreamReader()
+     proto  = asyncio.StreamReaderProtocol(reader)

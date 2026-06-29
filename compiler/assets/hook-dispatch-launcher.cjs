@@ -135,6 +135,24 @@ function resolvePluginRoot() {
   return scanForNewestPlugin();
 }
 
+/**
+ * Append a flight record for this dispatch — best-effort, fail-open. Loads the
+ * schema module from the runtime-resolved plugin `root` (single source of
+ * truth; the copied launcher cannot `require` a sibling lib). Any failure
+ * (older plugin without the module, unwritable `.topia/`, etc.) is swallowed:
+ * recording must never add a failure mode to the dispatch hot path.
+ */
+function recordDispatch(root, fields) {
+  try {
+    // biome-ignore lint/security/noGlobalEval: dynamic plugin-root require, not eval.
+    const fr = require(path.join(root, 'hooks', 'lib', 'flightrec.cjs'));
+    const dir = path.join(process.env.CLAUDE_PROJECT_DIR || process.cwd(), '.topia');
+    fr.appendRecord(dir, fr.formatRecord(fields));
+  } catch {
+    /* fail-open */
+  }
+}
+
 function main() {
   const root = resolvePluginRoot();
   if (!root) {
@@ -151,7 +169,16 @@ function main() {
   const forwarded = passed[0] === 'hook-dispatch' ? passed : ['hook-dispatch', ...passed];
 
   const cli = path.join(root, CLI_REL);
+  const t0 = Date.now();
   const result = spawnSync(process.execPath, [cli, ...forwarded], { stdio: 'inherit' });
+  const t1 = Date.now();
+  recordDispatch(root, {
+    hook: forwarded[1] || '(unknown)',
+    target: cli,
+    exit: result.status == null ? null : result.status,
+    durationMs: t1 - t0,
+    nowMs: t1,
+  });
   process.exit(result.status == null ? 0 : result.status);
 }
 

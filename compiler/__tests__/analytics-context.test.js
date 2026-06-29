@@ -10,6 +10,15 @@ import {
 
 let tmpRoot;
 
+// Dates must stay inside the analytics rolling window (filterByDays uses
+// today - days). Hard-coded dates age out and cause time-bomb failures, so
+// derive fixture dates relative to "now".
+function daysAgo(n) {
+  const d = new Date();
+  d.setDate(d.getDate() - n);
+  return d.toISOString().slice(0, 10);
+}
+
 beforeEach(async () => {
   tmpRoot = await mkdtemp(path.join(tmpdir(), 'topia-analytics-'));
   const metricsDir = path.join(tmpRoot, '.topia', 'metrics');
@@ -20,7 +29,7 @@ beforeEach(async () => {
     [
       JSON.stringify({
         id: 's-1',
-        date: '2026-05-25',
+        date: daysAgo(2),
         platform: 'claude',
         tool_calls: 130,
         pressure_level: 'red',
@@ -29,7 +38,7 @@ beforeEach(async () => {
       }),
       JSON.stringify({
         id: 's-2',
-        date: '2026-05-24',
+        date: daysAgo(3),
         platform: 'claude',
         tool_calls: 40,
         pressure_level: 'green',

@@ -1,0 +1,85 @@
+{
+  "_README": "Platform-contract fixtures: one representative Claude event payload per native hook. The conformance harness (hook-conformance.test.js) derives 4 variants from each (claude/cursor/crlf/winpath). Event names + matchers mirror hooks/hooks.json. Adding a hook to hooks/<name>/index.cjs WITHOUT an entry here fails the harness.",
+  "fixtures": [
+    {
+      "hook": "session-start",
+      "event": "SessionStart",
+      "payload": { "hook_event_name": "SessionStart", "source": "startup", "cwd": "/tmp/proj", "session_id": "s-test" }
+    },
+    {
+      "hook": "intent-router",
+      "event": "UserPromptSubmit",
+      "payload": { "hook_event_name": "UserPromptSubmit", "prompt": "add a unit test for the parser", "cwd": "/tmp/proj", "session_id": "s-test" }
+    },
+    {
+      "hook": "pre-tool-guard",
+      "event": "PreToolUse",
+      "payload": { "hook_event_name": "PreToolUse", "tool_name": "Read", "tool_input": { "file_path": "/tmp/proj/src/index.ts" }, "cwd": "/tmp/proj", "session_id": "s-test" }
+    },
+    {
+      "hook": "context-watch",
+      "event": "PreToolUse",
+      "payload": { "hook_event_name": "PreToolUse", "tool_name": "Read", "tool_input": { "file_path": "/tmp/proj/src/index.ts" }, "cwd": "/tmp/proj", "session_id": "s-test" }
+    },
+    {
+      "hook": "secrets-scan",
+      "event": "PreToolUse",
+      "payload": { "hook_event_name": "PreToolUse", "tool_name": "Bash", "tool_input": { "command": "ls -la" }, "cwd": "/tmp/proj", "session_id": "s-test" }
+    },
+    {
+      "hook": "git-push-checkpoint",
+      "event": "PreToolUse",
+      "payload": { "hook_event_name": "PreToolUse", "tool_name": "Bash", "tool_input": { "command": "git status" }, "cwd": "/tmp/proj", "session_id": "s-test" }
+    },
+    {
+      "hook": "token-meter",
+      "event": "PostToolUse",
+      "payload": { "hook_event_name": "PostToolUse", "tool_name": "Read", "tool_input": { "file_path": "/tmp/proj/src/index.ts" }, "tool_response": { "ok": true }, "cwd": "/tmp/proj", "session_id": "s-test" }
+    },
+    {
+      "hook": "tool-collector",
+      "event": "PostToolUse",
+      "payload": { "hook_event_name": "PostToolUse", "tool_name": "Read", "tool_input": { "file_path": "/tmp/proj/src/index.ts" }, "tool_response": { "ok": true }, "cwd": "/tmp/proj", "session_id": "s-test" }
+    },
+    {
+      "hook": "auto-format",
+      "event": "PostToolUse",
+      "payload": { "hook_event_name": "PostToolUse", "tool_name": "Edit", "tool_input": { "file_path": "/tmp/proj/does-not-exist.ts" }, "tool_response": { "ok": true }, "cwd": "/tmp/proj", "session_id": "s-test" }
+    },
+    {
+      "hook": "typecheck",
+      "event": "PostToolUse",
+      "payload": { "hook_event_name": "PostToolUse", "tool_name": "Edit", "tool_input": { "file_path": "/tmp/proj/does-not-exist.ts" }, "tool_response": { "ok": true }, "cwd": "/tmp/proj", "session_id": "s-test" }
+    },
+    {
+      "hook": "agora-learn-commit",
+      "event": "PostToolUse",
+      "payload": { "hook_event_name": "PostToolUse", "tool_name": "Bash", "tool_input": { "command": "git commit -m wip" }, "tool_response": { "ok": true }, "cwd": "/tmp/proj", "session_id": "s-test" }
+    },
+    {
+      "hook": "metrics-collector",
+      "event": "PostToolUse",
+      "payload": { "hook_event_name": "PostToolUse", "tool_name": "Skill", "tool_input": { "name": "topia:build" }, "tool_response": { "ok": true }, "cwd": "/tmp/proj", "session_id": "s-test" }
+    },
+    {
+      "hook": "quarantine",
+      "event": "PostToolUse",
+      "payload": { "hook_event_name": "PostToolUse", "tool_name": "Read", "tool_input": { "file_path": "/tmp/proj/uploads/note.md" }, "tool_response": { "ok": true }, "cwd": "/tmp/proj", "session_id": "s-test" }
+    },
+    {
+      "hook": "pre-compact",
+      "event": "PreCompact",
+      "payload": { "hook_event_name": "PreCompact", "trigger": "auto", "cwd": "/tmp/proj", "session_id": "s-test" }
+    },
+    {
+      "hook": "post-compact",
+      "event": "PostCompact",
+      "payload": { "hook_event_name": "PostCompact", "trigger": "auto", "cwd": "/tmp/proj", "session_id": "s-test" }
+    },
+    {
+      "hook": "post-session-reflect",
+      "event": "Stop",
+      "payload": { "hook_event_name": "Stop", "cwd": "/tmp/proj", "session_id": "s-test" }
+    }
+  ]
+}
