@@ -220,7 +220,7 @@ export async function getSkillChains(TopiaRoot, days = 30) {
     .slice(0, 20);
 }
 
-export async function getToolTokenDistribution(TopiaRoot, days = 30) {
+export async function getToolTokenDistribution(TopiaRoot, _days = 30) {
   const { toolTotals } = await loadMetrics(TopiaRoot);
 
   return Object.entries(toolTotals)

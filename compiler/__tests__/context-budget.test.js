@@ -21,7 +21,7 @@ describe('context-budget', () => {
   test('apply all writes context-budget.json', async () => {
     root = mkdtempSync(join(tmpdir(), 'topia-cb-'));
     mkdirSync(join(root, '.topia'), { recursive: true });
-    const long = '# Test\n' + 'line\n'.repeat(160);
+    const long = `# Test\n${'line\n'.repeat(160)}`;
     writeFileSync(join(root, 'CLAUDE.md'), long, 'utf-8');
     const audit = auditContextBudget(root);
     const r = await applyRemediations(root, ['all'], audit.metrics);

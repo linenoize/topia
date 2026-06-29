@@ -216,7 +216,7 @@ export function writeActivePacks(projectRoot, detected, force = false, source = 
     source,
     updatedAt: activatedAt,
   };
-  writeFileSync(outPath, JSON.stringify(payload, null, 2) + '\n', 'utf-8');
+  writeFileSync(outPath, `${JSON.stringify(payload, null, 2)}\n`, 'utf-8');
   return { path: outPath, enabled: payload.enabled, merged: true };
 }
 
@@ -234,7 +234,7 @@ export function mergeTopiaConfigExtensions(projectRoot, enabled) {
   const cfg = JSON.parse(readFileSync(cfgPath, 'utf-8'));
   if (!cfg.extensions) cfg.extensions = {};
   cfg.extensions.enabled = enabled.map((p) => packIdToDirName(p));
-  writeFileSync(cfgPath, JSON.stringify(cfg, null, 2) + '\n', 'utf-8');
+  writeFileSync(cfgPath, `${JSON.stringify(cfg, null, 2)}\n`, 'utf-8');
   return { updated: true, path: cfgPath };
 }
 

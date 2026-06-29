@@ -1,5 +1,5 @@
 import assert from 'node:assert';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, test } from 'node:test';
@@ -27,7 +27,7 @@ describe('detect-l4-packs', () => {
   test('writeActivePacks creates json', () => {
     root = mkdtempSync(join(tmpdir(), 'topia-l4-'));
     const detected = [{ pack: '@Topia/ui', reason: 'react' }];
-    const r = writeActivePacks(root, detected);
+    const _r = writeActivePacks(root, detected);
     assert.ok(existsSync(join(root, '.topia', 'active-packs.json')));
     const j = JSON.parse(readFileSync(join(root, '.topia', 'active-packs.json'), 'utf-8'));
     assert.ok(j.enabled.includes('@Topia/ui'));

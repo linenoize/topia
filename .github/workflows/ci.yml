@@ -26,6 +26,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      # No lockfile is committed, so `npm install` (not `npm ci`).
-      - run: npm install
+      # Lockfile is committed so the toolchain (esp. biome) is pinned and CI
+      # can't drift to a newer formatter/linter than developers run locally.
+      - run: npm ci
       - run: npm run ci

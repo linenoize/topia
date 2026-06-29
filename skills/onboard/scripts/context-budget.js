@@ -98,10 +98,10 @@ function applySlimClaudeMd(projectRoot) {
   const overflowPath = path.join(topiaDir, 'project-context.md');
   const header =
     '# Project context (overflow from CLAUDE.md)\n\n_Moved by Topia onboard context-budget remediation._\n\n';
-  writeFileSync(overflowPath, header + overflow + '\n', 'utf-8');
+  writeFileSync(overflowPath, `${header + overflow}\n`, 'utf-8');
   writeFileSync(
     claudePath,
-    keep + '\n\n> Extended project context: see [.topia/project-context.md](.topia/project-context.md)\n',
+    `${keep}\n\n> Extended project context: see [.topia/project-context.md](.topia/project-context.md)\n`,
     'utf-8',
   );
   return { ok: true, overflowPath };
@@ -127,7 +127,7 @@ function applyMcpAuditDoc(projectRoot, metrics) {
       : ['- _(none parsed — check IDE MCP panel manually)_']),
     '',
   ].join('\n');
-  writeFileSync(p, body + '\n', 'utf-8');
+  writeFileSync(p, `${body}\n`, 'utf-8');
   return { ok: true, path: p };
 }
 
@@ -168,7 +168,7 @@ export async function applyRemediations(projectRoot, ids, metrics) {
     metrics,
     appliedAt: new Date().toISOString(),
   };
-  writeFileSync(path.join(topiaDir, 'context-budget.json'), JSON.stringify(record, null, 2) + '\n', 'utf-8');
+  writeFileSync(path.join(topiaDir, 'context-budget.json'), `${JSON.stringify(record, null, 2)}\n`, 'utf-8');
   return record;
 }
 

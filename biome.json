@@ -36,6 +36,7 @@
       "suspicious": {
         "noExplicitAny": "off",
         "noVar": "error",
+        "noTemplateCurlyInString": "off",
         "noAssignInExpressions": "off",
         "useIterableCallbackReturn": "off",
         "noConsole": { "level": "off", "options": { "allow": ["log"] } }

@@ -6,14 +6,12 @@ import { afterEach, beforeEach, describe, it } from 'node:test';
 import {
   getAllAnalytics,
   getModelDistribution,
-  getPlatformComparison,
   getSavingsVsBaseline,
   getSessionOverview,
   getSessionTrend,
   getSkillChains,
   getSkillFrequency,
   getTokenOverview,
-  getTokenTrend,
   getToolDistribution,
 } from '../analytics.js';
 

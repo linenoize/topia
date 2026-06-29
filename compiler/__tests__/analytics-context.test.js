@@ -23,7 +23,7 @@ beforeEach(async () => {
 
   await writeFile(
     path.join(metricsDir, 'sessions.jsonl'),
-    [
+    `${[
       JSON.stringify({
         id: 's-1',
         date: daysAgo(2),
@@ -41,7 +41,7 @@ beforeEach(async () => {
         pressure_level: 'green',
         tokens: { compactions: 0, context_peak: 40000, confidence: 'measured' },
       }),
-    ].join('\n') + '\n',
+    ].join('\n')}\n`,
   );
 
   await writeFile(

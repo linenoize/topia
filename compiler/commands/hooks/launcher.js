@@ -25,8 +25,8 @@ export const LAUNCHER_REL = path.join('.claude', 'topia', 'hook-dispatch.cjs');
  * IS expanded in settings.json hooks, so this stays portable across machines
  * and deterministic for drift comparison.
  */
-// biome-ignore lint/suspicious/noTemplateCurlyInString: intentional — this is a
-// Claude Code settings.json variable, expanded by Claude Code, NOT a JS template.
+// NOTE: the ${CLAUDE_PROJECT_DIR} below is a Claude Code settings.json variable,
+// expanded by Claude Code at runtime — NOT a JS template literal.
 export const PROJECT_LAUNCHER_REF = '${CLAUDE_PROJECT_DIR}/.claude/topia/hook-dispatch.cjs';
 
 /** Absolute on-disk path of the launcher for a given scope root. */

@@ -18,7 +18,7 @@ import path from 'node:path';
 import { parseArgs } from 'node:util';
 import { resolveTopiaDir, topiaDirForWrite } from '../../../compiler/lib/topia-paths.js';
 
-const STATE_FILES = ['progress.md', 'decisions.md', 'conventions.md'];
+const _STATE_FILES = ['progress.md', 'decisions.md', 'conventions.md'];
 
 function cwdHash(cwd) {
   return Buffer.from(cwd).toString('base64url').slice(0, 16);
