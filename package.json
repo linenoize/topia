@@ -64,7 +64,7 @@
     "url": "https://github.com/linenoize/topia/issues"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.4.15",
+    "@biomejs/biome": "2.4.15",
     "c8": "^11.0.0"
   }
 }
