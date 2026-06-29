@@ -139,9 +139,7 @@ describe('stripTopiaHooks', () => {
       $schema: 'https://example.com/schema.json',
       env: { FOO: 'bar' },
       hooks: {
-        Stop: [
-          { matcher: '.*', hooks: [{ command: 'npx --yes @linenoize/topia hook-dispatch completion-gate' }] },
-        ],
+        Stop: [{ matcher: '.*', hooks: [{ command: 'npx --yes @linenoize/topia hook-dispatch completion-gate' }] }],
       },
     };
     const result = stripTopiaHooks(settings);

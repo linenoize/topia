@@ -346,9 +346,7 @@ describe('analytics — token metrics', () => {
       path.join(metricsDir, 'baseline.json'),
       JSON.stringify({ without_topia_avg_tokens: 10000, measured_date: today(), task_type: 'feature' }),
     );
-    await setupMetrics(tmpDir, [
-      sessionEntry({ tokens: { total_estimated: 5000, confidence: 'estimated' } }),
-    ]);
+    await setupMetrics(tmpDir, [sessionEntry({ tokens: { total_estimated: 5000, confidence: 'estimated' } })]);
     const savings = await getSavingsVsBaseline(tmpDir);
     assert.strictEqual(savings.has_baseline, true);
     assert.strictEqual(savings.recent_avg, 5000);
@@ -357,9 +355,7 @@ describe('analytics — token metrics', () => {
   });
 
   it('getAllAnalytics includes token fields', async () => {
-    await setupMetrics(tmpDir, [
-      sessionEntry({ tokens: { total_estimated: 1000, confidence: 'estimated' } }),
-    ]);
+    await setupMetrics(tmpDir, [sessionEntry({ tokens: { total_estimated: 1000, confidence: 'estimated' } })]);
     const data = await getAllAnalytics(tmpDir, 30);
     assert.ok(data.tokenOverview);
     assert.ok(Array.isArray(data.tokenTrend));

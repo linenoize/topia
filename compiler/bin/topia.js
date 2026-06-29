@@ -35,30 +35,27 @@ import os from 'node:os';
 import path from 'node:path';
 import { createInterface } from 'node:readline';
 import { fileURLToPath } from 'node:url';
+import { activateL4PacksForProject, packIdToDirName } from '../../skills/onboard/scripts/detect-l4-packs.js';
 import { getAdapter, listPlatforms } from '../adapters/index.js';
 import { getAllAnalytics } from '../analytics.js';
 import { dispatchHook } from '../commands/hook-dispatch.js';
 import { checkHookDrift, formatHookDriftResult } from '../commands/hooks/drift.js';
 import { installHooks } from '../commands/hooks/install.js';
+import { resolveTopiaRoot } from '../commands/hooks/resolve-topia-root.js';
 import { hookStatus } from '../commands/hooks/status.js';
 import { uninstallHooks } from '../commands/hooks/uninstall.js';
 import { runInstall } from '../commands/install.js';
+import { runMemorySeed } from '../commands/memory-seed.js';
 import { migrateFromRune } from '../commands/migrate-from-rune.js';
 import { migrateFromV1 } from '../commands/migrate-v1.js';
 import { formatSetupResult, runSetup } from '../commands/setup.js';
 import { generateDashboardHTML } from '../dashboard.js';
 import { checkNexusIntegrity, formatDoctorResults, formatNexusResults, runDoctor } from '../doctor.js';
+import { buildAll } from '../emitter.js';
 import { appendGitignoreChecks } from '../lib/ensure-gitignore.js';
 import { appendTopiaPathChecks } from '../lib/topia-paths.js';
-import { buildAll } from '../emitter.js';
 import { collectStats, detectMemoryHealth, renderStatus, renderStatusJson } from '../status.js';
 import { collectGraphData, generateNexusHTML } from '../visualizer.js';
-import {
-  activateL4PacksForProject,
-  packIdToDirName,
-} from '../../skills/onboard/scripts/detect-l4-packs.js';
-import { runMemorySeed } from '../commands/memory-seed.js';
-import { resolveTopiaRoot } from '../commands/hooks/resolve-topia-root.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

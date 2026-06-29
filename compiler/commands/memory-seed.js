@@ -4,15 +4,9 @@
  * Idempotent via .topia/.agora-seed.json content hash.
  */
 
-import { createHash } from 'node:crypto';
 import { execFileSync, spawnSync } from 'node:child_process';
-import {
-  existsSync,
-  mkdirSync,
-  readdirSync,
-  readFileSync,
-  writeFileSync,
-} from 'node:fs';
+import { createHash } from 'node:crypto';
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
 const SEED_FLAG = '.agora-seed.json';
@@ -44,7 +38,10 @@ export function collectSeedFindings(projectRoot) {
     for (const line of text.split('\n')) {
       if (!line.trim().startsWith('|')) continue;
       if (/^\|\s*Date\s*\|/i.test(line) || /^\|[-:\s|]+\|$/.test(line)) continue;
-      const cells = line.split('|').map((c) => c.trim()).filter(Boolean);
+      const cells = line
+        .split('|')
+        .map((c) => c.trim())
+        .filter(Boolean);
       if (cells.length >= 2) {
         const row = cells.slice(0, 3).join(' — ');
         if (row.length > 12) findings.push({ finding: row, tags: 'topia-seed,decision' });
@@ -59,9 +56,7 @@ export function collectSeedFindings(projectRoot) {
       const body = readFileSync(path.join(adrDir, name), 'utf-8');
       const title = body.match(/^#\s+(.+)/m)?.[1] || name;
       const decisionBlock = body.match(/##\s*Decision\s*\n+([\s\S]*?)(?=\n##|\n#|$)/i)?.[1]?.trim();
-      const text = decisionBlock
-        ? `${title}: ${decisionBlock.slice(0, 400)}`
-        : `${title} (see .topia/adr/${name})`;
+      const text = decisionBlock ? `${title}: ${decisionBlock.slice(0, 400)}` : `${title} (see .topia/adr/${name})`;
       findings.push({ finding: text, tags: 'topia-seed,decision,adr' });
     }
   }
@@ -74,7 +69,9 @@ export function collectSeedFindings(projectRoot) {
         const row = JSON.parse(line);
         const f = row.finding || row.text || row.learning;
         if (f && typeof f === 'string') findings.push({ finding: f, tags: 'topia-seed,learning' });
-      } catch { /* skip bad lines */ }
+      } catch {
+        /* skip bad lines */
+      }
     }
   }
 
@@ -123,19 +120,15 @@ function readSeedFlag(projectRoot) {
 
 function writeSeedFlag(projectRoot, payload) {
   mkdirSync(path.join(projectRoot, '.topia'), { recursive: true });
-  writeFileSync(
-    path.join(projectRoot, '.topia', SEED_FLAG),
-    `${JSON.stringify(payload, null, 2)}\n`,
-    'utf-8',
-  );
+  writeFileSync(path.join(projectRoot, '.topia', SEED_FLAG), `${JSON.stringify(payload, null, 2)}\n`, 'utf-8');
 }
 
 function storeViaCli(projectRoot, finding, tags) {
-  execFileSync(
-    'agora-code',
-    ['learn', finding, '--tags', tags, '--confidence', 'confirmed'],
-    { cwd: projectRoot, stdio: ['pipe', 'pipe', 'pipe'], encoding: 'utf-8' },
-  );
+  execFileSync('agora-code', ['learn', finding, '--tags', tags, '--confidence', 'confirmed'], {
+    cwd: projectRoot,
+    stdio: ['pipe', 'pipe', 'pipe'],
+    encoding: 'utf-8',
+  });
 }
 
 /**

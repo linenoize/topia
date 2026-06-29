@@ -3,10 +3,7 @@ import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, test } from 'node:test';
-import {
-  getExpensiveSessions,
-  getToolTokenDistribution,
-} from '../analytics.js';
+import { getExpensiveSessions, getToolTokenDistribution } from '../analytics.js';
 
 let tmpRoot;
 

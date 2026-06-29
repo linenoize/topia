@@ -49,9 +49,7 @@ function cursorPayloadForEvent(hookEventName, message) {
     return {};
   }
   if (!name) {
-    return message
-      ? { permission: 'allow', agent_message: message }
-      : { permission: 'allow' };
+    return message ? { permission: 'allow', agent_message: message } : { permission: 'allow' };
   }
   if (message) return { additional_context: message };
   return {};

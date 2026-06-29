@@ -7,7 +7,7 @@
  */
 
 import { existsSync } from 'node:fs';
-import { readFile, readdir } from 'node:fs/promises';
+import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { resolveTopiaRoot } from '../../commands/hooks/resolve-topia-root.js';
 
@@ -133,9 +133,7 @@ export async function uninstall({ projectRoot }) {
 
   if (existsSync(rulesDir)) {
     const entries = await readdir(rulesDir, { withFileTypes: true });
-    const TopiaFiles = entries.filter(
-      (e) => e.isFile() && e.name.startsWith(Topia_PREFIX) && e.name.endsWith('.mdc'),
-    );
+    const TopiaFiles = entries.filter((e) => e.isFile() && e.name.startsWith(Topia_PREFIX) && e.name.endsWith('.mdc'));
 
     for (const file of TopiaFiles) {
       const abs = path.join(rulesDir, file.name);
@@ -183,9 +181,7 @@ export async function status(projectRoot) {
 
   if (existsSync(rulesDir)) {
     const entries = await readdir(rulesDir, { withFileTypes: true });
-    const TopiaFiles = entries.filter(
-      (e) => e.isFile() && e.name.startsWith(Topia_PREFIX) && e.name.endsWith('.mdc'),
-    );
+    const TopiaFiles = entries.filter((e) => e.isFile() && e.name.startsWith(Topia_PREFIX) && e.name.endsWith('.mdc'));
     const ruleWired = TopiaFiles.map((f) => f.name.replace(Topia_PREFIX, '').replace('.mdc', ''));
     wired = [...wired, ...ruleWired];
     missing = expectedRules.filter((s) => !ruleWired.includes(s));

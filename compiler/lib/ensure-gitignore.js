@@ -3,8 +3,8 @@
  */
 import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { createInterface } from 'node:readline';
 import path from 'node:path';
+import { createInterface } from 'node:readline';
 
 export const SKIP_GITIGNORE_FLAG = 'skip-gitignore.flag';
 
@@ -52,11 +52,7 @@ function writeGitignore(projectRoot, content) {
 
 function writeSkipFlag(projectRoot) {
   mkdirSync(path.join(projectRoot, '.topia'), { recursive: true });
-  writeFileSync(
-    path.join(projectRoot, '.topia', SKIP_GITIGNORE_FLAG),
-    `${new Date().toISOString()}\n`,
-    'utf-8',
-  );
+  writeFileSync(path.join(projectRoot, '.topia', SKIP_GITIGNORE_FLAG), `${new Date().toISOString()}\n`, 'utf-8');
 }
 
 function hasSkipFlag(projectRoot) {
@@ -128,12 +124,15 @@ function findTrackedTopiaPaths(projectRoot) {
       stdio: ['pipe', 'pipe', 'pipe'],
     }).trim();
     if (!out) return [];
-    return out.split('\n').filter(Boolean).filter((p) => {
-      if (p === '.mcp.json') return true;
-      if (p.startsWith('.topia/org/')) return false;
-      if (p.startsWith('.topia/')) return true;
-      return false;
-    });
+    return out
+      .split('\n')
+      .filter(Boolean)
+      .filter((p) => {
+        if (p === '.mcp.json') return true;
+        if (p.startsWith('.topia/org/')) return false;
+        if (p.startsWith('.topia/')) return true;
+        return false;
+      });
   } catch {
     return [];
   }
@@ -170,9 +169,7 @@ export function checkGitignore(projectRoot) {
     // Surface the fix command so users don't have to figure it out.
     // .gitignore can't untrack already-committed files — only `git rm --cached` can.
     const quoted = tracked.map((p) => (/[\s"]/.test(p) ? `"${p.replace(/"/g, '\\"')}"` : p)).join(' ');
-    results.warnings.push(
-      `Fix: git rm --cached ${quoted} && git commit -m "chore: untrack .topia/ session state"`,
-    );
+    results.warnings.push(`Fix: git rm --cached ${quoted} && git commit -m "chore: untrack .topia/ session state"`);
     results.healthy = false;
   } else {
     results.checks.push({ name: 'Tracked Topia local files', status: 'pass' });

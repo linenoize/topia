@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'nod
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, test } from 'node:test';
-import { auditContextBudget, applyRemediations } from '../../skills/onboard/scripts/context-budget.js';
+import { applyRemediations, auditContextBudget } from '../../skills/onboard/scripts/context-budget.js';
 
 describe('context-budget', () => {
   let root;

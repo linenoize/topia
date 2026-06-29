@@ -75,9 +75,10 @@ export async function runDoctor({ outputRoot, adapter, config, topiaRoot }) {
     // No config at all (CI / fresh clone) — skip gracefully
     // For Claude adapter this is the normal state — config is only needed for
     // compile-to-other-IDE flows. Phrase the skip so users don't read it as an error.
-    const detail = adapter.name === 'claude'
-      ? 'Not required for Claude Code (reads SKILL.md directly)'
-      : 'No config — source-only mode';
+    const detail =
+      adapter.name === 'claude'
+        ? 'Not required for Claude Code (reads SKILL.md directly)'
+        : 'No config — source-only mode';
     results.checks.push({ name: 'Config file', status: 'skip', detail });
   }
 

@@ -199,11 +199,7 @@ Low
 
       for (const pack of packs) {
         const issues = validatePack(join(extDir, pack));
-        assert.strictEqual(
-          issues.length,
-          0,
-          `${pack} pack issues:\n${issues.join('\n')}`,
-        );
+        assert.strictEqual(issues.length, 0, `${pack} pack issues:\n${issues.join('\n')}`);
       }
     });
   });

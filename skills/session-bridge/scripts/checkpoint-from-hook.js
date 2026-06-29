@@ -122,8 +122,7 @@ export function writeCheckpointFromHook({ root, trigger }) {
 
   const now = new Date();
   const stamp = now.toISOString().replace('T', ' ').slice(0, 16);
-  const triggerLabel =
-    trigger === 'git-push' ? 'git push' : trigger === 'pre-compact' ? 'pre-compact' : trigger;
+  const triggerLabel = trigger === 'git-push' ? 'git push' : trigger === 'pre-compact' ? 'pre-compact' : trigger;
 
   const topTools = Object.entries(watch.toolCounts || {})
     .sort((a, b) => b[1] - a[1])

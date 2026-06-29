@@ -238,13 +238,9 @@ export async function getExpensiveSessions(TopiaRoot, days = 30) {
   const { sessions } = await loadMetrics(TopiaRoot);
   const filtered = filterByDays(sessions, days);
 
-  const peaks = filtered
-    .map((s) => s.tokens?.context_peak)
-    .filter((p) => typeof p === 'number');
+  const peaks = filtered.map((s) => s.tokens?.context_peak).filter((p) => typeof p === 'number');
   const p90 =
-    peaks.length > 0
-      ? peaks.sort((a, b) => a - b)[Math.floor(peaks.length * 0.9)] ?? peaks[peaks.length - 1]
-      : 90000;
+    peaks.length > 0 ? (peaks.sort((a, b) => a - b)[Math.floor(peaks.length * 0.9)] ?? peaks[peaks.length - 1]) : 90000;
 
   return filtered
     .filter(
@@ -546,12 +542,9 @@ export async function getSavingsVsBaseline(TopiaRoot) {
     return { has_baseline: true, baseline, recent_avg: null, delta_percent: null };
   }
 
-  const recentAvg = Math.round(
-    recent.reduce((sum, s) => sum + (s.tokens.total_estimated || 0), 0) / recent.length,
-  );
+  const recentAvg = Math.round(recent.reduce((sum, s) => sum + (s.tokens.total_estimated || 0), 0) / recent.length);
   const baselineVal = baseline.without_topia_avg_tokens;
-  const deltaPercent =
-    baselineVal > 0 ? Math.round(((baselineVal - recentAvg) / baselineVal) * 1000) / 10 : null;
+  const deltaPercent = baselineVal > 0 ? Math.round(((baselineVal - recentAvg) / baselineVal) * 1000) / 10 : null;
 
   return {
     has_baseline: true,

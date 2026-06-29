@@ -150,9 +150,7 @@ function printPlan(plan, opts) {
   if (runeState.present) {
     lines.push(`  .rune/ detected at ${runeState.dir}`);
     if (plan.fileCopies?.length) {
-      const copyDesc = plan.fileCopies.map(({ src, dest }) =>
-        src === dest ? src : `${src} → ${dest}`,
-      );
+      const copyDesc = plan.fileCopies.map(({ src, dest }) => (src === dest ? src : `${src} → ${dest}`));
       lines.push(`    files to copy: ${copyDesc.join(', ')}`);
     } else if (runeState.files.length) {
       lines.push(`    files to copy: ${runeState.files.join(', ')}`);
@@ -257,9 +255,7 @@ export async function migrateFromRune({
         copyFileSync(src, dest);
         result.stateCopied.copied.push(dest);
         const label =
-          srcName === destName
-            ? `.rune/${srcName} → .topia/${destName}`
-            : `.rune/${srcName} → .topia/${destName}`;
+          srcName === destName ? `.rune/${srcName} → .topia/${destName}` : `.rune/${srcName} → .topia/${destName}`;
         console.log(`  ✓ copied ${label}`);
       }
     }

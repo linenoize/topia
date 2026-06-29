@@ -53,10 +53,7 @@ export const TO_LINENOIZE_SCOPED = [
     file: '.claude-plugin/marketplace.json',
     pairs: [
       ['"name": "Topia"', '"name": "topia"'],
-      [
-        '"source": "./",',
-        '"source": { "source": "url", "url": "https://github.com/linenoize/topia.git" },',
-      ],
+      ['"source": "./",', '"source": { "source": "url", "url": "https://github.com/linenoize/topia.git" },'],
       [
         '"source": { "source": "github", "repo": "protopia/skill-topia" },',
         '"source": { "source": "url", "url": "https://github.com/linenoize/topia.git" },',
@@ -109,32 +106,15 @@ export const TO_PROTOPIA_SCOPED = [
   {
     file: '.claude-plugin/marketplace.json',
     pairs: [
-      [
-        '"name": "linenoize",\n  "description"',
-        '"name": "protopia",\n  "description"',
-      ],
-      [
-        '"owner": {\n    "name": "linenoize"\n  }',
-        '"owner": {\n    "name": "Protopia"\n  }',
-      ],
-      [
-        '"owner": {\n    "name": "protopia"\n  }',
-        '"owner": {\n    "name": "Protopia"\n  }',
-      ],
-      [
-        '"author": {\n        "name": "topia"\n      }',
-        '"author": {\n        "name": "skill-topia"\n      }',
-      ],
+      ['"name": "linenoize",\n  "description"', '"name": "protopia",\n  "description"'],
+      ['"owner": {\n    "name": "linenoize"\n  }', '"owner": {\n    "name": "Protopia"\n  }'],
+      ['"owner": {\n    "name": "protopia"\n  }', '"owner": {\n    "name": "Protopia"\n  }'],
+      ['"author": {\n        "name": "topia"\n      }', '"author": {\n        "name": "skill-topia"\n      }'],
     ],
   },
   {
     file: '.claude-plugin/plugin.json',
-    pairs: [
-      [
-        '"author": {\n    "name": "topia"\n  }',
-        '"author": {\n    "name": "skill-topia"\n  }',
-      ],
-    ],
+    pairs: [['"author": {\n    "name": "topia"\n  }', '"author": {\n    "name": "skill-topia"\n  }']],
   },
   {
     file: 'compiler/commands/install.js',

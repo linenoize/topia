@@ -31,15 +31,12 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { createInterface } from 'node:readline';
-import { migrateFromRune, planMigration as planRuneMigration } from './migrate-from-rune.js';
-import { resolveTopiaRoot } from './hooks/resolve-topia-root.js';
-import { runSetup } from './setup.js';
+import { activateL4PacksForProject, isProjectRepoRoot } from '../../skills/onboard/scripts/detect-l4-packs.js';
 import { ensureTopiaGitignore } from '../lib/ensure-gitignore.js';
-import {
-  activateL4PacksForProject,
-  isProjectRepoRoot,
-} from '../../skills/onboard/scripts/detect-l4-packs.js';
+import { resolveTopiaRoot } from './hooks/resolve-topia-root.js';
 import { runMemorySeed } from './memory-seed.js';
+import { migrateFromRune, planMigration as planRuneMigration } from './migrate-from-rune.js';
+import { runSetup } from './setup.js';
 
 /** Claude Code marketplace id (`.claude-plugin/marketplace.json` → `name`). */
 const MARKETPLACE_ID = 'linenoize';

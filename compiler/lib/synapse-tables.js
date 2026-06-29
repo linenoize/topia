@@ -97,7 +97,5 @@ export function extractSynapseSkillsFromSection(sectionText) {
 export function extractSynapseEdgesFromSkill(content, sourceName) {
   const callsMatch = content.match(/## Calls \(outbound[^)]*\)([\s\S]*?)(?=\n## )/);
   const targets = extractSynapseSkillsFromSection(callsMatch ? callsMatch[1] : '');
-  return targets
-    .filter((t) => t !== sourceName)
-    .map((target) => ({ source: sourceName, target, type: 'synapse' }));
+  return targets.filter((t) => t !== sourceName).map((target) => ({ source: sourceName, target, type: 'synapse' }));
 }

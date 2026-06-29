@@ -4,16 +4,52 @@ import path from 'node:path';
 import { parseArgs } from 'node:util';
 
 const PACK_RULES = [
-  { pack: '@Topia/ui', reason: 'Frontend patterns, design system, accessibility', match: (c) => /react|next\.js|vue|svelte/i.test(c.signals) },
-  { pack: '@Topia/backend', reason: 'API patterns, auth, middleware', match: (c) => /express|fastify|fastapi|django|nestjs|flask/i.test(c.signals) },
-  { pack: '@Topia/devops', reason: 'CI/CD, containers, IaC', match: (c) => /docker|kubernetes|terraform|github actions|ci\/cd/i.test(c.signals) },
-  { pack: '@Topia/mobile', reason: 'Mobile architecture, offline sync', match: (c) => /react native|expo|flutter|swiftui/i.test(c.signals) },
-  { pack: '@Topia/security', reason: 'OWASP, compliance', match: (c) => /auth|payment|hipaa|pci|owasp/i.test(c.signals) },
-  { pack: '@Topia/ecommerce', reason: 'Cart, checkout, inventory', match: (c) => /cart|checkout|shopify|ecommerce/i.test(c.signals) },
-  { pack: '@Topia/ai-ml', reason: 'LLM, inference, model evaluation', match: (c) => /ml|llm|embedding|pytorch|inference|tts|qwen|parler/i.test(c.signals) },
+  {
+    pack: '@Topia/ui',
+    reason: 'Frontend patterns, design system, accessibility',
+    match: (c) => /react|next\.js|vue|svelte/i.test(c.signals),
+  },
+  {
+    pack: '@Topia/backend',
+    reason: 'API patterns, auth, middleware',
+    match: (c) => /express|fastify|fastapi|django|nestjs|flask/i.test(c.signals),
+  },
+  {
+    pack: '@Topia/devops',
+    reason: 'CI/CD, containers, IaC',
+    match: (c) => /docker|kubernetes|terraform|github actions|ci\/cd/i.test(c.signals),
+  },
+  {
+    pack: '@Topia/mobile',
+    reason: 'Mobile architecture, offline sync',
+    match: (c) => /react native|expo|flutter|swiftui/i.test(c.signals),
+  },
+  {
+    pack: '@Topia/security',
+    reason: 'OWASP, compliance',
+    match: (c) => /auth|payment|hipaa|pci|owasp/i.test(c.signals),
+  },
+  {
+    pack: '@Topia/ecommerce',
+    reason: 'Cart, checkout, inventory',
+    match: (c) => /cart|checkout|shopify|ecommerce/i.test(c.signals),
+  },
+  {
+    pack: '@Topia/ai-ml',
+    reason: 'LLM, inference, model evaluation',
+    match: (c) => /ml|llm|embedding|pytorch|inference|tts|qwen|parler/i.test(c.signals),
+  },
   { pack: '@Topia/content', reason: 'CMS, SEO, editorial', match: (c) => /cms|blog|mdx|seo|content/i.test(c.signals) },
-  { pack: '@Topia/analytics', reason: 'Dashboards, pipelines, BI', match: (c) => /analytics|dashboard|metrics|data pipeline/i.test(c.signals) },
-  { pack: '@Topia/chrome-ext', reason: 'MV3 extensions', match: (c) => /chrome extension|manifest v3/i.test(c.signals) },
+  {
+    pack: '@Topia/analytics',
+    reason: 'Dashboards, pipelines, BI',
+    match: (c) => /analytics|dashboard|metrics|data pipeline/i.test(c.signals),
+  },
+  {
+    pack: '@Topia/chrome-ext',
+    reason: 'MV3 extensions',
+    match: (c) => /chrome extension|manifest v3/i.test(c.signals),
+  },
 ];
 
 /** @param {string} pack e.g. @Topia/ui */
@@ -110,12 +146,7 @@ export function collectProjectSignals(projectRoot) {
     language = language || 'php';
   }
 
-  const filenameHints = [
-    'Dockerfile',
-    'docker-compose.yml',
-    'docker-compose.yaml',
-    'manifest.json',
-  ];
+  const filenameHints = ['Dockerfile', 'docker-compose.yml', 'docker-compose.yaml', 'manifest.json'];
   for (const name of filenameHints) {
     if (existsSync(path.join(projectRoot, name))) {
       parts.push(name.replace(/\.(json|ya?ml)$/i, ''));
@@ -133,10 +164,18 @@ export function collectProjectSignals(projectRoot) {
           parts.push(readTextIfExists(path.join(ghWorkflows, f)).slice(0, 2000));
         }
       }
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }
 
-  for (const pattern of ['tailwind.config.js', 'tailwind.config.ts', 'next.config.js', 'next.config.mjs', 'next.config.ts']) {
+  for (const pattern of [
+    'tailwind.config.js',
+    'tailwind.config.ts',
+    'next.config.js',
+    'next.config.mjs',
+    'next.config.ts',
+  ]) {
     if (existsSync(path.join(projectRoot, pattern))) {
       parts.push(pattern);
       if (pattern.includes('tailwind')) parts.push('tailwind');

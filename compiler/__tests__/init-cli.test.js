@@ -4,8 +4,8 @@
  */
 
 import assert from 'node:assert';
-import { existsSync, mkdtempSync, readdirSync, rmSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
+import { existsSync, mkdtempSync, readdirSync, rmSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { describe, test } from 'node:test';
@@ -25,16 +25,15 @@ describe('topia init CLI', () => {
         env: { ...process.env, CI: '1' },
       });
 
-      assert.strictEqual(
-        result.status,
-        0,
-        `init failed (exit ${result.status}): ${result.stderr || result.stdout}`,
-      );
+      assert.strictEqual(result.status, 0, `init failed (exit ${result.status}): ${result.stderr || result.stdout}`);
       assert.ok(existsSync(path.join(tmp, 'topia.config.json')), 'topia.config.json missing');
       const rulesDir = path.join(tmp, '.cursor', 'rules');
       assert.ok(existsSync(rulesDir), '.cursor/rules/ missing');
       const entries = readdirSync(rulesDir);
-      assert.ok(entries.some((f) => f.startsWith('Topia-') && f.endsWith('.mdc')), 'no compiled .mdc rules');
+      assert.ok(
+        entries.some((f) => f.startsWith('Topia-') && f.endsWith('.mdc')),
+        'no compiled .mdc rules',
+      );
     } finally {
       rmSync(tmp, { recursive: true, force: true });
     }

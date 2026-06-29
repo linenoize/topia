@@ -56,9 +56,7 @@ if (existsSync(marketplacePath)) {
   if (marketplace.version === pkg.version) {
     pass(`marketplace.json version: ${marketplace.version}`);
   } else if (marketplace.version) {
-    fail(
-      `marketplace.json version=${marketplace.version} vs package.json=${pkg.version}`,
-    );
+    fail(`marketplace.json version=${marketplace.version} vs package.json=${pkg.version}`);
   }
   const entry = marketplace.plugins?.find((p) => p.name === plugin.name);
   if (!entry) {
@@ -69,9 +67,7 @@ if (existsSync(marketplacePath)) {
     pass('marketplace plugin entry version matches package.json');
   }
   if (entry?.name !== plugin.name) {
-    fail(
-      `marketplace plugin name "${entry?.name}" must match plugin.json name "${plugin.name}"`,
-    );
+    fail(`marketplace plugin name "${entry?.name}" must match plugin.json name "${plugin.name}"`);
   } else {
     pass('marketplace plugin name matches plugin.json');
   }

@@ -4,7 +4,17 @@
  * Keep hooks/lib/topia-paths.cjs in sync for CJS hook consumers.
  */
 
-import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, realpathSync, renameSync, rmSync, statSync } from 'node:fs';
+import {
+  cpSync,
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  realpathSync,
+  renameSync,
+  rmSync,
+  statSync,
+} from 'node:fs';
 import path from 'node:path';
 
 export const TOPIA_DIR = '.topia';

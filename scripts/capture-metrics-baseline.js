@@ -11,11 +11,7 @@
 import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
-import {
-  getAllAnalytics,
-  getExpensiveSessions,
-  getTokenOverview,
-} from '../compiler/analytics.js';
+import { getAllAnalytics, getExpensiveSessions, getTokenOverview } from '../compiler/analytics.js';
 import { resolveTopiaDir } from '../compiler/lib/topia-paths.js';
 
 async function main() {

@@ -16,9 +16,9 @@
 import os from 'node:os';
 import path from 'node:path';
 import { createInterface } from 'node:readline';
-import { installHooks } from './hooks/install.js';
 import { ensureTopiaGitignore } from '../lib/ensure-gitignore.js';
 import { normalizeTopiaDir } from '../lib/topia-paths.js';
+import { installHooks } from './hooks/install.js';
 
 /**
  * @param {{ projectRoot: string, topiaRoot: string, args: object }} opts

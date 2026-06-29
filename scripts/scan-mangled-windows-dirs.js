@@ -58,8 +58,7 @@ function scan(dir, depth = 0, maxDepth = 6) {
 const argv = process.argv.slice(2);
 const rootFlag = argv.indexOf('--root');
 const depthFlag = argv.indexOf('--depth');
-const root =
-  rootFlag >= 0 ? argv[rootFlag + 1] : process.cwd();
+const root = rootFlag >= 0 ? argv[rootFlag + 1] : process.cwd();
 const maxDepth = depthFlag >= 0 ? Number(argv[depthFlag + 1]) : 6;
 
 const hits = scan(path.resolve(root), 0, maxDepth);

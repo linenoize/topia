@@ -73,7 +73,9 @@ function readMcpConfigs(projectRoot) {
   const texts = [];
   for (const configPath of paths) {
     if (!existsSync(configPath)) continue;
-    try { texts.push(readFileSync(configPath, 'utf-8')); } catch { }
+    try {
+      texts.push(readFileSync(configPath, 'utf-8'));
+    } catch {}
   }
   return texts.join('\n');
 }

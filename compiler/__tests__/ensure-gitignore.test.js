@@ -4,10 +4,10 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, test } from 'node:test';
 import {
-  SKIP_GITIGNORE_FLAG,
-  TOPIA_GITIGNORE_BLOCK,
   ensureTopiaGitignore,
   gitignoreHasTopiaPatterns,
+  SKIP_GITIGNORE_FLAG,
+  TOPIA_GITIGNORE_BLOCK,
 } from '../lib/ensure-gitignore.js';
 
 function makeGitProject() {
