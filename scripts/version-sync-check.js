@@ -96,6 +96,28 @@ for (const { path, pattern } of versionFiles) {
   }
 }
 
+// 1c. Release drift: commits after the v{version} tag are invisible to installed plugins.
+//     The plugin updater is version-gated and the cache is keyed by the version string,
+//     so shipping commits (or re-pointing an existing tag) without a bump means
+//     `/plugin update` silently reports "up to date" forever.
+try {
+  const tag = `v${pkg.version}`;
+  const gitOpts = { cwd: ROOT, encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] };
+  execFileSync('git', ['rev-parse', '--verify', '--quiet', `refs/tags/${tag}`], gitOpts);
+  const drift = parseInt(execFileSync('git', ['rev-list', '--count', `${tag}..HEAD`], gitOpts).trim(), 10);
+  if (drift === 0) {
+    pass(`No unreleased commits since ${tag}`);
+  } else {
+    warn(
+      `${drift} commit(s) since ${tag} but version is still ${pkg.version} — ` +
+        `run "node scripts/bump-version.js <next>" and tag, or plugin users never receive them`,
+    );
+  }
+} catch {
+  // Tag doesn't exist yet: normal pre-release state right after a bump, before tagging.
+  warn(`Release tag v${pkg.version} not found — remember to "git tag v${pkg.version}" and push it after committing`);
+}
+
 // 1b2. Workspace-level dashboard.html (lives at D:/Project/Topia/dashboard.html when workspace exists)
 const dashboardPath = join(ROOT, '..', 'dashboard.html');
 if (existsSync(dashboardPath)) {
