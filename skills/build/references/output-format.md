@@ -30,6 +30,22 @@ Also defines the NEXUS Deliverables table format used when build is invoked by `
 ### Session State
 - Saved to .topia/decisions.md
 - Saved to .topia/progress.md
+
+### Acceptance Criteria (when bugfix kickoff brief exists — MANDATORY)
+| Criterion | Status | Evidence |
+|-----------|--------|----------|
+| [from brief] | DELIVERED / PARTIAL / NOT_MET | [test file, diff quote, or output] |
+
+### Files Touched (when bugfix kickoff brief exists — MANDATORY)
+| File | Action | Why |
+|------|--------|-----|
+| [from Progress Ledger] | read / create / modify | [reason from ledger] |
+
+### Progress Summary (when bugfix kickoff brief exists)
+- Pipeline phases completed: [list]
+- Steering adjustments: [count from ledger Steering history]
+- Brief: `.topia/bugfix-briefs/<ticket>.md`
+- Ledger: `.topia/bugfix-briefs/<ticket>-progress.md`
 ```
 
 ## Chain Metadata (Cross-Skill Data Forwarding)
@@ -69,5 +85,6 @@ chain_metadata:
 
 - When build is invoked **standalone** (not by team): Deliverables table is optional
 - When build is invoked by **team** with a NEXUS Handoff: Deliverables table is **MANDATORY** — team uses it to track acceptance criteria across streams
-- Cook Report MUST contain actual commit hash, not placeholder
+- When a **bugfix kickoff brief** exists (`.topia/bugfix-briefs/<ticket>.md`): Acceptance Criteria, Files Touched, and Progress Summary sections are **MANDATORY** in the Cook Report
+- Cook Report MUST contain actual commit hash, not placeholder — unless CP3 chose "Don't commit — PR summary only"
 - Self-Validation must pass before emitting the report

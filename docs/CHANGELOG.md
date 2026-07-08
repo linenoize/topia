@@ -4,6 +4,27 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
+## [3.5.0] — 2026-07-07
+
+Bugfix workflow kickoff gate — ticket/branch assembly, Progress Ledger, and steering checkpoints before recon.
+
+### Added
+
+- **`build` Phase 0.7 — Bugfix Kickoff** — `/topia build bugfix` collects ticket ID, branch, commit policy, and acceptance criteria before recon; Start now vs Copy brief for later.
+- **Progress Ledger** — `.topia/bugfix-briefs/<ticket>-progress.md` tracks pipeline phases, files touched (with why), and steering history.
+- **Steering checkpoints CP1–CP3** — dev confirms or adjusts objective, hypothesis, fix method, files, or AC after recon, after RED test, and before commit.
+- **`skills/build/references/bugfix-kickoff.md`** — kickoff AskQuestion spec, brief template, checkpoint definitions, SCRUM-453 example.
+- **`skills/build/evals.md`** — seven eval scenarios for kickoff, steer, status query, and resume.
+
+### Changed
+
+- **`build` v2.6.0** — bugfix chain extended to `Phase 0.7 → 1 → CP1 → 3 → CP2 → 4 → 5 → 6 → CP3 → 7 → 8`.
+- **Cook Report** — mandatory Acceptance Criteria, Files Touched, and Progress Summary when a bugfix brief exists.
+- **`mid-run-signals`** — `StatusQuery` reads Progress Ledger; `Steer` routes to ledger section updates.
+- **`git` branch mode** — documents `SCRUM-` / `JIRA-` ticket-prefix branch naming.
+
+---
+
 ## [3.3.2] — 2026-06-10
 
 Discipline hooks now route through a stable launcher shim — the v3.3.1 `${CLAUDE_PLUGIN_ROOT}` approach did not actually work in `.claude/settings.json`.

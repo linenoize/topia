@@ -68,6 +68,7 @@ These are entry-points the user runs in their shell. They do not invoke a skill 
 - ↻ `/topia fix <issue>` — apply code changes from diagnosis or review findings. Called by `build` Phase 4.
 - ↻ `/topia test` — TDD test writer (red → green). Called by `build` Phase 3.
 - ↻ `/topia db <task>` — database workflow specialist (migrations, schema diff, query audit). Auto-called by `build` when schema files change.
+- **Bugfix kickoff**: `/topia build bugfix` runs Phase 0.7 before recon — collects ticket ID, branch, acceptance criteria, Progress Ledger, and steering checkpoints (CP1–CP3).
 
 ### Quality
 - 👤 `/topia review` — code-quality review with `file:line` findings.

@@ -10,7 +10,7 @@ No LLM reasoning needed. Applies when message is <60 chars.
 | Pattern | Intent | Action |
 |---------|--------|--------|
 | "stop", "cancel", "dừng", "abort" | `Cancel` | Save progress → emit Cook Report with status BLOCKED → stop |
-| "status", "tiến độ", "progress", "where are you" | `StatusQuery` | Reply with current phase + task + % estimate → resume |
+| "status", "tiến độ", "progress", "where are you" | `StatusQuery` | Reply with current phase + task + % estimate → resume. **Bugfix chain**: `Read` `.topia/bugfix-briefs/<ticket>-progress.md` if exists and emit full ledger (Pipeline + Files touched + Fix plan sections) |
 | "wait", "pause", "đợi" | `Pause` | Create `.topia/.continue-here.md` → WIP commit → stop |
 | "skip this", "bỏ qua", "next" | `Steer` | Skip current task → proceed to next task/phase |
 
@@ -20,7 +20,7 @@ Applies when NO keyword match AND message is >60 chars.
 
 | Intent | Signal | Action |
 |--------|--------|--------|
-| `Steer` | Modifies scope but keeps goal ("actually use Redis instead of Memcached") | Update plan inline, note deviation in Cook Report |
+| `Steer` | Modifies scope but keeps goal ("actually use Redis instead of Memcached") | Update plan inline, note deviation in Cook Report. **Bugfix chain**: AskQuestion which Fix plan section to adjust (objective / hypothesis / fix method / files / AC / test approach) → patch brief + Progress Ledger → re-present current checkpoint → log Steering history |
 | `NewTask` | Unrelated to current work ("also fix the login page") | Log to `.topia/backlog.md`, continue current task. Announce: "Noted for later — staying on current task." |
 | `Clarification` | Answers a question build asked, or provides missing context | Absorb into current phase context, resume |
 

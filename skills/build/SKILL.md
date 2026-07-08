@@ -5,7 +5,7 @@ context: fork
 agent: general-purpose
 metadata:
   author: topia
-  version: "2.5.0"
+  version: "2.6.0"
   layer: L1
   model: sonnet
   group: orchestrator
@@ -34,7 +34,7 @@ Build supports predefined workflow chains for common task types. Use these as sh
 
 ```
 /topia build feature    → Full TDD pipeline (all phases)
-/topia build bugfix     → Diagnose → fix → verify (Phase 1 → 4 → 6 → 7)
+/topia build bugfix     → Kickoff → diagnose → steer → fix → verify (Phase 0.7 → 1 → CP1 → 3 → CP2 → 4 → 5 → 6 → CP3 → 7 → 8)
 /topia build refactor   → Understand → plan → implement → quality (Phase 1 → 2 → 4 → 5 → 6 → 7)
 /topia build security   → Full pipeline + guardian@opus + sast (all phases, security-escalated)
 /topia build hotfix     → Production Hotfix Protocol: contain → fix → verify → deploy → watchdog → postmortem (see below)
@@ -96,7 +96,7 @@ Not every task needs every phase:
 
 ```
 Nano task:           DO → VERIFY → DONE (no phases, auto-detected)
-Simple bug fix:      Phase 1 → 4 → 6 → 7
+Simple bug fix:      Phase 0.7 → 1 → CP1 → 3 → CP2 → 4 → 5 → 6 → CP3 → 7 → 8
 Small refactor:      Phase 1 → 4 → 5 → 6 → 7
 New feature:         Phase 1 → 1.5 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 Complex feature:     All phases + brainstorm in Phase 2
@@ -214,7 +214,7 @@ Auto-trigger: no `.topia/` dir (first run) OR build just failed with env-looking
 
 Ask **2 questions** before planning: (1) "What does success look like?" (2) "What should NOT change?"
 
-Skip if: bug fix with clear repro steps | user said "just do it" | fast mode + <10 LOC | hotfix chain active. Complexity revealed → escalate to `topia:idea`.
+Skip if: bug fix with clear repro steps | user said "just do it" | fast mode + <10 LOC | hotfix chain active | bugfix kickoff brief already defines success and scope. Complexity revealed → escalate to `topia:idea`.
 
 5. Invoke recon to scan the codebase (Glob + Grep + Read on relevant files)
 6. Summarize: what exists, project conventions, files likely to change, active decision constraints
@@ -224,6 +224,7 @@ Skip if: bug fix with clear repro steps | user said "just do it" | fast mode + <
    - Flag to Phase 2 (plan) for formal comparison
    - Separating "thinking" (Phase 1) from "committing" (Phase 2) prevents premature lock-in
 9. Mark Phase 1 as `completed`
+10. **Bugfix chain**: Populate Progress Ledger §2–§4 (hypothesis, fix method draft, files in scope with `read` + why) → run **CP1** before Phase 3. Update ledger Pipeline row `Recon` → `done`.
 
 **Gate**: If recon finds the feature already exists → STOP and inform user.
 
@@ -289,7 +290,57 @@ This phase is lightweight — Read + pattern match. It does NOT replace Phase 1 
 Contract violations are NON-NEGOTIABLE. If `.topia/contract.md` exists and a planned or implemented change violates any rule, build MUST stop and report the violation. The user must explicitly override ("ignore contract rule X") to proceed.
 </HARD-GATE>
 
+**Step 0.8 — Bugfix brief resume**: If user says `Continue <TICKET>` (e.g. `Continue SCRUM-453`) and `.topia/bugfix-briefs/<ticket>.md` exists:
+1. `Read` the brief and `.topia/bugfix-briefs/<ticket>-progress.md` if present
+2. Skip Phase 0.7 kickoff
+3. Resume from last incomplete pipeline phase or checkpoint per progress ledger
+
 **This enables multi-session workflows**: Opus plans once → each session picks up the next phase.
+
+## Phase 0.7: BUGFIX KICKOFF (Before Phase 1)
+
+<MUST-READ path="references/bugfix-kickoff.md" trigger="Phase 0.7 — bugfix chain active"/>
+
+**Goal**: Collect ticket/branch preferences, suggest acceptance criteria, assemble execution brief, initialize Progress Ledger — before any recon or edits.
+
+**Triggers (all required):**
+- Active chain is `bugfix` (explicit `/topia build bugfix` or auto-detect)
+- NOT `hotfix`, `nano`, or `fast` mode
+- NOT resuming via Step 0.8 bugfix brief resume above
+
+**Skip when:** user said `"just do it"` / `"skip kickoff"` | kickoff confirmed this session | complete brief (ticket ID + `- [ ]` acceptance criteria + explicit `"go"` / `"start now"`)
+
+1. Parse ticket ID, summary, repro, suspected cause, acceptance criteria from user message
+2. **AskQuestion** — branch, commit policy, regression test, UI verification, Start now vs Copy for later (see `bugfix-kickoff.md`)
+3. Collect ticket ID and branch name via follow-up if not parsed. HARD-GATE: block Start now without ticket ID
+4. Suggest acceptance criteria when missing (3–5 items from repro + cause)
+5. Assemble Bugfix Execution Brief → write `.topia/bugfix-briefs/<ticket>.md`
+6. **Start now**: `topia:git branch` if branch=yes → init `.topia/bugfix-briefs/<ticket>-progress.md` → proceed Phase 1
+7. **Copy for later**: emit Invoke block → **STOP** (no recon, no edits)
+
+If repro unconfirmed, suggest `/topia review-intake` before Start now.
+
+## Bugfix Steering Checkpoints (bugfix chain only)
+
+<MUST-READ path="references/bugfix-kickoff.md" trigger="bugfix chain — at CP1, CP2, or CP3"/>
+
+Skip checkpoints only if user said `just do it` / `skip kickoff` at kickoff.
+
+**After each substantive step**: update Progress Ledger + emit compact status block (see `bugfix-kickoff.md`).
+
+| Checkpoint | When | HARD-GATE |
+|------------|------|-----------|
+| **CP1 — Fix Hypothesis** | After Phase 1 recon, before Phase 3 | Present hypothesis + files-in-scope table; AskQuestion before tests |
+| **CP2 — Fix Method** | After Phase 3 RED, before Phase 4 | Present failing test output + change plan; AskQuestion before implement |
+| **CP3 — Pre-commit** | After Phase 6 verify green, before Phase 7 | Present files touched + AC pass/fail + commit draft; AskQuestion before commit |
+
+<HARD-GATE>
+Bugfix chain: Do NOT enter Phase 4 until dev confirms at CP1 or CP2.
+</HARD-GATE>
+
+**Adjustment menu** (CP1/CP2): Proceed | Adjust objective | Adjust hypothesis | Adjust fix method | Adjust files in scope | Adjust acceptance criteria | Adjust test approach (CP2 only) | Pause
+
+**Mid-run steering**: When dev message classifies as `Steer` (see `references/mid-run-signals.md`), AskQuestion which ledger section to update → patch brief/ledger → re-present current checkpoint. Log in Steering history.
 
 ## Phase 2: PLAN
 
@@ -359,6 +410,7 @@ If the coder model needs info from other phases, it's in the Cross-Phase Context
 4. **Python async pre-check** (if async-first Python flagged in Phase 1): verify `pytest-asyncio` is installed and `asyncio_mode = "auto"` is in `pyproject.toml` — if missing, warn user before writing async tests
 5. Run the test to verify it FAILS — expected: RED because implementation doesn't exist yet
 6. Mark Phase 3 as `completed` (one cycle); Phase 4 implements that one cycle, then loop returns here for the next test
+7. **Bugfix chain**: Update Progress Ledger files table with test file → run **CP2** before Phase 4. HARD-GATE: do not implement until CP2 confirmed (unless kickoff skip).
 
 **Gate**: Test MUST exist and MUST fail. If test passes without implementation → test is wrong, rewrite. If 2+ tests staged before any GREEN → `tdd.horizontal.violation` signal, unwind to one test.
 
@@ -496,11 +548,13 @@ Invoke `topia:context-lifecycle` (Boundary Save mode) after Phase 2, 4, and 5 wh
 
 Before entering ANY Phase N+1, assert: Phase N `completed` in TodoWrite | gate condition met | no BLOCK from sub-skills | no unresolved CRITICAL findings. If any fails → STOP, log "BLOCKED at Phase N→N+1: [assertion]", fix, re-check.
 
-**Key transitions:** 1→2: recon done | 2→3: plan approved | 3→4: failing tests exist | 4→5: all tests pass | 5→6: no CRITICAL findings | 6→7: lint+types+build green.
+**Key transitions:** 1→2: recon done | 2→3: plan approved | 1→3 (bugfix): CP1 confirmed | 3→4: failing tests exist + CP2 confirmed (bugfix) | 4→5: all tests pass | 5→6: no CRITICAL findings | 6→7: lint+types+build green + CP3 confirmed (bugfix).
 
 ## Phase 6: VERIFY
 
 **REQUIRED SUB-SKILL**: Use `topia:verification` — run lint, type check, full test suite, build. Then `topia:hallucination-guard` to verify imports and API signatures. ALL checks MUST pass before commit.
+
+**Bugfix chain**: After verify green, map acceptance criteria pass/fail → run **CP3** before Phase 7. If dev chooses "Don't commit — PR summary only", emit Cook Report without commit hash.
 
 ## Phase 7: COMMIT
 
@@ -514,6 +568,7 @@ Before entering ANY Phase N+1, assert: Phase N `completed` in TodoWrite | gate c
 
 1. Mark Phase 8 as `in_progress`
 2. Save to `.topia/decisions.md` (approach + trade-offs), `.topia/progress.md` (task complete), `.topia/conventions.md` (new patterns)
+2b. **Bugfix chain**: Finalize `.topia/bugfix-briefs/<ticket>-progress.md` pipeline rows + steering history
 3. **Skill metrics** → `.topia/metrics/skills.json`: increment phase run/skip counts, quality gate results, debug loop counts under `build` key
 4. **Routing overrides** (H3): if Phase 4 hit max loops for an error pattern → write rule to `.topia/metrics/routing-overrides.json`. Max 10 active rules.
 5. **Step 8.5 — Cross-Cutting Sweep**: After commit, check if this phase changed stats (skill count, test count, signal count, pack count, layer counts). If ANY stat changed:
@@ -869,12 +924,13 @@ When invoked by `team` with a NEXUS Handoff, include the Deliverables table — 
 | Verification results | Inline stdout | Shown in Build Report |
 | Build Report | Markdown (inline) | Emitted at end of session |
 | Session state | Markdown | `.topia/decisions.md`, `.topia/progress.md`, `.topia/conventions.md` |
+| Bugfix brief + progress | Markdown | `.topia/bugfix-briefs/<ticket>.md`, `.topia/bugfix-briefs/<ticket>-progress.md` |
 
 ## Document Ownership
 
 | Scope | Access | Files |
 |-------|--------|-------|
-| **Owns** (read + write) | `.topia/plan-*.md`, `.topia/progress.md`, `.topia/decisions.md`, `.topia/conventions.md`, source files per approved plan |
+| **Owns** (read + write) | `.topia/plan-*.md`, `.topia/progress.md`, `.topia/decisions.md`, `.topia/conventions.md`, `.topia/bugfix-briefs/`, source files per approved plan |
 | **Reads** (never writes) | `CLAUDE.md`, `SKILL.md` (any), `.topia/contract.md`, `.topia/checkpoint.md` |
 | **Never modifies** | `compiler/**`, `extensions/**`, `PACK.md`, other skills' `SKILL.md`, `.topia/learnings.jsonl` |
 

@@ -155,6 +155,7 @@ Rules:
 - Max 50 characters total
 - Kebab-case, no uppercase
 - Include issue number if referenced: `fix/123-login-crash`
+- Include ticket prefix when present: `fix/scrum-453-feedback-comments`, `fix/jira-123-auth-timeout` (lowercase ticket prefix + slug)
 
 #### Step 2 — Execute
 

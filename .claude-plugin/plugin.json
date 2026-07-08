@@ -1,7 +1,7 @@
 {
   "name": "topia",
   "displayName": "Topia",
-  "version": "3.4.1",
+  "version": "3.5.0",
   "description": "71-skill Topia Nexus for Claude Code — discipline rails via native hooks (readiness/guardian/completion-gate/quarantine). 315 synapses + 49 pulses, Maestro routing, optional agora-code neural memory. Use topia:build for code, topia:architecture-mapper for legacy mapping, topia:team for parallel work, topia:launch for deploy, topia:rescue for legacy code.",
   "author": {
     "name": "topia"
