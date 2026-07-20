@@ -6,7 +6,7 @@
 
 **What you'll learn:**
 1. Install Topia for your IDE
-2. Run your first `/topia build` to ship a real feature
+2. Run your first `/topia-build` to ship a real feature
 3. Understand what just happened (and why it was different from "vanilla" AI coding)
 
 ---

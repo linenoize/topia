@@ -1,6 +1,6 @@
 // Topia Post-Session Reflect Hook
 // 1. Flushes session metrics from tmpdir to .topia/metrics/ (H3 Intelligence)
-// 2. Displays structured self-review checklist at session end (Stop / sessionEnd)
+// 2. Displays expandable Topia activity report at session end (Stop / sessionEnd)
 
 const fs = require('fs');
 const path = require('path');
@@ -9,6 +9,8 @@ const { isCursorRuntime, writeHookResponse, readStdinJson } = require('../lib/cu
 const { topiaDirForWrite } = require('../lib/topia-paths.cjs');
 const { readEvents, clearEvents } = require('../lib/metrics-buffer.cjs');
 const { detectPlatform, normalizeSessionTokens } = require('../lib/token-meter.cjs');
+const { resolveSkillModel } = require('../lib/skill-catalog.cjs');
+const { formatSessionReport } = require('../lib/session-report.cjs');
 
 const hookLines = [];
 const origLog = console.log.bind(console);
@@ -17,29 +19,17 @@ console.log = (...args) => {
 };
 
 const cwd = process.cwd();
+const pluginRoot = process.env.CLAUDE_PLUGIN_ROOT || path.join(__dirname, '..', '..');
 const hash = Buffer.from(cwd).toString('base64url').slice(0, 16);
 const counterFile = path.join(os.tmpdir(), `Topia-context-watch-${hash}.json`);
 const TopiaMetricsDir = path.join(topiaDirForWrite(cwd), 'metrics');
 
 function resolveSkillModels(skillCounts) {
   const models = {};
-  const pluginRoot = process.env.CLAUDE_PLUGIN_ROOT || path.join(__dirname, '..', '..');
-  const agentsDir = path.join(pluginRoot, 'agents');
-
-  if (!fs.existsSync(agentsDir)) return models;
-
   for (const [skill, count] of Object.entries(skillCounts)) {
-    try {
-      const agentFile = path.join(agentsDir, `${skill}.md`);
-      if (!fs.existsSync(agentFile)) continue;
-      const content = fs.readFileSync(agentFile, 'utf-8');
-      const match = content.match(/^model:\s*(\w+)/m);
-      if (match) {
-        const model = match[1];
-        models[model] = (models[model] || 0) + count;
-      }
-    } catch {
-      /* best-effort */
+    const model = resolveSkillModel(skill, pluginRoot);
+    if (model) {
+      models[model] = (models[model] || 0) + count;
     }
   }
   return models;
@@ -53,27 +43,16 @@ async function run() {
     /* Stop may have empty stdin on Claude */
   }
 
+  let reportText = null;
   try {
-    flushMetrics(hookData);
+    reportText = flushMetrics(hookData);
   } catch {
     /* best-effort */
   }
 
-  console.log(`
-┌─────────────────────────────────────────────────────┐
-│  Topia Session End — Verification Checklist          │
-├─────────────────────────────────────────────────────┤
-│  Before closing this session, confirm:              │
-│                                                     │
-│  □ All TodoWrite tasks marked complete?             │
-│  □ Tests ran and passing?                           │
-│  □ No hardcoded secrets introduced?                 │
-│  □ If schema changed: migration + rollback exist?   │
-│  □ Verification ran (lint + types + build)?         │
-│                                                     │
-│  If any item is unclear → address it now.           │
-└─────────────────────────────────────────────────────┘
-`);
+  if (reportText) {
+    console.log(`\n${reportText}\n`);
+  }
 
   const stopText = hookLines.join('\n').trim();
   if (isCursorRuntime(hookData)) {
@@ -96,7 +75,7 @@ function flushMetrics(hookData) {
     }
   }
 
-  if (skillEvents.length === 0 && watchState.count === 0 && allEvents.length === 0) return;
+  if (skillEvents.length === 0 && watchState.count === 0 && allEvents.length === 0) return null;
 
   fs.mkdirSync(TopiaMetricsDir, { recursive: true });
 
@@ -242,21 +221,20 @@ function flushMetrics(hookData) {
 
   clearEvents(cwd);
 
-  const skillList = Object.entries(skillCounts)
-    .sort((a, b) => b[1] - a[1])
-    .map(([s, c]) => `${s}(${c})`)
-    .join(', ');
-
-  const tokenSummary =
-    tokens.confidence !== 'none'
-      ? `, ~${tokens.total_estimated} est. tokens (peak ctx: ${tokens.context_peak ?? 'n/a'})`
-      : '';
-
-  console.log(
-    `\n📊 [Topia metrics] Session ${sessionId} — ${durationMin}min, ${watchState.count} tool calls, ${skillEvents.length} skill invocations${tokenSummary}`,
+  return formatSessionReport(
+    {
+      skillCounts,
+      skillChain,
+      skillDurations,
+      toolCounts: watchState.toolCounts,
+      toolCalls: watchState.count,
+      durationMin,
+      primarySkill,
+      skillInvocations: skillEvents.length,
+      tokens,
+    },
+    pluginRoot,
   );
-  if (skillList) console.log(`   Skills: ${skillList}`);
-  console.log(`   Saved to .topia/metrics/\n`);
 }
 
 run().catch(() => process.exit(0));

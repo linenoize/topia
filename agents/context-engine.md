@@ -1,7 +1,7 @@
 ---
 name: context-engine
 description: "Context window management — tracks tool call count, auto-detects when context fills up, triggers state save + compaction. Artifact folding for large outputs (>4000 chars → file + preview)."
-model: sonnet
+model: haiku
 subagent_type: general-purpose
 ---
 

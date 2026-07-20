@@ -1,7 +1,7 @@
 ---
 name: launch
 description: "Deploy + marketing orchestrator. Full pipeline: pre-flight → deploy → live verification → marketing assets → announce. Use when shipping to production."
-model: opus
+model: sonnet
 subagent_type: general-purpose
 ---
 

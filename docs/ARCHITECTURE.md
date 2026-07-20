@@ -108,6 +108,12 @@ Rules:
 - Skills without `model:` produce no model field in any adapter
 - Unknown values pass through unchanged (forward-compatibility for new models)
 
+**Version bumps (e.g. Opus 4.7 → 4.8):** Skill frontmatter stays on tiers (`opus`/`sonnet`/`haiku`). Claude Code/Cursor resolve tiers to the current Anthropic model. When Anthropic ships a new version, update this table and any hardcoded example IDs in docs/snippets — not the 71 skill files.
+
+**Telemetry:** Session-end metrics and `models_used` resolve tiers from `skills/<name>/SKILL.md` first (then `agents/<name>.md`). Agent subagent wrappers should match their skill tier so reports reflect intended cost profile.
+
+**Slash commands:** User-facing Topia skills are invoked as `/topia-<skill>` (hyphen alias), `/topia:<skill>` (plugin namespace), or `/topia <skill>` (router). Bare `/skill` is intentionally not a Topia entry point.
+
 ### Parallel Execution
 
 | Context | Max Parallel | Reason |

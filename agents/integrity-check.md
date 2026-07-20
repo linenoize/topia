@@ -1,7 +1,7 @@
 ---
 name: integrity-check
 description: "Detect adversarial content in .topia/ files — prompt injection, memory poisoning, identity spoofing, zero-width Unicode. Verdict: CLEAN/SUSPICIOUS/TAINTED."
-model: sonnet
+model: haiku
 subagent_type: general-purpose
 ---
 

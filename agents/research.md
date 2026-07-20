@@ -1,7 +1,7 @@
 ---
 name: research
 description: "Web research — gathers data on technologies, libraries, best practices. Min 3 sources per conclusion, max 5 WebFetch calls. Use for external data gathering, not API docs (use docs-seeker)."
-model: sonnet
+model: haiku
 subagent_type: general-purpose
 ---
 

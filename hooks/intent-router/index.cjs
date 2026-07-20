@@ -9,6 +9,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { matchBareTopiaSlash, formatBareSlashRedirect } = require('../lib/skill-catalog.cjs');
 
 // Read user prompt from Claude Code hook stdin
 let input = '';
@@ -25,6 +26,12 @@ process.stdin.on('end', () => {
   }
 
   if (!userPrompt || userPrompt.length < 3) {
+    process.exit(0);
+  }
+
+  const bareSkill = matchBareTopiaSlash(userPrompt);
+  if (bareSkill) {
+    console.log(`\n⚠️  ${formatBareSlashRedirect(bareSkill)}\n`);
     process.exit(0);
   }
 
@@ -98,6 +105,7 @@ process.stdin.on('end', () => {
 
   // Output routing suggestion
   console.log(`\n🧭 [Topia intent-router] Suggested: topia:${top.skill} (${top.layer}, ${top.model})`);
+  console.log(`   Slash: /topia-${top.skill} or /topia:${top.skill}`);
   console.log(`   Chain: ${chainDisplay}`);
   if (alternates) {
     console.log(`   Also consider: ${alternates}`);

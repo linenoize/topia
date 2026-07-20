@@ -1,5 +1,5 @@
 ---
-description: "Topia skill toolkit — interconnected workflows for the full project lifecycle. Use /topia <action> to invoke a skill or run a CLI command."
+description: "Topia skill toolkit — interconnected workflows for the full project lifecycle. Use /topia-<skill> or /topia <action> to invoke a skill or run a CLI command."
 disable-model-invocation: true
 ---
 

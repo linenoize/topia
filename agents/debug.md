@@ -1,7 +1,7 @@
 ---
 name: debug
 description: "Root cause analysis ONLY — investigates errors, traces stack traces, forms/tests hypotheses. Does NOT fix code. Hands diagnosis to fix. Use when root cause is unknown."
-model: opus
+model: sonnet
 subagent_type: general-purpose
 ---
 

@@ -41,7 +41,21 @@ This is L0 — it sits above L1 orchestrators. It doesn't do work itself; it ens
 
 ## Workflow
 
-### Step 0 — Check Routing Overrides (H3 Adaptive Routing)
+### Step 0.05 — Bare Slash Guard (namespace collision prevention)
+
+If the user message is **exactly** a bare slash command matching a Topia skill name (e.g. `/design`, `/plan`, `/build`) — **without** the `topia-` prefix or `topia:` / `topia ` namespace:
+
+1. **Do NOT** invoke the Topia skill
+2. Reply with a one-line redirect: use `/topia-<skill>` (preferred), or `/topia:<skill>`, or `/topia <skill>`
+3. Explain briefly: bare names collide with Claude Code built-in slash commands
+
+Examples:
+- User: `/design` → "Use `/topia-design` or `/topia:design` — bare `/design` is not a Topia command."
+- User: `/topia-design` or `/topia:design` or `/topia design` → proceed with normal routing
+
+Keyword auto-routing (e.g. user says "design the landing page" without a slash) is unchanged.
+
+### Step 0.1 — Check Routing Overrides (H3 Adaptive Routing)
 
 Before standard routing, check if adaptive routing rules exist:
 

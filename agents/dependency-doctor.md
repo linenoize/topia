@@ -1,7 +1,7 @@
 ---
 name: dependency-doctor
 description: "Dependency health management — outdated packages, vulnerabilities (CVE), breaking change risk for major bumps. Health score 0-100. Prioritized update plan: CRITICAL → SECURITY → PATCH → MINOR → MAJOR."
-model: sonnet
+model: haiku
 subagent_type: general-purpose
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: incident
 description: "Structured incident response — triage (P1/P2/P3), contain, verify, root-cause, postmortem. Use when production is down or degraded. Contain BEFORE investigating."
-model: opus
+model: sonnet
 subagent_type: general-purpose
 ---
 

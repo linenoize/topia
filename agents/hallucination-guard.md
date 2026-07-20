@@ -1,7 +1,7 @@
 ---
 name: hallucination-guard
 description: "Post-generation validation — catches hallucinated imports, phantom functions, non-existent packages, typosquatting. Use after code generation, before commit."
-model: sonnet
+model: haiku
 subagent_type: general-purpose
 ---
 

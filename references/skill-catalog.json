@@ -1,0 +1,574 @@
+{
+  "version": 1,
+  "generated": "2026-07-20T02:48:36.099Z",
+  "skills": [
+    {
+      "name": "adversary",
+      "description": "Pre-implementation red-team analysis. Use when a plan is high-risk, critical path, or expensive to reverse. Challenges plans before code is written — finds edge cases, security holes, scalability bottlenecks, error propagation risks, and integration conflicts. Catches flaws at plan time (10x cheaper than post-implementation).",
+      "model": "opus",
+      "layer": "L2",
+      "userInvocable": true,
+      "slashAlias": "topia-adversary"
+    },
+    {
+      "name": "architecture-mapper",
+      "description": "Reverse-engineer an unfamiliar or legacy codebase into a drillable, cross-linked architecture knowledge base — per repo or across a polyrepo. Use to map how a system starts, wires together, and flows; or to refresh those docs after code changes. Read-mostly: writes only under docs/, never application code.",
+      "model": "opus",
+      "layer": "L2",
+      "userInvocable": true,
+      "slashAlias": "topia-architecture-mapper"
+    },
+    {
+      "name": "asset-creator",
+      "description": "Creates code-based visual assets — SVG icons, OG image HTML templates, social banners, and icon sets. Outputs files with usage instructions.",
+      "model": "sonnet",
+      "layer": "L3",
+      "userInvocable": true,
+      "slashAlias": "topia-asset-creator"
+    },
+    {
+      "name": "audit",
+      "description": "Comprehensive project audit — security, dependencies, code quality, architecture, performance, infra, docs, and nexus analytics. Delegates to specialist skills and generates an 8-dimension health score.",
+      "model": "sonnet",
+      "layer": "L2",
+      "userInvocable": true,
+      "slashAlias": "topia-audit"
+    },
+    {
+      "name": "autopsy",
+      "description": "Full codebase health assessment. Use when diagnosing project health or starting a rescue workflow on legacy code. Analyzes complexity, dependencies, dead code, tech debt, and git hotspots. Produces a health score and rescue plan.",
+      "model": "opus",
+      "layer": "L2",
+      "userInvocable": true,
+      "slashAlias": "topia-autopsy"
+    },
+    {
+      "name": "brainstorm",
+      "description": "Creative ideation and solution exploration. Generates multiple approaches with trade-offs, uses structured frameworks (SCAMPER, First Principles), and hands off to plan for structuring.",
+      "model": "opus",
+      "layer": "L2",
+      "userInvocable": true,
+      "slashAlias": "topia-brainstorm"
+    },
+    {
+      "name": "browser-pilot",
+      "description": "Playwright browser automation. Navigates URLs, takes screenshots, checks accessibility tree, interacts with UI elements, and reports findings.",
+      "model": "sonnet",
+      "layer": "L3",
+      "userInvocable": true,
+      "slashAlias": "topia-browser-pilot"
+    },
+    {
+      "name": "build",
+      "description": "Feature implementation orchestrator. ALWAYS use this skill for ANY code change — implement, build, add feature, create, fix bug, or any task that modifies source code. This is the default route for 70% of all requests. Runs full TDD cycle: understand → plan → test → implement → quality → verify → commit.",
+      "model": "sonnet",
+      "layer": "L1",
+      "userInvocable": true,
+      "slashAlias": "topia-build"
+    },
+    {
+      "name": "completion-gate",
+      "description": "Validates agent claims against evidence trail. Use when verifying an agent has actually done what it claims — auto-fires at workflow end. Catches 'done' without proof, 'tests pass' without output, 'fixed' without verification. Called by build and team.",
+      "model": "haiku",
+      "layer": "L3",
+      "userInvocable": false,
+      "slashAlias": "topia-completion-gate"
+    },
+    {
+      "name": "constraint-check",
+      "description": "Meta-validator for HARD-GATEs. Use when auditing whether a skill's mandatory constraints were actually followed during a workflow (not just claimed). Called by build, team, and audit for discipline compliance.",
+      "model": "haiku",
+      "layer": "L3",
+      "userInvocable": false,
+      "slashAlias": "topia-constraint-check"
+    },
+    {
+      "name": "context-engine",
+      "description": "Context window management. Auto-triggered when context is filling up. Triggers smart compaction and preserves critical information across compaction boundaries. Called by L1 orchestrators at context thresholds.",
+      "model": "haiku",
+      "layer": "L3",
+      "userInvocable": false,
+      "slashAlias": "topia-context-engine"
+    },
+    {
+      "name": "context-lifecycle",
+      "description": "Automated context boundary orchestration. Runs at phase ends, pre/post-compact, and after git push. Chunks work across sessions via session-bridge, context-pack, and neural-memory without losing continuity.",
+      "model": "haiku",
+      "layer": "L3",
+      "userInvocable": true,
+      "slashAlias": "topia-context-lifecycle"
+    },
+    {
+      "name": "context-pack",
+      "description": "Creates structured handoff briefings between agents. Use when delegating complex work to subagents that would otherwise lose context. Packages task context, constraints, and progress into a compact packet that subagents can consume without re-reading the full conversation. Prevents the 'lost context' problem in multi-agent delegation.",
+      "model": "haiku",
+      "layer": "L3",
+      "userInvocable": false,
+      "slashAlias": "topia-context-pack"
+    },
+    {
+      "name": "db",
+      "description": "Database workflow specialist. Generates migration files with rollback scripts, detects breaking schema changes, and validates query parameterization.",
+      "model": "sonnet",
+      "layer": "L2",
+      "userInvocable": true,
+      "slashAlias": "topia-db"
+    },
+    {
+      "name": "debug",
+      "description": "Root cause analysis for bugs and unexpected behavior. Traces errors through code, uses structured reasoning, and hands off to fix when cause is found. Core of the debug↔fix chain.",
+      "model": "sonnet",
+      "layer": "L2",
+      "userInvocable": true,
+      "slashAlias": "topia-debug"
+    },
+    {
+      "name": "dependency-doctor",
+      "description": "Dependency health management. Detects package manager, checks outdated packages and vulnerabilities, and produces a prioritized update plan.",
+      "model": "haiku",
+      "layer": "L3",
+      "userInvocable": true,
+      "slashAlias": "topia-dependency-doctor"
+    },
+    {
+      "name": "deploy",
+      "description": "Deploy application to target platform. Use when user explicitly says 'deploy', 'push to production', 'ship it'. Handles Vercel, Netlify, AWS, GCP, DigitalOcean, and VPS with pre-deploy verification and health checks.",
+      "model": "sonnet",
+      "layer": "L2",
+      "userInvocable": true,
+      "slashAlias": "topia-deploy"
+    },
+    {
+      "name": "design",
+      "description": "Design system reasoning. Maps product domain to style, palette, typography, and platform-specific patterns. Generates .topia/design-system.md as the shared design contract for all UI-generating skills.",
+      "model": "sonnet",
+      "layer": "L2",
+      "userInvocable": true,
+      "slashAlias": "topia-design"
+    },
+    {
+      "name": "doc-processor",
+      "description": "Generate and parse office documents — PDF, DOCX, XLSX, PPTX, CSV. Use when creating reports, exporting tabular data, or processing uploaded office files. NOT for project documentation (use docs).",
+      "model": "sonnet",
+      "layer": "L3",
+      "userInvocable": true,
+      "slashAlias": "topia-doc-processor"
+    },
+    {
+      "name": "docs",
+      "description": "Auto-generate and maintain project documentation. Creates README, API docs, architecture docs, changelogs, and keeps them in sync with code changes. The \\\"docs are never outdated\\\" skill.",
+      "model": "sonnet",
+      "layer": "L2",
+      "userInvocable": true,
+      "slashAlias": "topia-docs"
+    },
+    {
+      "name": "docs-seeker",
+      "description": "Find documentation for APIs, libraries, and error messages. Looks up official docs, changelog entries, and migration guides.",
+      "model": "haiku",
+      "layer": "L3",
+      "userInvocable": true,
+      "slashAlias": "topia-docs-seeker"
+    },
+    {
+      "name": "documentation",
+      "description": "Leadership-ready package generator. Produces feature folders, requirements, user stories, and Jira-compliant CSV tickets. Use after /topia plan and before /topia build to get stakeholder approval.",
+      "model": "sonnet",
+      "layer": "L2",
+      "userInvocable": true,
+      "slashAlias": "topia-documentation"
+    },
+    {
+      "name": "faq",
+      "description": "Lists Topia's HTML entry points (docs, guides, skill index, nexus diagram, live visualizer) with one-shot open-in-browser commands. Use when the user asks 'where are the docs?', 'how do I see the skill graph?', or `/topia:faq`.",
+      "model": "haiku",
+      "layer": "L3",
+      "userInvocable": true,
+      "slashAlias": "topia-faq"
+    },
+    {
+      "name": "fix",
+      "description": "Apply code changes and fixes. Writes implementation code, applies bug fixes, and verifies changes with tests. Core action hub in the Topia nexus.",
+      "model": "sonnet",
+      "layer": "L2",
+      "userInvocable": true,
+      "slashAlias": "topia-fix"
+    },
+    {
+      "name": "git",
+      "description": "Specialized git operations — semantic commits, PR descriptions, branch management, conflict resolution guidance. Replaces ad-hoc git commands with a dedicated, convention-aware utility.",
+      "model": "haiku",
+      "layer": "L3",
+      "userInvocable": true,
+      "slashAlias": "topia-git"
+    },
+    {
+      "name": "guardian",
+      "description": "Automated security gatekeeper. Blocks unsafe code before commit — secret scanning, OWASP top 10, dependency audit, permission checks. A GATE, not a suggestion.",
+      "model": "sonnet",
+      "layer": "L2",
+      "userInvocable": true,
+      "slashAlias": "topia-guardian"
+    },
+    {
+      "name": "guardian-env",
+      "description": "Environment-aware pre-flight check. Use when starting work in a new environment, switching machines, or when 'works on my machine' bugs surface. Validates OS, runtime versions, installed tools, port availability, env vars, and disk space BEFORE coding starts. Like sentinel but for the environment, not the code.",
+      "model": "haiku",
+      "layer": "L3",
+      "userInvocable": true,
+      "slashAlias": "topia-guardian-env"
+    },
+    {
+      "name": "hallucination-guard",
+      "description": "Verify AI-generated imports, API calls, and packages actually exist. Use when finishing AI-generated code that introduces new imports or external API calls — auto-fires after fix/build to catch phantom functions, non-existent packages, and slopsquatting attacks.",
+      "model": "haiku",
+      "layer": "L3",
+      "userInvocable": true,
+      "slashAlias": "topia-hallucination-guard"
+    },
+    {
+      "name": "idea",
+      "description": "Idea Elicitation agent. Use when starting a new feature requiring requirements elicitation BEFORE plan or build. Asks probing questions, identifies hidden requirements, maps stakeholders, defines scope boundaries, and produces a structured Requirements Document that plan and build consume.",
+      "model": "opus",
+      "layer": "L2",
+      "userInvocable": true,
+      "slashAlias": "topia-idea"
+    },
+    {
+      "name": "improve-architecture",
+      "description": "Find architectural friction in a codebase and propose deepening opportunities. Use when user wants to improve architecture, find refactor candidates, consolidate shallow modules, or make a codebase more testable. Outputs scored proposals (depth/leverage/locality) that surgeon and review can consume.",
+      "model": "opus",
+      "layer": "L2",
+      "userInvocable": true,
+      "slashAlias": "topia-improve-architecture"
+    },
+    {
+      "name": "incident",
+      "description": "Structured incident response. Use when user reports an outage, production error, or says 'incident', 'something is down', 'users are affected'. Triage severity, contain blast radius, root-cause, document timeline, generate postmortem.",
+      "model": "sonnet",
+      "layer": "L2",
+      "userInvocable": true,
+      "slashAlias": "topia-incident"
+    },
+    {
+      "name": "integrate",
+      "description": "Clone, port, or convert features from any GitHub repo into your project. Use when stealing patterns from external repos or porting proven code. Understand before copy, challenge before implement. 4 modes: port (rewrite), compare (analysis), copy (transplant), improve (copy + optimize).",
+      "model": "sonnet",
+      "layer": "L2",
+      "userInvocable": true,
+      "slashAlias": "topia-integrate"
+    },
+    {
+      "name": "integrity-check",
+      "description": "Verify integrity of persisted state, skill outputs, and context bus data. Use when validating .topia/ files or sub-agent outputs against prompt injection, memory poisoning, identity spoofing, or adversarial payloads. Called by sentinel, team, session-bridge.",
+      "model": "haiku",
+      "layer": "L3",
+      "userInvocable": false,
+      "slashAlias": "topia-integrity-check"
+    },
+    {
+      "name": "journal",
+      "description": "Persistent state tracking and Architecture Decision Records across sessions. Use when recording a decision, ADR, or progress that must survive session boundaries. Manages progress state, module health, dependency graphs, and ADRs for any workflow.",
+      "model": "haiku",
+      "layer": "L3",
+      "userInvocable": true,
+      "slashAlias": "topia-journal"
+    },
+    {
+      "name": "launch",
+      "description": "Deploy + marketing orchestrator. Use when user says 'launch', 'ship to production', 'deploy and announce', or 'go live'. Runs the full pipeline — pre-flight tests, deployment, live verification, marketing asset creation, and announcement.",
+      "model": "sonnet",
+      "layer": "L1",
+      "userInvocable": true,
+      "slashAlias": "topia-launch"
+    },
+    {
+      "name": "logic-guardian",
+      "description": "Protects complex business logic from accidental deletion or overwrite. Use when editing payment, trading, state-machine, or other load-bearing business logic where a single deleted line can cause silent data corruption. Maintains a logic manifest, enforces pre-edit gates, validates post-edit diffs.",
+      "model": "sonnet",
+      "layer": "L2",
+      "userInvocable": true,
+      "slashAlias": "topia-logic-guardian"
+    },
+    {
+      "name": "marketing",
+      "description": "Create marketing assets and execute launch strategy. Generates landing copy, social banners, SEO meta, blog posts, and video scripts.",
+      "model": "sonnet",
+      "layer": "L2",
+      "userInvocable": true,
+      "slashAlias": "topia-marketing"
+    },
+    {
+      "name": "mcp-builder",
+      "description": "Build Model Context Protocol servers from specifications. Use when creating an MCP server for a tool, resource, or service that AI agents should access. Generates tool definitions, resource handlers, and test suites in TypeScript or Python (FastMCP).",
+      "model": "sonnet",
+      "layer": "L2",
+      "userInvocable": true,
+      "slashAlias": "topia-mcp-builder"
+    },
+    {
+      "name": "neural-memory",
+      "description": "Cross-session cognitive persistence via Neural Memory MCP. Captures decisions, patterns, errors, and insights with rich semantic links. Provides recall, hypothesis tracking, and evidence-based reasoning across projects.",
+      "model": "haiku",
+      "layer": "L3",
+      "userInvocable": true,
+      "slashAlias": "topia-neural-memory"
+    },
+    {
+      "name": "onboard",
+      "description": "Auto-generate project context for AI sessions. Use when starting on a new repo for the first time, or when CLAUDE.md / .topia/ context is missing or stale. Scans codebase and creates the setup so every future session starts with full context.",
+      "model": "sonnet",
+      "layer": "L2",
+      "userInvocable": true,
+      "slashAlias": "topia-onboard"
+    },
+    {
+      "name": "org-config",
+      "description": "Team org policy setup for Topia. Use during /topia finalize or when configuring .topia/org/org.md — asks structured questions and writes team roles, policies, approval flows, and governance level so guardian and readiness enforce your rules.",
+      "model": "sonnet",
+      "layer": "L2",
+      "userInvocable": true,
+      "slashAlias": "topia-org-config"
+    },
+    {
+      "name": "perf",
+      "description": "Performance regression gate. Detects N+1 queries, sync-in-async, missing indexes, memory leaks, and bundle bloat before they reach production.",
+      "model": "sonnet",
+      "layer": "L2",
+      "userInvocable": true,
+      "slashAlias": "topia-perf"
+    },
+    {
+      "name": "plan",
+      "description": "Create structured implementation plans from requirements. Produces master plan + phase files for enterprise-scale project management. Master plan = overview (<80 lines). Phase files = execution detail (<150 lines each). Each session handles 1 phase. Uses opus for deep reasoning.",
+      "model": "opus",
+      "layer": "L2",
+      "userInvocable": true,
+      "slashAlias": "topia-plan"
+    },
+    {
+      "name": "problem-solver",
+      "description": "Structured reasoning frameworks for complex problems. 19 analytical frameworks, 12 cognitive bias detectors, 10 decomposition methods, 10 mental models, Cynefin domain classification, ethical dimension check, and 6 communication patterns. McKinsey-grade problem solving for AI coding assistants.",
+      "model": "sonnet",
+      "layer": "L3",
+      "userInvocable": true,
+      "slashAlias": "topia-problem-solver"
+    },
+    {
+      "name": "quarantine",
+      "description": "Advisory wrap for tool results from untrusted external surfaces. Appends `[QUARANTINE-NOTICE]` to next-turn context after `mcp__*`, `WebFetch`, and `Read` of `**/uploads/**` so prior tool output is treated as data — not directives. Use when the session ingests MCP user-content (Zendesk, Intercom, support tickets), fetched HTML, or operator-uploaded files. Hook fires AFTER ingestion — advisory, not structural.",
+      "model": "opus",
+      "layer": "L3",
+      "userInvocable": false,
+      "slashAlias": "topia-quarantine"
+    },
+    {
+      "name": "readiness",
+      "description": "Pre-commit quality gate that catches 'almost right' code. Use when about to commit — auto-fires before commit to validate logic correctness, error handling, regressions, and completeness. Goes beyond linting.",
+      "model": "sonnet",
+      "layer": "L2",
+      "userInvocable": true,
+      "slashAlias": "topia-readiness"
+    },
+    {
+      "name": "recall",
+      "description": "Unified cross-source memory recall: .remember/, .topia/, neural-memory, and agora-memory. Use at session start or before architecture decisions. Read-only orchestrator — writes stay on neural-memory Capture and session-bridge Save.",
+      "model": "haiku",
+      "layer": "L3",
+      "userInvocable": true,
+      "slashAlias": "topia-recall"
+    },
+    {
+      "name": "recon",
+      "description": "Fast codebase scanner. Use when any skill needs codebase context. Finds files, patterns, dependencies, project structure. Pure read-only — never modifies files.",
+      "model": "haiku",
+      "layer": "L2",
+      "userInvocable": true,
+      "slashAlias": "topia-recon"
+    },
+    {
+      "name": "rescue",
+      "description": "Legacy refactoring orchestrator. Use when user says 'refactor', 'modernize', 'clean up this mess', 'rescue', or when dealing with old/messy/legacy code. Multi-session workflow — autopsy, safety net, incremental surgery, progress tracking.",
+      "model": "sonnet",
+      "layer": "L1",
+      "userInvocable": true,
+      "slashAlias": "topia-rescue"
+    },
+    {
+      "name": "research",
+      "description": "Web search and external knowledge lookup. Gathers data on technologies, libraries, best practices, and competitor solutions.",
+      "model": "haiku",
+      "layer": "L3",
+      "userInvocable": true,
+      "slashAlias": "topia-research"
+    },
+    {
+      "name": "retro",
+      "description": "Engineering retrospective. Analyzes commit history, work patterns, and code quality metrics with trend tracking. Per-person breakdowns, shipping streaks, and actionable improvements. Use when asked for \\\"retro\\\", \\\"weekly review\\\", \\\"what did we ship\\\", or \\\"engineering retrospective\\\".",
+      "model": "sonnet",
+      "layer": "L2",
+      "userInvocable": true,
+      "slashAlias": "topia-retro"
+    },
+    {
+      "name": "review",
+      "description": "Code quality review — patterns, security, performance, correctness. Finds bugs, suggests improvements, triggers fix for issues found. Escalates to opus for security-critical code.",
+      "model": "sonnet",
+      "layer": "L2",
+      "userInvocable": true,
+      "slashAlias": "topia-review"
+    },
+    {
+      "name": "review-intake",
+      "description": "Use when receiving external input that needs structured intake before action — PR review feedback, code review comments, OR issue tracker items (bug reports, feature requests). PR Review Mode (default) verifies suggestions before implementing. Issue Triage Mode classifies issues into a state machine (ready-for-agent / ready-for-human / needs-info / wontfix) and emits AGENT-BRIEFs for AFK execution. Prevents blind implementation, enforces verification-first discipline.",
+      "model": "sonnet",
+      "layer": "L2",
+      "userInvocable": true,
+      "slashAlias": "topia-review-intake"
+    },
+    {
+      "name": "safeguard",
+      "description": "Build safety nets before refactoring. Use when running surgeon or any risky refactor that needs a rollback point. Creates characterization tests, boundary markers, config freezes, and rollback points.",
+      "model": "sonnet",
+      "layer": "L2",
+      "userInvocable": true,
+      "slashAlias": "topia-safeguard"
+    },
+    {
+      "name": "sast",
+      "description": "Static analysis tool runner. Wraps ESLint, Semgrep, Bandit, Clippy, and language-specific analyzers with unified severity output. Use when deeper code analysis needed beyond pattern matching.",
+      "model": "haiku",
+      "layer": "L3",
+      "userInvocable": true,
+      "slashAlias": "topia-sast"
+    },
+    {
+      "name": "scaffold",
+      "description": "Autonomous project bootstrapper. Generates complete project from a description — structure, code, tests, docs, config. Orchestrates idea → plan → design → fix → test → docs → git in one pipeline. The \\\"0 to production-ready\\\" skill.",
+      "model": "sonnet",
+      "layer": "L1",
+      "userInvocable": true,
+      "slashAlias": "topia-scaffold"
+    },
+    {
+      "name": "scope-guard",
+      "description": "Detects scope creep by quantifying drift percentage. Auto-triggered by L1 orchestrators when files exceed the original plan. Compares git changes against plan, classifies drift into 4 tiers: ON_TRACK, MINOR_DRIFT, SIGNIFICANT_DRIFT, OUT_OF_CONTROL.",
+      "model": "haiku",
+      "layer": "L3",
+      "userInvocable": false,
+      "slashAlias": "topia-scope-guard"
+    },
+    {
+      "name": "sequential-thinking",
+      "description": "Step-by-step complex reasoning for multi-variable problems. Breaks interconnected decisions into ordered logical steps with bias detection, reversibility classification, and second-order effect tracking.",
+      "model": "sonnet",
+      "layer": "L3",
+      "userInvocable": true,
+      "slashAlias": "topia-sequential-thinking"
+    },
+    {
+      "name": "session-bridge",
+      "description": "Universal context persistence across sessions. Auto-saves decisions, conventions, and progress to .topia/ files. Loads state at session start. Use when any skill makes architectural decisions or establishes patterns that must survive session boundaries.",
+      "model": "haiku",
+      "layer": "L3",
+      "userInvocable": true,
+      "slashAlias": "topia-session-bridge"
+    },
+    {
+      "name": "skill-forge",
+      "description": "Use when creating new Topia skills, editing existing skills, or verifying skill quality before deployment. Applies TDD discipline to skill authoring — test before write, verify before ship.",
+      "model": "opus",
+      "layer": "L2",
+      "userInvocable": true,
+      "slashAlias": "topia-skill-forge"
+    },
+    {
+      "name": "skill-router",
+      "description": "Meta-enforcement layer that routes EVERY agent action through the correct skill. MUST check this routing table before ANY response involving code, files, or technical decisions. Default: route to topia:build for code tasks. Prevents rationalization, enforces check-before-act discipline.",
+      "model": "haiku",
+      "layer": "L0",
+      "userInvocable": false,
+      "slashAlias": "topia-skill-router"
+    },
+    {
+      "name": "slides",
+      "description": "Generate Marp-compatible slide decks from structured JSON schema. Converts context into presentations for tech talks, sprint demos, and tutorials.",
+      "model": "sonnet",
+      "layer": "L3",
+      "userInvocable": true,
+      "slashAlias": "topia-slides"
+    },
+    {
+      "name": "surgeon",
+      "description": "Incremental refactorer. Use within a rescue workflow after safeguard has set up safety nets. Refactors ONE module per session using proven patterns — Strangler Fig, Branch by Abstraction, Expand-Migrate-Contract.",
+      "model": "sonnet",
+      "layer": "L2",
+      "userInvocable": true,
+      "slashAlias": "topia-surgeon"
+    },
+    {
+      "name": "team",
+      "description": "Multi-agent meta-orchestrator. Use when task spans 5+ files or 3+ modules, or when user says 'parallel', 'split this up', 'do all of these'. Decomposes large tasks into parallel workstreams, assigns to isolated build instances, coordinates merging.",
+      "model": "opus",
+      "layer": "L1",
+      "userInvocable": true,
+      "slashAlias": "topia-team"
+    },
+    {
+      "name": "test",
+      "description": "TDD test writer. Writes failing tests FIRST (red), then verifies they pass after implementation (green). Covers unit, integration, and e2e tests.",
+      "model": "sonnet",
+      "layer": "L2",
+      "userInvocable": true,
+      "slashAlias": "topia-test"
+    },
+    {
+      "name": "trend-scout",
+      "description": "Scan market trends, competitor activity, and emerging patterns. Monitors Product Hunt, GitHub Trending, HackerNews, and social platforms.",
+      "model": "haiku",
+      "layer": "L3",
+      "userInvocable": true,
+      "slashAlias": "topia-trend-scout"
+    },
+    {
+      "name": "tut",
+      "description": "Re-shows the structured first-run menu (finalize / onboard / doctor / faq / help) on demand, with current completion status. Use when the user wants to revisit the tutorial, asks 'what should I do next?', or types `/topia:tut`. This is the explicit re-entry point for the menu that auto-shows on session-start until completed.",
+      "model": "haiku",
+      "layer": "L3",
+      "userInvocable": true,
+      "slashAlias": "topia-tut"
+    },
+    {
+      "name": "verification",
+      "description": "Universal verification runner. Runs lint, type-check, tests, and build. Use after any code change to verify nothing is broken.",
+      "model": "haiku",
+      "layer": "L3",
+      "userInvocable": true,
+      "slashAlias": "topia-verification"
+    },
+    {
+      "name": "video-creator",
+      "description": "Video content planning. Writes narration scripts, storyboards, shot lists, and asset checklists. Saves plan to marketing/video-plan.md.",
+      "model": "sonnet",
+      "layer": "L3",
+      "userInvocable": true,
+      "slashAlias": "topia-video-creator"
+    },
+    {
+      "name": "watchdog",
+      "description": "Post-deploy monitoring. Use when verifying a deployed app is healthy after deploy or launch — auto-fires from launch/deploy. Checks HTTP status, response times, error detection, and smoke test report.",
+      "model": "sonnet",
+      "layer": "L3",
+      "userInvocable": true,
+      "slashAlias": "topia-watchdog"
+    },
+    {
+      "name": "worktree",
+      "description": "Git worktree lifecycle management. Use when team needs parallel isolated workspaces for multi-stream development, or when an experiment must not touch the main working tree. Creates isolated workspaces, manages branches, handles cleanup. Called by team and build.",
+      "model": "haiku",
+      "layer": "L3",
+      "userInvocable": false,
+      "slashAlias": "topia-worktree"
+    }
+  ]
+}

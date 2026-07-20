@@ -1,7 +1,7 @@
 ---
 name: design
 description: "Design system generator — maps product domain to style, palette, typography, anti-patterns. Creates .topia/design-system.md. Use BEFORE any frontend code generation."
-model: opus
+model: sonnet
 subagent_type: general-purpose
 ---
 

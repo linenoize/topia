@@ -18,7 +18,7 @@ Design system reasoning layer. Converts a product description into a concrete de
 
 ## Triggers
 
-- `/topia design` — manual invocation when starting a new UI project
+- `/topia-design` — manual invocation when starting a new UI project
 - Called by `build` (L1): frontend task detected, no `.topia/design-system.md` exists
 - Called by `review` (L2): AI anti-pattern detected — recommended to run design skill
 - Called by `perf` (L2): Lighthouse Accessibility BLOCK — design foundation may be missing
@@ -37,7 +37,7 @@ Design system reasoning layer. Converts a product description into a concrete de
 - `idea` (L2): when requirements include UI/UX components
 - `review` (L2): when AI anti-pattern detected in diff
 - `perf` (L2): when Lighthouse Accessibility score blocks
-- User: `/topia design` direct invocation
+- User: `/topia-design` direct invocation (also `/topia:design`, `/topia design`)
 
 ## Output Files
 

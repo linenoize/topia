@@ -4,6 +4,26 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
+## [3.6.0] — 2026-07-19
+
+Slash-command namespace hard-cut (`/topia-*`) to avoid Claude Code built-in collisions, plus session-end activity visibility and accurate model-tier reporting.
+
+### Added
+
+- **`/topia-<skill>` slash aliases** — generated `commands/topia-*.md` for all user-invocable skills (e.g. `/topia-design`). Skill tool IDs stay `topia:<skill>`; `/topia:design` and `/topia design` still work.
+- **`compiler/commands/generate-slash-aliases.js`** — regenerates aliases + `references/skill-catalog.json` + `hooks/lib/skill-catalog.cjs` (wired into `ci` / `prepublishOnly`).
+- **Bare-slash soft-break** — `/design` (etc.) redirects to `/topia-design` via intent-router + skill-router Step 0.05; does not invoke Topia.
+- **Session-end activity report** — Stop hook shows `Topia · N skills · models … · N tools` with expandable skill/tool/tier details (replaces verification checklist box).
+
+### Changed
+
+- **`models_used` telemetry** — resolves tiers from `skills/*/SKILL.md` first (then agents), so reports match Cost Profile.
+- **Agent frontmatter** — aligned mismatched wrappers with skill tiers (e.g. `build`/`debug`/`design` → sonnet, `skill-router` → haiku).
+- **Docs / Triggers** — prefer `/topia-<skill>` in install guides, session-start menu, and design skill triggers.
+- **`docs/ARCHITECTURE.md`** — documents tier authoring, version-bump policy (4.7→4.8 = docs only), and slash forms.
+
+---
+
 ## [3.5.0] — 2026-07-07
 
 Bugfix workflow kickoff gate — ticket/branch assembly, Progress Ledger, and steering checkpoints before recon.

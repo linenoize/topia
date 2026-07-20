@@ -1,7 +1,7 @@
 ---
 name: audit
 description: "Comprehensive 8-dimension project health audit — dependencies, security, code quality, architecture, performance, infrastructure, documentation, nexus analytics. Produces AUDIT-REPORT.md."
-model: opus
+model: sonnet
 subagent_type: general-purpose
 ---
 
