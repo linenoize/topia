@@ -96,6 +96,15 @@ Auto-activation flow (Step 4 ORANGE / Step 5 RED):
 
 Manual override always wins: if user says "/caveman" while GREEN, activate; if user says "stop caveman" while RED, respect it (but emit warning that context is critical).
 
+## Relation to Coding Agent Output Policy
+
+Caveman is an output **density** mode (strip filler). The coding-agent output policy (skill-router `references/coding-agent-output-policy.md`) is an operating **persona** and **response contract** (repository operator; artifact-first sections).
+
+Both may apply at once:
+
+- Caveman must not reintroduce status-narrator prose ("I verified…", takeaways, follow-up invites).
+- Density compression does not waive RESULT/FILES/EVIDENCE/EXCEPTIONS or skill-defined finals (e.g. Cook Report).
+
 ## Anti-patterns
 
 | Anti-pattern | Why it fails |

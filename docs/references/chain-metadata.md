@@ -167,6 +167,8 @@ When chain_metadata is present in the conversation context from a previous skill
 
 **Conflict resolution**: If chain_metadata suggests skill A but skill-router's hardcoded table suggests skill B, prefer chain_metadata (it has more context).
 
+**Stack Brief vs chain_metadata:** skill-router Step 2.5 may emit an ephemeral **Stack Brief** when false multi-matches share description wording. That brief folds unique HARD-GATE digests before the primary Skill invoke — it is **not** chain_metadata and does not replace `suggested_next`. Deferred legitimate follow-ups still use `chain_metadata.suggested_next` after the primary skill completes.
+
 ## How Downstream Skills Consume Exports
 
 When a skill is invoked and chain_metadata exists from a prior skill:

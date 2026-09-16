@@ -33,13 +33,77 @@ describe('skill-index.json generation', () => {
       const index = JSON.parse(await readFile(indexPath, 'utf-8'));
 
       // Structure checks
-      assert.strictEqual(index.version, 2);
+      assert.strictEqual(index.version, 3);
       assert.ok(index.generated, 'missing generated timestamp');
       assert.ok(index.skillCount >= 50, `too few skills: ${index.skillCount}`);
       assert.ok(typeof index.skills === 'object', 'missing skills object');
       assert.ok(typeof index.graph === 'object', 'missing graph object');
       assert.ok(typeof index.signals === 'object', 'missing signals object');
       assert.ok(typeof index.intents === 'object', 'missing intents object');
+    } finally {
+      await rm(tmp, { recursive: true, force: true });
+    }
+  });
+
+  test('skill-index skills expose hardGates and descTokens digests', async () => {
+    const tmp = path.join(tmpdir(), `Topia-idx-digest-${Date.now()}`);
+    try {
+      const adapter = getAdapter('cursor');
+      await buildAll({ topiaRoot: Topia_ROOT, outputRoot: tmp, adapter });
+
+      const index = JSON.parse(await readFile(path.join(tmp, adapter.outputDir, 'skill-index.json'), 'utf-8'));
+      assert.strictEqual(index.version, 3);
+
+      assert.ok(index.skills.build, 'build not in skills');
+      assert.ok(Array.isArray(index.skills.build.hardGates), 'build.hardGates must be array');
+      assert.ok(Array.isArray(index.skills.build.descTokens), 'build.descTokens must be array');
+      assert.ok(index.skills.build.descTokens.length > 0, 'build.descTokens should be non-empty');
+      assert.ok(!index.skills.build.descTokens.includes('the'), 'descTokens should strip stopwords');
+
+      // At least one core skill should ship HARD-GATE digests
+      const withGates = Object.entries(index.skills).filter(([, s]) => s.hardGates.length > 0);
+      assert.ok(withGates.length >= 5, `expected ≥5 skills with hardGates, got ${withGates.length}`);
+    } finally {
+      await rm(tmp, { recursive: true, force: true });
+    }
+  });
+
+  test('skill-index hardGates digests from synthetic skill', async () => {
+    const tmp = path.join(tmpdir(), `Topia-idx-hg-${Date.now()}`);
+    const skillsDir = path.join(tmp, 'skills', 'gated');
+    await mkdir(skillsDir, { recursive: true });
+    await mkdir(path.join(tmp, 'extensions'), { recursive: true });
+
+    await writeFile(
+      path.join(skillsDir, 'SKILL.md'),
+      [
+        '---',
+        'name: gated',
+        'description: "Use when reviewing code quality before merge."',
+        'metadata:',
+        '  layer: L2',
+        '  group: quality',
+        '---',
+        '',
+        '# gated',
+        '',
+        '<HARD-GATE>',
+        'MUST run tests before declaring done.',
+        '</HARD-GATE>',
+      ].join('\n'),
+      'utf-8',
+    );
+
+    try {
+      const adapter = getAdapter('generic');
+      await buildAll({ topiaRoot: tmp, outputRoot: tmp, adapter });
+
+      const index = JSON.parse(await readFile(path.join(tmp, adapter.outputDir, 'skill-index.json'), 'utf-8'));
+      assert.strictEqual(index.version, 3);
+      assert.ok(index.skills.gated, 'gated not in skills');
+      assert.deepStrictEqual(index.skills.gated.hardGates, ['MUST run tests before declaring done.']);
+      assert.ok(index.skills.gated.descTokens.includes('reviewing'), 'descTokens should include reviewing');
+      assert.ok(!index.skills.gated.descTokens.includes('when'), 'descTokens should strip when');
     } finally {
       await rm(tmp, { recursive: true, force: true });
     }

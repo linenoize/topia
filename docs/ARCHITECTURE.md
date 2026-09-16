@@ -17,6 +17,7 @@
 - Loaded via plugin description, always active
 - Routes user intent to the correct L1-L3 skill
 - Prevents agents from bypassing skills ("I'll just do it manually")
+- **Stack Consolidation (Step 2.5):** when similar descriptions cause a false multi-match, emit a short Stack Brief (unique HARD-GATE digests from `skill-index.json`) and invoke **only** the primary skill — never load full near-match bodies. Legitimate compound intents stay sequenced (primary now, deferred via `chain_metadata.suggested_next`)
 - See `skills/skill-router/SKILL.md` for the full routing table and anti-rationalization gate
 
 ### L4 — Extension Packs (Activation Protocol)
@@ -81,7 +82,8 @@ Mode-based execution variants that activate inside existing skills based on sign
 
 | Mode | Skill | Activation | Behavior |
 |------|-------|------------|----------|
-| **Caveman Output** | `context-engine` (broadcast) | Auto on context ORANGE / RED, manual via `/caveman` / "be brief" | Strips filler / articles / hedging while preserving full technical accuracy. ~75% output reduction. Auto-clarity exception for security warnings, irreversible-action confirmations, multi-step sequences. |
+| **Artifact-First Output** | `skill-router` (L0) | Always-on posture; coding-class contracts for `CODE_CHANGE` / `DEBUG_REQUEST` / `REVIEW_REQUEST` / inspect-style explore | Repository-operator persona (not status narrator). Default finals: RESULT / FILES / EVIDENCE / EXCEPTIONS. Skill-defined formats (e.g. Cook Report) take precedence. Full policy: `skills/skill-router/references/coding-agent-output-policy.md`. |
+| **Caveman Output** | `context-engine` (broadcast) | Auto on context ORANGE / RED, manual via `/caveman` / "be brief" | Strips filler / articles / hedging while preserving full technical accuracy. ~75% output reduction. Auto-clarity exception for security warnings, irreversible-action confirmations, multi-step sequences. Density mode — orthogonal to Artifact-First Output; both may apply. |
 | **Synthesis** | `idea` (Step 1.4) | Pasted spec > 200 words, conversation > 1000 words, continuation session, filled issue template, explicit "synthesize" | Extract Requirements Document from existing context with mandatory source citations, then confirm instead of re-interview. Skip 5-question elicitation if all 5 dimensions filled. |
 | **Vertical Slice** | `plan` (Step 3) | Default for any feature with 3+ phases | Tracer-bullet task decomposition: each task = end-to-end path through schema + API + UI + test, demoable on its own. AFK / HITL classification. Replaces horizontal layer planning. |
 | **Feedback Loop (Step 0)** | `debug` | Repro is slow / non-deterministic / multi-component / intermittent | Construct fast deterministic pass/fail signal from 10-rank ladder BEFORE forming hypotheses. Skip if existing repro is one command, deterministic, < 5s. > 10 min construction → 3-Fix Escalation (architecture, not bug). |

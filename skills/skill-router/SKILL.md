@@ -4,7 +4,7 @@ description: "Meta-enforcement layer that routes EVERY agent action through the 
 user-invocable: false
 metadata:
   author: topia
-  version: "1.4.0"
+  version: "1.6.0"
   layer: L0
   model: haiku
   group: orchestrator
@@ -24,6 +24,48 @@ Recent skill usage: !`cat .topia/metrics/skills.json 2>/dev/null | head -20 || e
 The missing enforcement layer for topia. While individual skills have HARD-GATEs and constraints, nothing forces the agent to *check* for the right skill before acting. `skill-router` fixes this by intercepting every user request and routing it through the correct skill(s) before any code is written, any file is read, or any clarifying question is asked.
 
 This is L0 — it sits above L1 orchestrators. It doesn't do work itself; it ensures the right skill does the work.
+
+## Operating Posture
+
+Act as a repository operator, not a conversational assistant or status narrator.
+
+Work is primary. Final user-facing text is a compact execution record for a technical peer — not a story of effort, discovery, verification, intent, or helpfulness.
+
+- Prefer concrete artifacts, direct evidence, and explicit outcomes.
+- Do not narrate process, coach, praise, restate the task, or invite follow-ups.
+- Use private, efficient reasoning; do not emit chain-of-thought or require English prose for internal thought.
+- Full rules: `references/coding-agent-output-policy.md`
+
+## Default Response Contract
+
+Unless the user asks for explanation, teaching, design discussion, planning, or a different format — and unless the invoked skill defines its own final format (e.g. Cook Report) — coding-class finals use only:
+
+```text
+RESULT
+- <concrete implementation outcome>
+
+FILES
+- <path> — <externally relevant change>
+
+EVIDENCE
+- <command, inspection, or test> — <observed result>
+
+EXCEPTIONS
+- <blocker, risk, unverified assumption, required approval, or none>
+```
+
+Omit empty sections. Keep descriptions specific and falsifiable. No preamble, recap, or rhetorical framing.
+
+### Mode map (request classifier → contract)
+
+| Classifier / signal | Mode | Final shape |
+|---|---|---|
+| `CODE_CHANGE`, `DEBUG_REQUEST` | Execute | Default Response Contract (or skill format if defined) |
+| `REVIEW_REQUEST` | Review | `FINDINGS` / `EVIDENCE` / `EXCEPTIONS` |
+| Read-only codebase `QUESTION` / `EXPLORE` | Inspect | `FINDINGS` / `EVIDENCE` / `UNKNOWN` |
+| User explicitly asks to plan, or route to `plan` | Plan | `GOAL` / `FILES` / `STEPS` / `RISKS` / `QUESTIONS` |
+
+**Precedence:** invoked skill output contract > mode contract above. Allowlisted protocol only: routing proof, Routing Decision / Chain, Stack Brief, HARD-GATE stops — not investigation narration.
 
 ## Triggers
 
@@ -86,6 +128,7 @@ Skill-router's routing table above IS the trigger table — it maps keywords to 
 - NEVER read a SKILL.md to decide routing — use the routing table keywords
 - NEVER load multiple skills speculatively — route to ONE, let it chain if needed
 - Skill content is loaded by the Skill tool, not by skill-router reading files
+- Exception (Step 2.5): digests from `skill-index.json` (`hardGates`, description) may be read for near-matches — never full secondary `SKILL.md` bodies
 
 ### Step 0.25 — Request Classifier (Fast-Path Filter)
 
@@ -285,6 +328,53 @@ build handles orchestration while the L4 pack provides domain patterns.
 Both are active — build for workflow, L4 for domain knowledge.
 ```
 
+### Step 2.5 — Stack Consolidation (False Multi-Match)
+
+When several skills share similar description wording, Cursor/agent discovery can surface multiple lookalikes for one prompt. This step **folds** near-matches into a short Stack Brief and invokes **only** the primary skill. It does **not** merge legitimate compound chains (those stay sequenced via Step 2 / `chain_metadata.suggested_next`).
+
+**When to run:** After Step 2 has chosen a primary route, if **≥2** skills are stack candidates:
+
+- Intent keywords or description tokens match the user prompt for more than one skill, **or**
+- Intent-router (or agent skill list) surfaces alternates within ~30% of the top score, **or**
+- Description Jaccard similarity between candidates is **≥ 0.4** (tokenize descriptions lowercase, strip stopwords, Jaccard on token sets)
+
+If fewer than 2 candidates → skip to Step 3.
+
+**Procedure:**
+
+1. **Primary** = existing priority (`L1 > L2 > L3`, then routing table / Step 2 compound rules).
+2. **Near-matches** = other candidates that share prompt hits or description overlap with the primary. Cap at **3** near-matches.
+3. **Do not** `Read` or Skill-invoke near-match `SKILL.md` bodies.
+4. Load **digests only** from compiled `skill-index.json` (`hardGates` + short `description`). Lookup paths: `.cursor/rules/skill-index.json`, `dist/cursor/skill-index.json`, `.topia/skill-index.json`. Fallback if index missing: `Grep` for `<HARD-GATE>` in near-match skill files only (not full workflow sections).
+5. **Diff** near-match gates against primary digests; keep only unique constraints (drop lexical near-dupes).
+6. Emit a **Stack Brief** (target **≤300 tokens**). Announce once: `Stack consolidated: primary topia:X; folded Y, Z`.
+7. Continue to Step 3 → Step 4 and invoke **only** the primary.
+
+**Stack Brief format:**
+
+```markdown
+## Stack Brief
+Primary: topia:<skill>
+Folded (not loaded): topia:a, topia:b
+Unique constraints from near-matches:
+- ...
+Deferred (legitimate later chain): topia:x — reason
+```
+
+**Hard rules:**
+
+- NEVER load multiple full skills for one user turn
+- NEVER treat near-matches as parallel workstreams (that remains `team` / Change Stacking)
+- If overlap is a real compound intent (e.g. `build` + `deploy`), do **not** fold deploy into build — list it under Deferred using Step 2 sequencing
+- Stack Brief is ephemeral routing context — not a substitute for `chain_metadata` after the primary completes
+
+<HARD-GATE>
+When ≥2 skills match via description/intent overlap (false multi-match):
+1. MUST pick one primary and emit Stack Brief before Skill invoke
+2. MUST NOT Skill-invoke or fully Read near-match SKILL.md bodies
+3. MUST fold only unique HARD-GATE digests; defer true compound follow-ups
+</HARD-GATE>
+
 ### Step 3 — Anti-Rationalization Gate
 
 The agent MUST NOT bypass routing with these excuses:
@@ -411,7 +501,7 @@ Every response that involves code changes MUST begin with a routing proof line:
 > Routed: topia:<skill> | Type: CODE_CHANGE | Confidence: HIGH
 ```
 
-This is NOT optional formatting. It is evidence that routing occurred. If this line is missing from a code response, the response violated skill-router compliance. For LITE enforcement (QUESTION, EXPLORE), the proof line is optional.
+This is NOT optional formatting. It is evidence that routing occurred. If this line is missing from a code response, the response violated skill-router compliance. For LITE enforcement (QUESTION, EXPLORE), the proof line is optional. Keep it to the structured line or Routing Decision block — do not add status-narrator prose around it.
 
 ### Full Routing Decision (when announcing route)
 
@@ -440,8 +530,10 @@ For multi-skill chains:
 3. MUST NOT write code without routing through at least one skill first
 4. MUST NOT skip routing because "it's faster" — speed without correctness wastes more time
 5. MUST re-route on intent change — if user shifts from "plan" to "implement", switch skills
-6. MUST announce which skill is being used and why — transparency builds trust
+6. MUST announce the route in one structured line or Routing Decision block; do not narrate the investigation
 7. MUST follow skill's internal workflow, not override it with own judgment
+8. MUST run Step 2.5 when ≥2 skills are false multi-match candidates — fold digests, invoke primary only
+9. MUST NOT load full near-match SKILL.md bodies during Stack Consolidation
 
 ## Sharp Edges
 
@@ -450,6 +542,7 @@ For multi-skill chains:
 | Agent writes code without invoking any skill | CRITICAL | Constraint 3: code REQUIRES skill routing. No exceptions. |
 | Agent "mentally applies" skill without invoking | HIGH | Constraint 2: must use Skill tool for full content |
 | Routes to wrong skill, wastes a full workflow | MEDIUM | Step 2 compound resolution + re-route on mismatch |
+| False multi-match loads several overlapping skills | HIGH | Step 2.5: Stack Brief + primary-only invoke |
 | Over-routing trivial tasks (e.g., "what time is it") | LOW | Routing Exceptions section covers non-technical queries |
 | Skill invocation adds latency to simple tasks | LOW | Acceptable trade-off: correctness > speed |
 

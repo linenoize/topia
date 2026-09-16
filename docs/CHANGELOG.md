@@ -4,6 +4,17 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
+## [3.7.0] — 2026-09-16
+
+Artifact-first coding-agent output policy and PR-accepter validation method.
+
+### Added
+
+- **Artifact-First Output (coding agent policy)** — L0 `skill-router` operating posture + RESULT/FILES/EVIDENCE/EXCEPTIONS contracts for coding-class turns; full rules in [`skills/skill-router/references/coding-agent-output-policy.md`](../skills/skill-router/references/coding-agent-output-policy.md). Skill-defined finals (e.g. Cook Report) take precedence; Caveman remains a separate density mode. Reinforced in `contexts/{dev,review,research}.md`.
+- **PR-accepter validation method** — [`docs/PR-ACCEPTER-VALIDATION.md`](PR-ACCEPTER-VALIDATION.md) plus Approval Flows in [`.topia/org/org.md`](../.topia/org/org.md): maintainer-owned full-branch gates (`readiness` ‖ `guardian` → `review` → evidence/CI) for every PR, and a risk-triaged retrospective for commit batches. Linked from [`ORG-CONFIG.md`](ORG-CONFIG.md) and [`INSTALL.md`](INSTALL.md).
+
+---
+
 ## [3.6.0] — 2026-07-19
 
 Slash-command namespace hard-cut (`/topia-*`) to avoid Claude Code built-in collisions, plus session-end activity visibility and accurate model-tier reporting.

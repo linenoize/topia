@@ -640,6 +640,7 @@ Techniques:
 5. MUST update ARCHITECTURE.md and CLAUDE.md on every new skill
 6. MUST NOT ship skill that fails its own pressure test
 7. MUST write description as triggers only — never summarize workflow in description
+8. MUST keep description keyword clusters distinct from sibling skills — sharp `"Use when…"` discriminators so skill-router Step 2.5 rarely fires; avoid shared boilerplate that causes false multi-matches
 
 ## Sharp Edges
 
@@ -648,6 +649,7 @@ Techniques:
 | Writing skill without baseline test | CRITICAL | Phase 2 HARD-GATE: must observe failure first |
 | Description summarizes workflow → agents skip content | HIGH | Phase 3 description rules: "Use when..." triggers only |
 | New skill duplicates existing skill | HIGH | Phase 1 HARD-GATE: >70% overlap → extend, don't create |
+| Description keyword cluster overlaps siblings → false multi-match stack | HIGH | Distinct `"Use when…"` discriminators; skill-router Step 2.5 folds digests if it still fires |
 | Skill passes test but breaks nexus synapses | MEDIUM | Phase 6 integration: verify output compatibility |
 | Editing skill without testing the edit | MEDIUM | Adapting section: same TDD cycle for edits |
 | Overly verbose skill burns context tokens | MEDIUM | Token efficiency guidelines: layer-based word targets |

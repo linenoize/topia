@@ -88,3 +88,4 @@ chain_metadata:
 - When a **bugfix kickoff brief** exists (`.topia/bugfix-briefs/<ticket>.md`): Acceptance Criteria, Files Touched, and Progress Summary sections are **MANDATORY** in the Cook Report
 - Cook Report MUST contain actual commit hash, not placeholder — unless CP3 chose "Don't commit — PR summary only"
 - Self-Validation must pass before emitting the report
+- **Format precedence:** Cook Report is the final user-facing artifact for `topia:build`. Do not replace it with skill-router’s RESULT/FILES/EVIDENCE/EXCEPTIONS contract. Mid-phase chat must obey Status-Narrator Prohibition (artifact facts only — no investigation diary) around protocol lines and the Cook Report. See skill-router `references/coding-agent-output-policy.md`.

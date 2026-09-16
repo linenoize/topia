@@ -64,24 +64,51 @@ version: "1.0.0"
 
 ## Approval Flows
 
+> Full operating procedure: [`docs/PR-ACCEPTER-VALIDATION.md`](../../docs/PR-ACCEPTER-VALIDATION.md).
+> The **maintainer accepting the PR** owns Topia gates before merge (authors' `/topia build` is not sufficient alone).
+
+### PR accepter validation
+```
+scope ALL commits (git log/diff main...HEAD)
+→ /topia readiness ‖ /topia guardian (BLOCK stops merge; maintainer cannot override guardian)
+→ /topia review full branch (file:line or per-file approval; blast≥50 + behavior change → /topia adversary)
+→ completion-gate if agent claims "tests pass / fixed / done"
+→ confirm CI green (npm run ci)
+→ Security team + 1 when auth/crypto/secrets paths touched
+→ approve and merge only when gates clear; author uses /topia review-intake on feedback
+```
+
 ### Feature launch
 ```
-contributor opens PR → reviewer comments → maintainer approves → /topia deploy
+contributor /topia build → opens PR → CI green
+→ maintainer runs PR accepter validation (see above)
+→ maintainer approves → /topia deploy
 ```
 
 ### Hotfix
 ```
-on-call opens PR → maintainer approves (single reviewer OK for P1/P2) → /topia deploy
+on-call opens PR → maintainer runs guardian + CI (single reviewer OK for P1/P2)
+→ still no self-merge → /topia deploy
+```
+
+### Retrospective commit batch
+```
+define window (git log A..B or --since)
+→ cluster by PR (prefer gh pr list --state merged)
+→ triage P0 secrets/auth/crypto/deps/CI-red → P1 blast/LOC → P2 sample-or-skip
+→ per cluster: replay readiness ‖ guardian → review → evidence/CI
+→ report PASS|FAIL|SKIP(risk); FAIL → /topia fix|/topia build (no history rewrite by default)
 ```
 
 ### Refactor (>200 LOC or >3 modules)
 ```
 contributor runs /topia rescue → maintainer approves plan → surgeon executes per session
+→ merge via PR accepter validation
 ```
 
 ### Dependency bump (major version)
 ```
-contributor opens PR → Security team reviews CVE delta → maintainer approves
+contributor opens PR → Security team reviews CVE delta → maintainer runs PR accepter validation → approves
 ```
 
 ## Governance Level

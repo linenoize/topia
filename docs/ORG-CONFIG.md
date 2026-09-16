@@ -59,6 +59,8 @@ Read by `git` skill for semantic commit + branch-name validation.
 ### `## Approval Flows`
 Each flow defines who → does what → who approves. `build`, `team`, and `review-intake` consult these to know when to pause for human approval vs proceed autonomously.
 
+For this repo, **PR accepter validation** is the maintainer-owned gate stack before merge (full-branch `readiness` ‖ `guardian` → `review` → evidence/CI), plus a risk-triaged retrospective for commit batches. Operating procedure: [`PR-ACCEPTER-VALIDATION.md`](PR-ACCEPTER-VALIDATION.md).
+
 ### `## Governance Level`
 Master toggle. Three values:
 
@@ -153,6 +155,7 @@ node compiler/bin/topia.js setup --global --preset gentle
 ## Where to go next
 
 - **Template + full field reference**: [`.topia/org/org.md`](../.topia/org/org.md) — the live file in this repo, pre-filled with realistic defaults
+- **PR accepter validation**: [`PR-ACCEPTER-VALIDATION.md`](PR-ACCEPTER-VALIDATION.md) — maintainer checklist for every PR + retrospective commit batches
 - **Hook architecture**: [`docs/HOOKS.md`](HOOKS.md)
 - **Sentinel skill spec**: [`skills/guardian/SKILL.md`](../skills/guardian/SKILL.md)
 - **Preflight skill spec**: [`skills/readiness/SKILL.md`](../skills/readiness/SKILL.md)

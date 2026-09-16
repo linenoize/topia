@@ -90,7 +90,7 @@ If `.rune/` exists: `/topia migrate-from-rune` first.
 
 `/topia org-config` asks these questions and writes the file. Without it, `guardian` and `readiness` log "no org config" and skip organization enforcement.
 
-Read: [`ORG-CONFIG.md`](ORG-CONFIG.md)
+Read: [`ORG-CONFIG.md`](ORG-CONFIG.md). Maintainers accepting PRs: [`PR-ACCEPTER-VALIDATION.md`](PR-ACCEPTER-VALIDATION.md).
 
 ---
 

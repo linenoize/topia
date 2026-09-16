@@ -55,6 +55,7 @@ Topia is built for **shared discipline**: one committed policy file drives what 
 | Define reviewers, CVE SLAs, deploy windows | `/topia org-config` or finalize |
 | Share across developers | `git add .topia/org/ && git commit` |
 | Change policy | Edit `org.md`, re-run finalize or `topia setup --global` |
+| Accept / audit PRs (maintainer) | Follow [`PR-ACCEPTER-VALIDATION.md`](PR-ACCEPTER-VALIDATION.md) — gates before merge; no self-merge |
 
 Without a configured `org.md`, organization checks in guardian/readiness are skipped or use the shipped template.
 

@@ -749,11 +749,60 @@ const INTENT_KEYWORDS = {
   retro: ['retrospective', 'sprint review', 'velocity', 'team health'],
 };
 
+/** Stopwords stripped when building descTokens for Jaccard overlap (Step 2.5). */
+const DESC_TOKEN_STOPWORDS = new Set([
+  'a',
+  'an',
+  'and',
+  'for',
+  'from',
+  'in',
+  'into',
+  'is',
+  'of',
+  'on',
+  'or',
+  'the',
+  'to',
+  'use',
+  'when',
+  'with',
+  'that',
+  'this',
+  'as',
+  'by',
+  'it',
+  'its',
+  'be',
+  'are',
+  'not',
+  'no',
+]);
+
+/**
+ * Tokenize a skill description for false multi-match Jaccard checks.
+ * @param {string} description
+ * @returns {string[]}
+ */
+function tokenizeDescription(description) {
+  if (!description || typeof description !== 'string') return [];
+  const seen = new Set();
+  const tokens = [];
+  for (const raw of description.toLowerCase().split(/[^a-z0-9]+/)) {
+    if (!raw || raw.length < 2 || DESC_TOKEN_STOPWORDS.has(raw)) continue;
+    if (seen.has(raw)) continue;
+    seen.add(raw);
+    tokens.push(raw);
+  }
+  return tokens;
+}
+
 /**
  * Generate skill-index.json — compiled intent graph for runtime auto-trigger
  *
  * Extracts from parsed skills: name, description, layer, model, group,
- * cross-references (connections), and maps intent keywords to skill chains.
+ * hardGates digests, descTokens, cross-references (connections), and maps
+ * intent keywords to skill chains. Version 3 adds digests for skill-router Step 2.5.
  *
  * @param {Array} parsedSkills - array of parsed skill objects
  * @returns {object} skill index with graph + intents
@@ -765,12 +814,15 @@ function generateSkillIndex(parsedSkills) {
 
   for (const skill of parsedSkills) {
     const outbound = [...new Set(skill.crossRefs.map((r) => r.skillName))];
+    const hardGates = Array.isArray(skill.hardGates) ? skill.hardGates : [];
     graph[skill.name] = outbound;
     skills[skill.name] = {
       layer: skill.layer,
       model: skill.model,
       group: skill.group,
       description: skill.description.slice(0, 200),
+      descTokens: tokenizeDescription(skill.description),
+      hardGates,
       connections: outbound,
       ...(skill.signals ? { signals: skill.signals } : {}),
     };
@@ -797,7 +849,7 @@ function generateSkillIndex(parsedSkills) {
   }
 
   return {
-    version: 2,
+    version: 3,
     generated: new Date().toISOString(),
     skillCount: parsedSkills.length,
     skills,

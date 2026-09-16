@@ -181,6 +181,46 @@ No table here.
     const result = parseOrgConfig(minimalTemplate, '/test/org.md');
     assert.strictEqual(result.filePath, '/test/org.md');
   });
+
+  test('live .topia/org/org.md parses PR accepter + retrospective flows', () => {
+    const orgPath = path.resolve(__dirname, '../../.topia/org/org.md');
+    const content = readFileSync(orgPath, 'utf-8');
+    const result = parseOrgConfig(content, orgPath);
+
+    assert.strictEqual(result.governanceLevel.level, 'moderate');
+    assert.ok(result.approvalFlows.pr_accepter_validation, 'Expected pr_accepter_validation flow');
+    assert.ok(
+      result.approvalFlows.pr_accepter_validation.includes('/topia readiness'),
+      'Expected readiness in PR accepter flow',
+    );
+    assert.ok(
+      result.approvalFlows.pr_accepter_validation.includes('/topia guardian'),
+      'Expected guardian in PR accepter flow',
+    );
+    assert.ok(result.approvalFlows.retrospective_commit_batch, 'Expected retrospective_commit_batch flow');
+    assert.ok(
+      result.approvalFlows.retrospective_commit_batch.includes('PASS|FAIL|SKIP'),
+      'Expected PASS|FAIL|SKIP report in retrospective flow',
+    );
+    assert.ok(result.approvalFlows.feature_launch, 'Expected feature_launch flow');
+    assert.ok(
+      result.approvalFlows.feature_launch.includes('PR accepter validation'),
+      'Expected feature launch to require PR accepter validation',
+    );
+    assert.ok(result.approvalFlows.hotfix, 'Expected hotfix flow');
+    assert.ok(
+      result.approvalFlows.hotfix.includes('guardian + CI'),
+      'Expected hotfix to still run guardian + CI',
+    );
+
+    const codeReview = result.policies.code_review || [];
+    const selfMerge = codeReview.find((r) => r.key === 'self-merge_allowed');
+    assert.ok(selfMerge, 'Expected self-merge_allowed policy');
+    assert.strictEqual(selfMerge.value, 'No');
+    const securityReviewers = codeReview.find((r) => r.key === 'required_reviewers_for_security-tagged_files');
+    assert.ok(securityReviewers, 'Expected security-tagged reviewer policy');
+    assert.ok(securityReviewers.value.toLowerCase().includes('security'), 'Expected Security team on security paths');
+  });
 });
 
 // ─── Guardian + readiness org integration ─────────────────────────
