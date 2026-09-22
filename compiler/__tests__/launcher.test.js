@@ -17,13 +17,25 @@ import {
 const ASSET = path.resolve(import.meta.dirname, '../assets/hook-dispatch-launcher.cjs');
 const FLIGHTREC_SRC = path.resolve(import.meta.dirname, '../../hooks/lib/flightrec.cjs');
 
-/** Build a fake plugin tree with a stub CLI; optionally include flightrec.cjs. */
-function makeFakePlugin(root, { withFlightrec = false } = {}) {
+/** Ensure a non-empty skills/ tree so the launcher liveness probe passes. */
+function ensureSkills(root) {
+  const skillsDir = path.join(root, 'skills', 'readiness');
+  mkdirSync(skillsDir, { recursive: true });
+  writeFileSync(path.join(skillsDir, '.keep'), '');
+}
+
+/**
+ * Build a fake plugin tree with a stub CLI; optionally include flightrec.cjs.
+ * @param {string} root
+ * @param {{ withFlightrec?: boolean, version?: string, withSkills?: boolean, cliBody?: string }} [opts]
+ */
+function makeFakePlugin(root, { withFlightrec = false, version = '9.9.9', withSkills = true, cliBody } = {}) {
   const cli = path.join(root, 'compiler', 'bin', 'topia.js');
   mkdirSync(path.dirname(cli), { recursive: true });
   mkdirSync(path.join(root, '.claude-plugin'), { recursive: true });
-  writeFileSync(path.join(root, '.claude-plugin', 'plugin.json'), JSON.stringify({ name: 'topia', version: '9.9.9' }));
-  writeFileSync(cli, 'process.exit(0);\n');
+  writeFileSync(path.join(root, '.claude-plugin', 'plugin.json'), JSON.stringify({ name: 'topia', version }));
+  writeFileSync(cli, cliBody ?? 'process.exit(0);\n');
+  if (withSkills) ensureSkills(root);
   if (withFlightrec) {
     const libDir = path.join(root, 'hooks', 'lib');
     mkdirSync(libDir, { recursive: true });
@@ -61,19 +73,10 @@ describe('launcher runtime delegation', () => {
     const tmp = await mkdtemp(path.join(os.tmpdir(), 'topia-launcher-'));
     try {
       const plugin = path.join(tmp, 'plugin');
-      const cli = path.join(plugin, 'compiler', 'bin', 'topia.js');
-      mkdirSync(path.dirname(cli), { recursive: true });
-      mkdirSync(path.join(plugin, '.claude-plugin'), { recursive: true });
-      writeFileSync(
-        path.join(plugin, '.claude-plugin', 'plugin.json'),
-        JSON.stringify({ name: 'topia', version: '9.9.9' }),
-      );
       const out = path.join(tmp, 'received.txt');
-      // Stub CLI writes its argv (minus node + script) to a file.
-      writeFileSync(
-        cli,
-        `require('node:fs').writeFileSync(${JSON.stringify(out)}, process.argv.slice(2).join(' '));\n`,
-      );
+      makeFakePlugin(plugin, {
+        cliBody: `require('node:fs').writeFileSync(${JSON.stringify(out)}, process.argv.slice(2).join(' '));\n`,
+      });
 
       const res = spawnSync(process.execPath, [ASSET, 'hook-dispatch', 'completion-gate', '--gentle'], {
         env: { ...process.env, CLAUDE_PLUGIN_ROOT: plugin, TOPIA_ROOT: '' },
@@ -95,11 +98,10 @@ describe('launcher runtime delegation', () => {
       const out = path.join(tmp, 'received.txt');
       for (const v of ['3.1.1', '3.4.0']) {
         const root = path.join(cacheBase, v);
-        const cli = path.join(root, 'compiler', 'bin', 'topia.js');
-        mkdirSync(path.dirname(cli), { recursive: true });
-        mkdirSync(path.join(root, '.claude-plugin'), { recursive: true });
-        writeFileSync(path.join(root, '.claude-plugin', 'plugin.json'), JSON.stringify({ name: 'topia', version: v }));
-        writeFileSync(cli, `require('node:fs').writeFileSync(${JSON.stringify(out)}, ${JSON.stringify(v)});\n`);
+        makeFakePlugin(root, {
+          version: v,
+          cliBody: `require('node:fs').writeFileSync(${JSON.stringify(out)}, ${JSON.stringify(v)});\n`,
+        });
       }
 
       // Run a COPY of the launcher placed outside any plugin tree, with HOME=tmp.
@@ -110,6 +112,87 @@ describe('launcher runtime delegation', () => {
 
       assert.equal(res.status, 0, res.stderr);
       assert.equal(readFileSync(out, 'utf8'), '3.4.0'); // newest version wins
+    } finally {
+      await rm(tmp, { recursive: true, force: true });
+    }
+  });
+
+  test('skips a candidate root that is missing skills/', async () => {
+    const tmp = await mkdtemp(path.join(os.tmpdir(), 'topia-incomplete-'));
+    try {
+      const cache = path.join(tmp, '.claude', 'plugins', 'cache');
+      const out = path.join(tmp, 'received.txt');
+
+      // Higher version but incomplete (no skills/) — must be skipped.
+      makeFakePlugin(path.join(cache, 'linenoize', 'topia', '3.7.0'), {
+        version: '3.7.0',
+        withSkills: false,
+        cliBody: `require('node:fs').writeFileSync(${JSON.stringify(out)}, 'incomplete');\n`,
+      });
+      // Lower complete version should win.
+      makeFakePlugin(path.join(cache, 'linenoize', 'topia', '3.6.0'), {
+        version: '3.6.0',
+        cliBody: `require('node:fs').writeFileSync(${JSON.stringify(out)}, 'complete');\n`,
+      });
+
+      const launcher = path.join(tmp, 'hook-dispatch.cjs');
+      copyFileSync(ASSET, launcher);
+      const env = { ...process.env, CLAUDE_PLUGIN_ROOT: '', TOPIA_ROOT: '', HOME: tmp, USERPROFILE: tmp };
+      const res = spawnSync(process.execPath, [launcher, 'hook-dispatch', 'readiness'], { env, encoding: 'utf8' });
+
+      assert.equal(res.status, 0, res.stderr);
+      assert.equal(readFileSync(out, 'utf8'), 'complete');
+    } finally {
+      await rm(tmp, { recursive: true, force: true });
+    }
+  });
+
+  test('equal version prefers canonical install over temp_git staging', async () => {
+    const tmp = await mkdtemp(path.join(os.tmpdir(), 'topia-staging-'));
+    try {
+      const cache = path.join(tmp, '.claude', 'plugins', 'cache');
+      const out = path.join(tmp, 'received.txt');
+      const version = '3.7.0';
+
+      // Staging dir visited first alphabetically (temp_git_* after linenoize when
+      // sorted ascending into a LIFO stack → popped first). Both complete.
+      makeFakePlugin(path.join(cache, 'temp_git_9999999999_test'), {
+        version,
+        cliBody: `require('node:fs').writeFileSync(${JSON.stringify(out)}, 'staging');\n`,
+      });
+      makeFakePlugin(path.join(cache, 'linenoize', 'topia', version), {
+        version,
+        cliBody: `require('node:fs').writeFileSync(${JSON.stringify(out)}, 'canonical');\n`,
+      });
+
+      const launcher = path.join(tmp, 'hook-dispatch.cjs');
+      copyFileSync(ASSET, launcher);
+      const env = { ...process.env, CLAUDE_PLUGIN_ROOT: '', TOPIA_ROOT: '', HOME: tmp, USERPROFILE: tmp };
+      const res = spawnSync(process.execPath, [launcher, 'hook-dispatch', 'readiness'], { env, encoding: 'utf8' });
+
+      assert.equal(res.status, 0, res.stderr);
+      assert.equal(readFileSync(out, 'utf8'), 'canonical');
+    } finally {
+      await rm(tmp, { recursive: true, force: true });
+    }
+  });
+
+  test('resolves when the only candidate is a canonical install', async () => {
+    const tmp = await mkdtemp(path.join(os.tmpdir(), 'topia-canonical-only-'));
+    try {
+      const out = path.join(tmp, 'received.txt');
+      makeFakePlugin(path.join(tmp, '.claude', 'plugins', 'cache', 'linenoize', 'topia', '3.7.0'), {
+        version: '3.7.0',
+        cliBody: `require('node:fs').writeFileSync(${JSON.stringify(out)}, 'ok');\n`,
+      });
+
+      const launcher = path.join(tmp, 'hook-dispatch.cjs');
+      copyFileSync(ASSET, launcher);
+      const env = { ...process.env, CLAUDE_PLUGIN_ROOT: '', TOPIA_ROOT: '', HOME: tmp, USERPROFILE: tmp };
+      const res = spawnSync(process.execPath, [launcher, 'hook-dispatch', 'readiness'], { env, encoding: 'utf8' });
+
+      assert.equal(res.status, 0, res.stderr);
+      assert.equal(readFileSync(out, 'utf8'), 'ok');
     } finally {
       await rm(tmp, { recursive: true, force: true });
     }

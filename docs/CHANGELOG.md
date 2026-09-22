@@ -4,6 +4,21 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
+## [3.7.1] — 2026-09-22
+
+Harden plugin-root resolution so abandoned Claude Code `temp_git_*` staging dirs cannot win equal-version scans and crash Stop hooks.
+
+### Fixed
+
+- **`compiler/assets/hook-dispatch-launcher.cjs`** — liveness probe now requires a non-empty `skills/` tree; equal-version ties prefer a canonical `cache/<owner>/<plugin>/<version>/` install over `temp_git_*` staging; scan traversal sorts directory names for deterministic order.
+- **`compiler/commands/hooks/resolve-topia-root.js`** — same probe, staging-aware tie-break, and sorted traversal so CLI resolution stays aligned with the launcher.
+
+### Tests
+
+- Scanner regression coverage in `launcher.test.js` and `resolve-topia-root.test.js` for incomplete roots, equal-version non-staging preference, and canonical-only installs.
+
+---
+
 ## [3.7.0] — 2026-09-16
 
 Artifact-first coding-agent output policy and PR-accepter validation method.

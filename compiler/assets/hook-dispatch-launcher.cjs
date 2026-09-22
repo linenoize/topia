@@ -46,7 +46,13 @@ const MANIFEST_REL = path.join('.claude-plugin', 'plugin.json');
 const PLUGIN_NAMES = new Set(['topia', 'skill-topia']);
 
 function hasCli(root) {
-  return Boolean(root) && fs.existsSync(path.join(root, CLI_REL));
+  if (!root || !fs.existsSync(path.join(root, CLI_REL))) return false;
+  // topia.js imports from skills/ — a root without it is a partial install
+  try {
+    return fs.readdirSync(path.join(root, 'skills')).length > 0;
+  } catch {
+    return false;
+  }
 }
 
 /** Manifest version if `root` is a Topia plugin root, else null. */
@@ -74,6 +80,20 @@ function cmpVersion(a, b) {
     if (xi !== yi) return xi - yi;
   }
   return 0;
+}
+
+/** Claude Code staging clone left in plugins/cache after an interrupted install. */
+function isStaging(p) {
+  return /(^|[\\/])temp_git_\d+_/.test(p);
+}
+
+/** Prefer higher version; on a tie prefer a non-staging path. */
+function better(cand, best) {
+  if (!best) return true;
+  const v = cmpVersion(cand.version, best.version);
+  if (v !== 0) return v > 0;
+  if (isStaging(best.root) && !isStaging(cand.root)) return true;
+  return false;
 }
 
 /** Walk up from `startDir` to a plugin root identified by its manifest. */
@@ -107,7 +127,8 @@ function scanForNewestPlugin() {
       const { dir, depth } = stack.pop();
       const version = hasCli(dir) ? pluginVersion(dir) : null;
       if (version !== null) {
-        if (!best || cmpVersion(version, best.version) > 0) best = { root: dir, version };
+        const cand = { root: dir, version };
+        if (better(cand, best)) best = cand;
         continue; // do not descend into a resolved plugin root
       }
       if (depth >= 4) continue;
@@ -117,6 +138,7 @@ function scanForNewestPlugin() {
       } catch {
         continue;
       }
+      entries.sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
       for (const entry of entries) {
         if (!entry.isDirectory() || skip.has(entry.name)) continue;
         stack.push({ dir: path.join(dir, entry.name), depth: depth + 1 });

@@ -24,7 +24,13 @@ const PLUGIN_NAMES = new Set(['topia', 'skill-topia']);
 const here = path.dirname(fileURLToPath(import.meta.url));
 
 function hasCli(root) {
-  return Boolean(root && existsSync(path.join(root, CLI_REL)));
+  if (!root || !existsSync(path.join(root, CLI_REL))) return false;
+  // topia.js imports from skills/ — a root without it is a partial install
+  try {
+    return readdirSync(path.join(root, 'skills')).length > 0;
+  } catch {
+    return false;
+  }
 }
 
 /** Manifest version if `root` is a Topia plugin root, else null. */
@@ -52,6 +58,20 @@ function cmpVersion(a, b) {
     if (xi !== yi) return xi - yi;
   }
   return 0;
+}
+
+/** Claude Code staging clone left in plugins/cache after an interrupted install. */
+function isStaging(p) {
+  return /(^|[\\/])temp_git_\d+_/.test(p);
+}
+
+/** Prefer higher version; on a tie prefer a non-staging path. */
+function better(cand, best) {
+  if (!best) return true;
+  const v = cmpVersion(cand.version, best.version);
+  if (v !== 0) return v > 0;
+  if (isStaging(best.root) && !isStaging(cand.root)) return true;
+  return false;
 }
 
 /**
@@ -87,7 +107,8 @@ function newestPluginUnder(base) {
     const { dir, depth } = stack.pop();
     const version = hasCli(dir) ? pluginVersion(dir) : null;
     if (version !== null) {
-      if (!best || cmpVersion(version, best.version) > 0) best = { root: path.resolve(dir), version };
+      const cand = { root: path.resolve(dir), version };
+      if (better(cand, best)) best = cand;
       continue; // do not descend into a resolved plugin root
     }
     if (depth >= 4) continue;
@@ -97,6 +118,7 @@ function newestPluginUnder(base) {
     } catch {
       continue;
     }
+    entries.sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
     for (const entry of entries) {
       if (!entry.isDirectory() || skip.has(entry.name)) continue;
       stack.push({ dir: path.join(dir, entry.name), depth: depth + 1 });
@@ -107,7 +129,7 @@ function newestPluginUnder(base) {
 
 /**
  * @param {string|null|undefined} explicit — path passed from caller (clone dir or TOPIA_ROOT)
- * @param {{ skipPluginCache?: boolean }} [opts]
+ * @param {{ skipPluginCache?: boolean, skipManifestWalk?: boolean }} [opts]
  * @returns {string|null} absolute path to Topia root, or null to fall back to npx
  */
 export function resolveTopiaRoot(explicit, opts = {}) {
@@ -126,8 +148,11 @@ export function resolveTopiaRoot(explicit, opts = {}) {
 
   // Manifest-anchored: this module lives inside the plugin, so walking up from
   // its own location finds the plugin root regardless of cache namespace/version.
-  const fromSelf = findPluginRootFromFile(here);
-  if (fromSelf) return fromSelf;
+  // skipManifestWalk is for tests that need to exercise the cache scan alone.
+  if (!opts.skipManifestWalk) {
+    const fromSelf = findPluginRootFromFile(here);
+    if (fromSelf) return fromSelf;
+  }
 
   // Last resort: newest installed Topia plugin across known roots. Generalized
   // over any owner namespace so namespace migrations resolve with no code change.
@@ -140,7 +165,7 @@ export function resolveTopiaRoot(explicit, opts = {}) {
   let best = null;
   for (const base of bases) {
     const found = newestPluginUnder(base);
-    if (found && (!best || cmpVersion(found.version, best.version) > 0)) best = found;
+    if (found && better(found, best)) best = found;
   }
   return best ? best.root : null;
 }
