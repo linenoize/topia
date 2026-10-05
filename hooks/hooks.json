@@ -159,5 +159,8 @@
         ]
       }
     ]
-  }
+  },
+  "modules": [
+    "../mods/index.tsx"
+  ]
 }

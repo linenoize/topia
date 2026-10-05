@@ -9,5 +9,45 @@
   "repository": "https://github.com/linenoize/topia",
   "homepage": "https://github.com/linenoize/topia",
   "license": "MIT",
-  "keywords": ["skills", "nexus", "tdd", "multi-platform", "coding-agent", "neural-memory"]
+  "keywords": [
+    "skills",
+    "nexus",
+    "tdd",
+    "multi-platform",
+    "coding-agent",
+    "neural-memory"
+  ],
+  "types": "./mods/types/index.d.ts",
+  "userConfig": {
+    "gitBand": {
+      "type": "boolean",
+      "title": "Git band",
+      "description": "Show changed / unpushed counts above the prompt with Commit and Push buttons",
+      "default": true
+    },
+    "standingOrders": {
+      "type": "boolean",
+      "title": "Standing orders",
+      "description": "Per-project rules added to the system prompt, toggled with /orders (all off until you turn one on)",
+      "default": true
+    },
+    "remoteHosts": {
+      "type": "boolean",
+      "title": "Remote hosts",
+      "description": "Remember SSH hosts from ssh calls that worked in this project and list them to the model (kept per project, never in the repo); /hosts",
+      "default": false
+    },
+    "quietReports": {
+      "type": "boolean",
+      "title": "Quiet Topia reports",
+      "description": "Keep Topia session reports and banners out of the model context; usage in the status line; /topia-activity",
+      "default": true
+    },
+    "modelPreset": {
+      "type": "boolean",
+      "title": "Model preset",
+      "description": "Remember the model used per project and switch to it at startup; /model-preset",
+      "default": true
+    }
+  }
 }
