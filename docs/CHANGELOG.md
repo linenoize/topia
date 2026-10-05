@@ -4,6 +4,30 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
+## [3.8.0] — 2026-10-04
+
+Claude Code mods ship inside the `topia` plugin: five function-hook features, each with its own `/config` switch.
+
+### Added
+
+- **Claude Code mods** ([`mods/`](../mods/README.md)) — `hooks/hooks.json` loads `mods/index.tsx` as a function-hooks module alongside the command hooks. Switches live in `.claude-plugin/plugin.json` `userConfig`:
+  - `gitBand` — changed / unpushed / behind counts above the prompt with Commit, Commit & push and Push buttons.
+  - `standingOrders` — per-project rules in the system prompt (fan out, skipped ledger, logged hand-off scripts, commit when done) via `/orders`; every order starts off.
+  - `remoteHosts` — **off by default**; learns SSH hosts from `ssh` calls that worked and lists them to the model via `/hosts`. Kept per project.
+  - `quietReports` — keeps Topia's session report, guardian advisory and install banners out of the model's context; usage, cache and cost in the status line; `/topia-activity`.
+  - `modelPreset` — remembers the model last used per project and restores it at startup; `/model-preset`.
+
+### Security
+
+- Mod data lives only in the user's Claude Code plugin store (`~/.claude/plugins/store/`), keyed per project; nothing is written to the project or repo.
+- Test fixtures use reserved names only (`example.com`, `.test`, `203.0.113.0/24`).
+
+### Notes
+
+- `mods/` is Claude Code only and outside the npm `files` list; marketplace installs get it from the git clone.
+
+---
+
 ## [3.7.1] — 2026-09-22
 
 Harden plugin-root resolution so abandoned Claude Code `temp_git_*` staging dirs cannot win equal-version scans and crash Stop hooks.
