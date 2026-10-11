@@ -313,6 +313,12 @@ node compiler/bin/topia.js memory seed
 
 Imports decisions, ADRs, and learnings from `.topia/` into agora's SQLite store (idempotent). Skip silently if agora is not installed — file-based `.topia/` remains source of truth.
 
+### Step 6d.2 — Topia mods (Claude Code only)
+
+In Claude Code, Topia's mods (git band, standing orders, remote hosts, quiet reports, model preset, prompt routing) ask for themselves: the first onboard run in a project shows a **"topia onboard · which mods here?"** row above the prompt, with one chip per mod to switch it for this project and a **Keep** button. Do not ask about mods with AskQuestion and do not write any mod setting yourself — choices live in the plugin's own store, never in the repo.
+
+Report `### Mods` with one line: the row above the prompt picks them for this project; `/mods` changes them any time, for the user (every project) or this project (`/mods <mod> on|off --project`). Skip the section on other platforms.
+
 ### Step 6e — AI-Driven Interview (Optional, User-Initiated)
 
 When invoked as `/topia onboard --interview` or when the project is too ambiguous for automated detection (e.g., no package.json, no clear entry point, mixed languages), switch to **conversational onboarding** — the AI asks targeted questions instead of relying solely on file scanning.
@@ -450,6 +456,9 @@ If any of the `.topia/` files already exist, do not overwrite them (they may con
 
 ### Context Budget
 - [metrics + applied remediations, or "healthy baseline"]
+
+### Mods (Claude Code)
+- Pick them in the row above the prompt for this project; `/mods` changes them any time, for you or this project
 ```
 
 ## Constraints

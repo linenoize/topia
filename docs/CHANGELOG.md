@@ -4,6 +4,40 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
+## [3.9.0] — 2026-10-11
+
+A sixth Claude Code mod, prompt routing, shows as you type which Topia skills your wording will send the prompt to. Every mod can now be turned on or off at runtime, for you or for one project, and the first session in a project asks which to keep.
+
+### Added
+
+- **`promptRouting` mod** ([`mods/`](../mods/README.md)) — a row above the prompt names up to three skills the draft points at, then the lead skill's usual hand-offs (build: plan → test → fix → readiness → guardian → review → completion-gate → verification). The matched words are underlined in the draft in each skill's color. Hover, Tab to or click a skill to read its description. After the turn the row compares predicted with ran (✓ / ✗, plus other Topia skills that ran, from Skill calls, slash commands and Topia subagents). `/routing on|off` is a shortcut for `/mods routing`; the row has a Hide button.
+- **`promptRoutingHint`** — on by default; hands the same reading to the model beside the prompt (never shown in the transcript), so skill-router sees the routing the user saw.
+- **`/mods`** — turns any mod on or off with no reload: `/mods git off`, `/mods hosts on --project`, `/mods routing reset`, `/mods forget-project`. With no argument it opens a pane: a switch per mod (digit hotkeys), where each value comes from (default, /config, you, this project, locked), and **Save for** this project or all your projects. A project choice beats yours, yours beats the `/config` switch (now the default), and a row locked by policy beats all. Each mod's own command still answers when it is off and says how to turn it back on.
+- **First-run row** — the first interactive session in a project, and the first `onboard` run there, ask above the prompt which mods to keep: a chip per mod (press to switch it for this project), Keep, More… and Don't ask in new projects. `skills/onboard` Step 6d.2 reports it; `/topia mods` points to `/mods`.
+- **Recap row** — at most every 10 sessions and 14 days, a row lists which mods are on and how to change them, with Got it and Don't remind me.
+- **What each value means** — every value the mods draw (git branch and counts, Commit / Push / Hide, routing chips, mod switches and their sources) has a one-line description, shown at the end of its row under a resting pointer and under the band or pane while it holds the focus. The status line's parts are explained in the `/mods` and `/topia-activity` panes.
+- **`compiler/lib/intent-keywords.js`** — one source for intent keywords and hand-off chains, now covering 62 skills (was 30, inlined in `emitter.js`). `npm run generate:slash-aliases` also writes `mods/lib/skill-routes.generated.ts` from it. The compiled skill index's `intents.*.chain` uses the curated chains where they exist.
+
+### Changed
+
+- Mod switches are read at each hook, not once when the module loads, so a change applies at once: a hidden band comes back when its mod is turned on, and a status-line part goes when its mod is turned off.
+- `/routing`'s own global switch (`promptRouting:off`) is folded into your `/mods` choices on the first session and deleted.
+- Overbroad intent keywords narrowed: build no longer claims "code"; team drops "multiple" and "large"; marketing's "copy", onboard's "setup" and db's "index" / "query" are now phrases.
+
+### Fixed
+
+- **`intent-router` hook never fired** — it looked for a `skill-index.json` that Claude Code installs never have, so it always exited silently. It now scores against `hooks/lib/skill-routes.json`, generated with the mod's table, using `hooks/lib/prompt-routing.cjs`, a Node port of the mod's scorer (a Node test holds the two to the same answers). It stays silent with no match, when the skill is named outright, and under Cursor (which wants JSON on stdout). Where the prompt-routing mod is loaded it drops the hook's block, so the model reads the reading once.
+- **Status line could outlive its mod** — a reload cleared the module's slots but never redrew the line, so a mod turned off left its last status text pinned. Each session start now redraws it.
+- **Model preset could switch the model mid-session** — turning `modelPreset` on after startup reloaded the module and ran the startup switch again. It now runs only on the session's first start.
+- **`npx biome check .`** is clean again: import order and formatting in `session-report.test.js` and `org-templates.test.js`, and an unused import in `generate-slash-aliases.js`.
+
+### Security
+
+- Mod choices live in the plugin's own store under `~/.claude` (`mods:user`, `mods:prefs`, and `mods:<project root>`), never in the repo. Drafts and predictions stay in session memory, and the model hint carries skill names and matched keywords, never the prompt's text.
+- A test fixture's Windows path used a real username; it now uses `example`.
+
+---
+
 ## [3.8.0] — 2026-10-04
 
 Claude Code mods ship inside the `topia` plugin: five function-hook features, each with its own `/config` switch.

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
-import { describe, test } from 'node:test';
 import { createRequire } from 'node:module';
 import { join } from 'node:path';
+import { describe, test } from 'node:test';
 
 const require = createRequire(import.meta.url);
 const REPO = join(import.meta.dirname, '..', '..');

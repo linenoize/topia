@@ -16,6 +16,7 @@ Route to the appropriate Topia skill, CLI command, or extension pack based on th
 - **Step 1:** `/plugin marketplace add linenoize/topia` then `/plugin install topia@linenoize`
 - **Step 2:** `/topia finalize` — dispatch hooks, team `org.md` (org-config), optional agora-code. See [`commands/finalize.md`](finalize.md). Flags: `--strict`, `--skip-agora`, `--skip-org`, `--all`, `--reset`, `--dismiss`.
 - **Per repo:** `/topia onboard` → `/topia org-config` → `/topia doctor`
+- **Mods:** 👤 `/mods` (not `/topia mods`) — turn Topia's Claude Code mods on or off, for you or for this project. See [`mods/README.md`](../mods/README.md).
 
 ## Team policy
 
@@ -228,6 +229,7 @@ When the user runs `/topia <action>`:
 1. **CLI command?** (install, setup, init, doctor, build, status, visualize, analytics, hooks, migrate-from-rune) → route to the CLI binary (`node compiler/bin/topia.js <action>`).
 2. **Core skill?** (any name in L0/L1/L2/L3 above) → invoke `topia:<action>` via the Skill tool, passing arguments as the prompt.
 3. **L4 pack command?** → read the corresponding `extensions/<pack>/PACK.md`, locate the matching skill section, follow its workflow.
-4. **No action provided?** → show this help menu.
+4. **`mods`?** → tell the user to type `/mods` themselves (the mods module answers it; nothing to run here).
+5. **No action provided?** → show this help menu.
 
 For ambiguous routing (the user described intent without naming a skill), defer to `topia:skill-router` for canonical resolution.

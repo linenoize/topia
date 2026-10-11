@@ -1,7 +1,7 @@
 {
   "name": "topia",
   "displayName": "Topia",
-  "version": "3.8.0",
+  "version": "3.9.0",
   "description": "71-skill Topia Nexus for Claude Code — discipline rails via native hooks (readiness/guardian/completion-gate/quarantine). 315 synapses + 49 pulses, Maestro routing, optional agora-code neural memory. Use topia:build for code, topia:architecture-mapper for legacy mapping, topia:team for parallel work, topia:launch for deploy, topia:rescue for legacy code.",
   "author": {
     "name": "topia"
@@ -22,31 +22,43 @@
     "gitBand": {
       "type": "boolean",
       "title": "Git band",
-      "description": "Show changed / unpushed counts above the prompt with Commit and Push buttons",
+      "description": "Show changed / unpushed counts above the prompt with Commit and Push buttons. The default: /mods git overrides it for you or one project",
       "default": true
     },
     "standingOrders": {
       "type": "boolean",
       "title": "Standing orders",
-      "description": "Per-project rules added to the system prompt, toggled with /orders (all off until you turn one on)",
+      "description": "Per-project rules added to the system prompt, toggled with /orders (all off until you turn one on). The default: /mods orders overrides it for you or one project",
       "default": true
     },
     "remoteHosts": {
       "type": "boolean",
       "title": "Remote hosts",
-      "description": "Remember SSH hosts from ssh calls that worked in this project and list them to the model (kept per project, never in the repo); /hosts",
+      "description": "Remember SSH hosts from ssh calls that worked in this project and list them to the model (kept per project, never in the repo); /hosts. The default: /mods hosts overrides it for you or one project",
       "default": false
     },
     "quietReports": {
       "type": "boolean",
       "title": "Quiet Topia reports",
-      "description": "Keep Topia session reports and banners out of the model context; usage in the status line; /topia-activity",
+      "description": "Keep Topia session reports and banners out of the model context; usage in the status line; /topia-activity. The default: /mods quiet overrides it for you or one project",
       "default": true
     },
     "modelPreset": {
       "type": "boolean",
       "title": "Model preset",
-      "description": "Remember the model used per project and switch to it at startup; /model-preset",
+      "description": "Remember the model used per project and switch to it at startup; /model-preset. The default: /mods model overrides it for you or one project",
+      "default": true
+    },
+    "promptRouting": {
+      "type": "boolean",
+      "title": "Prompt routing",
+      "description": "Show above the prompt, as you type, which Topia skills your wording points at, with the trigger words underlined; after the turn, predicted vs ran. The default: /mods routing overrides it for you or one project",
+      "default": true
+    },
+    "promptRoutingHint": {
+      "type": "boolean",
+      "title": "Prompt routing hint for the model",
+      "description": "Also hand that reading to the model beside your prompt (never shown in the transcript), so skill-router sees what you meant",
       "default": true
     }
   }

@@ -29,6 +29,7 @@
 import { existsSync } from 'node:fs';
 import { cp, mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { INTENT_CHAINS, INTENT_KEYWORDS } from './lib/intent-keywords.js';
 import { extractCrossRefs, extractToolRefs, parseOrgConfig, parsePack, parseSkill, parseTemplate } from './parser.js';
 import { transformSkill } from './transformer.js';
 import { resolveScriptsPath } from './transforms/scripts-path.js';
@@ -712,43 +713,6 @@ function generateAgentsMd(stats, adapter) {
   return lines.join('\n');
 }
 
-/**
- * Intent keyword patterns for each skill — extracted from description + Triggers section
- * Maps common user intent words to the skill that handles them
- */
-const INTENT_KEYWORDS = {
-  build: ['implement', 'build', 'create', 'add', 'feature', 'fix', 'code', 'write', 'make', 'develop'],
-  team: ['parallel', 'split', 'multiple', 'large', 'many files', 'multi-module'],
-  launch: ['deploy', 'launch', 'release', 'ship', 'publish', 'production'],
-  rescue: ['legacy', 'refactor', 'modernize', 'rescue', 'clean up', 'old code', 'messy'],
-  scaffold: ['new project', 'bootstrap', 'scaffold', 'init', 'greenfield', 'starter'],
-  plan: ['plan', 'architect', 'design system', 'roadmap', 'strategy'],
-  brainstorm: ['brainstorm', 'explore', 'ideas', 'alternatives', 'approaches'],
-  debug: ['debug', 'error', 'bug', 'broken', 'trace', 'diagnose', 'crash', 'fail'],
-  fix: ['fix', 'patch', 'hotfix', 'resolve', 'repair'],
-  test: ['test', 'tdd', 'coverage', 'unit test', 'e2e', 'spec'],
-  review: ['review', 'code review', 'check quality', 'audit code'],
-  guardian: ['security', 'vulnerability', 'owasp', 'secret', 'audit security'],
-  readiness: ['pre-commit', 'quality gate', 'check before'],
-  deploy: ['deploy', 'ci/cd', 'pipeline', 'kubernetes', 'docker'],
-  design: ['ui', 'ux', 'design', 'layout', 'component design', 'wireframe'],
-  perf: ['performance', 'slow', 'optimize', 'n+1', 'memory leak', 'bundle size'],
-  db: ['database', 'migration', 'schema', 'sql', 'query', 'index'],
-  audit: ['audit', 'health check', 'project assessment', 'codebase review'],
-  onboard: ['onboard', 'setup', 'configure project', 'get started'],
-  docs: ['document', 'readme', 'api docs', 'changelog'],
-  idea: ['requirements', 'business analysis', 'user stories', 'stakeholder'],
-  adversary: ['red team', 'challenge', 'stress test', 'edge case'],
-  incident: ['incident', 'outage', 'downtime', 'postmortem'],
-  surgeon: ['refactor', 'extract', 'strangler', 'decompose'],
-  'mcp-builder': ['mcp', 'mcp server', 'tool server', 'model context'],
-  'skill-forge': ['new skill', 'create skill', 'edit skill'],
-  'review-intake': ['pr feedback', 'review comments', 'received review'],
-  'logic-guardian': ['business logic', 'protect logic', 'critical path'],
-  marketing: ['marketing', 'landing page', 'seo', 'social media', 'copy'],
-  retro: ['retrospective', 'sprint review', 'velocity', 'team health'],
-};
-
 /** Stopwords stripped when building descTokens for Jaccard overlap (Step 2.5). */
 const DESC_TOKEN_STOPWORDS = new Set([
   'a',
@@ -831,14 +795,15 @@ function generateSkillIndex(parsedSkills) {
   // Build signal graph — maps each signal to its emitters and listeners
   const signalGraph = buildSignalGraph(parsedSkills);
 
-  // Build intent patterns from INTENT_KEYWORDS + skill descriptions
+  // Build intent patterns from INTENT_KEYWORDS (compiler/lib/intent-keywords.js)
   const intents = {};
   for (const [skillName, keywords] of Object.entries(INTENT_KEYWORDS)) {
     if (!skills[skillName]) continue;
     const skill = skills[skillName];
 
-    // Build chain: primary skill + its direct connections (1-hop)
-    const chain = [skillName, ...graph[skillName].filter((c) => skills[c]).slice(0, 5)];
+    // Chain: the skill's usual hand-offs when known, else its first 1-hop connections
+    const next = INTENT_CHAINS[skillName] ?? graph[skillName].filter((c) => skills[c]).slice(0, 5);
+    const chain = [skillName, ...next.filter((c) => skills[c])];
 
     intents[skillName] = {
       keywords,

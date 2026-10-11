@@ -101,12 +101,28 @@ describe('pre-tool-guard: privacy nexus', () => {
 // --- Intent Router ---
 
 describe('intent-router', () => {
-  test('exits silently when no skill-index.json available', () => {
-    const { stdout, exitCode } = runHook('intent-router', '{"user_prompt": "build a feature"}', {
+  test('suggests the skill the wording points at, from the table shipped in hooks/lib', () => {
+    const { stdout, exitCode } = runHook('intent-router', '{"prompt": "fix the crash and add a unit test"}', {
       CLAUDE_PLUGIN_ROOT: '/nonexistent',
+      CURSOR_HOOK: '',
     });
     assert.strictEqual(exitCode, 0);
-    assert.strictEqual(stdout.trim(), '', 'should be silent without index');
+    assert.match(stdout, /\[Topia intent-router\] Suggested: topia:build \(L1, sonnet\) — wording: "fix", "add"/);
+    assert.match(stdout, /Also consider: test, debug/);
+  });
+
+  test('stays silent when nothing matches or the skill is named outright', () => {
+    for (const prompt of ['hello there, how are you', 'update the address field', '/topia-debug the login crash']) {
+      const { stdout, exitCode } = runHook('intent-router', JSON.stringify({ prompt }), { CURSOR_HOOK: '' });
+      assert.strictEqual(exitCode, 0);
+      assert.strictEqual(stdout.trim(), '', prompt);
+    }
+  });
+
+  test('prints nothing under Cursor, which wants JSON on stdout', () => {
+    const { stdout, exitCode } = runHook('intent-router', '{"prompt": "fix the crash"}', { CURSOR_HOOK: '1' });
+    assert.strictEqual(exitCode, 0);
+    assert.strictEqual(stdout.trim(), '');
   });
 
   test('exits silently on empty prompt', () => {

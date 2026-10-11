@@ -1,0 +1,1064 @@
+[
+  {
+    "name": "adversary",
+    "layer": "L2",
+    "model": "opus",
+    "description": "Pre-implementation red-team analysis. Use when a plan is high-risk, critical path, or expensive to reverse. Challenges plans before code is written — finds edge cases, security holes, scalability bottlenecks, error propagation risks, and integration conflicts. Catches flaws at plan time (10x cheaper than post-implementation).",
+    "userInvocable": true,
+    "keywords": [
+      "red team",
+      "challenge",
+      "stress test",
+      "edge case",
+      "poke holes"
+    ],
+    "chain": [
+      "documentation",
+      "build"
+    ]
+  },
+  {
+    "name": "architecture-mapper",
+    "layer": "L2",
+    "model": "opus",
+    "description": "Reverse-engineer an unfamiliar or legacy codebase into a drillable, cross-linked architecture knowledge base — per repo or across a polyrepo. Use to map how a system starts, wires together, and flows; or to refresh those docs after code changes. Read-mostly: writes only under docs/, never application code.",
+    "userInvocable": true,
+    "keywords": [
+      "architecture map",
+      "map the architecture",
+      "map the codebase",
+      "how the system starts"
+    ],
+    "chain": []
+  },
+  {
+    "name": "asset-creator",
+    "layer": "L3",
+    "model": "sonnet",
+    "description": "Creates code-based visual assets — SVG icons, OG image HTML templates, social banners, and icon sets. Outputs files with usage instructions.",
+    "userInvocable": true,
+    "keywords": [
+      "svg",
+      "icon",
+      "og image",
+      "banner",
+      "favicon"
+    ],
+    "chain": []
+  },
+  {
+    "name": "audit",
+    "layer": "L2",
+    "model": "sonnet",
+    "description": "Comprehensive project audit — security, dependencies, code quality, architecture, performance, infra, docs, and nexus analytics. Delegates to specialist skills and generates an 8-dimension health score.",
+    "userInvocable": true,
+    "keywords": [
+      "audit",
+      "health check",
+      "project assessment",
+      "codebase review"
+    ],
+    "chain": []
+  },
+  {
+    "name": "autopsy",
+    "layer": "L2",
+    "model": "opus",
+    "description": "Full codebase health assessment. Use when diagnosing project health or starting a rescue workflow on legacy code. Analyzes complexity, dependencies, dead code, tech debt, and git hotspots. Produces a health score and rescue plan.",
+    "userInvocable": true,
+    "keywords": [
+      "autopsy",
+      "health score",
+      "tech debt",
+      "codebase health"
+    ],
+    "chain": [
+      "safeguard",
+      "surgeon"
+    ]
+  },
+  {
+    "name": "brainstorm",
+    "layer": "L2",
+    "model": "opus",
+    "description": "Creative ideation and solution exploration. Generates multiple approaches with trade-offs, uses structured frameworks (SCAMPER, First Principles), and hands off to plan for structuring.",
+    "userInvocable": true,
+    "keywords": [
+      "brainstorm",
+      "ideas",
+      "alternatives",
+      "approaches",
+      "options"
+    ],
+    "chain": [
+      "plan"
+    ]
+  },
+  {
+    "name": "browser-pilot",
+    "layer": "L3",
+    "model": "sonnet",
+    "description": "Playwright browser automation. Navigates URLs, takes screenshots, checks accessibility tree, interacts with UI elements, and reports findings.",
+    "userInvocable": true,
+    "keywords": [
+      "browser",
+      "screenshot",
+      "playwright",
+      "click through",
+      "accessibility tree"
+    ],
+    "chain": []
+  },
+  {
+    "name": "build",
+    "layer": "L1",
+    "model": "sonnet",
+    "description": "Feature implementation orchestrator. ALWAYS use this skill for ANY code change — implement, build, add feature, create, fix bug, or any task that modifies source code. This is the default route for 70% of all requests. Runs full TDD cycle: understand → plan → test → implement → quality → verify → commit.",
+    "userInvocable": true,
+    "keywords": [
+      "implement",
+      "build",
+      "create",
+      "add",
+      "feature",
+      "fix",
+      "write",
+      "make",
+      "develop"
+    ],
+    "chain": [
+      "plan",
+      "test",
+      "fix",
+      "readiness",
+      "guardian",
+      "review",
+      "completion-gate",
+      "verification"
+    ]
+  },
+  {
+    "name": "completion-gate",
+    "layer": "L3",
+    "model": "haiku",
+    "description": "Validates agent claims against evidence trail. Use when verifying an agent has actually done what it claims — auto-fires at workflow end. Catches 'done' without proof, 'tests pass' without output, 'fixed' without verification. Called by build and team.",
+    "userInvocable": false,
+    "keywords": [],
+    "chain": []
+  },
+  {
+    "name": "constraint-check",
+    "layer": "L3",
+    "model": "haiku",
+    "description": "Meta-validator for HARD-GATEs. Use when auditing whether a skill's mandatory constraints were actually followed during a workflow (not just claimed). Called by build, team, and audit for discipline compliance.",
+    "userInvocable": false,
+    "keywords": [],
+    "chain": []
+  },
+  {
+    "name": "context-engine",
+    "layer": "L3",
+    "model": "haiku",
+    "description": "Context window management. Auto-triggered when context is filling up. Triggers smart compaction and preserves critical information across compaction boundaries. Called by L1 orchestrators at context thresholds.",
+    "userInvocable": false,
+    "keywords": [],
+    "chain": []
+  },
+  {
+    "name": "context-lifecycle",
+    "layer": "L3",
+    "model": "haiku",
+    "description": "Automated context boundary orchestration. Runs at phase ends, pre/post-compact, and after git push. Chunks work across sessions via session-bridge, context-pack, and neural-memory without losing continuity.",
+    "userInvocable": true,
+    "keywords": [
+      "compaction",
+      "context window"
+    ],
+    "chain": []
+  },
+  {
+    "name": "context-pack",
+    "layer": "L3",
+    "model": "haiku",
+    "description": "Creates structured handoff briefings between agents. Use when delegating complex work to subagents that would otherwise lose context. Packages task context, constraints, and progress into a compact packet that subagents can consume without re-reading the full conversation. Prevents the 'lost context' problem in multi-agent delegation.",
+    "userInvocable": false,
+    "keywords": [],
+    "chain": []
+  },
+  {
+    "name": "db",
+    "layer": "L2",
+    "model": "sonnet",
+    "description": "Database workflow specialist. Generates migration files with rollback scripts, detects breaking schema changes, and validates query parameterization.",
+    "userInvocable": true,
+    "keywords": [
+      "database",
+      "migration",
+      "schema",
+      "sql",
+      "sql query",
+      "database index"
+    ],
+    "chain": []
+  },
+  {
+    "name": "debug",
+    "layer": "L2",
+    "model": "sonnet",
+    "description": "Root cause analysis for bugs and unexpected behavior. Traces errors through code, uses structured reasoning, and hands off to fix when cause is found. Core of the debug↔fix chain.",
+    "userInvocable": true,
+    "keywords": [
+      "debug",
+      "error",
+      "bug",
+      "broken",
+      "trace",
+      "diagnose",
+      "crash",
+      "fail",
+      "not working",
+      "stack trace"
+    ],
+    "chain": [
+      "fix",
+      "test"
+    ]
+  },
+  {
+    "name": "dependency-doctor",
+    "layer": "L3",
+    "model": "haiku",
+    "description": "Dependency health management. Detects package manager, checks outdated packages and vulnerabilities, and produces a prioritized update plan.",
+    "userInvocable": true,
+    "keywords": [
+      "dependencies",
+      "outdated packages",
+      "npm audit",
+      "cve",
+      "upgrade packages"
+    ],
+    "chain": []
+  },
+  {
+    "name": "deploy",
+    "layer": "L2",
+    "model": "sonnet",
+    "description": "Deploy application to target platform. Use when user explicitly says 'deploy', 'push to production', 'ship it'. Handles Vercel, Netlify, AWS, GCP, DigitalOcean, and VPS with pre-deploy verification and health checks.",
+    "userInvocable": true,
+    "keywords": [
+      "deploy",
+      "ci/cd",
+      "pipeline",
+      "kubernetes",
+      "docker",
+      "vercel",
+      "netlify"
+    ],
+    "chain": [
+      "watchdog"
+    ]
+  },
+  {
+    "name": "design",
+    "layer": "L2",
+    "model": "sonnet",
+    "description": "Design system reasoning. Maps product domain to style, palette, typography, and platform-specific patterns. Generates .topia/design-system.md as the shared design contract for all UI-generating skills.",
+    "userInvocable": true,
+    "keywords": [
+      "ui",
+      "ux",
+      "design",
+      "layout",
+      "component design",
+      "wireframe",
+      "palette",
+      "typography"
+    ],
+    "chain": []
+  },
+  {
+    "name": "doc-processor",
+    "layer": "L3",
+    "model": "sonnet",
+    "description": "Generate and parse office documents — PDF, DOCX, XLSX, PPTX, CSV. Use when creating reports, exporting tabular data, or processing uploaded office files. NOT for project documentation (use docs).",
+    "userInvocable": true,
+    "keywords": [
+      "pdf",
+      "docx",
+      "xlsx",
+      "pptx",
+      "spreadsheet",
+      "csv"
+    ],
+    "chain": []
+  },
+  {
+    "name": "docs",
+    "layer": "L2",
+    "model": "sonnet",
+    "description": "Auto-generate and maintain project documentation. Creates README, API docs, architecture docs, changelogs, and keeps them in sync with code changes. The \\\"docs are never outdated\\\" skill.",
+    "userInvocable": true,
+    "keywords": [
+      "document",
+      "readme",
+      "api docs",
+      "changelog"
+    ],
+    "chain": []
+  },
+  {
+    "name": "docs-seeker",
+    "layer": "L3",
+    "model": "haiku",
+    "description": "Find documentation for APIs, libraries, and error messages. Looks up official docs, changelog entries, and migration guides.",
+    "userInvocable": true,
+    "keywords": [
+      "api reference",
+      "library docs",
+      "method signature",
+      "deprecated"
+    ],
+    "chain": []
+  },
+  {
+    "name": "documentation",
+    "layer": "L2",
+    "model": "sonnet",
+    "description": "Leadership-ready package generator. Produces feature folders, requirements, user stories, and Jira-compliant CSV tickets. Use after /topia plan and before /topia build to get stakeholder approval.",
+    "userInvocable": true,
+    "keywords": [
+      "jira",
+      "leadership package",
+      "stakeholder approval",
+      "tickets"
+    ],
+    "chain": [
+      "build"
+    ]
+  },
+  {
+    "name": "faq",
+    "layer": "L3",
+    "model": "haiku",
+    "description": "Lists Topia's HTML entry points (docs, guides, skill index, nexus diagram, live visualizer) with one-shot open-in-browser commands. Use when the user asks 'where are the docs?', 'how do I see the skill graph?', or `/topia:faq`.",
+    "userInvocable": true,
+    "keywords": [
+      "faq",
+      "where are the docs",
+      "skill graph"
+    ],
+    "chain": []
+  },
+  {
+    "name": "fix",
+    "layer": "L2",
+    "model": "sonnet",
+    "description": "Apply code changes and fixes. Writes implementation code, applies bug fixes, and verifies changes with tests. Core action hub in the Topia nexus.",
+    "userInvocable": true,
+    "keywords": [
+      "fix",
+      "patch",
+      "hotfix",
+      "resolve",
+      "repair"
+    ],
+    "chain": [
+      "test",
+      "readiness"
+    ]
+  },
+  {
+    "name": "git",
+    "layer": "L3",
+    "model": "haiku",
+    "description": "Specialized git operations — semantic commits, PR descriptions, branch management, conflict resolution guidance. Replaces ad-hoc git commands with a dedicated, convention-aware utility.",
+    "userInvocable": true,
+    "keywords": [
+      "commit",
+      "pull request",
+      "pr",
+      "branch",
+      "rebase",
+      "merge conflict"
+    ],
+    "chain": []
+  },
+  {
+    "name": "guardian",
+    "layer": "L2",
+    "model": "sonnet",
+    "description": "Automated security gatekeeper. Blocks unsafe code before commit — secret scanning, OWASP top 10, dependency audit, permission checks. A GATE, not a suggestion.",
+    "userInvocable": true,
+    "keywords": [
+      "security",
+      "vulnerability",
+      "owasp",
+      "secret",
+      "audit security"
+    ],
+    "chain": [
+      "fix"
+    ]
+  },
+  {
+    "name": "guardian-env",
+    "layer": "L3",
+    "model": "haiku",
+    "description": "Environment-aware pre-flight check. Use when starting work in a new environment, switching machines, or when 'works on my machine' bugs surface. Validates OS, runtime versions, installed tools, port availability, env vars, and disk space BEFORE coding starts. Like sentinel but for the environment, not the code.",
+    "userInvocable": true,
+    "keywords": [
+      "environment check",
+      "works on my machine",
+      "env vars",
+      "port in use"
+    ],
+    "chain": []
+  },
+  {
+    "name": "hallucination-guard",
+    "layer": "L3",
+    "model": "haiku",
+    "description": "Verify AI-generated imports, API calls, and packages actually exist. Use when finishing AI-generated code that introduces new imports or external API calls — auto-fires after fix/build to catch phantom functions, non-existent packages, and slopsquatting attacks.",
+    "userInvocable": true,
+    "keywords": [
+      "hallucinated",
+      "phantom import",
+      "fake package",
+      "typosquat"
+    ],
+    "chain": []
+  },
+  {
+    "name": "idea",
+    "layer": "L2",
+    "model": "opus",
+    "description": "Idea Elicitation agent. Use when starting a new feature requiring requirements elicitation BEFORE plan or build. Asks probing questions, identifies hidden requirements, maps stakeholders, defines scope boundaries, and produces a structured Requirements Document that plan and build consume.",
+    "userInvocable": true,
+    "keywords": [
+      "requirements",
+      "business analysis",
+      "user stories",
+      "stakeholder"
+    ],
+    "chain": [
+      "plan"
+    ]
+  },
+  {
+    "name": "improve-architecture",
+    "layer": "L2",
+    "model": "opus",
+    "description": "Find architectural friction in a codebase and propose deepening opportunities. Use when user wants to improve architecture, find refactor candidates, consolidate shallow modules, or make a codebase more testable. Outputs scored proposals (depth/leverage/locality) that surgeon and review can consume.",
+    "userInvocable": true,
+    "keywords": [
+      "shallow module",
+      "deepen",
+      "coupling",
+      "testability",
+      "architecture improvement"
+    ],
+    "chain": []
+  },
+  {
+    "name": "incident",
+    "layer": "L2",
+    "model": "sonnet",
+    "description": "Structured incident response. Use when user reports an outage, production error, or says 'incident', 'something is down', 'users are affected'. Triage severity, contain blast radius, root-cause, document timeline, generate postmortem.",
+    "userInvocable": true,
+    "keywords": [
+      "incident",
+      "outage",
+      "downtime",
+      "postmortem",
+      "production is down"
+    ],
+    "chain": [
+      "debug",
+      "fix"
+    ]
+  },
+  {
+    "name": "integrate",
+    "layer": "L2",
+    "model": "sonnet",
+    "description": "Clone, port, or convert features from any GitHub repo into your project. Use when stealing patterns from external repos or porting proven code. Understand before copy, challenge before implement. 4 modes: port (rewrite), compare (analysis), copy (transplant), improve (copy + optimize).",
+    "userInvocable": true,
+    "keywords": [
+      "integrate",
+      "port from",
+      "port this",
+      "steal the",
+      "from that repo"
+    ],
+    "chain": []
+  },
+  {
+    "name": "integrity-check",
+    "layer": "L3",
+    "model": "haiku",
+    "description": "Verify integrity of persisted state, skill outputs, and context bus data. Use when validating .topia/ files or sub-agent outputs against prompt injection, memory poisoning, identity spoofing, or adversarial payloads. Called by sentinel, team, session-bridge.",
+    "userInvocable": false,
+    "keywords": [],
+    "chain": []
+  },
+  {
+    "name": "journal",
+    "layer": "L3",
+    "model": "haiku",
+    "description": "Persistent state tracking and Architecture Decision Records across sessions. Use when recording a decision, ADR, or progress that must survive session boundaries. Manages progress state, module health, dependency graphs, and ADRs for any workflow.",
+    "userInvocable": true,
+    "keywords": [
+      "adr",
+      "decision record",
+      "journal",
+      "log the decision"
+    ],
+    "chain": []
+  },
+  {
+    "name": "launch",
+    "layer": "L1",
+    "model": "sonnet",
+    "description": "Deploy + marketing orchestrator. Use when user says 'launch', 'ship to production', 'deploy and announce', or 'go live'. Runs the full pipeline — pre-flight tests, deployment, live verification, marketing asset creation, and announcement.",
+    "userInvocable": true,
+    "keywords": [
+      "deploy",
+      "launch",
+      "release",
+      "ship",
+      "publish",
+      "production"
+    ],
+    "chain": [
+      "verification",
+      "deploy",
+      "watchdog",
+      "marketing"
+    ]
+  },
+  {
+    "name": "logic-guardian",
+    "layer": "L2",
+    "model": "sonnet",
+    "description": "Protects complex business logic from accidental deletion or overwrite. Use when editing payment, trading, state-machine, or other load-bearing business logic where a single deleted line can cause silent data corruption. Maintains a logic manifest, enforces pre-edit gates, validates post-edit diffs.",
+    "userInvocable": true,
+    "keywords": [
+      "business logic",
+      "protect logic",
+      "critical path"
+    ],
+    "chain": []
+  },
+  {
+    "name": "marketing",
+    "layer": "L2",
+    "model": "sonnet",
+    "description": "Create marketing assets and execute launch strategy. Generates landing copy, social banners, SEO meta, blog posts, and video scripts.",
+    "userInvocable": true,
+    "keywords": [
+      "marketing",
+      "landing page",
+      "seo",
+      "social media",
+      "landing copy",
+      "marketing copy"
+    ],
+    "chain": []
+  },
+  {
+    "name": "mcp-builder",
+    "layer": "L2",
+    "model": "sonnet",
+    "description": "Build Model Context Protocol servers from specifications. Use when creating an MCP server for a tool, resource, or service that AI agents should access. Generates tool definitions, resource handlers, and test suites in TypeScript or Python (FastMCP).",
+    "userInvocable": true,
+    "keywords": [
+      "mcp",
+      "mcp server",
+      "tool server",
+      "model context"
+    ],
+    "chain": []
+  },
+  {
+    "name": "neural-memory",
+    "layer": "L3",
+    "model": "haiku",
+    "description": "Cross-session cognitive persistence via Neural Memory MCP. Captures decisions, patterns, errors, and insights with rich semantic links. Provides recall, hypothesis tracking, and evidence-based reasoning across projects.",
+    "userInvocable": true,
+    "keywords": [
+      "remember this",
+      "capture learning",
+      "neural memory"
+    ],
+    "chain": []
+  },
+  {
+    "name": "onboard",
+    "layer": "L2",
+    "model": "sonnet",
+    "description": "Auto-generate project context for AI sessions. Use when starting on a new repo for the first time, or when CLAUDE.md / .topia/ context is missing or stale. Scans codebase and creates the setup so every future session starts with full context.",
+    "userInvocable": true,
+    "keywords": [
+      "onboard",
+      "get started",
+      "configure project",
+      "claude.md"
+    ],
+    "chain": []
+  },
+  {
+    "name": "org-config",
+    "layer": "L2",
+    "model": "sonnet",
+    "description": "Team org policy setup for Topia. Use during /topia finalize or when configuring .topia/org/org.md — asks structured questions and writes team roles, policies, approval flows, and governance level so guardian and readiness enforce your rules.",
+    "userInvocable": true,
+    "keywords": [
+      "org config",
+      "team roles",
+      "governance",
+      "approval flow"
+    ],
+    "chain": []
+  },
+  {
+    "name": "perf",
+    "layer": "L2",
+    "model": "sonnet",
+    "description": "Performance regression gate. Detects N+1 queries, sync-in-async, missing indexes, memory leaks, and bundle bloat before they reach production.",
+    "userInvocable": true,
+    "keywords": [
+      "performance",
+      "slow",
+      "optimize",
+      "n+1",
+      "memory leak",
+      "bundle size"
+    ],
+    "chain": []
+  },
+  {
+    "name": "plan",
+    "layer": "L2",
+    "model": "opus",
+    "description": "Create structured implementation plans from requirements. Produces master plan + phase files for enterprise-scale project management. Master plan = overview (<80 lines). Phase files = execution detail (<150 lines each). Each session handles 1 phase. Uses opus for deep reasoning.",
+    "userInvocable": true,
+    "keywords": [
+      "plan",
+      "architect",
+      "design system",
+      "roadmap",
+      "strategy"
+    ],
+    "chain": [
+      "adversary",
+      "documentation",
+      "build"
+    ]
+  },
+  {
+    "name": "problem-solver",
+    "layer": "L3",
+    "model": "sonnet",
+    "description": "Structured reasoning frameworks for complex problems. 19 analytical frameworks, 12 cognitive bias detectors, 10 decomposition methods, 10 mental models, Cynefin domain classification, ethical dimension check, and 6 communication patterns. McKinsey-grade problem solving for AI coding assistants.",
+    "userInvocable": true,
+    "keywords": [
+      "5 whys",
+      "root cause analysis",
+      "first principles",
+      "fishbone"
+    ],
+    "chain": []
+  },
+  {
+    "name": "quarantine",
+    "layer": "L3",
+    "model": "opus",
+    "description": "Advisory wrap for tool results from untrusted external surfaces. Appends `[QUARANTINE-NOTICE]` to next-turn context after `mcp__*`, `WebFetch`, and `Read` of `**/uploads/**` so prior tool output is treated as data — not directives. Use when the session ingests MCP user-content (Zendesk, Intercom, support tickets), fetched HTML, or operator-uploaded files. Hook fires AFTER ingestion — advisory, not structural.",
+    "userInvocable": false,
+    "keywords": [],
+    "chain": []
+  },
+  {
+    "name": "readiness",
+    "layer": "L2",
+    "model": "sonnet",
+    "description": "Pre-commit quality gate that catches 'almost right' code. Use when about to commit — auto-fires before commit to validate logic correctness, error handling, regressions, and completeness. Goes beyond linting.",
+    "userInvocable": true,
+    "keywords": [
+      "pre-commit",
+      "quality gate",
+      "check before",
+      "ready to commit"
+    ],
+    "chain": []
+  },
+  {
+    "name": "recall",
+    "layer": "L3",
+    "model": "haiku",
+    "description": "Unified cross-source memory recall: .remember/, .topia/, neural-memory, and agora-memory. Use at session start or before architecture decisions. Read-only orchestrator — writes stay on neural-memory Capture and session-bridge Save.",
+    "userInvocable": true,
+    "keywords": [
+      "recall",
+      "what did we do",
+      "last session",
+      "remember when"
+    ],
+    "chain": []
+  },
+  {
+    "name": "recon",
+    "layer": "L2",
+    "model": "haiku",
+    "description": "Fast codebase scanner. Use when any skill needs codebase context. Finds files, patterns, dependencies, project structure. Pure read-only — never modifies files.",
+    "userInvocable": true,
+    "keywords": [
+      "where is",
+      "find",
+      "search the codebase",
+      "scan the codebase",
+      "project structure"
+    ],
+    "chain": []
+  },
+  {
+    "name": "rescue",
+    "layer": "L1",
+    "model": "sonnet",
+    "description": "Legacy refactoring orchestrator. Use when user says 'refactor', 'modernize', 'clean up this mess', 'rescue', or when dealing with old/messy/legacy code. Multi-session workflow — autopsy, safety net, incremental surgery, progress tracking.",
+    "userInvocable": true,
+    "keywords": [
+      "legacy",
+      "refactor",
+      "modernize",
+      "rescue",
+      "clean up",
+      "old code",
+      "messy"
+    ],
+    "chain": [
+      "autopsy",
+      "safeguard",
+      "surgeon"
+    ]
+  },
+  {
+    "name": "research",
+    "layer": "L3",
+    "model": "haiku",
+    "description": "Web search and external knowledge lookup. Gathers data on technologies, libraries, best practices, and competitor solutions.",
+    "userInvocable": true,
+    "keywords": [
+      "research",
+      "compare libraries",
+      "best practice",
+      "look up"
+    ],
+    "chain": []
+  },
+  {
+    "name": "retro",
+    "layer": "L2",
+    "model": "sonnet",
+    "description": "Engineering retrospective. Analyzes commit history, work patterns, and code quality metrics with trend tracking. Per-person breakdowns, shipping streaks, and actionable improvements. Use when asked for \\\"retro\\\", \\\"weekly review\\\", \\\"what did we ship\\\", or \\\"engineering retrospective\\\".",
+    "userInvocable": true,
+    "keywords": [
+      "retrospective",
+      "retro",
+      "sprint review",
+      "velocity",
+      "what did we ship"
+    ],
+    "chain": []
+  },
+  {
+    "name": "review",
+    "layer": "L2",
+    "model": "sonnet",
+    "description": "Code quality review — patterns, security, performance, correctness. Finds bugs, suggests improvements, triggers fix for issues found. Escalates to opus for security-critical code.",
+    "userInvocable": true,
+    "keywords": [
+      "review",
+      "code review",
+      "check quality",
+      "audit code",
+      "look at this code"
+    ],
+    "chain": [
+      "fix"
+    ]
+  },
+  {
+    "name": "review-intake",
+    "layer": "L2",
+    "model": "sonnet",
+    "description": "Use when receiving external input that needs structured intake before action — PR review feedback, code review comments, OR issue tracker items (bug reports, feature requests). PR Review Mode (default) verifies suggestions before implementing. Issue Triage Mode classifies issues into a state machine (ready-for-agent / ready-for-human / needs-info / wontfix) and emits AGENT-BRIEFs for AFK execution. Prevents blind implementation, enforces verification-first discipline.",
+    "userInvocable": true,
+    "keywords": [
+      "pr feedback",
+      "review comments",
+      "received review",
+      "triage issues"
+    ],
+    "chain": []
+  },
+  {
+    "name": "safeguard",
+    "layer": "L2",
+    "model": "sonnet",
+    "description": "Build safety nets before refactoring. Use when running surgeon or any risky refactor that needs a rollback point. Creates characterization tests, boundary markers, config freezes, and rollback points.",
+    "userInvocable": true,
+    "keywords": [
+      "characterization test",
+      "safety net",
+      "rollback point"
+    ],
+    "chain": []
+  },
+  {
+    "name": "sast",
+    "layer": "L3",
+    "model": "haiku",
+    "description": "Static analysis tool runner. Wraps ESLint, Semgrep, Bandit, Clippy, and language-specific analyzers with unified severity output. Use when deeper code analysis needed beyond pattern matching.",
+    "userInvocable": true,
+    "keywords": [
+      "static analysis",
+      "semgrep",
+      "bandit",
+      "eslint",
+      "clippy"
+    ],
+    "chain": []
+  },
+  {
+    "name": "scaffold",
+    "layer": "L1",
+    "model": "sonnet",
+    "description": "Autonomous project bootstrapper. Generates complete project from a description — structure, code, tests, docs, config. Orchestrates idea → plan → design → fix → test → docs → git in one pipeline. The \\\"0 to production-ready\\\" skill.",
+    "userInvocable": true,
+    "keywords": [
+      "new project",
+      "bootstrap",
+      "scaffold",
+      "greenfield",
+      "starter",
+      "from scratch"
+    ],
+    "chain": [
+      "idea",
+      "plan",
+      "design",
+      "fix",
+      "test",
+      "docs",
+      "git",
+      "verification"
+    ]
+  },
+  {
+    "name": "scope-guard",
+    "layer": "L3",
+    "model": "haiku",
+    "description": "Detects scope creep by quantifying drift percentage. Auto-triggered by L1 orchestrators when files exceed the original plan. Compares git changes against plan, classifies drift into 4 tiers: ON_TRACK, MINOR_DRIFT, SIGNIFICANT_DRIFT, OUT_OF_CONTROL.",
+    "userInvocable": false,
+    "keywords": [],
+    "chain": []
+  },
+  {
+    "name": "sequential-thinking",
+    "layer": "L3",
+    "model": "sonnet",
+    "description": "Step-by-step complex reasoning for multi-variable problems. Breaks interconnected decisions into ordered logical steps with bias detection, reversibility classification, and second-order effect tracking.",
+    "userInvocable": true,
+    "keywords": [
+      "trade-off",
+      "tradeoff",
+      "interdependent",
+      "second-order"
+    ],
+    "chain": []
+  },
+  {
+    "name": "session-bridge",
+    "layer": "L3",
+    "model": "haiku",
+    "description": "Universal context persistence across sessions. Auto-saves decisions, conventions, and progress to .topia/ files. Loads state at session start. Use when any skill makes architectural decisions or establishes patterns that must survive session boundaries.",
+    "userInvocable": true,
+    "keywords": [
+      "save context",
+      "save state",
+      "pick up where",
+      "next session"
+    ],
+    "chain": []
+  },
+  {
+    "name": "skill-forge",
+    "layer": "L2",
+    "model": "opus",
+    "description": "Use when creating new Topia skills, editing existing skills, or verifying skill quality before deployment. Applies TDD discipline to skill authoring — test before write, verify before ship.",
+    "userInvocable": true,
+    "keywords": [
+      "new skill",
+      "create skill",
+      "edit skill"
+    ],
+    "chain": []
+  },
+  {
+    "name": "skill-router",
+    "layer": "L0",
+    "model": "haiku",
+    "description": "Meta-enforcement layer that routes EVERY agent action through the correct skill. MUST check this routing table before ANY response involving code, files, or technical decisions. Default: route to topia:build for code tasks. Prevents rationalization, enforces check-before-act discipline.",
+    "userInvocable": false,
+    "keywords": [],
+    "chain": []
+  },
+  {
+    "name": "slides",
+    "layer": "L3",
+    "model": "sonnet",
+    "description": "Generate Marp-compatible slide decks from structured JSON schema. Converts context into presentations for tech talks, sprint demos, and tutorials.",
+    "userInvocable": true,
+    "keywords": [
+      "slides",
+      "slide deck",
+      "presentation",
+      "marp"
+    ],
+    "chain": []
+  },
+  {
+    "name": "surgeon",
+    "layer": "L2",
+    "model": "sonnet",
+    "description": "Incremental refactorer. Use within a rescue workflow after safeguard has set up safety nets. Refactors ONE module per session using proven patterns — Strangler Fig, Branch by Abstraction, Expand-Migrate-Contract.",
+    "userInvocable": true,
+    "keywords": [
+      "refactor",
+      "extract",
+      "strangler",
+      "decompose"
+    ],
+    "chain": []
+  },
+  {
+    "name": "team",
+    "layer": "L1",
+    "model": "opus",
+    "description": "Multi-agent meta-orchestrator. Use when task spans 5+ files or 3+ modules, or when user says 'parallel', 'split this up', 'do all of these'. Decomposes large tasks into parallel workstreams, assigns to isolated build instances, coordinates merging.",
+    "userInvocable": true,
+    "keywords": [
+      "parallel",
+      "split this up",
+      "do all of these",
+      "fan out",
+      "many files",
+      "multi-module"
+    ],
+    "chain": [
+      "plan",
+      "worktree",
+      "build",
+      "completion-gate"
+    ]
+  },
+  {
+    "name": "test",
+    "layer": "L2",
+    "model": "sonnet",
+    "description": "TDD test writer. Writes failing tests FIRST (red), then verifies they pass after implementation (green). Covers unit, integration, and e2e tests.",
+    "userInvocable": true,
+    "keywords": [
+      "test",
+      "tdd",
+      "coverage",
+      "unit test",
+      "e2e",
+      "spec"
+    ],
+    "chain": [
+      "readiness"
+    ]
+  },
+  {
+    "name": "trend-scout",
+    "layer": "L3",
+    "model": "haiku",
+    "description": "Scan market trends, competitor activity, and emerging patterns. Monitors Product Hunt, GitHub Trending, HackerNews, and social platforms.",
+    "userInvocable": true,
+    "keywords": [
+      "competitor",
+      "trending",
+      "market trends",
+      "product hunt",
+      "hacker news"
+    ],
+    "chain": []
+  },
+  {
+    "name": "tut",
+    "layer": "L3",
+    "model": "haiku",
+    "description": "Re-shows the structured first-run menu (finalize / onboard / doctor / faq / help) on demand, with current completion status. Use when the user wants to revisit the tutorial, asks 'what should I do next?', or types `/topia:tut`. This is the explicit re-entry point for the menu that auto-shows on session-start until completed.",
+    "userInvocable": true,
+    "keywords": [
+      "tutorial",
+      "what should i do next"
+    ],
+    "chain": []
+  },
+  {
+    "name": "verification",
+    "layer": "L3",
+    "model": "haiku",
+    "description": "Universal verification runner. Runs lint, type-check, tests, and build. Use after any code change to verify nothing is broken.",
+    "userInvocable": true,
+    "keywords": [
+      "verify",
+      "run the tests",
+      "lint",
+      "type check",
+      "typecheck"
+    ],
+    "chain": []
+  },
+  {
+    "name": "video-creator",
+    "layer": "L3",
+    "model": "sonnet",
+    "description": "Video content planning. Writes narration scripts, storyboards, shot lists, and asset checklists. Saves plan to marketing/video-plan.md.",
+    "userInvocable": true,
+    "keywords": [
+      "video",
+      "storyboard",
+      "narration",
+      "youtube",
+      "shot list"
+    ],
+    "chain": []
+  },
+  {
+    "name": "watchdog",
+    "layer": "L3",
+    "model": "sonnet",
+    "description": "Post-deploy monitoring. Use when verifying a deployed app is healthy after deploy or launch — auto-fires from launch/deploy. Checks HTTP status, response times, error detection, and smoke test report.",
+    "userInvocable": true,
+    "keywords": [
+      "uptime",
+      "monitor the site",
+      "is it up",
+      "response time"
+    ],
+    "chain": []
+  },
+  {
+    "name": "worktree",
+    "layer": "L3",
+    "model": "haiku",
+    "description": "Git worktree lifecycle management. Use when team needs parallel isolated workspaces for multi-stream development, or when an experiment must not touch the main working tree. Creates isolated workspaces, manages branches, handles cleanup. Called by team and build.",
+    "userInvocable": false,
+    "keywords": [],
+    "chain": []
+  }
+]

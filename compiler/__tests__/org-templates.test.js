@@ -208,10 +208,7 @@ No table here.
       'Expected feature launch to require PR accepter validation',
     );
     assert.ok(result.approvalFlows.hotfix, 'Expected hotfix flow');
-    assert.ok(
-      result.approvalFlows.hotfix.includes('guardian + CI'),
-      'Expected hotfix to still run guardian + CI',
-    );
+    assert.ok(result.approvalFlows.hotfix.includes('guardian + CI'), 'Expected hotfix to still run guardian + CI');
 
     const codeReview = result.policies.code_review || [];
     const selfMerge = codeReview.find((r) => r.key === 'self-merge_allowed');
