@@ -4,6 +4,12 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
+## [3.9.1] — 2026-10-11
+
+### Changed
+
+- **Value descriptions sit in one fixed slot** ([`mods/`](../mods/README.md)) — the description of the value under the pointer, else the focused value, else a hint, now shows in a two-line slot under the band and the `/mods` pane, the way Claude Code's own menus show the highlighted item's detail. It used to appear at the end of the value's own row, so hovering from one chip to the next lengthened and rewrapped the row (the "topia mods for …?" row worst of all). The slot keeps its height whatever it shows, cuts a long description off after two lines, and now shows below 60 columns too.
+
 ## [3.9.0] — 2026-10-11
 
 A sixth Claude Code mod, prompt routing, shows as you type which Topia skills your wording will send the prompt to. Every mod can now be turned on or off at runtime, for you or for one project, and the first session in a project asks which to keep.

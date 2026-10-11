@@ -1,5 +1,5 @@
 import { atom, read, update } from 'claude-code'
-import type { EngineInterface, Register } from 'claude-code'
+import type { BoxProps, ElementConstructor, EngineInterface, Register, TextProps } from 'claude-code'
 
 import { COMMIT, COMMIT_PUSH, NOT_A_REPO, PUSH, WRITING_TOOLS, parseStatus } from './lib/git-band'
 import {
@@ -121,6 +121,36 @@ function setStatus($: EngineInterface, slot: StatusSlot, text: string | undefine
   if (text === undefined || text.length === 0) delete statusSlots[slot]
   else statusSlots[slot] = text
   $.ui.status(joinStatus(statusSlots))
+}
+
+// What a value means, in one fixed slot under the rows, like Claude Code's own
+// menus. The slot keeps its height whatever is shown, so the rows above never
+// move or rewrap: the line for the value under the pointer covers the slot
+// (hover, no hook), else the focused value's line (Tab, arrows, a click), else
+// the hint. Long lines wrap inside the slot and are clipped at its height.
+const ABOUT_LINES = 2
+
+function aboutSlot(
+  { Box, Text }: { Box: ElementConstructor<BoxProps>; Text: ElementConstructor<TextProps> },
+  abouts: Record<string, string>,
+  focused: string | undefined,
+) {
+  return (
+    <Box key="about" flexDirection="column" height={ABOUT_LINES} overflow="hidden">
+      {Object.keys(abouts).map(key => (
+        <Box key={`about-${key}`} display="none" height={ABOUT_LINES} flexShrink={0} hover={{ scope: scopeOf(key), display: 'flex' }}>
+          <Text dimColor wrap="wrap">
+            ⓘ {abouts[key]}
+          </Text>
+        </Box>
+      ))}
+      <Box key="about-rest" height={ABOUT_LINES} flexShrink={0}>
+        <Text dimColor wrap="wrap">
+          ⓘ {focused ?? 'Hover or Tab to a value to see what it means.'}
+        </Text>
+      </Box>
+    </Box>
+  )
 }
 
 function offText(id: ModId): string {
@@ -505,25 +535,11 @@ export const register: Register = (on, options) => {
     const focus = await read($, modsFocus)
     const hidden = { gitBand: await read($, gitBandHidden), promptRouting: await read($, routingHidden) } as Partial<Record<ModId, boolean>>
     const here = projectName(await $.session.root())
-    const isNarrow = e.props.bodyColumns < 60
 
     const abouts: Record<string, string> = {}
-    let rowKeys: string[] = []
     const described = (key: string, about: string) => {
       abouts[key] = about
-      rowKeys.push(key)
       return { key, hover: { scope: scopeOf(key), underline: true } }
-    }
-    const endRow = () => {
-      const keys = rowKeys
-      rowKeys = []
-      return isNarrow
-        ? null
-        : keys.map(key => (
-            <Box key={`about-${key}`} display="none" hover={{ scope: scopeOf(key), display: 'flex' }}>
-              <Text dimColor>— {abouts[key]}</Text>
-            </Box>
-          ))
     }
     const toggle = async (id: ModId) => {
       if (settings.locked.includes(id)) {
@@ -558,7 +574,6 @@ export const register: Register = (on, options) => {
             variant={scope === 'user' ? 'primary' : 'secondary'}
             onPress={() => update($, modsScope, () => 'user')}
           />
-          {endRow()}
         </Box>
         {MOD_IDS.map((id, index) => {
           const { isOn: modOn, source } = resolve(id, config, settings)
@@ -578,7 +593,6 @@ export const register: Register = (on, options) => {
                   {hidden[id] ? ' · hidden this session' : ''}
                 </Text>
               </Button>
-              {endRow()}
             </Box>
           )
         })}
@@ -595,10 +609,8 @@ export const register: Register = (on, options) => {
                 <Text dimColor>{part.text}</Text>
               </Button>
             ))}
-            {endRow()}
           </Box>
         )}
-        {focus !== null && abouts[focus] !== undefined && <Text dimColor>ⓘ {abouts[focus]}</Text>}
         <Box key="actions" flexDirection="row" gap={1}>
           <Button
             {...described('clear-project', `Drops ${here}'s own choices, so your all-projects choices apply here.`)}
@@ -620,9 +632,9 @@ export const register: Register = (on, options) => {
             plain
             onPress={() => savePrefs($, saved => ({ ...saved, isRecapOff: !saved.isRecapOff }))}
           />
-          {endRow()}
         </Box>
-        <Text dimColor>Hover or Tab to a value to see what it means. {MODS_USAGE}</Text>
+        {aboutSlot({ Box, Text }, abouts, focus !== null ? abouts[focus] : undefined)}
+        <Text dimColor>{MODS_USAGE}</Text>
       </Box>
     )
   })
@@ -749,28 +761,13 @@ export const register: Register = (on, options) => {
     const { Box, Button, Text } = $.ui.resolve(e)
     const submit = (text: string) => () => $.prompt.submit({ text, asUser: true })
     const hideRouting = () => update($, routingHidden, () => true)
-    const isNarrow = e.props.bodyColumns < 60
 
-    // Every value carries a line on what it means: revealed at the end of its
-    // row while the pointer rests on it, and under the band while it holds
-    // the focus (Tab, the arrows, a click).
+    // Every value carries a line on what it means, shown in the slot under
+    // the band (aboutSlot).
     const abouts: Record<string, string> = {}
-    let rowKeys: string[] = []
     const described = (key: string, about: string) => {
       abouts[key] = about
-      rowKeys.push(key)
       return { key, hover: { scope: scopeOf(key), underline: true } }
-    }
-    const endRow = () => {
-      const keys = rowKeys
-      rowKeys = []
-      return isNarrow
-        ? null
-        : keys.map(key => (
-            <Box key={`about-${key}`} display="none" hover={{ scope: scopeOf(key), display: 'flex' }}>
-              <Text dimColor>— {abouts[key]}</Text>
-            </Box>
-          ))
     }
     const value = (key: string, label: string, about: string, look: { color?: string; bold?: boolean } = {}, onPress?: () => unknown) => (
       <Button
@@ -824,7 +821,6 @@ export const register: Register = (on, options) => {
                 await update($, modsPrompt, () => null)
               }}
             />
-            {endRow()}
           </Box>
         ) : (
           <Box key="mods" flexDirection="row" gap={1}>
@@ -841,7 +837,6 @@ export const register: Register = (on, options) => {
                 await keep()
               }}
             />
-            {endRow()}
           </Box>
         )
     }
@@ -860,7 +855,6 @@ export const register: Register = (on, options) => {
           )}
           {live.chain.length > 0 && value('routing-chain', `then ${live.chain.join(' → ')}`, ROUTING_ABOUT.chain)}
           <Button {...described('routing-hide', ROUTING_ABOUT.hide)} label="Hide" plain onPress={hideRouting} />
-          {endRow()}
         </Box>
       )
     } else if (turn !== null) {
@@ -879,7 +873,6 @@ export const register: Register = (on, options) => {
           {chained.map(name => chip(name, name, skillAbout(name, ROUTING_ABOUT.chained), 'cyan'))}
           {extra.map(name => chip(name, name, skillAbout(name, ROUTING_ABOUT.extra), 'yellow'))}
           <Button {...described('routing-hide', ROUTING_ABOUT.hide)} label="Hide" plain onPress={hideRouting} />
-          {endRow()}
         </Box>
       )
     }
@@ -900,19 +893,16 @@ export const register: Register = (on, options) => {
             <Button {...described('push', GIT_ABOUT.push)} label="Push" hotkey="p" variant="primary" onPress={submit(PUSH)} />
           )}
           <Button {...described('hide', GIT_ABOUT.hide)} label="Hide" plain onPress={() => update($, gitBandHidden, () => true)} />
-          {endRow()}
         </Box>
       )
     }
-
-    const about = focus !== null ? abouts[focus] : undefined
 
     return (
       <Box flexDirection="column">
         {modsRow}
         {routingRow}
         {gitRow}
-        {about !== undefined && <Text dimColor>ⓘ {about}</Text>}
+        {aboutSlot({ Box, Text }, abouts, focus !== null ? abouts[focus] : undefined)}
       </Box>
     )
   })

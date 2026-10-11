@@ -183,17 +183,19 @@ test('the first session in a project asks which mods to keep; Keep answers it', 
     await ui.unmount()
   }
 
-  // Each chip's line waits, hidden, at the end of its row for the pointer;
-  // a narrow band leaves them out.
-  const narrow = await $.ui.mount({ plugin: 'topia', surface: 'terminal', ...BAND, props: { ...BAND.props, bodyColumns: 40 } })
-  expect(await narrow.find({ key: 'about-mods-gitBand' })).toBe(undefined)
-  await narrow.unmount()
+  // Each chip's line waits, hidden, in one fixed slot under the rows, at any
+  // width, so hovering one chip after another never moves the row.
+  for (const bodyColumns of [40, BAND.props.bodyColumns]) {
+    const sized = await $.ui.mount({ plugin: 'topia', surface: 'terminal', ...BAND, props: { ...BAND.props, bodyColumns } })
+    expect(await sized.find({ key: 'about-mods-gitBand' })).toBeDefined()
+    expect((await sized.find({ key: 'about-rest' }))?.text).toBe('ⓘ Hover or Tab to a value to see what it means.')
+    await sized.unmount()
+  }
   const ui = await $.ui.mount({ plugin: 'topia', surface: 'terminal', ...BAND })
-  expect(await ui.find({ key: 'about-mods-gitBand' })).toBeDefined()
-  // A chip switches its mod for this project, and its line shows under the band.
+  // A chip switches its mod for this project, and its line takes the slot.
   await ui.press({ key: 'mods-remoteHosts' })
   expect((await ui.find({ key: 'mods-remoteHosts' }))?.text).toBe('hosts ✓')
-  expect(await ui.find({ type: 'Text', text: /^ⓘ Remote hosts: Remembers SSH hosts/ })).toBeDefined()
+  expect((await ui.find({ key: 'about-rest' }))?.text).toMatch(/^ⓘ Remote hosts: Remembers SSH hosts/)
   await ui.press({ key: 'mods-keep' })
   expect(await ui.find({ key: 'mods-keep' })).toBe(undefined)
   await ui.unmount()
