@@ -6,6 +6,33 @@ Hub page with all paths: [`INSTALL.md`](INSTALL.md).
 
 ---
 
+## Cursor marketplace plugin
+
+Topia ships a Cursor plugin manifest at `.cursor-plugin/plugin.json` (skills, agents, commands, and lifecycle hooks). Install from **Cursor Settings → Plugins** once the listing is published.
+
+| If install fails with `gitPath` / unsafe source path | What to do |
+|------------------------------------------------------|------------|
+| Stale empty cache from a prior failed clone | Delete empty folders under `~/.cursor/plugins/cache/` (Windows: `%USERPROFILE%\.cursor\plugins\cache\`) and retry |
+| Testing before marketplace refresh | Local smoke-test (below) |
+
+**Local smoke-test** (dev / pre-publish):
+
+```bash
+# Unix — symlink the clone into Cursor's local plugins dir
+mkdir -p ~/.cursor/plugins/local
+ln -sfn /path/to/topia ~/.cursor/plugins/local/topia
+
+# Windows PowerShell
+New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.cursor\plugins\local" | Out-Null
+New-Item -ItemType Junction -Force -Path "$env:USERPROFILE\.cursor\plugins\local\topia" -Target "C:\path\to\topia"
+```
+
+Restart Cursor and confirm Topia skills/commands load with no `gitPath` error.
+
+**Plugin skills ≠ project rules.** Marketplace/local plugin install exposes skills and commands to the agent. Compiling `.cursor/rules/*.mdc` into an application repo still requires `init --platform cursor` (steps below).
+
+---
+
 ## Prerequisites
 
 - **Node.js 18+**
@@ -132,7 +159,8 @@ If you also run **Claude Code inside VS Code**, install the plugin in Claude's t
 
 | Mistake | What to do instead |
 |---------|-------------------|
-| Installed Claude plugin, opened Cursor, no skills | Run `init --platform cursor` in the project |
+| Cursor marketplace install fails with `gitPath` / unsafe source path | Confirm `.cursor-plugin/plugin.json` exists in the install; clear empty `~/.cursor/plugins/cache/` dirs and retry, or use the local smoke-test above |
+| Installed Claude plugin, opened Cursor, no project rules | Run `init --platform cursor` in the project (plugin skills alone do not write `.cursor/rules/`) |
 | Ran `topia init` but `topia` command not found | Use `node "/full/path/to/.../topia.js" init …` |
 | Ran `--platform cursor` without `init` | Full command: `… topia.js init --platform cursor` |
 | Edited files inside plugin cache | Cache is replaced on upgrade — edit your project `.topia/` instead |

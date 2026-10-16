@@ -74,6 +74,11 @@ const targets = [
     replace: () => `"version": "${newVersion}"`,
   },
   {
+    file: '.cursor-plugin/plugin.json',
+    find: new RegExp(`"version":\\s*"${oldEsc}"`),
+    replace: () => `"version": "${newVersion}"`,
+  },
+  {
     file: 'docs/index.html',
     find: new RegExp(`v${oldEsc}\\s*&middot;`),
     replace: () => `v${newVersion} &middot;`,

@@ -49,6 +49,19 @@ if (pkg.version === plugin.version) {
   fail(`Version mismatch: package.json=${pkg.version} vs plugin.json=${plugin.version}`);
 }
 
+// 1a0. Cursor plugin manifest version (when present)
+const cursorPluginPath = join(ROOT, '.cursor-plugin/plugin.json');
+if (existsSync(cursorPluginPath)) {
+  const cursorPlugin = JSON.parse(readFileSync(cursorPluginPath, 'utf8'));
+  if (cursorPlugin.version === pkg.version) {
+    pass(`.cursor-plugin/plugin.json version: ${cursorPlugin.version}`);
+  } else {
+    fail(
+      `Version mismatch: package.json=${pkg.version} vs .cursor-plugin/plugin.json=${cursorPlugin.version}`,
+    );
+  }
+}
+
 // 1a. marketplace.json version + plugin entry version
 const marketplacePath = join(ROOT, '.claude-plugin', 'marketplace.json');
 if (existsSync(marketplacePath)) {

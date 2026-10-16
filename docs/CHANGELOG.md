@@ -4,6 +4,12 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
+## [3.9.2] — 2026-10-16
+
+### Fixed
+
+- **Cursor marketplace install (`gitPath` / unsafe source path)** — added root [`.cursor-plugin/plugin.json`](../.cursor-plugin/plugin.json) and [`hooks/hooks-cursor.json`](../hooks/hooks-cursor.json) so Cursor resolves a safe plugin surface (skills, agents, commands, lifecycle hooks). Documented marketplace install + local smoke-test in [`INSTALL-NON-CLAUDE.md`](INSTALL-NON-CLAUDE.md). Version bump/sync scripts now keep the Cursor manifest aligned with `package.json`.
+
 ## [3.9.1] — 2026-10-11
 
 ### Changed

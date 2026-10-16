@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": "node \"${CURSOR_PLUGIN_ROOT}/hooks/run-hook.cjs\" session-start"
+      }
+    ],
+    "postToolUse": [
+      {
+        "command": "node \"${CURSOR_PLUGIN_ROOT}/hooks/run-hook.cjs\" token-meter",
+        "matcher": ".*"
+      },
+      {
+        "command": "node \"${CURSOR_PLUGIN_ROOT}/hooks/run-hook.cjs\" metrics-collector",
+        "matcher": "Skill"
+      }
+    ],
+    "preCompact": [
+      {
+        "command": "node \"${CURSOR_PLUGIN_ROOT}/hooks/run-hook.cjs\" pre-compact"
+      }
+    ],
+    "sessionEnd": [
+      {
+        "command": "node \"${CURSOR_PLUGIN_ROOT}/hooks/run-hook.cjs\" post-session-reflect"
+      }
+    ],
+    "stop": [
+      {
+        "command": "node \"${CURSOR_PLUGIN_ROOT}/hooks/run-hook.cjs\" post-session-reflect"
+      }
+    ]
+  }
+}
