@@ -4,6 +4,18 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
+## [3.10.0] — 2026-10-24
+
+### Changed
+
+- **Node 22+ required; tested on Node 22, 24 and 26** — `engines` moves from `>=18` to `>=22` (Node 18 and 20 are end-of-life, and `npm test` already needed 21+ for `node --test` globs). CI now runs a Node 22/24/26 × Linux/Windows matrix instead of Node 20 alone, npm publish runs on Node 24, and `actions/checkout` / `actions/setup-node` move from v4 to v7 (node24 runtime). [`GETTING_STARTED.md`](GETTING_STARTED.md) and [`INSTALL-NON-CLAUDE.md`](INSTALL-NON-CLAUDE.md) now say Node.js 22+.
+
+### Fixed
+
+- **`scripts/sync-to-skill-topia.mjs` fork verification** — dropped `shell: true` from the `node --test` spawn: it emitted DEP0190 on Node 24+ and broke when Node lived under a path with spaces (`C:\Program Files\nodejs`).
+- **`hook-dispatch` test env leak** — the Cursor tests restore `CURSOR_HOOK` / `CURSOR_VERSION` in a `finally` and delete them when they were unset, instead of writing the string `"undefined"` into later tests' env (DEP0104).
+- **Lint** — `scripts/version-sync-check.js` formatting, which had `npm run ci` failing at the Biome step.
+
 ## [3.9.2] — 2026-10-16
 
 ### Fixed
