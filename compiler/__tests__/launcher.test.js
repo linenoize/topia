@@ -74,12 +74,15 @@ describe('launcher reference helpers', () => {
 
   // Installed launchers are only replaced when the bundled revision is higher,
   // so an edit without a bump never reaches users. Update both values together.
+  // Comments are left out of the hash: they don't change behaviour, and the
+  // skill-topia fork rebrands them.
   test('LAUNCHER_REVISION is bumped whenever the launcher changes', () => {
     const src = launcherSource().replace(/\r\n/g, '\n');
-    const digest = createHash('sha256').update(src).digest('hex').slice(0, 16);
+    const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*\n/gm, '');
+    const digest = createHash('sha256').update(code).digest('hex').slice(0, 16);
     assert.deepEqual(
       { revision: launcherRevision(src), digest },
-      { revision: 3, digest: '2d5c63457c94bb82' },
+      { revision: 3, digest: '7ed0023995dc7860' },
       'launcher changed: bump LAUNCHER_REVISION, then update this pin',
     );
   });
