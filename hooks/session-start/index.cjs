@@ -49,6 +49,11 @@ detectFinalizeNudge();
 // upgrade). Repair = re-run /topia finalize, which now writes a stable launcher.
 detectStaleHooks();
 
+// Outdated launcher — setup copies the launcher once and plugin updates never
+// touch it again, so refresh the global copy when this plugin bundles a newer
+// revision. Same opt-out as auto-repair.
+refreshOutdatedLauncher();
+
 function detectRuneMigration() {
   const runeDir = path.join(cwd, '.rune');
   const home = os.homedir();
@@ -220,6 +225,16 @@ function detectStaleHooks() {
   console.log(`      (e.g. ${example})`);
   console.log('      This usually means the plugin was upgraded. Repair with:');
   console.log('        /topia finalize     (rewrites hooks to a version-stable launcher)');
+}
+
+function refreshOutdatedLauncher() {
+  const home = os.homedir();
+  const optOutDirs = [TopiaDirWrite, TopiaDirRead, path.join(home, '.claude', 'topia')];
+  if (autofix.repairOptedOut(optOutDirs)) return;
+  if (!autofix.refreshLauncher(path.join(home, '.claude', 'topia', 'hook-dispatch.cjs'))) return;
+  console.log('');
+  console.log('  ✓ topia: updated the hook launcher (~/.claude/topia/hook-dispatch.cjs)');
+  console.log('      disable via TOPIA_NO_AUTOREPAIR=1');
 }
 
 // Opt-in (TOPIA_AUTO_FINALIZE=1 or a `.auto-finalize` flag): wire the managed

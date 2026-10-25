@@ -86,6 +86,50 @@ describe('session-start auto-repair (opt-out, default on)', () => {
   });
 });
 
+describe('session-start launcher refresh (opt-out, default on)', () => {
+  const ASSET = readFileSync(path.join(REPO, 'compiler', 'assets', 'hook-dispatch-launcher.cjs'), 'utf8');
+  const launcherPath = (home) => path.join(home, '.claude', 'topia', 'hook-dispatch.cjs');
+  const plantLauncher = (home, body) => {
+    mkdirSync(path.dirname(launcherPath(home)), { recursive: true });
+    writeFileSync(launcherPath(home), body);
+  };
+  // A pre-revision launcher, like the copies setup wrote before LAUNCHER_REVISION existed.
+  const OLD = '/**\n * Topia hook-dispatch launcher — a stable shim that survives plugin upgrades.\n */\n';
+
+  test('replaces an installed launcher with an older revision', () => {
+    const home = makeHome();
+    plantLauncher(home, OLD);
+    const res = runSessionStart(home, { CLAUDE_PLUGIN_ROOT: REPO });
+    assert.equal(res.status, 0, res.stderr);
+    assert.equal(readFileSync(launcherPath(home), 'utf8'), ASSET);
+  });
+
+  test('leaves a launcher at the same revision alone (never downgrades)', () => {
+    const home = makeHome();
+    const sameRevision = `${ASSET}\n// local edit\n`;
+    plantLauncher(home, sameRevision);
+    const res = runSessionStart(home, { CLAUDE_PLUGIN_ROOT: REPO });
+    assert.equal(res.status, 0, res.stderr);
+    assert.equal(readFileSync(launcherPath(home), 'utf8'), sameRevision);
+  });
+
+  test('never touches a file that is not a Topia launcher', () => {
+    const home = makeHome();
+    plantLauncher(home, '// something else\n');
+    const res = runSessionStart(home, { CLAUDE_PLUGIN_ROOT: REPO });
+    assert.equal(res.status, 0, res.stderr);
+    assert.equal(readFileSync(launcherPath(home), 'utf8'), '// something else\n');
+  });
+
+  test('TOPIA_NO_AUTOREPAIR=1 leaves an outdated launcher untouched', () => {
+    const home = makeHome();
+    plantLauncher(home, OLD);
+    const res = runSessionStart(home, { CLAUDE_PLUGIN_ROOT: REPO, TOPIA_NO_AUTOREPAIR: '1' });
+    assert.equal(res.status, 0, res.stderr);
+    assert.equal(readFileSync(launcherPath(home), 'utf8'), OLD);
+  });
+});
+
 describe('session-start auto-finalize (opt-in, default off)', () => {
   test('default off: a never-wired machine is NOT auto-wired', () => {
     const home = makeHome(); // empty .claude, no settings.json

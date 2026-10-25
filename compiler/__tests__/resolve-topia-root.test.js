@@ -18,14 +18,15 @@ function ensureSkills(root) {
 
 /**
  * @param {string} root
- * @param {{ version?: string, withSkills?: boolean }} [opts]
+ * @param {{ version?: string, withSkills?: boolean, withPackageJson?: boolean }} [opts]
  */
-function makeFakePlugin(root, { version = '9.9.9', withSkills = true } = {}) {
+function makeFakePlugin(root, { version = '9.9.9', withSkills = true, withPackageJson = true } = {}) {
   const cli = path.join(root, 'compiler', 'bin', 'topia.js');
   mkdirSync(path.dirname(cli), { recursive: true });
   mkdirSync(path.join(root, '.claude-plugin'), { recursive: true });
   writeFileSync(path.join(root, '.claude-plugin', 'plugin.json'), JSON.stringify({ name: 'topia', version }));
   writeFileSync(cli, '// stub\n', 'utf8');
+  if (withPackageJson) writeFileSync(path.join(root, 'package.json'), '{}');
   if (withSkills) ensureSkills(root);
 }
 
@@ -153,6 +154,55 @@ describe('resolveTopiaRoot cache scan', () => {
 
       withIsolatedHome(tmp, () => {
         assert.equal(resolveTopiaRoot(null, { skipManifestWalk: true }), canonical);
+      });
+    } finally {
+      await rm(tmp, { recursive: true, force: true });
+    }
+  });
+
+  test('skips a candidate root that is missing package.json (clone still in flight)', async () => {
+    const tmp = await mkdtemp(path.join(os.tmpdir(), 'topia-rt-no-pkg-'));
+    try {
+      const cache = path.join(tmp, '.claude', 'plugins', 'cache');
+      const partial = path.join(cache, 'linenoize', 'topia', '3.10.0');
+      const complete = path.join(cache, 'linenoize', 'topia', '3.9.2');
+      makeFakePlugin(partial, { version: '3.10.0', withPackageJson: false });
+      makeFakePlugin(complete, { version: '3.9.2' });
+
+      withIsolatedHome(tmp, () => {
+        assert.equal(resolveTopiaRoot(null, { skipManifestWalk: true }), complete);
+      });
+    } finally {
+      await rm(tmp, { recursive: true, force: true });
+    }
+  });
+
+  test('a newer temp_git staging clone never beats an installed version', async () => {
+    const tmp = await mkdtemp(path.join(os.tmpdir(), 'topia-rt-staging-newer-'));
+    try {
+      const cache = path.join(tmp, '.claude', 'plugins', 'cache');
+      const staging = path.join(cache, 'temp_git_9999999999_test');
+      const canonical = path.join(cache, 'linenoize', 'topia', '3.9.2');
+      makeFakePlugin(staging, { version: '3.10.0' });
+      makeFakePlugin(canonical, { version: '3.9.2' });
+
+      withIsolatedHome(tmp, () => {
+        assert.equal(resolveTopiaRoot(null, { skipManifestWalk: true }), canonical);
+      });
+    } finally {
+      await rm(tmp, { recursive: true, force: true });
+    }
+  });
+
+  test('falls back to a staging clone when nothing else is installed', async () => {
+    const tmp = await mkdtemp(path.join(os.tmpdir(), 'topia-rt-staging-only-'));
+    try {
+      const cache = path.join(tmp, '.claude', 'plugins', 'cache');
+      const staging = path.join(cache, 'temp_git_9999999999_test');
+      makeFakePlugin(staging, { version: '3.10.0' });
+
+      withIsolatedHome(tmp, () => {
+        assert.equal(resolveTopiaRoot(null, { skipManifestWalk: true }), staging);
       });
     } finally {
       await rm(tmp, { recursive: true, force: true });

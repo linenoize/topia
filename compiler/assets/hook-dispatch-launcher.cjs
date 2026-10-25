@@ -41,13 +41,19 @@ const os = require('node:os');
 const path = require('node:path');
 const { spawnSync } = require('node:child_process');
 
+// Bump on every change to this file: session-start replaces an installed copy
+// whose revision is lower than the plugin's bundled one (hooks/lib/autofix.cjs).
+const LAUNCHER_REVISION = 2;
+
 const CLI_REL = path.join('compiler', 'bin', 'topia.js');
 const MANIFEST_REL = path.join('.claude-plugin', 'plugin.json');
 const PLUGIN_NAMES = new Set(['topia', 'skill-topia']);
 
 function hasCli(root) {
   if (!root || !fs.existsSync(path.join(root, CLI_REL))) return false;
-  // topia.js imports from skills/ — a root without it is a partial install
+  // topia.js is ESM (needs package.json "type": "module") and imports from
+  // skills/ — a root missing either is a partial install or a clone in flight
+  if (!fs.existsSync(path.join(root, 'package.json'))) return false;
   try {
     return fs.readdirSync(path.join(root, 'skills')).length > 0;
   } catch {
@@ -82,18 +88,21 @@ function cmpVersion(a, b) {
   return 0;
 }
 
-/** Claude Code staging clone left in plugins/cache after an interrupted install. */
+/**
+ * Claude Code staging clone in plugins/cache: an install in flight (it carries
+ * the new version's manifest before its other files land) or one left behind
+ * by an interrupted install.
+ */
 function isStaging(p) {
   return /(^|[\\/])temp_git_\d+_/.test(p);
 }
 
-/** Prefer higher version; on a tie prefer a non-staging path. */
+/** A staging clone never beats a real install; otherwise prefer higher version. */
 function better(cand, best) {
   if (!best) return true;
-  const v = cmpVersion(cand.version, best.version);
-  if (v !== 0) return v > 0;
-  if (isStaging(best.root) && !isStaging(cand.root)) return true;
-  return false;
+  const candStaging = isStaging(cand.root);
+  if (candStaging !== isStaging(best.root)) return !candStaging;
+  return cmpVersion(cand.version, best.version) > 0;
 }
 
 /** Walk up from `startDir` to a plugin root identified by its manifest. */

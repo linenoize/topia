@@ -114,6 +114,37 @@ function detectPreset(settings) {
   return gentle ? 'gentle' : strict ? 'strict' : null;
 }
 
+const LAUNCHER_MARKER = 'Topia hook-dispatch launcher';
+
+/** `LAUNCHER_REVISION` of a launcher source; 0 for copies that predate it. */
+function launcherRevision(source) {
+  const m = /const LAUNCHER_REVISION = (\d+);/.exec(source);
+  return m ? Number(m[1]) : 0;
+}
+
+/**
+ * Replace an installed launcher with this plugin's bundled one when the bundled
+ * revision is newer. The launcher is copied once at setup and never refreshed by
+ * plugin updates, so resolver fixes would otherwise never reach it. Never
+ * downgrades (an older plugin can't clobber a newer launcher) and never touches
+ * a file that isn't a Topia launcher. Returns true when it wrote the file.
+ */
+function refreshLauncher(launcherPath) {
+  try {
+    const installed = fs.readFileSync(launcherPath, 'utf8');
+    if (!installed.includes(LAUNCHER_MARKER)) return false;
+    const bundled = fs.readFileSync(
+      path.join(pluginRoot(), 'compiler', 'assets', 'hook-dispatch-launcher.cjs'),
+      'utf8',
+    );
+    if (launcherRevision(bundled) <= launcherRevision(installed)) return false;
+    fs.writeFileSync(launcherPath, bundled, 'utf8');
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Run `topia setup --global --preset <preset> --yes` quietly. The installer
  * backs up + writes settings.json. Returns { ok, reason? }.
@@ -141,5 +172,7 @@ module.exports = {
   staleTargetsIn,
   hasManagedHooks,
   detectPreset,
+  launcherRevision,
+  refreshLauncher,
   runGlobalSetup,
 };

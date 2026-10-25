@@ -25,7 +25,9 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 
 function hasCli(root) {
   if (!root || !existsSync(path.join(root, CLI_REL))) return false;
-  // topia.js imports from skills/ — a root without it is a partial install
+  // topia.js is ESM (needs package.json "type": "module") and imports from
+  // skills/ — a root missing either is a partial install or a clone in flight
+  if (!existsSync(path.join(root, 'package.json'))) return false;
   try {
     return readdirSync(path.join(root, 'skills')).length > 0;
   } catch {
@@ -60,18 +62,21 @@ function cmpVersion(a, b) {
   return 0;
 }
 
-/** Claude Code staging clone left in plugins/cache after an interrupted install. */
+/**
+ * Claude Code staging clone in plugins/cache: an install in flight (it carries
+ * the new version's manifest before its other files land) or one left behind
+ * by an interrupted install.
+ */
 function isStaging(p) {
   return /(^|[\\/])temp_git_\d+_/.test(p);
 }
 
-/** Prefer higher version; on a tie prefer a non-staging path. */
+/** A staging clone never beats a real install; otherwise prefer higher version. */
 function better(cand, best) {
   if (!best) return true;
-  const v = cmpVersion(cand.version, best.version);
-  if (v !== 0) return v > 0;
-  if (isStaging(best.root) && !isStaging(cand.root)) return true;
-  return false;
+  const candStaging = isStaging(cand.root);
+  if (candStaging !== isStaging(best.root)) return !candStaging;
+  return cmpVersion(cand.version, best.version) > 0;
 }
 
 /**

@@ -27,14 +27,18 @@ function ensureSkills(root) {
 /**
  * Build a fake plugin tree with a stub CLI; optionally include flightrec.cjs.
  * @param {string} root
- * @param {{ withFlightrec?: boolean, version?: string, withSkills?: boolean, cliBody?: string }} [opts]
+ * @param {{ withFlightrec?: boolean, version?: string, withSkills?: boolean, withPackageJson?: boolean, cliBody?: string }} [opts]
  */
-function makeFakePlugin(root, { withFlightrec = false, version = '9.9.9', withSkills = true, cliBody } = {}) {
+function makeFakePlugin(
+  root,
+  { withFlightrec = false, version = '9.9.9', withSkills = true, withPackageJson = true, cliBody } = {},
+) {
   const cli = path.join(root, 'compiler', 'bin', 'topia.js');
   mkdirSync(path.dirname(cli), { recursive: true });
   mkdirSync(path.join(root, '.claude-plugin'), { recursive: true });
   writeFileSync(path.join(root, '.claude-plugin', 'plugin.json'), JSON.stringify({ name: 'topia', version }));
   writeFileSync(cli, cliBody ?? 'process.exit(0);\n');
+  if (withPackageJson) writeFileSync(path.join(root, 'package.json'), '{}');
   if (withSkills) ensureSkills(root);
   if (withFlightrec) {
     const libDir = path.join(root, 'hooks', 'lib');
@@ -172,6 +176,83 @@ describe('launcher runtime delegation', () => {
 
       assert.equal(res.status, 0, res.stderr);
       assert.equal(readFileSync(out, 'utf8'), 'canonical');
+    } finally {
+      await rm(tmp, { recursive: true, force: true });
+    }
+  });
+
+  test('skips a candidate root that is missing package.json (clone still in flight)', async () => {
+    const tmp = await mkdtemp(path.join(os.tmpdir(), 'topia-no-pkg-'));
+    try {
+      const cache = path.join(tmp, '.claude', 'plugins', 'cache');
+      const out = path.join(tmp, 'received.txt');
+      makeFakePlugin(path.join(cache, 'linenoize', 'topia', '3.10.0'), {
+        version: '3.10.0',
+        withPackageJson: false,
+        cliBody: `require('node:fs').writeFileSync(${JSON.stringify(out)}, 'partial');\n`,
+      });
+      makeFakePlugin(path.join(cache, 'linenoize', 'topia', '3.9.2'), {
+        version: '3.9.2',
+        cliBody: `require('node:fs').writeFileSync(${JSON.stringify(out)}, 'complete');\n`,
+      });
+
+      const launcher = path.join(tmp, 'hook-dispatch.cjs');
+      copyFileSync(ASSET, launcher);
+      const env = { ...process.env, CLAUDE_PLUGIN_ROOT: '', TOPIA_ROOT: '', HOME: tmp, USERPROFILE: tmp };
+      const res = spawnSync(process.execPath, [launcher, 'hook-dispatch', 'readiness'], { env, encoding: 'utf8' });
+
+      assert.equal(res.status, 0, res.stderr);
+      assert.equal(readFileSync(out, 'utf8'), 'complete');
+    } finally {
+      await rm(tmp, { recursive: true, force: true });
+    }
+  });
+
+  test('a newer temp_git staging clone never beats an installed version', async () => {
+    const tmp = await mkdtemp(path.join(os.tmpdir(), 'topia-staging-newer-'));
+    try {
+      const cache = path.join(tmp, '.claude', 'plugins', 'cache');
+      const out = path.join(tmp, 'received.txt');
+      // An update in flight: the staging clone carries the new version's
+      // manifest before the rest of its files have landed.
+      makeFakePlugin(path.join(cache, 'temp_git_9999999999_test'), {
+        version: '3.10.0',
+        cliBody: `require('node:fs').writeFileSync(${JSON.stringify(out)}, 'staging');\n`,
+      });
+      makeFakePlugin(path.join(cache, 'linenoize', 'topia', '3.9.2'), {
+        version: '3.9.2',
+        cliBody: `require('node:fs').writeFileSync(${JSON.stringify(out)}, 'canonical');\n`,
+      });
+
+      const launcher = path.join(tmp, 'hook-dispatch.cjs');
+      copyFileSync(ASSET, launcher);
+      const env = { ...process.env, CLAUDE_PLUGIN_ROOT: '', TOPIA_ROOT: '', HOME: tmp, USERPROFILE: tmp };
+      const res = spawnSync(process.execPath, [launcher, 'hook-dispatch', 'readiness'], { env, encoding: 'utf8' });
+
+      assert.equal(res.status, 0, res.stderr);
+      assert.equal(readFileSync(out, 'utf8'), 'canonical');
+    } finally {
+      await rm(tmp, { recursive: true, force: true });
+    }
+  });
+
+  test('falls back to a staging clone when nothing else is installed', async () => {
+    const tmp = await mkdtemp(path.join(os.tmpdir(), 'topia-staging-only-'));
+    try {
+      const cache = path.join(tmp, '.claude', 'plugins', 'cache');
+      const out = path.join(tmp, 'received.txt');
+      makeFakePlugin(path.join(cache, 'temp_git_9999999999_test'), {
+        version: '3.10.0',
+        cliBody: `require('node:fs').writeFileSync(${JSON.stringify(out)}, 'staging');\n`,
+      });
+
+      const launcher = path.join(tmp, 'hook-dispatch.cjs');
+      copyFileSync(ASSET, launcher);
+      const env = { ...process.env, CLAUDE_PLUGIN_ROOT: '', TOPIA_ROOT: '', HOME: tmp, USERPROFILE: tmp };
+      const res = spawnSync(process.execPath, [launcher, 'hook-dispatch', 'readiness'], { env, encoding: 'utf8' });
+
+      assert.equal(res.status, 0, res.stderr);
+      assert.equal(readFileSync(out, 'utf8'), 'staging');
     } finally {
       await rm(tmp, { recursive: true, force: true });
     }
