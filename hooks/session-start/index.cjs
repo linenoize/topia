@@ -51,7 +51,8 @@ detectStaleHooks();
 
 // Outdated launcher — setup copies the launcher once and plugin updates never
 // touch it again, so refresh the global copy when this plugin bundles a newer
-// revision. Same opt-out as auto-repair.
+// revision. Same opt-out as auto-repair. A project-scope copy only gets a warn,
+// matching project settings.json (it lives in the repo).
 refreshOutdatedLauncher();
 
 function detectRuneMigration() {
@@ -229,12 +230,18 @@ function detectStaleHooks() {
 
 function refreshOutdatedLauncher() {
   const home = os.homedir();
+  const globalLauncher = path.join(home, '.claude', 'topia', 'hook-dispatch.cjs');
+  const projectLauncher = path.join(cwd, '.claude', 'topia', 'hook-dispatch.cjs');
   const optOutDirs = [TopiaDirWrite, TopiaDirRead, path.join(home, '.claude', 'topia')];
-  if (autofix.repairOptedOut(optOutDirs)) return;
-  if (!autofix.refreshLauncher(path.join(home, '.claude', 'topia', 'hook-dispatch.cjs'))) return;
+  if (!autofix.repairOptedOut(optOutDirs) && autofix.refreshLauncher(globalLauncher)) {
+    console.log('');
+    console.log('  ✓ topia: updated the hook launcher (~/.claude/topia/hook-dispatch.cjs)');
+    console.log('      disable via TOPIA_NO_AUTOREPAIR=1');
+  }
+  if (projectLauncher === globalLauncher || !autofix.outdatedLauncher(projectLauncher)) return;
   console.log('');
-  console.log('  ✓ topia: updated the hook launcher (~/.claude/topia/hook-dispatch.cjs)');
-  console.log('      disable via TOPIA_NO_AUTOREPAIR=1');
+  console.log("  ⚠ topia: this project's hook launcher (.claude/topia/hook-dispatch.cjs) is outdated");
+  console.log('      Update it with:  topia setup --here');
 }
 
 // Opt-in (TOPIA_AUTO_FINALIZE=1 or a `.auto-finalize` flag): wire the managed

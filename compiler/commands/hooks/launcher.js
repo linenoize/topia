@@ -51,3 +51,12 @@ export function launcherRefFor(scopeRoot, { global = false } = {}) {
 export function launcherSource() {
   return readFileSync(path.join(here, '..', '..', 'assets', 'hook-dispatch-launcher.cjs'), 'utf8');
 }
+
+/** Header line every Topia launcher carries (also checked in hooks/lib/autofix.cjs). */
+export const LAUNCHER_MARKER = 'Topia hook-dispatch launcher';
+
+/** `LAUNCHER_REVISION` of a launcher source; 0 for copies that predate it. */
+export function launcherRevision(source) {
+  const m = /const LAUNCHER_REVISION = (\d+);/.exec(source);
+  return m ? Number(m[1]) : 0;
+}

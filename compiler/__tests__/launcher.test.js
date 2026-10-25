@@ -1,15 +1,18 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { mkdtemp, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { describe, test } from 'node:test';
 import flightrec from '../../hooks/lib/flightrec.cjs';
+import { emit } from '../adapters/hooks/claude.js';
 import {
   LAUNCHER_REL,
   launcherPathFor,
   launcherRefFor,
+  launcherRevision,
   launcherSource,
   PROJECT_LAUNCHER_REF,
 } from '../commands/hooks/launcher.js';
@@ -67,6 +70,48 @@ describe('launcher reference helpers', () => {
     const src = launcherSource();
     assert.ok(src.includes('hook-dispatch'));
     assert.ok(src.includes('.claude-plugin'));
+  });
+
+  // Installed launchers are only replaced when the bundled revision is higher,
+  // so an edit without a bump never reaches users. Update both values together.
+  test('LAUNCHER_REVISION is bumped whenever the launcher changes', () => {
+    const src = launcherSource().replace(/\r\n/g, '\n');
+    const digest = createHash('sha256').update(src).digest('hex').slice(0, 16);
+    assert.deepEqual(
+      { revision: launcherRevision(src), digest },
+      { revision: 3, digest: '2d5c63457c94bb82' },
+      'launcher changed: bump LAUNCHER_REVISION, then update this pin',
+    );
+  });
+});
+
+describe('setup launcher write', () => {
+  const NEWER = '/**\n * Topia hook-dispatch launcher\n */\nconst LAUNCHER_REVISION = 999;\n';
+
+  test('writes the bundled launcher on a fresh project', async () => {
+    const tmp = await mkdtemp(path.join(os.tmpdir(), 'topia-setup-fresh-'));
+    try {
+      const { files } = await emit({ preset: 'gentle', projectRoot: tmp, topiaRoot: tmp });
+      const launcher = files.find((f) => f.path === launcherPathFor(tmp));
+      assert.equal(launcher?.content, launcherSource());
+    } finally {
+      await rm(tmp, { recursive: true, force: true });
+    }
+  });
+
+  test('keeps an installed launcher with a newer revision (never downgrades)', async () => {
+    const tmp = await mkdtemp(path.join(os.tmpdir(), 'topia-setup-newer-'));
+    try {
+      mkdirSync(path.dirname(launcherPathFor(tmp)), { recursive: true });
+      writeFileSync(launcherPathFor(tmp), NEWER);
+      const { files } = await emit({ preset: 'gentle', projectRoot: tmp, topiaRoot: tmp });
+      assert.equal(
+        files.some((f) => f.path === launcherPathFor(tmp)),
+        false,
+      );
+    } finally {
+      await rm(tmp, { recursive: true, force: true });
+    }
   });
 });
 
@@ -236,7 +281,7 @@ describe('launcher runtime delegation', () => {
     }
   });
 
-  test('falls back to a staging clone when nothing else is installed', async () => {
+  test('never dispatches to a staging clone, even when nothing else is installed', async () => {
     const tmp = await mkdtemp(path.join(os.tmpdir(), 'topia-staging-only-'));
     try {
       const cache = path.join(tmp, '.claude', 'plugins', 'cache');
@@ -252,7 +297,61 @@ describe('launcher runtime delegation', () => {
       const res = spawnSync(process.execPath, [launcher, 'hook-dispatch', 'readiness'], { env, encoding: 'utf8' });
 
       assert.equal(res.status, 0, res.stderr);
-      assert.equal(readFileSync(out, 'utf8'), 'staging');
+      assert.match(res.stderr, /could not locate the Topia plugin/);
+      assert.equal(existsSync(out), false, 'staging CLI must not run');
+    } finally {
+      await rm(tmp, { recursive: true, force: true });
+    }
+  });
+
+  test('ignores CLAUDE_PLUGIN_ROOT pointing at a staging clone', async () => {
+    const tmp = await mkdtemp(path.join(os.tmpdir(), 'topia-staging-env-'));
+    try {
+      const cache = path.join(tmp, '.claude', 'plugins', 'cache');
+      const out = path.join(tmp, 'received.txt');
+      const staging = path.join(cache, 'temp_git_9999999999_test');
+      makeFakePlugin(staging, {
+        version: '3.10.0',
+        cliBody: `require('node:fs').writeFileSync(${JSON.stringify(out)}, 'staging');\n`,
+      });
+      makeFakePlugin(path.join(cache, 'linenoize', 'topia', '3.9.2'), {
+        version: '3.9.2',
+        cliBody: `require('node:fs').writeFileSync(${JSON.stringify(out)}, 'installed');\n`,
+      });
+
+      const launcher = path.join(tmp, 'hook-dispatch.cjs');
+      copyFileSync(ASSET, launcher);
+      const env = { ...process.env, CLAUDE_PLUGIN_ROOT: staging, TOPIA_ROOT: '', HOME: tmp, USERPROFILE: tmp };
+      const res = spawnSync(process.execPath, [launcher, 'hook-dispatch', 'readiness'], { env, encoding: 'utf8' });
+
+      assert.equal(res.status, 0, res.stderr);
+      assert.equal(readFileSync(out, 'utf8'), 'installed');
+    } finally {
+      await rm(tmp, { recursive: true, force: true });
+    }
+  });
+
+  test('skips marketplace clones in favour of the installed copy', async () => {
+    const tmp = await mkdtemp(path.join(os.tmpdir(), 'topia-marketplace-'));
+    try {
+      const plugins = path.join(tmp, '.claude', 'plugins');
+      const out = path.join(tmp, 'received.txt');
+      makeFakePlugin(path.join(plugins, 'marketplaces', 'linenoize'), {
+        version: '3.11.0',
+        cliBody: `require('node:fs').writeFileSync(${JSON.stringify(out)}, 'marketplace');\n`,
+      });
+      makeFakePlugin(path.join(plugins, 'cache', 'linenoize', 'topia', '3.10.0'), {
+        version: '3.10.0',
+        cliBody: `require('node:fs').writeFileSync(${JSON.stringify(out)}, 'installed');\n`,
+      });
+
+      const launcher = path.join(tmp, 'hook-dispatch.cjs');
+      copyFileSync(ASSET, launcher);
+      const env = { ...process.env, CLAUDE_PLUGIN_ROOT: '', TOPIA_ROOT: '', HOME: tmp, USERPROFILE: tmp };
+      const res = spawnSync(process.execPath, [launcher, 'hook-dispatch', 'readiness'], { env, encoding: 'utf8' });
+
+      assert.equal(res.status, 0, res.stderr);
+      assert.equal(readFileSync(out, 'utf8'), 'installed');
     } finally {
       await rm(tmp, { recursive: true, force: true });
     }

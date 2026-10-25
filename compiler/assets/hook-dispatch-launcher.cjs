@@ -43,14 +43,14 @@ const { spawnSync } = require('node:child_process');
 
 // Bump on every change to this file: session-start replaces an installed copy
 // whose revision is lower than the plugin's bundled one (hooks/lib/autofix.cjs).
-const LAUNCHER_REVISION = 2;
+const LAUNCHER_REVISION = 3;
 
 const CLI_REL = path.join('compiler', 'bin', 'topia.js');
 const MANIFEST_REL = path.join('.claude-plugin', 'plugin.json');
 const PLUGIN_NAMES = new Set(['topia', 'skill-topia']);
 
 function hasCli(root) {
-  if (!root || !fs.existsSync(path.join(root, CLI_REL))) return false;
+  if (!root || isStaging(root) || !fs.existsSync(path.join(root, CLI_REL))) return false;
   // topia.js is ESM (needs package.json "type": "module") and imports from
   // skills/ — a root missing either is a partial install or a clone in flight
   if (!fs.existsSync(path.join(root, 'package.json'))) return false;
@@ -91,18 +91,10 @@ function cmpVersion(a, b) {
 /**
  * Claude Code staging clone in plugins/cache: an install in flight (it carries
  * the new version's manifest before its other files land) or one left behind
- * by an interrupted install.
+ * by an interrupted install. Never a usable root either way.
  */
 function isStaging(p) {
   return /(^|[\\/])temp_git_\d+_/.test(p);
-}
-
-/** A staging clone never beats a real install; otherwise prefer higher version. */
-function better(cand, best) {
-  if (!best) return true;
-  const candStaging = isStaging(cand.root);
-  if (candStaging !== isStaging(best.root)) return !candStaging;
-  return cmpVersion(cand.version, best.version) > 0;
 }
 
 /** Walk up from `startDir` to a plugin root identified by its manifest. */
@@ -125,7 +117,9 @@ function scanForNewestPlugin() {
     path.join(home, '.claude', 'plugins'),
     path.join(home, '.claude', 'skills'),
   ];
-  const skip = new Set(['node_modules', '.git']);
+  // marketplaces/ holds marketplace repo clones that Claude Code refreshes in
+  // place; the installed copy of a plugin is always under cache/
+  const skip = new Set(['node_modules', '.git', 'marketplaces']);
   let best = null; // { root, version }
   let budget = 4000;
 
@@ -136,8 +130,7 @@ function scanForNewestPlugin() {
       const { dir, depth } = stack.pop();
       const version = hasCli(dir) ? pluginVersion(dir) : null;
       if (version !== null) {
-        const cand = { root: dir, version };
-        if (better(cand, best)) best = cand;
+        if (!best || cmpVersion(version, best.version) > 0) best = { root: dir, version };
         continue; // do not descend into a resolved plugin root
       }
       if (depth >= 4) continue;
@@ -149,7 +142,7 @@ function scanForNewestPlugin() {
       }
       entries.sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
       for (const entry of entries) {
-        if (!entry.isDirectory() || skip.has(entry.name)) continue;
+        if (!entry.isDirectory() || skip.has(entry.name) || isStaging(entry.name)) continue;
         stack.push({ dir: path.join(dir, entry.name), depth: depth + 1 });
       }
     }

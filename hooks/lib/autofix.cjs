@@ -123,6 +123,25 @@ function launcherRevision(source) {
 }
 
 /**
+ * This plugin's bundled launcher source when the Topia launcher at
+ * `launcherPath` has an older revision, else null (absent, current or newer,
+ * or not a Topia launcher). Never throws.
+ */
+function outdatedLauncher(launcherPath) {
+  try {
+    const installed = fs.readFileSync(launcherPath, 'utf8');
+    if (!installed.includes(LAUNCHER_MARKER)) return null;
+    const bundled = fs.readFileSync(
+      path.join(pluginRoot(), 'compiler', 'assets', 'hook-dispatch-launcher.cjs'),
+      'utf8',
+    );
+    return launcherRevision(bundled) > launcherRevision(installed) ? bundled : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Replace an installed launcher with this plugin's bundled one when the bundled
  * revision is newer. The launcher is copied once at setup and never refreshed by
  * plugin updates, so resolver fixes would otherwise never reach it. Never
@@ -130,17 +149,21 @@ function launcherRevision(source) {
  * a file that isn't a Topia launcher. Returns true when it wrote the file.
  */
 function refreshLauncher(launcherPath) {
+  const bundled = outdatedLauncher(launcherPath);
+  if (!bundled) return false;
+  // Write-then-rename: hooks running in parallel with session-start execute
+  // this file, and must never read it half-written.
+  const tmp = `${launcherPath}.${process.pid}.tmp`;
   try {
-    const installed = fs.readFileSync(launcherPath, 'utf8');
-    if (!installed.includes(LAUNCHER_MARKER)) return false;
-    const bundled = fs.readFileSync(
-      path.join(pluginRoot(), 'compiler', 'assets', 'hook-dispatch-launcher.cjs'),
-      'utf8',
-    );
-    if (launcherRevision(bundled) <= launcherRevision(installed)) return false;
-    fs.writeFileSync(launcherPath, bundled, 'utf8');
+    fs.writeFileSync(tmp, bundled, 'utf8');
+    fs.renameSync(tmp, launcherPath);
     return true;
   } catch {
+    try {
+      fs.rmSync(tmp, { force: true });
+    } catch {
+      /* ignore */
+    }
     return false;
   }
 }
@@ -173,6 +196,7 @@ module.exports = {
   hasManagedHooks,
   detectPreset,
   launcherRevision,
+  outdatedLauncher,
   refreshLauncher,
   runGlobalSetup,
 };

@@ -24,7 +24,7 @@ const PLUGIN_NAMES = new Set(['topia', 'skill-topia']);
 const here = path.dirname(fileURLToPath(import.meta.url));
 
 function hasCli(root) {
-  if (!root || !existsSync(path.join(root, CLI_REL))) return false;
+  if (!root || isStaging(root) || !existsSync(path.join(root, CLI_REL))) return false;
   // topia.js is ESM (needs package.json "type": "module") and imports from
   // skills/ — a root missing either is a partial install or a clone in flight
   if (!existsSync(path.join(root, 'package.json'))) return false;
@@ -65,18 +65,10 @@ function cmpVersion(a, b) {
 /**
  * Claude Code staging clone in plugins/cache: an install in flight (it carries
  * the new version's manifest before its other files land) or one left behind
- * by an interrupted install.
+ * by an interrupted install. Never a usable root either way.
  */
 function isStaging(p) {
   return /(^|[\\/])temp_git_\d+_/.test(p);
-}
-
-/** A staging clone never beats a real install; otherwise prefer higher version. */
-function better(cand, best) {
-  if (!best) return true;
-  const candStaging = isStaging(cand.root);
-  if (candStaging !== isStaging(best.root)) return !candStaging;
-  return cmpVersion(cand.version, best.version) > 0;
 }
 
 /**
@@ -103,7 +95,9 @@ export function findPluginRootFromFile(startDir) {
  */
 function newestPluginUnder(base) {
   if (!existsSync(base)) return null;
-  const skip = new Set(['node_modules', '.git']);
+  // marketplaces/ holds marketplace repo clones that Claude Code refreshes in
+  // place; the installed copy of a plugin is always under cache/
+  const skip = new Set(['node_modules', '.git', 'marketplaces']);
   const stack = [{ dir: base, depth: 0 }];
   let best = null;
   let budget = 3000;
@@ -112,8 +106,7 @@ function newestPluginUnder(base) {
     const { dir, depth } = stack.pop();
     const version = hasCli(dir) ? pluginVersion(dir) : null;
     if (version !== null) {
-      const cand = { root: path.resolve(dir), version };
-      if (better(cand, best)) best = cand;
+      if (!best || cmpVersion(version, best.version) > 0) best = { root: path.resolve(dir), version };
       continue; // do not descend into a resolved plugin root
     }
     if (depth >= 4) continue;
@@ -125,7 +118,7 @@ function newestPluginUnder(base) {
     }
     entries.sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
     for (const entry of entries) {
-      if (!entry.isDirectory() || skip.has(entry.name)) continue;
+      if (!entry.isDirectory() || skip.has(entry.name) || isStaging(entry.name)) continue;
       stack.push({ dir: path.join(dir, entry.name), depth: depth + 1 });
     }
   }
@@ -170,7 +163,7 @@ export function resolveTopiaRoot(explicit, opts = {}) {
   let best = null;
   for (const base of bases) {
     const found = newestPluginUnder(base);
-    if (found && better(found, best)) best = found;
+    if (found && (!best || cmpVersion(found.version, best.version) > 0)) best = found;
   }
   return best ? best.root : null;
 }

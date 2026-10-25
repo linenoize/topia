@@ -4,12 +4,15 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
-## [Unreleased]
+## [3.10.1] — 2026-10-25
+
+Hooks no longer run a half-installed plugin update, and installed launchers pick up fixes.
 
 ### Fixed
 
-- **Hooks ran a half-written plugin update** — while Claude Code installs an update, it clones into a `plugins/cache/temp_git_*` staging directory that carries the new version's manifest before its other files land. The hook launcher picked the highest version it found, so a hook firing mid-update ran that partial clone and failed with `ERR_MODULE_NOT_FOUND` (and a `MODULE_TYPELESS_PACKAGE_JSON` warning). A staging clone now never beats a real install whatever its version (it's only used when nothing else is installed), and a root without `package.json` counts as incomplete. Same fix in [`resolve-topia-root.js`](../compiler/commands/hooks/resolve-topia-root.js).
-- **Installed launcher never got fixes** — `topia setup` copies the launcher to `~/.claude/topia/hook-dispatch.cjs` once, and plugin updates never touched it again. The launcher now carries a `LAUNCHER_REVISION`, and session-start replaces an installed Topia launcher whose revision is older than the bundled one (never downgrades, never touches a non-Topia file; opt out with `TOPIA_NO_AUTOREPAIR=1`).
+- **Hooks ran a half-written plugin update** — while Claude Code installs an update, it clones into a `plugins/cache/temp_git_*` staging directory that carries the new version's manifest before its other files land. The hook launcher picked the highest version it found, so a hook firing mid-update ran that partial clone and failed with `ERR_MODULE_NOT_FOUND` (and a `MODULE_TYPELESS_PACKAGE_JSON` warning). Staging clones are now never used, whether found by the scan or passed in `CLAUDE_PLUGIN_ROOT` / `TOPIA_ROOT`; with nothing else installed the launcher exits 0 with its usual notice. Marketplace clones under `plugins/marketplaces/` (refreshed in place by Claude Code) are skipped too, and a root without `package.json` counts as incomplete. Same fix in [`resolve-topia-root.js`](../compiler/commands/hooks/resolve-topia-root.js).
+- **Installed launcher never got fixes** — `topia setup` copies the launcher to `~/.claude/topia/hook-dispatch.cjs` once, and plugin updates never touched it again. The launcher now carries a `LAUNCHER_REVISION`, and session-start replaces an installed Topia launcher whose revision is older than the bundled one, writing a temp file and renaming it so a hook running at the same moment never reads a partial file. It never downgrades, never touches a non-Topia file, and `TOPIA_NO_AUTOREPAIR=1` turns it off. A project-scope launcher (`.claude/topia/hook-dispatch.cjs` in the repo) is not rewritten; session-start warns and suggests `topia setup --here`.
+- **Setup could downgrade the launcher** — `topia setup` from an older install overwrote a newer launcher. It now keeps an installed launcher with a higher revision. A test pins the launcher's content hash to its revision, so editing the launcher without bumping `LAUNCHER_REVISION` fails CI.
 
 ## [3.10.0] — 2026-10-24
 

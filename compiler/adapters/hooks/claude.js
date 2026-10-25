@@ -6,13 +6,29 @@
  * degrade gracefully against Claude's capabilities.
  */
 
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { launcherPathFor, launcherRefFor, launcherSource } from '../../commands/hooks/launcher.js';
+import {
+  LAUNCHER_MARKER,
+  launcherPathFor,
+  launcherRefFor,
+  launcherRevision,
+  launcherSource,
+} from '../../commands/hooks/launcher.js';
 import { appendHookBlock, detectPreset, stripTopiaHooks, summarizeTopiaHooks } from '../../commands/hooks/merge.js';
 import { buildPreset, SETTINGS_REL_PATH, WIRED_SKILLS } from '../../commands/hooks/presets.js';
+
+/** Revision of the Topia launcher already at `launcherPath`; -1 if none. */
+function installedLauncherRevision(launcherPath) {
+  try {
+    const installed = readFileSync(launcherPath, 'utf8');
+    return installed.includes(LAUNCHER_MARKER) ? launcherRevision(installed) : -1;
+  } catch {
+    return -1;
+  }
+}
 
 /** A scope root is "global" when it is the user's home dir (~/.claude/settings.json). */
 function isGlobalScope(scopeRoot) {
@@ -51,7 +67,12 @@ export async function emit({ preset, projectRoot, topiaRoot }) {
     // The stable launcher is what settings.json hooks invoke. It lives outside the
     // versioned plugin cache so it survives upgrades, then re-resolves the active
     // plugin install at runtime (see commands/hooks/launcher.js).
-    files.push({ path: launcherPath, content: launcherSource() });
+    // Keep an installed launcher from a newer plugin: setup from an older
+    // install (or the npm package) must not downgrade it.
+    const source = launcherSource();
+    if (!(installedLauncherRevision(launcherPath) > launcherRevision(source))) {
+      files.push({ path: launcherPath, content: source });
+    }
     notes.push(`hook launcher: ${path.relative(projectRoot, launcherPath) || launcherPath}`);
   } else {
     // Uninstall semantics — remove the launcher we previously installed.

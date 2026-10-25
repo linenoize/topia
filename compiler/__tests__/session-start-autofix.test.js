@@ -102,6 +102,23 @@ describe('session-start launcher refresh (opt-out, default on)', () => {
     const res = runSessionStart(home, { CLAUDE_PLUGIN_ROOT: REPO });
     assert.equal(res.status, 0, res.stderr);
     assert.equal(readFileSync(launcherPath(home), 'utf8'), ASSET);
+    assert.deepEqual(readdirSync(path.dirname(launcherPath(home))), ['hook-dispatch.cjs'], 'no temp file left');
+  });
+
+  test('warns about, but does not rewrite, an outdated project-scope launcher', () => {
+    const home = makeHome();
+    const project = path.join(home, 'proj');
+    plantLauncher(project, OLD);
+    const res = spawnSync(process.execPath, [RUN_HOOK, 'session-start'], {
+      input: JSON.stringify({ hook_event_name: 'SessionStart', source: 'startup', cwd: project }),
+      cwd: project,
+      encoding: 'utf8',
+      timeout: 60000,
+      env: { ...process.env, HOME: home, USERPROFILE: home, CLAUDE_PROJECT_DIR: project, CLAUDE_PLUGIN_ROOT: REPO },
+    });
+    assert.equal(res.status, 0, res.stderr);
+    assert.match(res.stdout, /project's hook launcher .* is outdated/);
+    assert.equal(readFileSync(launcherPath(project), 'utf8'), OLD);
   });
 
   test('leaves a launcher at the same revision alone (never downgrades)', () => {

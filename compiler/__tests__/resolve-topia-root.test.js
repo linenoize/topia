@@ -122,6 +122,20 @@ describe('resolveTopiaRoot env', () => {
       await rm(tmp, { recursive: true, force: true });
     }
   });
+
+  test('ignores CLAUDE_PLUGIN_ROOT pointing at a staging clone', async () => {
+    const tmp = await mkdtemp(path.join(os.tmpdir(), 'topia-rt-staging-env-'));
+    try {
+      const staging = path.join(tmp, 'temp_git_9999999999_test');
+      makeFakePlugin(staging);
+      withIsolatedHome(tmp, () => {
+        process.env.CLAUDE_PLUGIN_ROOT = staging;
+        assert.equal(resolveTopiaRoot(null, { skipPluginCache: true }), null);
+      });
+    } finally {
+      await rm(tmp, { recursive: true, force: true });
+    }
+  });
 });
 
 describe('resolveTopiaRoot cache scan', () => {
@@ -194,7 +208,7 @@ describe('resolveTopiaRoot cache scan', () => {
     }
   });
 
-  test('falls back to a staging clone when nothing else is installed', async () => {
+  test('never resolves to a staging clone, even when nothing else is installed', async () => {
     const tmp = await mkdtemp(path.join(os.tmpdir(), 'topia-rt-staging-only-'));
     try {
       const cache = path.join(tmp, '.claude', 'plugins', 'cache');
@@ -202,7 +216,24 @@ describe('resolveTopiaRoot cache scan', () => {
       makeFakePlugin(staging, { version: '3.10.0' });
 
       withIsolatedHome(tmp, () => {
-        assert.equal(resolveTopiaRoot(null, { skipManifestWalk: true }), staging);
+        assert.equal(resolveTopiaRoot(null, { skipManifestWalk: true }), null);
+        assert.equal(resolveTopiaRoot(staging, { skipPluginCache: true }), null, 'explicit staging root');
+      });
+    } finally {
+      await rm(tmp, { recursive: true, force: true });
+    }
+  });
+
+  test('skips marketplace clones in favour of the installed copy', async () => {
+    const tmp = await mkdtemp(path.join(os.tmpdir(), 'topia-rt-marketplace-'));
+    try {
+      const plugins = path.join(tmp, '.claude', 'plugins');
+      const canonical = path.join(plugins, 'cache', 'linenoize', 'topia', '3.10.0');
+      makeFakePlugin(path.join(plugins, 'marketplaces', 'linenoize'), { version: '3.11.0' });
+      makeFakePlugin(canonical, { version: '3.10.0' });
+
+      withIsolatedHome(tmp, () => {
+        assert.equal(resolveTopiaRoot(null, { skipManifestWalk: true }), canonical);
       });
     } finally {
       await rm(tmp, { recursive: true, force: true });
