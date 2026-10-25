@@ -134,29 +134,26 @@ export const TO_PROTOPIA_SCOPED = [
   {
     file: '.claude-plugin/marketplace.json',
     pairs: [
+      // Keep the HTTPS url form: the github form clones over SSH and fails for
+      // users without GitHub SSH keys. The tree-wide pairs have already turned
+      // the url into protopia/skill-topia.git; these catch the github forms.
       [
         '"source": { "source": "url", "url": "https://github.com/linenoize/topia.git" },',
-        '"source": { "source": "github", "repo": "protopia/skill-topia" },',
+        '"source": { "source": "url", "url": "https://github.com/protopia/skill-topia.git" },',
       ],
       [
-        '"source": { "source": "url", "url": "https://github.com/protopia/skill-topia.git" },',
         '"source": { "source": "github", "repo": "protopia/skill-topia" },',
+        '"source": { "source": "url", "url": "https://github.com/protopia/skill-topia.git" },',
       ],
       [
         '"source": { "source": "github", "repo": "linenoize/topia" },',
-        '"source": { "source": "github", "repo": "protopia/skill-topia" },',
+        '"source": { "source": "url", "url": "https://github.com/protopia/skill-topia.git" },',
       ],
     ],
   },
   {
     file: 'scripts/__tests__/marketplace.test.js',
-    pairs: [
-      ["assert.equal(marketplace.name, 'linenoize');", "assert.equal(marketplace.name, 'protopia');"],
-      [
-        "assert.equal(typeof entry.source, 'object', 'source should be a url object');\n    assert.equal(entry.source.source, 'url');\n    assert.equal(entry.source.url, 'https://github.com/linenoize/topia.git');",
-        "assert.equal(typeof entry.source, 'object', 'source should be a github object');\n    assert.equal(entry.source.source, 'github');\n    assert.equal(entry.source.repo, 'protopia/skill-topia');",
-      ],
-    ],
+    pairs: [["assert.equal(marketplace.name, 'linenoize');", "assert.equal(marketplace.name, 'protopia');"]],
   },
 ];
 

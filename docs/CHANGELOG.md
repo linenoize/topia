@@ -15,6 +15,7 @@ All notable changes to Topia will be documented in this file.
 - **`scripts/sync-to-skill-topia.mjs` fork verification** — dropped `shell: true` from the `node --test` spawn: it emitted DEP0190 on Node 24+ and broke when Node lived under a path with spaces (`C:\Program Files\nodejs`).
 - **`hook-dispatch` test env leak** — the Cursor tests restore `CURSOR_HOOK` / `CURSOR_VERSION` in a `finally` and delete them when they were unset, instead of writing the string `"undefined"` into later tests' env (DEP0104).
 - **Lint** — `scripts/version-sync-check.js` formatting, which had `npm run ci` failing at the Biome step.
+- **skill-topia marketplace source** — the topia → skill-topia rebrand pairs rewrote the marketplace entry to `{ "source": "github", "repo": "protopia/skill-topia" }`, which Claude Code clones over SSH and fails for users without GitHub SSH keys. They now keep the HTTPS `url` form (`https://github.com/protopia/skill-topia.git`); [`scripts/__tests__/rebrand-pairs.test.js`](../scripts/__tests__/rebrand-pairs.test.js) guards it.
 
 ## [3.9.2] — 2026-10-16
 
