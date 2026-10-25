@@ -13,7 +13,7 @@
 
 ## Prerequisites
 
-- **Node.js 18+** (only if you use Cursor, Codex, or other non-Claude IDEs — check: `node --version`)
+- **Node.js 22+** (only if you use Cursor, Codex, or other non-Claude IDEs — check: `node --version`)
 - One of: **Claude Code**, **Cursor**, **Google Antigravity**, **OpenAI Codex**, **OpenCode**, or **OpenClaw**
 - A project directory — existing or empty
 

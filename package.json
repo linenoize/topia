@@ -47,7 +47,7 @@
     "url": "https://github.com/linenoize/topia"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=22"
   },
   "files": [
     ".claude-plugin/",

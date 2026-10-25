@@ -35,7 +35,7 @@ Restart Cursor and confirm Topia skills/commands load with no `gitPath` error.
 
 ## Prerequisites
 
-- **Node.js 18+**
+- **Node.js 22+**
 - **Topia source** — one of:
   - Git clone: `git clone https://github.com/linenoize/topia.git`
   - Already installed the Claude plugin? Use the cache path (see [Finding Topia](#finding-topia) below)

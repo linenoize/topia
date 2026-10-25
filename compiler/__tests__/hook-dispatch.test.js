@@ -69,9 +69,15 @@ describe('dispatchHook', () => {
     process.env.CURSOR_HOOK = '1';
     delete process.env.CURSOR_VERSION;
     const io = makeIO({ stdinData: '{}' });
-    const code = await dispatchHook(['readiness', '--gentle'], io);
-    process.env.CURSOR_HOOK = prevHook;
-    if (prevVer !== undefined) process.env.CURSOR_VERSION = prevVer;
+    let code;
+    try {
+      code = await dispatchHook(['readiness', '--gentle'], io);
+    } finally {
+      if (prevHook !== undefined) process.env.CURSOR_HOOK = prevHook;
+      else delete process.env.CURSOR_HOOK;
+      if (prevVer !== undefined) process.env.CURSOR_VERSION = prevVer;
+      else delete process.env.CURSOR_VERSION;
+    }
     assert.strictEqual(code, 0);
     const out = JSON.parse(io.getOut().trim());
     assert.strictEqual(out.permission, 'allow');
@@ -85,11 +91,15 @@ describe('dispatchHook', () => {
     const io = makeIO({
       stdinData: JSON.stringify({ hook_event_name: 'postToolUse', tool_name: 'Edit' }),
     });
-    const code = await dispatchHook(['dependency-doctor', '--gentle'], io);
-    if (prevHook !== undefined) process.env.CURSOR_HOOK = prevHook;
-    else delete process.env.CURSOR_HOOK;
-    if (prevVer !== undefined) process.env.CURSOR_VERSION = prevVer;
-    else delete process.env.CURSOR_VERSION;
+    let code;
+    try {
+      code = await dispatchHook(['dependency-doctor', '--gentle'], io);
+    } finally {
+      if (prevHook !== undefined) process.env.CURSOR_HOOK = prevHook;
+      else delete process.env.CURSOR_HOOK;
+      if (prevVer !== undefined) process.env.CURSOR_VERSION = prevVer;
+      else delete process.env.CURSOR_VERSION;
+    }
     assert.strictEqual(code, 0);
     const out = JSON.parse(io.getOut().trim());
     assert.ok(out.additional_context);

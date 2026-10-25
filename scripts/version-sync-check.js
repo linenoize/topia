@@ -56,9 +56,7 @@ if (existsSync(cursorPluginPath)) {
   if (cursorPlugin.version === pkg.version) {
     pass(`.cursor-plugin/plugin.json version: ${cursorPlugin.version}`);
   } else {
-    fail(
-      `Version mismatch: package.json=${pkg.version} vs .cursor-plugin/plugin.json=${cursorPlugin.version}`,
-    );
+    fail(`Version mismatch: package.json=${pkg.version} vs .cursor-plugin/plugin.json=${cursorPlugin.version}`);
   }
 }
 

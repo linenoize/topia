@@ -15,17 +15,18 @@ permissions:
 
 jobs:
   conformance:
-    name: ci (${{ matrix.os }})
+    name: ci (${{ matrix.os }}, node ${{ matrix.node }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
+        node: ['22', '24', '26']
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: '20'
+          node-version: ${{ matrix.node }}
       # Lockfile is committed so the toolchain (esp. biome) is pinned and CI
       # can't drift to a newer formatter/linter than developers run locally.
       - run: npm ci

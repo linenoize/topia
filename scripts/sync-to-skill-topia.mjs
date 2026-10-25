@@ -130,7 +130,6 @@ if (!opts.skipVerify && !opts.dryRun) {
   console.log('\nRunning fork verification...');
   const test = spawnSync(process.execPath, ['--test', 'compiler/__tests__/*.test.js', 'scripts/__tests__/*.test.js'], {
     cwd: opts.target,
-    shell: true,
     stdio: 'inherit',
   });
   if (test.status !== 0) {

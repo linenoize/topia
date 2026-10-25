@@ -611,10 +611,10 @@ jobs:
   validate-source:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: 20
+          node-version: 22
       - run: node scripts/validate-skills.js
       - run: node scripts/validate-nexus.js
       - run: node scripts/validate-pack.js
@@ -626,10 +626,10 @@ jobs:
       matrix:
         platform: [cursor, windsurf, antigravity, generic]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: 20
+          node-version: 22
       - run: node compiler/cli.js build --platform ${{ matrix.platform }} --output dist/${{ matrix.platform }}
       - run: node compiler/cli.js doctor --platform ${{ matrix.platform }} --output dist/${{ matrix.platform }}
       - uses: actions/upload-artifact@v4
@@ -640,10 +640,10 @@ jobs:
   test-compiler:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: 20
+          node-version: 22
       - run: npm test
 ```
 
