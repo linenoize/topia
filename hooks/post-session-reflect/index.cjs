@@ -4,13 +4,14 @@
 
 const fs = require('fs');
 const path = require('path');
-const os = require('os');
 const { isCursorRuntime, writeHookResponse, readStdinJson } = require('../lib/cursor-io.cjs');
 const { topiaDirForWrite } = require('../lib/topia-paths.cjs');
-const { readEvents, clearEvents } = require('../lib/metrics-buffer.cjs');
+const { readEvents, clearEvents, watchFilePath } = require('../lib/metrics-buffer.cjs');
 const { detectPlatform, normalizeSessionTokens } = require('../lib/token-meter.cjs');
 const { resolveSkillModel } = require('../lib/skill-catalog.cjs');
 const { formatSessionReport } = require('../lib/session-report.cjs');
+const { recordTranscriptDelta } = require('../lib/transcript-meter.cjs');
+const { sessionPressure, mergeSessionEntry, mergeChain, upsertJsonl } = require('../lib/session-rows.cjs');
 
 const hookLines = [];
 const origLog = console.log.bind(console);
@@ -20,8 +21,7 @@ console.log = (...args) => {
 
 const cwd = process.cwd();
 const pluginRoot = process.env.CLAUDE_PLUGIN_ROOT || path.join(__dirname, '..', '..');
-const hash = Buffer.from(cwd).toString('base64url').slice(0, 16);
-const counterFile = path.join(os.tmpdir(), `Topia-context-watch-${hash}.json`);
+const counterFile = watchFilePath(cwd);
 const TopiaMetricsDir = path.join(topiaDirForWrite(cwd), 'metrics');
 
 function resolveSkillModels(skillCounts) {
@@ -63,8 +63,18 @@ async function run() {
 }
 
 function flushMetrics(hookData) {
+  // Measured context + slash-command skills come from the transcript; they land
+  // in the buffer as events so the aggregation below treats them like the rest.
+  try {
+    recordTranscriptDelta(cwd, hookData, { platform: detectPlatform(hookData), pluginRoot });
+  } catch {
+    /* best-effort */
+  }
+
   const allEvents = readEvents(cwd);
-  const skillEvents = allEvents.filter((e) => e.event === 'invoke' || (e.skill && !e.event));
+  const skillEvents = allEvents
+    .filter((e) => e.event === 'invoke' || (e.skill && !e.event))
+    .sort((a, b) => String(a.ts || '').localeCompare(String(b.ts || '')));
 
   let watchState = { count: 0, sessionStart: null, sessionId: null, toolCounts: {} };
   if (fs.existsSync(counterFile)) {
@@ -86,11 +96,14 @@ function flushMetrics(hookData) {
   const skillCounts = {};
   const skillDurations = {};
   const skillTokenTotals = {};
+  const skillVia = {};
   const skillChain = [];
 
   for (const evt of skillEvents) {
     if (!evt.skill) continue;
     skillCounts[evt.skill] = (skillCounts[evt.skill] || 0) + 1;
+    const via = evt.via || 'skill';
+    skillVia[via] = (skillVia[via] || 0) + 1;
     skillChain.push(evt.skill);
     if (evt.duration_ms != null) {
       skillDurations[evt.skill] = (skillDurations[evt.skill] || 0) + evt.duration_ms;
@@ -104,15 +117,18 @@ function flushMetrics(hookData) {
     Object.entries(skillCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || 'none';
   const modelsUsed = resolveSkillModels(skillCounts);
 
+  // Claude's own session_id is per session; the watch-state id is per project
+  // dir, so two sessions in one directory would otherwise share a row.
   const sessionId =
-    watchState.sessionId ||
     hookData.session_id ||
+    watchState.sessionId ||
     `s-${now.slice(0, 10).replace(/-/g, '')}-${now.slice(11, 19).replace(/:/g, '')}`;
 
   const platform =
     allEvents.find((e) => e.platform)?.platform || detectPlatform(hookData);
 
-  const { tokens, compactionRows } = normalizeSessionTokens(allEvents);
+  const { tokens, compactionRows, toolIoByTool } = normalizeSessionTokens(allEvents);
+  const toolCountLevel = watchState.pressureLevel || 'green';
 
   const sessionEntry = {
     id: sessionId,
@@ -121,8 +137,14 @@ function flushMetrics(hookData) {
     duration_min: durationMin,
     tool_calls: watchState.count,
     tool_distribution: watchState.toolCounts,
-    pressure_level: watchState.pressureLevel || 'green',
+    started: sessionStart,
+    turns: 1,
+    // Context pressure from measured tokens when known, else the tool-count proxy.
+    ...sessionPressure(tokens, toolCountLevel),
+    tool_count_pressure: toolCountLevel,
     skill_invocations: skillEvents.length,
+    skill_counts: skillCounts,
+    skill_via: skillVia,
     skills_used: Object.keys(skillCounts),
     primary_skill: primarySkill,
     models_used: modelsUsed,
@@ -133,17 +155,9 @@ function flushMetrics(hookData) {
       (typeof tokens.context_peak === 'number' && tokens.context_peak >= 90000),
   };
 
+  // Stop fires every turn: fold this turn into the session's row (capped at 100 sessions).
   const sessionsFile = path.join(TopiaMetricsDir, 'sessions.jsonl');
-  fs.appendFileSync(sessionsFile, `${JSON.stringify(sessionEntry)}\n`);
-
-  try {
-    const allLines = fs.readFileSync(sessionsFile, 'utf-8').trim().split('\n').filter(Boolean);
-    if (allLines.length > 100) {
-      fs.writeFileSync(sessionsFile, `${allLines.slice(-100).join('\n')}\n`);
-    }
-  } catch {
-    /* cap is best-effort */
-  }
+  upsertJsonl(sessionsFile, sessionEntry, { key: 'id', merge: mergeSessionEntry, cap: 100 });
 
   if (compactionRows.length > 0) {
     const tokensFile = path.join(TopiaMetricsDir, 'tokens.jsonl');
@@ -188,13 +202,13 @@ function flushMetrics(hookData) {
 
   if (skillChain.length > 0) {
     const chainsFile = path.join(TopiaMetricsDir, 'chains.jsonl');
-    fs.appendFileSync(
+    upsertJsonl(
       chainsFile,
-      `${JSON.stringify({ session: sessionId, chain: skillChain, depth: skillChain.length })}\n`,
+      { session: sessionId, chain: skillChain, depth: skillChain.length },
+      { key: 'session', merge: mergeChain, cap: 500 },
     );
   }
 
-  const { toolIoByTool } = normalizeSessionTokens(allEvents);
   if (toolIoByTool && Object.keys(toolIoByTool).length > 0) {
     const toolsFile = path.join(TopiaMetricsDir, 'tools.json');
     let toolsData = { version: 1, updated: now, tools: {} };

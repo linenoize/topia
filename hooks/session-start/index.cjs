@@ -9,6 +9,7 @@ const { isCursorRuntime, writeHookResponse } = require('../lib/cursor-io.cjs');
 const { isAgoraMemoryRegistered, agoraCodeOnPath } = require('../lib/agora-detect.cjs');
 const { resolveTopiaDir, topiaDirForWrite } = require('../lib/topia-paths.cjs');
 const autofix = require('../lib/autofix.cjs');
+const { watchFilePath } = require('../lib/metrics-buffer.cjs');
 
 const hookLines = [];
 const origLog = console.log.bind(console);
@@ -21,8 +22,7 @@ const TopiaDirRead = resolveTopiaDir(cwd);
 const TopiaDirWrite = topiaDirForWrite(cwd);
 
 // Initialize fresh session state (shared between context-watch and metrics-collector)
-const hash = Buffer.from(cwd).toString('base64url').slice(0, 16);
-const counterFile = path.join(os.tmpdir(), `Topia-context-watch-${hash}.json`);
+const counterFile = watchFilePath(cwd);
 const now = new Date().toISOString();
 const sessionId = `s-${now.slice(0, 10).replace(/-/g, '')}-${now.slice(11, 19).replace(/:/g, '')}`;
 try {

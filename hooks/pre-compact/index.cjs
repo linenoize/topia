@@ -3,23 +3,54 @@
 
 const fs = require('fs');
 const path = require('path');
-const os = require('os');
 const { readStdinJson, isCursorRuntime, writeHookResponse, emitHookOutput } = require('../lib/cursor-io.cjs');
 const { resolveTopiaDir, topiaDirForWrite } = require('../lib/topia-paths.cjs');
-const { appendEvent } = require('../lib/metrics-buffer.cjs');
+const { appendEvent, watchFilePath } = require('../lib/metrics-buffer.cjs');
 const { detectPlatform, extractCompactionTokens } = require('../lib/token-meter.cjs');
+const { recordTranscriptDelta, scanTranscript, resolveContextWindow } = require('../lib/transcript-meter.cjs');
+
+const COMPACTION_TAIL_BYTES = 2 * 1024 * 1024;
+
+/**
+ * Claude Code's PreCompact payload has `trigger` and `transcript_path` but no
+ * token fields (only Cursor's preCompact does), so extractCompactionTokens
+ * returns null there and no compaction was ever recorded on Claude. Measure the
+ * context being compacted from the transcript tail instead.
+ */
+function compactionFromTranscript(hookData) {
+  const transcriptPath = hookData.transcript_path || hookData.transcriptPath;
+  if (!transcriptPath) return null;
+  const tail = scanTranscript(transcriptPath, { maxBytes: COMPACTION_TAIL_BYTES });
+  const tokens = typeof tail?.contextPeak === 'number' ? tail.contextPeak : null;
+  const window = tokens != null ? resolveContextWindow({ peak: tokens, model: tail.model }) : null;
+  return {
+    context_tokens: tokens,
+    context_usage_percent: window ? Math.round((tokens / window.size) * 1000) / 10 : null,
+    context_window_size: window ? window.size : null,
+    trigger: hookData.trigger || 'unknown',
+    message_count: null,
+    messages_to_compact: null,
+  };
+}
 const { runCheckpointFromHook } = require('../lib/checkpoint-runner.cjs');
 
 const cwd = process.cwd();
 const TopiaDirRead = resolveTopiaDir(cwd);
 const TopiaDirWrite = topiaDirForWrite(cwd);
-const hash = Buffer.from(cwd).toString('base64url').slice(0, 16);
-const counterFile = path.join(os.tmpdir(), `Topia-context-watch-${hash}.json`);
+const counterFile = watchFilePath(cwd);
 
 async function main() {
   const hookData = await readStdinJson();
   const platform = detectPlatform(hookData);
-  const compaction = extractCompactionTokens(hookData);
+  let compaction = extractCompactionTokens(hookData);
+  try {
+    if (!compaction) compaction = compactionFromTranscript(hookData);
+    // Bank this turn's measured context + slash-command skills before the
+    // transcript is summarised; the Stop flush picks them up from the buffer.
+    recordTranscriptDelta(cwd, hookData, { platform });
+  } catch {
+    /* best-effort */
+  }
 
   let watchState = null;
   try {

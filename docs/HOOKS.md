@@ -228,6 +228,7 @@ These ship in plugin [`hooks/hooks.json`](../hooks/hooks.json) and automate chec
 | `post-compact` | `PostCompact` | Re-injects checkpoint + progress after `/compact` |
 | `git-push-checkpoint` | `PreToolUse` (`Bash`, `git push`) | Checkpoint before push; recommends compact or new session |
 | `tool-collector` | `PostToolUse` (all) | Per-tool totals → `.topia/metrics/tools.json` at session end |
+| `metrics-collector` | `PostToolUse` (`Skill`, `Agent`, `Task`) | Skill calls and `topia:*` subagents → `.topia/metrics/skills.json`; slash commands are read from the transcript at `Stop` |
 
 Agent follow-up: invoke `topia:context-lifecycle` when hook messages appear. Baseline summary: `npm run metrics:baseline`.
 

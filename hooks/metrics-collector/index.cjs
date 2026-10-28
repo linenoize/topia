@@ -1,18 +1,20 @@
 // Topia Metrics Collector Hook
-// PostToolUse on Skill — captures skill invocations for H3 nexus analytics
+// PostToolUse on Skill | Agent | Task — captures skill invocations for H3 nexus analytics:
+//   Skill tool calls (tool_input.skill) and topia:* subagents (tool_input.subagent_type).
+// Slash-command invocations never reach a tool hook; post-session-reflect reads
+// them from the transcript (hooks/lib/transcript-meter.cjs).
 // Append-only JSONL to tmpdir. Flushed to .topia/metrics/ at session end.
 
 const fs = require('fs');
 const path = require('path');
-const os = require('os');
 const { readStdinJson, isCursorRuntime, writeHookResponse } = require('../lib/cursor-io.cjs');
-const { appendEvent } = require('../lib/metrics-buffer.cjs');
+const { appendEvent, readEvents, watchFilePath, skillCacheFilePath } = require('../lib/metrics-buffer.cjs');
 const { detectPlatform, estimateSkillLoadTokens } = require('../lib/token-meter.cjs');
+const { extractToolSkillInvocation } = require('../lib/skill-telemetry.cjs');
 
 const cwd = process.cwd();
-const hash = Buffer.from(cwd).toString('base64url').slice(0, 16);
-const watchFile = path.join(os.tmpdir(), `Topia-context-watch-${hash}.json`);
-const skillCacheFile = path.join(os.tmpdir(), `Topia-skill-cache-${hash}.json`);
+const watchFile = watchFilePath(cwd);
+const skillCacheFile = skillCacheFilePath(cwd);
 
 function loadSkillCache() {
   try {
@@ -33,33 +35,19 @@ function saveSkillCache(cache) {
 async function main() {
   const hookData = await readStdinJson();
   const platform = detectPlatform(hookData);
-  let skillName = 'unknown';
+  const invocation = extractToolSkillInvocation(hookData);
 
-  try {
-    const toolInput = hookData.tool_input || hookData.toolInput || {};
-    const raw = toolInput.skill || toolInput.name || '';
-    // Case-insensitive: accepts both v3+ `topia:` and legacy `topia:` prefixes.
-    skillName = raw.replace(/^[Tt]opia:/, '') || 'unknown';
-  } catch {
-    const toolInput = process.env.CLAUDE_TOOL_INPUT || '';
-    try {
-      const parsed = JSON.parse(toolInput);
-      skillName = (parsed.skill || parsed.name || '').replace(/^[Tt]opia:/, '');
-    } catch {
-      const match = toolInput.match(/(?:[Tt]opia:)?([a-z][\w-]*)/);
-      if (match) skillName = match[1];
-    }
-  }
-
-  if (skillName && skillName !== 'unknown') {
+  if (invocation) {
+    const { skill: skillName, via } = invocation;
     const now = Date.now();
-    const ts = new Date(now).toISOString();
 
-    let sessionId = null;
-    try {
-      sessionId = JSON.parse(fs.readFileSync(watchFile, 'utf-8')).sessionId || null;
-    } catch {
-      /* no watch state */
+    let sessionId = hookData.session_id || null;
+    if (!sessionId) {
+      try {
+        sessionId = JSON.parse(fs.readFileSync(watchFile, 'utf-8')).sessionId || null;
+      } catch {
+        /* no watch state */
+      }
     }
 
     const pluginRoot = process.env.CLAUDE_PLUGIN_ROOT || path.join(__dirname, '..', '..');
@@ -72,11 +60,10 @@ async function main() {
 
     let durationMs = null;
     try {
-      const { readEvents } = require('../lib/metrics-buffer.cjs');
       const lines = readEvents(cwd).filter((e) => e.event === 'invoke' || e.event === 'skill_invoke');
       if (lines.length > 0) {
         durationMs = now - new Date(lines[lines.length - 1].ts).getTime();
-        if (durationMs > 600000) durationMs = null;
+        if (!(durationMs >= 0) || durationMs > 600000) durationMs = null;
       }
     } catch {
       /* first event */
@@ -85,6 +72,7 @@ async function main() {
     appendEvent(cwd, {
       skill: skillName,
       event: 'invoke',
+      via,
       session_id: sessionId,
       duration_ms: durationMs,
       platform,

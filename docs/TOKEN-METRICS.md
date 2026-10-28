@@ -24,9 +24,11 @@ npx @linenoize/topia analytics
 
 | Signal | Confidence | Source |
 |--------|------------|--------|
-| Context peak (`context_peak`) | **measured** | Cursor `preCompact` hook (`context_tokens`, `context_usage_percent`) |
+| Context peak (`context_peak`) | **measured** | Claude Code: transcript `message.usage` (input + cache read + cache creation), read at `Stop` / `PreCompact`. Cursor: `preCompact` hook (`context_tokens`, `context_usage_percent`) |
+| Context pressure (`pressure_level`) | **measured** or **proxy** | `pressure_source: "context"` when the context window is known (Cursor payload, `TOPIA_CONTEXT_WINDOW`, a `[1m]` model, or a peak over 200k); otherwise `"tool_count"`, the context-watch tool-call proxy |
 | Tool I/O estimate | **estimated** | `postToolUse` → char count × 0.25 on tool input + output |
-| Skill load estimate | **estimated** | Skill/agent file size when `Skill` tool fires |
+| Skill invocations | **measured** | `Skill` tool (`via: skill`), `Agent`/`Task` with a `topia:*` `subagent_type` (`via: agent`), and `/topia:<skill>` slash commands read from the transcript (`via: slash`) |
+| Skill load estimate | **estimated** | Skill/agent file size per invocation |
 | Compaction count | **measured** | `preCompact` events per session |
 | Per-tool I/O totals | **estimated** | `tool-collector` → `.topia/metrics/tools.json` at session end |
 | Checkpoint writes | **measured** | `context_checkpoint_written` events (pre-compact / git push) |
@@ -45,7 +47,7 @@ Every session entry includes `tokens.confidence`:
 
 ### Claude Code
 
-Metrics hooks live in the plugin [`hooks/hooks.json`](../hooks/hooks.json). Install the Topia plugin and run sessions with the plugin active. Session end (`Stop`) flushes data to `.topia/metrics/`.
+Metrics hooks live in the plugin [`hooks/hooks.json`](../hooks/hooks.json). Install the Topia plugin and run sessions with the plugin active. `Stop` fires at the end of every turn; each flush folds that turn into the session's single row in `sessions.jsonl` (keyed by Claude's `session_id`). Claude Code does not report the context window size to hooks, so a session that never exceeds 200k tokens has no measured pressure unless you set `TOPIA_CONTEXT_WINDOW` (for example `1000000`).
 
 ### Cursor
 

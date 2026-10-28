@@ -26,8 +26,17 @@ function serializedLength(value) {
  * @returns {'cursor' | 'claude'}
  */
 function detectPlatform(event = {}) {
-  if (isCursorRuntime(event)) return 'cursor';
-  return 'claude';
+  // isCursorRuntime() treats any `hook_event_name` as Cursor, but Claude Code
+  // sends one on every hook too, so every Claude session was logged as
+  // "cursor". Cursor's event names are camelCase (`postToolUse`, `stop`);
+  // Claude Code's are PascalCase (`PostToolUse`, `Stop`).
+  if (process.env.CURSOR_HOOK === '1' || process.env.CURSOR_AGENT === '1') return 'cursor';
+  if (process.env.CURSOR_VERSION || process.env.CURSOR_PROJECT_DIR) return 'cursor';
+  if (event?.cursor_version) return 'cursor';
+  const name = event?.hook_event_name;
+  if (typeof name === 'string' && name) return /^[a-z]/.test(name) ? 'cursor' : 'claude';
+  if (event?.transcript_path) return 'claude';
+  return isCursorRuntime(event) ? 'cursor' : 'claude';
 }
 
 /**
@@ -43,6 +52,7 @@ function extractToolIoTokens(payload = {}) {
 
   const toolInput = payload.tool_input ?? payload.toolInput ?? {};
   const toolOutput =
+    payload.tool_response ?? // Claude Code's PostToolUse field
     payload.tool_output ??
     payload.tool_result ??
     payload.toolOutput ??
@@ -108,9 +118,16 @@ function normalizeSessionTokens(events = []) {
   const compactionRows = [];
   const toolIoByTool = {};
 
+  // token-meter (`tool_io`) and tool-collector (`tool_use`) both fire on every
+  // PostToolUse with the same estimate. Counting both doubled every tool's
+  // invocations and I/O tokens. Use `tool_use` when present (Claude), else
+  // `tool_io` (Cursor wires only token-meter).
+  const ioType = events.some((e) => (e.event || e.type) === 'tool_use') ? 'tool_use' : 'tool_io';
+
   for (const evt of events) {
     const type = evt.event || evt.type;
     if (type === 'tool_io' || type === 'tool_use') {
+      if (type !== ioType) continue;
       estimatedIo += evt.estimated_tokens || 0;
       hasEstimated = true;
       const toolName = evt.tool || 'unknown';

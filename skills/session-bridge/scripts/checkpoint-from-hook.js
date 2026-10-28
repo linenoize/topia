@@ -12,6 +12,7 @@
  */
 
 import { execSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -20,8 +21,12 @@ import { resolveTopiaDir, topiaDirForWrite } from '../../../compiler/lib/topia-p
 
 const _STATE_FILES = ['progress.md', 'decisions.md', 'conventions.md'];
 
+// Must match hooks/lib/metrics-buffer.cjs cwdHash (full-path sha256), or this
+// script reads a different project's counter.
 function cwdHash(cwd) {
-  return Buffer.from(cwd).toString('base64url').slice(0, 16);
+  let resolved = path.resolve(cwd);
+  if (process.platform === 'win32') resolved = resolved.toLowerCase();
+  return createHash('sha256').update(resolved).digest('hex').slice(0, 16);
 }
 
 function readWatchState(cwd) {

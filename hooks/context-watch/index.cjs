@@ -3,14 +3,11 @@
 // H3 Intelligence: tool distribution + pressure level for metrics at session end.
 
 const fs = require('fs');
-const path = require('path');
-const os = require('os');
 const { readStdinJson, isCursorRuntime, writeHookResponse, emitHookOutput } = require('../lib/cursor-io.cjs');
-const { readEvents, appendEvent } = require('../lib/metrics-buffer.cjs');
+const { readEvents, appendEvent, watchFilePath } = require('../lib/metrics-buffer.cjs');
 
 const cwd = process.cwd();
-const hash = Buffer.from(cwd).toString('base64url').slice(0, 16);
-const counterFile = path.join(os.tmpdir(), `Topia-context-watch-${hash}.json`);
+const counterFile = watchFilePath(cwd);
 
 // Aligned with skills/context-engine/SKILL.md
 const THRESHOLDS = {

@@ -4,6 +4,20 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
+## [Unreleased]
+
+Skill telemetry records the skills a session actually ran, and context pressure comes from measured tokens.
+
+### Fixed
+
+- **Projects shared one metrics buffer** — the tmpdir key for the metrics buffer, tool counter and session id was the first 16 base64url characters of the working directory, which encode only its first 12 bytes. Every project under one parent (`C:\CodeBase\`, `/home/me/src/`) shared them, so any session's `Stop` flushed and cleared the others' skill events into its own `.topia/metrics`. The key is now a SHA-256 of the full path ([`metrics-buffer.cjs`](../hooks/lib/metrics-buffer.cjs)).
+- **Slash commands and Topia subagents were never counted** — only the `Skill` tool reached `skills.json`. `/topia:<skill>` commands (read from the transcript at `Stop`) and `Agent`/`Task` calls with a `topia:*` `subagent_type` now count too, tagged `via: slash | agent | skill`. `/topia-<skill>` aliases are not double-counted ([`skill-telemetry.cjs`](../hooks/lib/skill-telemetry.cjs)).
+- **One row per turn in `sessions.jsonl`** — Claude Code's `Stop` fires every turn, and each appended a row that repeated the cumulative tool count and duration. Turns now fold into one row per `session_id`, and `chains.jsonl` likewise ([`session-rows.cjs`](../hooks/lib/session-rows.cjs)).
+- **`context_peak` always null on Claude Code** — it came only from Cursor's `preCompact` fields. It is now measured from transcript `usage`, scanned incrementally, and `PreCompact` records a compaction on Claude Code too ([`transcript-meter.cjs`](../hooks/lib/transcript-meter.cjs)).
+- **`pressure_level` was a tool-count proxy** — sessions over 120 tool calls read "red" regardless of context used. It now comes from measured context when the window is known (`pressure_source: "context"`); otherwise the proxy is kept and labelled `pressure_source: "tool_count"`.
+- **Claude sessions logged as `platform: "cursor"`** — Claude Code sends `hook_event_name` on every hook, which the Cursor check treated as Cursor. Platform detection now uses the event-name casing.
+- **Tool I/O counted twice, without output** — `token-meter` and `tool-collector` both log every call and both were summed; tool output was read from fields Claude Code does not send (`tool_response` is now read).
+
 ## [3.10.1] — 2026-10-25
 
 Hooks no longer run a half-installed plugin update, and installed launchers pick up fixes.
