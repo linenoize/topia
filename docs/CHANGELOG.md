@@ -4,7 +4,7 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
-## [Unreleased]
+## [3.10.2] — 2026-10-28
 
 Skill telemetry records the skills a session actually ran, and context pressure comes from measured tokens.
 
