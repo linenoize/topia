@@ -61,6 +61,10 @@ export type ModsPrefs = { askNewProjects: boolean; recapAt: number; sessionsSinc
 // The row above the prompt that asks about mods, when one shows.
 export type ModsPrompt = 'first-run' | 'onboard' | 'recap'
 
+// Whether Topia's prompt.compose hook has run this session, and whether a
+// turn showed a plugin ahead of it sent the system prompt on past it.
+export type ComposeWatch = { isComposed: boolean; isBypassed: boolean }
+
 declare module 'claude-code' {
   interface PluginState {
     topia: {
@@ -81,6 +85,7 @@ declare module 'claude-code' {
       modsScope: ModScope
       modsFocus: string | null
       modsPrefs: ModsPrefs | null
+      composeWatch: ComposeWatch
     }
   }
 }

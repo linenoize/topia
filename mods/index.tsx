@@ -1,6 +1,7 @@
 import { atom, read, update } from 'claude-code'
 import type { BoxProps, ElementConstructor, EngineInterface, Register, TextProps } from 'claude-code'
 
+import { BYPASS_NOTE, UNSEEN, bypassText, isNewBypass, sentRequest } from './lib/compose-watch'
 import { COMMIT, COMMIT_PUSH, NOT_A_REPO, PUSH, WRITING_TOOLS, parseStatus } from './lib/git-band'
 import {
   DEFAULT_PREFS,
@@ -96,6 +97,7 @@ const modsPrompt = atom({ plugin: 'topia', key: 'modsPrompt' } as const, null)
 const modsScope = atom({ plugin: 'topia', key: 'modsScope' } as const, 'project')
 const modsFocus = atom({ plugin: 'topia', key: 'modsFocus' } as const, null)
 const modsPrefs = atom({ plugin: 'topia', key: 'modsPrefs' } as const, null)
+const composeWatch = atom({ plugin: 'topia', key: 'composeWatch' } as const, UNSEEN)
 
 const ORDERS_PANE = 'topia-standing-orders'
 const HOSTS_PANE = 'topia-remote-hosts'
@@ -235,6 +237,28 @@ async function saveOrders($: EngineInterface, next: Orders) {
   await $.store.set(ordersKey(await $.session.root()), next)
   await update($, standingOrders, () => next)
   setStatus($, 'orders', ordersStatus(next))
+}
+
+// ── compose bypass ──────────────────────────────────────────────────────────
+
+// What Topia's prompt.compose hook would add now, by name; empty when nothing.
+async function composeParts($: EngineInterface, config: Options): Promise<string[]> {
+  const parts: string[] = []
+  const orders = (await isOn($, config, 'standingOrders')) ? await read($, standingOrders) : null
+  if (orders !== null && ordersText(orders) !== null) parts.push('standing orders')
+  if ((await isOn($, config, 'remoteHosts')) && hostsText(await read($, sshHosts)) !== null) parts.push('known SSH hosts')
+  return parts
+}
+
+async function noticeBypass($: EngineInterface, config: Options) {
+  const missing = await composeParts($, config)
+  if (!isNewBypass(await read($, composeWatch), missing)) return
+  await update($, composeWatch, watch => ({ ...watch, isBypassed: true }))
+  $.ui.toast(bypassText(missing), { timeoutMs: 12000 })
+}
+
+async function bypassNote($: EngineInterface): Promise<string> {
+  return (await read($, composeWatch)).isBypassed ? `\n${BYPASS_NOTE}` : ''
 }
 
 // Reads the latest value at press time, never the one a drawing captured.
@@ -486,6 +510,9 @@ export const register: Register = (on, options) => {
       // read again once each main-thread turn ends, and when the session ends.
       if (await isOn($, config, 'modelPreset')) await rememberModel($)
       await update($, routingTurn, turn => (turn === null ? null : { ...turn, isDone: true }))
+      // A request went out, so a system prompt was rendered: if Topia's compose
+      // hook never ran this session, a plugin ahead of it sent the event past.
+      if (sentRequest(e)) await noticeBypass($, config)
     }
 
     return result
@@ -703,6 +730,8 @@ export const register: Register = (on, options) => {
   })
 
   on('prompt.compose', async ($, e, next) => {
+    // Marked before next, so a failure beneath still counts as having run here.
+    if (!(await read($, composeWatch)).isComposed) await update($, composeWatch, () => ({ isComposed: true, isBypassed: false }))
     const composed = await next(e)
     const sections = [...composed.sections]
 
@@ -916,7 +945,7 @@ export const register: Register = (on, options) => {
 
     if (!id) {
       await $.ui.open({ id: ORDERS_PANE, title: 'Standing orders', focus: true, closeOnEscape: true })
-      return { text: 'Standing orders pane opened.' }
+      return { text: `Standing orders pane opened.${await bypassNote($)}` }
     }
     if (!IDS.includes(id as OrderId)) {
       return { text: `Unknown order "${id}". Orders: ${IDS.join(', ')}.` }
@@ -926,7 +955,7 @@ export const register: Register = (on, options) => {
     const turnOn = value === 'on' ? true : value === 'off' ? false : !current[key]
     await saveOrders($, { ...current, [key]: turnOn })
 
-    return { text: `Standing order "${key}" is now ${turnOn ? 'on' : 'off'} for this project.` }
+    return { text: `Standing order "${key}" is now ${turnOn ? 'on' : 'off'} for this project.${await bypassNote($)}` }
   })
 
   on('ui.render', { component: 'Pane', requestId: ORDERS_PANE }, async ($, e) => {
@@ -936,6 +965,7 @@ export const register: Register = (on, options) => {
     return (
       <Box flexDirection="column">
         <Text dimColor>Added to the system prompt for this project. Press to toggle.</Text>
+        {(await read($, composeWatch)).isBypassed && <Text color="warning">{BYPASS_NOTE}</Text>}
         {IDS.map((id, index) => (
           <Box key={`row-${id}`} flexDirection="row" gap={1}>
             <Button
@@ -965,7 +995,7 @@ export const register: Register = (on, options) => {
     }
 
     await $.ui.open({ id: HOSTS_PANE, title: 'Known SSH hosts', focus: true, closeOnEscape: true })
-    return { text: 'Known SSH hosts pane opened.' }
+    return { text: `Known SSH hosts pane opened.${await bypassNote($)}` }
   })
 
   on('ui.render', { component: 'Pane', requestId: HOSTS_PANE }, async ($, e) => {
