@@ -12,10 +12,18 @@ export const TOPIA_GITIGNORE_BLOCK = `# Topia — local session state (do not co
 /.topia/*
 !/.topia/org/
 !/.topia/org/**
+!/.topia/salesforce/
+/.topia/salesforce/*
+!/.topia/salesforce/orgs.json
+!/.topia/salesforce/plans/
+!/.topia/salesforce/plans/**
 .remember/
 .mcp.json
 `;
 
+// The Salesforce lines are left out on purpose. A project on the older block
+// ignores everything under .topia/salesforce/, which fails closed: nothing leaks,
+// and a project that never uses Salesforce gets no doctor warning.
 export const REQUIRED_PATTERNS = ['/.topia/*', '!/.topia/org/', '.remember/', '.mcp.json'];
 
 function prompt(question) {
@@ -130,6 +138,7 @@ function findTrackedTopiaPaths(projectRoot) {
       .filter((p) => {
         if (p === '.mcp.json') return true;
         if (p.startsWith('.topia/org/')) return false;
+        if (p === '.topia/salesforce/orgs.json' || p.startsWith('.topia/salesforce/plans/')) return false;
         if (p.startsWith('.topia/')) return true;
         return false;
       });

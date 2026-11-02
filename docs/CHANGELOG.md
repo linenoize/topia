@@ -4,6 +4,24 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
+## [3.11.0] — 2026-11-02
+
+Experimental Salesforce tools, for testing, off everywhere until a person turns them on for one project. **Use a sandbox. This hasn't run against a live org.** It was built and tested against a fake Salesforce CLI, and `docs/salesforce/LIVE-CHECKLIST.md` lists what a person still has to confirm before a release. Start at `docs/salesforce/README.md`.
+
+### Added
+
+- **Reads and plans on any host that loads the server** — live identity, schema, bounded counts that withhold personal values, reports, metadata retrieve and diff, package inventory, and an advisory `dependency_report`. A plan holds a structured payload, and the code computes its counts, hash, expiry, and reversibility class.
+- **Changes in Claude Code, after a person approves the exact change in a dialog** — `sf_records_execute`, `sf_deployment_execute`, `sf_restore_plan_execute`, and `sf_tests_run`. The dialog is built by code from a fresh live check. Records save their old values first, and a write that may have landed is reconciled, never re-sent. Deploys validate first, and production ships only by quick deploy.
+- **Production with two users** — a read-only user for reads, plus a writer a person logs in only for the change, through a browser with MFA, then logs out. Writes refuse without it, and the band says while it's logged in. An org with one user that can write can accept that once, at registration.
+
+### Limits
+
+The approval covers Topia's tools, not everything the assistant can do. A shell command can write if your CLI login can, and Topia can only slow that down. A read-only Salesforce user is the only hard limit. The guide lists the residual risks.
+
+### Known issues
+
+Open review findings are listed in `docs/salesforce/LIVE-CHECKLIST.md` section 19b. Real Salesforce CLI output may differ from what the parsers expect. A mismatch stops the operation and reads as `unknown`, and that's the most useful thing to report.
+
 ## [3.10.3] — 2026-11-02
 
 Topia now says so when another plugin stops its standing orders and SSH hosts from reaching the model.

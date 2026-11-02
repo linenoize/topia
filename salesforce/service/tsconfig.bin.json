@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "bin",
+    "newLine": "lf"
+  },
+  "include": ["./**/*.ts"],
+  "exclude": ["dist", "bin", "**/*.case.ts", "test-support.ts"]
+}

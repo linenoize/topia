@@ -31,3 +31,11 @@ export const BYPASS_REASON =
   "A plugin that runs ahead of Topia sends the system prompt on past Topia's hook; `claude --debug` names it. If your organization manages that plugin, this is its policy and Topia leaves it alone."
 
 export const BYPASS_NOTE = `Not reaching the model this session. ${BYPASS_REASON}`
+
+// The same chain can skip Topia's Salesforce guard. A person-gated tool asks the
+// chain about a line the guard always catches, and refuses when the guard didn't
+// answer. That shows the guard is in the chain now. It isn't a boundary: see
+// docs/salesforce/README.md.
+export const GUARD_MISSING =
+  "Topia's Salesforce guard isn't answering in this session, so tools that need a person are refused. A plugin ahead of Topia may be answering for it; `claude --debug` names it."
+

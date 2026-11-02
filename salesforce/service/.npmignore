@@ -1,0 +1,8 @@
+# The npm package runs bin/. Source, tests, and fixtures stay in the repo.
+# "files" in the root package.json wins over a .npmignore at the root, so this sits here.
+*.ts
+*.test.js
+publish-tests.js
+tsconfig*.json
+dist/
+test-fixtures/

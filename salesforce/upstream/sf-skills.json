@@ -1,0 +1,154 @@
+{
+  "repo": "forcedotcom/sf-skills",
+  "license": "Apache-2.0",
+  "sources": [
+    {
+      "sha": "219a84a028387366f9d73fd2551ce7ed47bb1103",
+      "sourcePath": "LICENSE.txt",
+      "sha256": "7f32b32434490332df34d81b4b91f310f5885920ecb9890774b38b772f08c660",
+      "portedInto": [
+        "salesforce/THIRD_PARTY_NOTICES.md"
+      ]
+    },
+    {
+      "sha": "219a84a028387366f9d73fd2551ce7ed47bb1103",
+      "sourcePath": "skills/platform-metadata-discovery-get/SKILL.md",
+      "sha256": "e2660a3c84ca61c10b125d2468110a57d6fe3cd53d846f6df4a679cd0f5cf238",
+      "portedInto": [
+        "salesforce/skills/investigate.md",
+        "salesforce/skills/navigator.md",
+        "commands/sf/inspect.md"
+      ]
+    },
+    {
+      "sha": "219a84a028387366f9d73fd2551ce7ed47bb1103",
+      "sourcePath": "skills/platform-metadata-discovery-get/references/scoped-soql.md",
+      "sha256": "3ac1b75c6d6636695db5c0c7ebf8a7359111af4c34a93a06559c150fd7a4f375",
+      "portedInto": [
+        "salesforce/skills/investigate.md",
+        "salesforce/skills/security-reviewer.md"
+      ]
+    },
+    {
+      "sha": "219a84a028387366f9d73fd2551ce7ed47bb1103",
+      "sourcePath": "skills/platform-metadata-deploy/SKILL.md",
+      "sha256": "0237b74c128b886bba5ec49c4a7e6fb6a4e4ff9121b86d30c8c7a14ee7343bdd",
+      "portedInto": [
+        "salesforce/skills/release-engineer.md",
+        "commands/sf/validate.md",
+        "commands/sf/deploy.md"
+      ]
+    },
+    {
+      "sha": "219a84a028387366f9d73fd2551ce7ed47bb1103",
+      "sourcePath": "plugins/builder/salesforce-code-quality/skills/platform-architecture-analyze/references/well-architected-rubric.md",
+      "sha256": "848184877d523a8a55146ca383f4cb5b316c18ffe7bc26ad8ada3b27c2bc5093",
+      "portedInto": [
+        "agents/sf-practice-review.md",
+        "salesforce/skills/automation-reviewer.md",
+        "commands/sf/review-flow.md"
+      ]
+    },
+    {
+      "sha": "219a84a028387366f9d73fd2551ce7ed47bb1103",
+      "sourcePath": "plugins/builder/salesforce-code-quality/skills/platform-architecture-analyze/references/observable-checks.md",
+      "sha256": "420ee41993f855d64fc1a09e664ac98092bdaea05e8c673a79d621a4a31e1bf5",
+      "portedInto": [
+        "agents/sf-practice-review.md"
+      ]
+    },
+    {
+      "sha": "219a84a028387366f9d73fd2551ce7ed47bb1103",
+      "sourcePath": "plugins/builder/salesforce-code-quality/skills/platform-architecture-analyze/references/manual-review-checklist.md",
+      "sha256": "ae2a9b439a9ad4017c4795a0a9f37dbd825d52cf863a5fa413eab0d5bdf3cee0",
+      "portedInto": [
+        "agents/sf-practice-review.md"
+      ]
+    },
+    {
+      "sha": "219a84a028387366f9d73fd2551ce7ed47bb1103",
+      "sourcePath": "skills/platform-soql-query/references/anti-patterns.md",
+      "sha256": "67d02f9daa2908090fd9a28a3c9c90e27018378e4f3b1b3e6502a21f6dd115d9",
+      "portedInto": [
+        "salesforce/skills/data-steward.md",
+        "commands/sf/query.md"
+      ]
+    },
+    {
+      "sha": "219a84a028387366f9d73fd2551ce7ed47bb1103",
+      "sourcePath": "skills/platform-soql-query/references/query-optimization.md",
+      "sha256": "daa5d074dd69ded20c947eb4e35c32fff1ead080e27e02383b2c32972e256724",
+      "portedInto": [
+        "salesforce/skills/data-steward.md"
+      ]
+    },
+    {
+      "sha": "219a84a028387366f9d73fd2551ce7ed47bb1103",
+      "sourcePath": "skills/platform-apex-generate/SKILL.md",
+      "sha256": "eff5c8c15f9335c30af3e22bf2ac70965e8f06150c2f81d244f8679fbf10f8dd",
+      "portedInto": [
+        "salesforce/skills/automation-reviewer.md",
+        "commands/sf/diagnose.md"
+      ]
+    },
+    {
+      "sha": "219a84a028387366f9d73fd2551ce7ed47bb1103",
+      "sourcePath": "skills/platform-apex-logs-debug/SKILL.md",
+      "sha256": "5e8819061238d6f30002cc45980bbee2d8982d4d1562fd47cec7cd03786ce618",
+      "portedInto": [
+        "salesforce/skills/automation-reviewer.md",
+        "commands/sf/diagnose.md"
+      ]
+    },
+    {
+      "sha": "219a84a028387366f9d73fd2551ce7ed47bb1103",
+      "sourcePath": "skills/platform-apex-logs-debug/references/common-issues.md",
+      "sha256": "46338ba4ee0b94d7bbd32add456d71a46aa97b2d1c3faf75a46b8de5a99d1b06",
+      "portedInto": [
+        "salesforce/skills/automation-reviewer.md"
+      ]
+    },
+    {
+      "sha": "219a84a028387366f9d73fd2551ce7ed47bb1103",
+      "sourcePath": "skills/platform-apex-test-run/SKILL.md",
+      "sha256": "e4e7a98940d3723a246a5f76d1b9afab2a10a0e86ca05558024c776348307cf1",
+      "portedInto": [
+        "salesforce/skills/automation-reviewer.md",
+        "commands/sf/test.md"
+      ]
+    },
+    {
+      "sha": "219a84a028387366f9d73fd2551ce7ed47bb1103",
+      "sourcePath": "skills/platform-apex-test-run/references/test-fix-loop.md",
+      "sha256": "fc634b3d1df37fa9cc1f5a8203289585f172d261665cf4a349590bdb7238460d",
+      "portedInto": [
+        "commands/sf/test.md"
+      ]
+    },
+    {
+      "sha": "219a84a028387366f9d73fd2551ce7ed47bb1103",
+      "sourcePath": "skills/platform-permission-set-generate/SKILL.md",
+      "sha256": "6f71f605b2cb88464931ac8806ea733d03bbbed84cde4e0a5ca2d80bb0235085",
+      "portedInto": [
+        "salesforce/skills/security-reviewer.md",
+        "commands/sf/review-access.md"
+      ]
+    },
+    {
+      "sha": "219a84a028387366f9d73fd2551ce7ed47bb1103",
+      "sourcePath": "skills/dx-org-analyze/references/collection-details.md",
+      "sha256": "f7b4857975784cb078b273534d33d8f5d1e5af0a0f706bd2df9eefe8807e395f",
+      "portedInto": [
+        "salesforce/skills/references/package-inventory-queries.md"
+      ]
+    },
+    {
+      "sha": "219a84a028387366f9d73fd2551ce7ed47bb1103",
+      "sourcePath": "skills/dx-org-analyze/scripts/collect_org_data.py",
+      "sha256": "de63a419e62af3441b5eb2e069646daafbaca9688f0168f5dfe97a4f3751decc",
+      "portedInto": [
+        "salesforce/skills/references/package-inventory-queries.md"
+      ]
+    }
+  ]
+}

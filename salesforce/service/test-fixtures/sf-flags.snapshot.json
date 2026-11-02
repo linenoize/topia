@@ -1,0 +1,827 @@
+{
+  "cliVersion": "2.156.8",
+  "source": "sf commands --json",
+  "commands": {
+    "version": {
+      "flags": {
+        "json": {
+          "type": "boolean"
+        },
+        "verbose": {
+          "type": "boolean"
+        }
+      },
+      "args": []
+    },
+    "org display": {
+      "flags": {
+        "api-version": {
+          "type": "option"
+        },
+        "flags-dir": {
+          "type": "option"
+        },
+        "json": {
+          "type": "boolean"
+        },
+        "loglevel": {
+          "type": "option"
+        },
+        "target-org": {
+          "type": "option",
+          "char": "o"
+        },
+        "verbose": {
+          "type": "boolean"
+        }
+      },
+      "args": []
+    },
+    "data query": {
+      "flags": {
+        "all-rows": {
+          "type": "boolean"
+        },
+        "api-version": {
+          "type": "option"
+        },
+        "file": {
+          "type": "option",
+          "char": "f"
+        },
+        "flags-dir": {
+          "type": "option"
+        },
+        "json": {
+          "type": "boolean"
+        },
+        "loglevel": {
+          "type": "option"
+        },
+        "output-file": {
+          "type": "option"
+        },
+        "perflog": {
+          "type": "boolean"
+        },
+        "query": {
+          "type": "option",
+          "char": "q"
+        },
+        "result-format": {
+          "type": "option",
+          "char": "r",
+          "options": [
+            "human",
+            "csv",
+            "json"
+          ]
+        },
+        "target-org": {
+          "type": "option",
+          "char": "o"
+        },
+        "use-tooling-api": {
+          "type": "boolean",
+          "char": "t"
+        }
+      },
+      "args": []
+    },
+    "sobject describe": {
+      "flags": {
+        "api-version": {
+          "type": "option"
+        },
+        "flags-dir": {
+          "type": "option"
+        },
+        "json": {
+          "type": "boolean"
+        },
+        "loglevel": {
+          "type": "option"
+        },
+        "sobject": {
+          "type": "option",
+          "char": "s"
+        },
+        "target-org": {
+          "type": "option",
+          "char": "o"
+        },
+        "use-tooling-api": {
+          "type": "boolean",
+          "char": "t"
+        }
+      },
+      "args": []
+    },
+    "api request rest": {
+      "flags": {
+        "body": {
+          "type": "option",
+          "char": "b"
+        },
+        "file": {
+          "type": "option",
+          "char": "f"
+        },
+        "flags-dir": {
+          "type": "option"
+        },
+        "header": {
+          "type": "option",
+          "char": "H",
+          "multiple": true
+        },
+        "include": {
+          "type": "boolean",
+          "char": "i"
+        },
+        "json": {
+          "type": "boolean"
+        },
+        "method": {
+          "type": "option",
+          "char": "X",
+          "options": [
+            "GET",
+            "POST",
+            "PUT",
+            "PATCH",
+            "HEAD",
+            "DELETE",
+            "OPTIONS",
+            "TRACE"
+          ]
+        },
+        "stream-to-file": {
+          "type": "option",
+          "char": "S"
+        },
+        "target-org": {
+          "type": "option",
+          "char": "o"
+        }
+      },
+      "args": [
+        "url"
+      ]
+    },
+    "project retrieve start": {
+      "flags": {
+        "api-version": {
+          "type": "option",
+          "char": "a"
+        },
+        "flags-dir": {
+          "type": "option"
+        },
+        "ignore-conflicts": {
+          "type": "boolean",
+          "char": "c"
+        },
+        "json": {
+          "type": "boolean"
+        },
+        "manifest": {
+          "type": "option",
+          "char": "x"
+        },
+        "metadata": {
+          "type": "option",
+          "char": "m",
+          "multiple": true
+        },
+        "output-dir": {
+          "type": "option",
+          "char": "r"
+        },
+        "package-name": {
+          "type": "option",
+          "char": "n",
+          "multiple": true
+        },
+        "root-type-with-dependencies": {
+          "type": "option",
+          "multiple": true,
+          "options": [
+            "Bot",
+            "AiAgentDefinitionVersion"
+          ]
+        },
+        "single-package": {
+          "type": "boolean"
+        },
+        "source-dir": {
+          "type": "option",
+          "char": "d",
+          "multiple": true
+        },
+        "target-metadata-dir": {
+          "type": "option",
+          "char": "t"
+        },
+        "target-org": {
+          "type": "option",
+          "char": "o"
+        },
+        "unzip": {
+          "type": "boolean",
+          "char": "z"
+        },
+        "wait": {
+          "type": "option",
+          "char": "w"
+        },
+        "zip-file-name": {
+          "type": "option"
+        }
+      },
+      "args": []
+    },
+    "data update bulk": {
+      "flags": {
+        "api-version": {
+          "type": "option"
+        },
+        "column-delimiter": {
+          "type": "option",
+          "options": [
+            "BACKQUOTE",
+            "CARET",
+            "COMMA",
+            "PIPE",
+            "SEMICOLON",
+            "TAB"
+          ]
+        },
+        "file": {
+          "type": "option",
+          "char": "f"
+        },
+        "flags-dir": {
+          "type": "option"
+        },
+        "json": {
+          "type": "boolean"
+        },
+        "line-ending": {
+          "type": "option",
+          "options": [
+            "CRLF",
+            "LF"
+          ]
+        },
+        "sobject": {
+          "type": "option",
+          "char": "s"
+        },
+        "target-org": {
+          "type": "option",
+          "char": "o"
+        },
+        "wait": {
+          "type": "option",
+          "char": "w"
+        }
+      },
+      "args": []
+    },
+    "data delete bulk": {
+      "flags": {
+        "api-version": {
+          "type": "option"
+        },
+        "file": {
+          "type": "option",
+          "char": "f"
+        },
+        "flags-dir": {
+          "type": "option"
+        },
+        "hard-delete": {
+          "type": "boolean"
+        },
+        "json": {
+          "type": "boolean"
+        },
+        "line-ending": {
+          "type": "option",
+          "options": [
+            "CRLF",
+            "LF"
+          ]
+        },
+        "loglevel": {
+          "type": "option"
+        },
+        "sobject": {
+          "type": "option",
+          "char": "s"
+        },
+        "target-org": {
+          "type": "option",
+          "char": "o"
+        },
+        "wait": {
+          "type": "option",
+          "char": "w"
+        }
+      },
+      "args": []
+    },
+    "data bulk results": {
+      "flags": {
+        "api-version": {
+          "type": "option"
+        },
+        "flags-dir": {
+          "type": "option"
+        },
+        "job-id": {
+          "type": "option",
+          "char": "i"
+        },
+        "json": {
+          "type": "boolean"
+        },
+        "target-org": {
+          "type": "option",
+          "char": "o"
+        }
+      },
+      "args": []
+    },
+    "project deploy validate": {
+      "flags": {
+        "api-version": {
+          "type": "option",
+          "char": "a"
+        },
+        "async": {
+          "type": "boolean"
+        },
+        "concise": {
+          "type": "boolean"
+        },
+        "coverage-formatters": {
+          "type": "option",
+          "multiple": true,
+          "options": [
+            "clover",
+            "cobertura",
+            "html-spa",
+            "html",
+            "json",
+            "json-summary",
+            "lcovonly",
+            "none",
+            "teamcity",
+            "text",
+            "text-summary"
+          ]
+        },
+        "flags-dir": {
+          "type": "option"
+        },
+        "ignore-warnings": {
+          "type": "boolean",
+          "char": "g"
+        },
+        "json": {
+          "type": "boolean"
+        },
+        "junit": {
+          "type": "boolean"
+        },
+        "manifest": {
+          "type": "option",
+          "char": "x"
+        },
+        "metadata": {
+          "type": "option",
+          "char": "m",
+          "multiple": true
+        },
+        "metadata-dir": {
+          "type": "option"
+        },
+        "post-destructive-changes": {
+          "type": "option"
+        },
+        "pre-destructive-changes": {
+          "type": "option"
+        },
+        "purge-on-delete": {
+          "type": "boolean"
+        },
+        "results-dir": {
+          "type": "option"
+        },
+        "single-package": {
+          "type": "boolean"
+        },
+        "source-dir": {
+          "type": "option",
+          "char": "d",
+          "multiple": true
+        },
+        "target-org": {
+          "type": "option",
+          "char": "o"
+        },
+        "test-level": {
+          "type": "option",
+          "char": "l",
+          "options": [
+            "RunAllTestsInOrg",
+            "RunLocalTests",
+            "RunSpecifiedTests",
+            "RunRelevantTests"
+          ]
+        },
+        "tests": {
+          "type": "option",
+          "char": "t",
+          "multiple": true
+        },
+        "verbose": {
+          "type": "boolean"
+        },
+        "wait": {
+          "type": "option",
+          "char": "w"
+        }
+      },
+      "args": []
+    },
+    "project deploy start": {
+      "flags": {
+        "api-version": {
+          "type": "option",
+          "char": "a"
+        },
+        "async": {
+          "type": "boolean"
+        },
+        "concise": {
+          "type": "boolean"
+        },
+        "coverage-formatters": {
+          "type": "option",
+          "multiple": true,
+          "options": [
+            "clover",
+            "cobertura",
+            "html-spa",
+            "html",
+            "json",
+            "json-summary",
+            "lcovonly",
+            "none",
+            "teamcity",
+            "text",
+            "text-summary"
+          ]
+        },
+        "dry-run": {
+          "type": "boolean"
+        },
+        "flags-dir": {
+          "type": "option"
+        },
+        "ignore-conflicts": {
+          "type": "boolean",
+          "char": "c"
+        },
+        "ignore-errors": {
+          "type": "boolean",
+          "char": "r"
+        },
+        "ignore-warnings": {
+          "type": "boolean",
+          "char": "g"
+        },
+        "json": {
+          "type": "boolean"
+        },
+        "junit": {
+          "type": "boolean"
+        },
+        "manifest": {
+          "type": "option",
+          "char": "x"
+        },
+        "metadata": {
+          "type": "option",
+          "char": "m",
+          "multiple": true
+        },
+        "metadata-dir": {
+          "type": "option"
+        },
+        "post-destructive-changes": {
+          "type": "option"
+        },
+        "pre-destructive-changes": {
+          "type": "option"
+        },
+        "purge-on-delete": {
+          "type": "boolean"
+        },
+        "results-dir": {
+          "type": "option"
+        },
+        "single-package": {
+          "type": "boolean"
+        },
+        "source-dir": {
+          "type": "option",
+          "char": "d",
+          "multiple": true
+        },
+        "target-org": {
+          "type": "option",
+          "char": "o"
+        },
+        "test-level": {
+          "type": "option",
+          "char": "l",
+          "options": [
+            "NoTestRun",
+            "RunSpecifiedTests",
+            "RunLocalTests",
+            "RunAllTestsInOrg",
+            "RunRelevantTests"
+          ]
+        },
+        "tests": {
+          "type": "option",
+          "char": "t",
+          "multiple": true
+        },
+        "verbose": {
+          "type": "boolean"
+        },
+        "wait": {
+          "type": "option",
+          "char": "w"
+        }
+      },
+      "args": []
+    },
+    "project deploy quick": {
+      "flags": {
+        "api-version": {
+          "type": "option",
+          "char": "a"
+        },
+        "async": {
+          "type": "boolean"
+        },
+        "concise": {
+          "type": "boolean"
+        },
+        "flags-dir": {
+          "type": "option"
+        },
+        "job-id": {
+          "type": "option",
+          "char": "i"
+        },
+        "json": {
+          "type": "boolean"
+        },
+        "target-org": {
+          "type": "option",
+          "char": "o"
+        },
+        "use-most-recent": {
+          "type": "boolean",
+          "char": "r"
+        },
+        "verbose": {
+          "type": "boolean"
+        },
+        "wait": {
+          "type": "option",
+          "char": "w"
+        }
+      },
+      "args": []
+    },
+    "project deploy report": {
+      "flags": {
+        "coverage-formatters": {
+          "type": "option",
+          "multiple": true,
+          "options": [
+            "clover",
+            "cobertura",
+            "html-spa",
+            "html",
+            "json",
+            "json-summary",
+            "lcovonly",
+            "none",
+            "teamcity",
+            "text",
+            "text-summary"
+          ]
+        },
+        "flags-dir": {
+          "type": "option"
+        },
+        "job-id": {
+          "type": "option",
+          "char": "i"
+        },
+        "json": {
+          "type": "boolean"
+        },
+        "junit": {
+          "type": "boolean"
+        },
+        "results-dir": {
+          "type": "option"
+        },
+        "target-org": {
+          "type": "option",
+          "char": "o"
+        },
+        "use-most-recent": {
+          "type": "boolean",
+          "char": "r"
+        },
+        "wait": {
+          "type": "option",
+          "char": "w"
+        }
+      },
+      "args": []
+    },
+    "project deploy cancel": {
+      "flags": {
+        "async": {
+          "type": "boolean"
+        },
+        "flags-dir": {
+          "type": "option"
+        },
+        "job-id": {
+          "type": "option",
+          "char": "i"
+        },
+        "json": {
+          "type": "boolean"
+        },
+        "target-org": {
+          "type": "option",
+          "char": "o"
+        },
+        "use-most-recent": {
+          "type": "boolean",
+          "char": "r"
+        },
+        "wait": {
+          "type": "option",
+          "char": "w"
+        }
+      },
+      "args": []
+    },
+    "apex run test": {
+      "flags": {
+        "api-version": {
+          "type": "option"
+        },
+        "class-names": {
+          "type": "option",
+          "char": "n",
+          "multiple": true
+        },
+        "code-coverage": {
+          "type": "boolean",
+          "char": "c"
+        },
+        "concise": {
+          "type": "boolean"
+        },
+        "detailed-coverage": {
+          "type": "boolean",
+          "char": "v"
+        },
+        "flags-dir": {
+          "type": "option"
+        },
+        "json": {
+          "type": "boolean"
+        },
+        "loglevel": {
+          "type": "option"
+        },
+        "output-dir": {
+          "type": "option",
+          "char": "d"
+        },
+        "poll-interval": {
+          "type": "option",
+          "char": "i"
+        },
+        "result-format": {
+          "type": "option",
+          "char": "r",
+          "options": [
+            "human",
+            "tap",
+            "junit",
+            "json"
+          ]
+        },
+        "suite-names": {
+          "type": "option",
+          "char": "s",
+          "multiple": true
+        },
+        "synchronous": {
+          "type": "boolean",
+          "char": "y"
+        },
+        "target-org": {
+          "type": "option",
+          "char": "o"
+        },
+        "test-level": {
+          "type": "option",
+          "char": "l",
+          "options": [
+            "RunLocalTests",
+            "RunAllTestsInOrg",
+            "RunSpecifiedTests"
+          ]
+        },
+        "tests": {
+          "type": "option",
+          "char": "t",
+          "multiple": true
+        },
+        "wait": {
+          "type": "option",
+          "char": "w"
+        }
+      },
+      "args": []
+    },
+    "apex get test": {
+      "flags": {
+        "api-version": {
+          "type": "option"
+        },
+        "code-coverage": {
+          "type": "boolean",
+          "char": "c"
+        },
+        "concise": {
+          "type": "boolean"
+        },
+        "detailed-coverage": {
+          "type": "boolean"
+        },
+        "flags-dir": {
+          "type": "option"
+        },
+        "json": {
+          "type": "boolean"
+        },
+        "loglevel": {
+          "type": "option"
+        },
+        "output-dir": {
+          "type": "option",
+          "char": "d"
+        },
+        "result-format": {
+          "type": "option",
+          "char": "r",
+          "options": [
+            "human",
+            "tap",
+            "junit",
+            "json"
+          ]
+        },
+        "target-org": {
+          "type": "option",
+          "char": "o"
+        },
+        "test-run-id": {
+          "type": "option",
+          "char": "i"
+        }
+      },
+      "args": []
+    }
+  }
+}
