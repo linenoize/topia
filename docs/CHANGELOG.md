@@ -4,6 +4,14 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
+## [3.10.3] — 2026-11-02
+
+Topia now says so when another plugin stops its standing orders and SSH hosts from reaching the model.
+
+### Fixed
+
+- **Standing orders could silently stop applying** — a hook with more authority (a managed plugin, or one earlier in the chain) can send `prompt.compose` past Topia. Standing orders and known SSH hosts then never reached the model, while `/orders`, `/hosts`, and the orders pane still described them as added to the system prompt. Topia now notices when a turn sent a request and its hook never ran this session. It shows one toast, and adds a note to `/orders`, `/hosts`, and the pane. It doesn't route the text around the bypass, because that's how the chain grants precedence, and often an organization's policy.
+
 ## [3.10.2] — 2026-10-28
 
 Skill telemetry records the skills a session actually ran, and context pressure comes from measured tokens.
