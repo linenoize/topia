@@ -54,8 +54,8 @@ export const RULES: Record<OrderId, { label: string; about: string; text: string
       'for it. Never merge or delete any other branch, even one that looks finished. Never touch main, master, ' +
       'dev, develop, development, staging, production, release/*, hotfix/* or any branch whose name contains ' +
       'proto, spike, experiment, wip, keep, archive or sandbox. Steps: commit the finished work on the task ' +
-      'branch, switch to local main, merge the task branch, then delete it with git branch -d (git refuses ' +
-      'unless every commit is in main) and remove its worktree with git worktree remove (git refuses if the ' +
+      'branch, switch to local main, merge the task branch, and check that git branch --merged lists it. Only ' +
+      'then delete it with git branch -d and remove its worktree with git worktree remove (git refuses if the ' +
       'worktree has uncommitted or untracked files). Never use git branch -D, git worktree remove --force or ' +
       'git push --delete. If git refuses a delete, leave the branch and say why. Report each deleted branch with ' +
       'its last commit hash (restore with git branch <name> <hash>) and how many commits local main is ahead of ' +

@@ -8,7 +8,7 @@ All notable changes to Topia will be documented in this file.
 
 ### Changed
 
-- **`trunk` touches only the task's own branch.** It merges the branch the task was done on (and agent or worktree branches made for it) into local main, then deletes only those, with `git branch -d` and `git worktree remove`. Git refuses both for unmerged commits or uncommitted files, and the branch is left in place. Long-lived branches (main, dev, develop, staging, release/*, hotfix/*, and names with proto, spike, experiment, wip, keep, archive or sandbox) are never touched. Each deleted branch is reported with its last commit hash so it can be restored. `trunk` never pushes main, even with the commit-and-push order on: that order pushes the task branch before the merge.
+- **`trunk` touches only the task's own branch.** It merges the branch the task was done on (and agent or worktree branches made for it) into local main, then deletes only those: a branch only after `git branch --merged` lists it, with `git branch -d` (never `-D`), and a worktree with `git worktree remove`, which git refuses while it has uncommitted or untracked files. Anything that fails a check is left in place. Long-lived branches (main, dev, develop, staging, release/*, hotfix/*, and names with proto, spike, experiment, wip, keep, archive or sandbox) are never touched. Each deleted branch is reported with its last commit hash so it can be restored. `trunk` never pushes main, even with the commit-and-push order on: that order pushes the task branch before the merge.
 - **A guard backs the `trunk` order.** While it is on, `git branch -D`, a forced or protected-branch delete, `git worktree remove --force` and remote branch deletes ask you first instead of running.
 
 ### Fixed
