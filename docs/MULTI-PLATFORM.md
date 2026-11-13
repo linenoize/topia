@@ -56,7 +56,7 @@ interface ParsedSkill {
 
 interface CrossRef {
   raw: string;       // "topia:recon", "topia:build"
-  skillName: string; // "scout", "build"
+  skillName: string; // "recon", "build"
   line: number;      // line number in source
   context: string;   // surrounding text for rewrite
 }
@@ -338,7 +338,7 @@ const CROSS_REF_PATTERN = /`?[Tt]opia:([a-z][\w-]*)`?/g;
 
 | Source | Claude Code | Cursor | Windsurf / Antigravity |
 |--------|------------|--------|------------------------|
-| `Use topia:recon` | `Use topia:recon` (unchanged) | `Use @Topia-scout.mdc` | `Follow the Topia-scout rule file` |
+| `Use topia:recon` | `Use topia:recon` (unchanged) | `Use @Topia-recon.mdc` | `Follow the Topia-recon rule file` |
 | `REQUIRED SUB-SKILL: Use topia:plan` | unchanged | `REQUIRED: Follow @Topia-plan.mdc` | `REQUIRED: Follow the Topia-plan rule file` |
 | `invoke topia:debug` | unchanged | `follow @Topia-debug.mdc` | `follow the Topia-debug rule file` |
 

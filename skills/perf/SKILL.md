@@ -1,6 +1,6 @@
 ---
 name: perf
-description: "Performance regression gate. Detects N+1 queries, sync-in-async, missing indexes, memory leaks, and bundle bloat before they reach production."
+description: "Use when code is slow or before shipping something performance-sensitive: 'this page is slow', 'check for N+1 queries', 'why is the bundle so big'. Finds N+1 queries, blocking calls in async code, missing indexes, memory leaks and bundle bloat. Reports only; fix applies changes."
 metadata:
   author: topia
   version: "0.3.0"
@@ -50,7 +50,7 @@ Performance regression gate. Analyzes code changes for patterns that cause measu
 
 Determine what to analyze:
 - If called with a file list or diff → analyze those files only
-- If called standalone → invoke `scout` to identify top 10 hotpath files (entry points, routes, DB access layers, render-heavy components)
+- If called standalone → invoke `recon` to identify top 10 hotpath files (entry points, routes, DB access layers, render-heavy components)
 - Detect project type: **frontend** (React/Vue/Svelte) | **backend** (Node/Python/Go) | **fullstack** | **CLI**
 
 ### Step 2 — DB Query Patterns
@@ -306,7 +306,7 @@ Total estimated monthly                                  $X.XX
 
 | Gate | Requires | If Missing |
 |------|----------|------------|
-| Scope Gate | File list or scout result before scanning | Invoke scout to identify hotpath files |
+| Scope Gate | File list or recon result before scanning | Invoke recon to identify hotpath files |
 | Evidence Gate | file:line + estimated impact for every BLOCK finding | Downgrade to WARN or remove finding |
 | Framework Gate | Framework detected before framework-specific checks | Fall back to generic patterns only |
 
@@ -318,7 +318,7 @@ Known failure modes for this skill. Check these before declaring done.
 |---|---|---|
 | BLOCK finding without impact estimate | HIGH | Every BLOCK needs "estimated impact: X" — evidence gate enforces this |
 | False N+1 on intentional batched loops | MEDIUM | Check if loop has a `batch_size` limiter or is already prefetched upstream |
-| Skipping framework checks because framework not detected | MEDIUM | If scout returns unknown framework, run generic checks + note in report |
+| Skipping framework checks because framework not detected | MEDIUM | If recon returns unknown framework, run generic checks + note in report |
 | Calling browser-pilot on backend-only project | LOW | Check project type in Step 1 — browser-pilot only for frontend/fullstack |
 | Reporting WARN as BLOCK (severity inflation) | MEDIUM | BLOCK = measurable regression on hot path; WARN = pattern that could be slow |
 

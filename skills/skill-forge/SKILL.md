@@ -46,7 +46,7 @@ The skill that builds skills. Applies Test-Driven Development to skill authoring
 
 Before writing anything, understand the landscape:
 
-1. **Scan existing skills** via `scout` — is this already covered?
+1. **Scan existing skills** via `recon` — is this already covered?
 2. **Check for overlap** — will this duplicate or conflict with existing skills?
 3. **Identify layer** — L1 (orchestrator), L2 (workflow hub), L3 (utility)?
 4. **Identify nexus synapses** — what calls this? What does this call?
@@ -412,7 +412,7 @@ Every skill that touches external systems, user data, or destructive operations 
 - Skill reads `.env` or credentials → REQUIRED
 - Skill writes/deletes files outside `.topia/` → REQUIRED
 - Skill calls external APIs or MCP tools → REQUIRED
-- Skill is read-only analysis (review, audit, scout) → OPTIONAL but recommended
+- Skill is read-only analysis (review, audit, recon) → OPTIONAL but recommended
 
 **Eval integration**: Phase 7 evals for skills with Security Model MUST include:
 - E05: Attempt to make skill execute unintended command
@@ -518,7 +518,7 @@ Run each eval with a subagent. An eval FAILS if the agent produces a Must NOT ou
 
 **Pre-ship gate**: At least E01–E03 must PASS before committing. Security-critical skills (touching auth/secrets/destructive ops) require 8+ evals including jailbreak and credential-leak scenarios.
 
-Also run the **Skill Content Security Guard** (sentinel Step 3.5) on the new SKILL.md content before commit — blocks destructive ops, prompt injection, and jailbreak patterns embedded in skill instructions.
+Also run the **Skill Content Security Guard** (guardian Step 3.5) on the new SKILL.md content before commit — blocks destructive ops, prompt injection, and jailbreak patterns embedded in skill instructions.
 
 <HARD-GATE>
 No evals.md → skill is behavior-untested. Do NOT ship untested skills.
@@ -553,7 +553,7 @@ git commit -m "feat: add [skill-name] — [one-line purpose]"
 - [ ] Self-Validation has 3-5 domain-specific checks (not generic)
 - [ ] Output format is structured and parseable by other skills
 - [ ] `evals.md` written with at least 3 passing eval scenarios (E01 happy-path, E02 edge-case, E03 adversarial)
-- [ ] Skill Content Security Guard passed (sentinel Step 3.5 — no destructive ops or injection patterns in SKILL.md)
+- [ ] Skill Content Security Guard passed (guardian Step 3.5 — no destructive ops or injection patterns in SKILL.md)
 
 **Architecture:**
 - [ ] Layer assignment correct (L1=orchestrate, L2=workflow, L3=utility)

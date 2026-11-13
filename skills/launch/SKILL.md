@@ -1,6 +1,6 @@
 ---
 name: launch
-description: "Deploy + marketing orchestrator. Use when user says 'launch', 'ship to production', 'deploy and announce', or 'go live'. Runs the full pipeline — pre-flight tests, deployment, live verification, marketing asset creation, and announcement."
+description: "Use when shipping a product to the public and announcing it: 'launch this', 'go live and announce it'. Runs tests and security checks, deploys, verifies the live site, then writes the marketing assets. For a deploy with no announcement, use deploy."
 context: fork
 agent: general-purpose
 disable-model-invocation: true
@@ -21,7 +21,7 @@ metadata:
 Orchestrate the full deployment and marketing pipeline. Launch coordinates testing, deployment, live site verification, marketing asset creation, and public announcement. One command to go from "code ready" to "product live and marketed."
 
 <HARD-GATE>
-- ALL tests must pass before any deploy attempt. Zero exceptions. Block deploy if any of: tests failing, TypeScript errors present, build fails, or sentinel CRITICAL issues detected.
+- ALL tests must pass before any deploy attempt. Zero exceptions. Block deploy if any of: tests failing, TypeScript errors present, build fails, or guardian CRITICAL issues detected.
 - NEVER deploy in the same run as pre-flight. Deploy only when ARGUMENTS carry `deploy-approved <launch plan>` and HEAD still matches the commit recorded in that plan.
 </HARD-GATE>
 
@@ -111,16 +111,18 @@ Report artifact status before proceeding:
 - Design system: ✅ .topia/design-system.md | ⚠️ Not found (run /topia design first for UI projects)
 ```
 
-### Step 1 — Initialize TodoWrite
+### Step 1 — Create the task list
+
+Create one task per entry with the task list tool (TaskCreate/TaskUpdate in Claude Code, the host todo tool elsewhere). Mark each `in_progress` when its phase starts and `completed` when it ends.
 
 ```
-TodoWrite([
+[
   { content: "PRE-FLIGHT: Run full test suite and verification", status: "pending", activeForm: "Running pre-flight checks" },
   { content: "DEPLOY: Detect platform and push to production", status: "pending", activeForm: "Deploying to production" },
   { content: "VERIFY LIVE: Check live URL and setup monitoring", status: "pending", activeForm: "Verifying live deployment" },
   { content: "MARKET: Generate landing copy and social assets", status: "pending", activeForm: "Generating marketing assets" },
   { content: "ANNOUNCE: Present all marketing assets to user", status: "pending", activeForm: "Preparing announcement" }
-])
+]
 ```
 
 ---
@@ -141,7 +143,7 @@ Block deploy if ANY of:
   [ ] Tests failing (failed count > 0)
   [ ] TypeScript errors present
   [ ] Build fails
-  [ ] sentinel CRITICAL issues detected (invoke topia:guardian if not already run)
+  [ ] guardian CRITICAL issues detected (invoke topia:guardian if not already run)
 
 If any check fails:
   → STOP immediately
@@ -293,7 +295,7 @@ Mark todo[4] `completed`.
 ## Constraints
 
 1. MUST pass ALL tests before any deploy attempt — zero exceptions
-2. MUST pass sentinel security scan before deploy — no CRITICAL findings allowed
+2. MUST pass guardian security scan before deploy — no CRITICAL findings allowed
 3. MUST have rollback plan documented before deploying to production
 4. MUST NOT deploy and run marketing simultaneously — deploy first, verify, then market
 5. MUST verify deploy is live and healthy before triggering marketing skills
@@ -304,7 +306,7 @@ Mark todo[4] `completed`.
 | Gate | Requires | If Missing |
 |------|----------|------------|
 | Test Gate | verification output showing all green | Run topia:verification first |
-| Security Gate | sentinel output with no CRITICAL findings | Run topia:guardian first |
+| Security Gate | guardian output with no CRITICAL findings | Run topia:guardian first |
 | Deploy Gate | Successful deploy confirmation before marketing | Deploy first |
 | Approval Gate | `deploy-approved <launch plan>` in ARGUMENTS, HEAD equals recorded SHA, clean tree | Stop after pre-flight (Run 1) |
 
@@ -363,13 +365,13 @@ Known failure modes for this skill. Check these before declaring done.
 | Running marketing before deploy verified live | HIGH | Constraint 4: deploy → verify HTTP 200 → THEN market. Never simultaneous |
 | No rollback plan before production deploy | MEDIUM | Constraint 3: document rollback strategy before running deploy command |
 | Platform auto-detected incorrectly (wrong deploy command) | MEDIUM | Verify platform config files before running — ask if ambiguous |
-| Marketing assets generated from assumptions rather than scout output | MEDIUM | Step 1 requires scout to run — copy based on actual features, not assumptions |
+| Marketing assets generated from assumptions rather than recon output | MEDIUM | Step 1 requires recon to run — copy based on actual features, not assumptions |
 
 ## Done When
 
 - Run 1: pre-flight PASS, launch plan written, `ready-to-deploy` report with the resume line returned
 - Run 2: launch plan approved by the person and HEAD matched the recorded SHA
-- Pre-flight PASS: all tests, types, lint, build, and sentinel green
+- Pre-flight PASS: all tests, types, lint, build, and guardian green
 - Deploy command succeeded with live URL captured
 - Live site returns HTTP 200 (curl or browser-pilot confirmed)
 - watchdog monitoring active on deployed URL

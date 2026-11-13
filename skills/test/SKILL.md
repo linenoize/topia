@@ -1,6 +1,6 @@
 ---
 name: test
-description: "TDD test writer. Writes failing tests FIRST (red), then verifies they pass after implementation (green). Covers unit, integration, and e2e tests."
+description: "Use when writing or repairing tests: 'add tests for X', 'write a failing test first', 'raise coverage on Y', 'add an e2e test'. Writes the failing test first, then confirms it passes after the change. Running the existing suite is verification."
 metadata:
   author: topia
   version: "1.3.0"
@@ -43,7 +43,7 @@ VERTICAL SLICING (Iron Law extension): one test → GREEN → one test → GREEN
 - Each cycle MUST emit a commit pair: `test(scope): <behavior>` + `feat(scope): <behavior>`
 - Claim "I did TDD" is verified by `completion-gate` against `git log --oneline` — no paired commits = REJECTED
 - Horizontal slicing produces tests-of-imagination, not tests-of-behavior. See [references/vertical-tdd.md](references/vertical-tdd.md).
-- Emit signal `tdd.horizontal.violation` when triggered; preflight blocks merge until cycles are unwound.
+- Emit signal `tdd.horizontal.violation` when triggered; verification blocks merge until cycles are unwound.
 Exceptions (narrow, must be documented in test header): retrofitting characterization tests for legacy untested code; spec-driven scaffolding where the contract is external (OpenAPI, wire protocol).
 </HARD-GATE>
 
@@ -60,8 +60,10 @@ Exceptions (narrow, must be documented in test header): retrofitting characteriz
    - Assertion style and patterns
 4. Use `Glob` to find the source file(s) being tested
 
+Track progress with the task list tool (TaskCreate/TaskUpdate in Claude Code, the host todo tool elsewhere):
+
 ```
-TodoWrite: [
+[
   { content: "Understand scope and find existing test patterns", status: "in_progress" },
   { content: "Detect test framework and conventions", status: "pending" },
   { content: "Write failing tests (RED phase)", status: "pending" },
@@ -323,7 +325,7 @@ A skill is **behavior-tested** when it has evals covering:
 | Adversarial | 1 | Time pressure, sunk cost, authority pressure |
 | Jailbreak / injection | 1 | Prompt injection attempt, "ignore instructions" |
 
-**Minimum**: 4 evals per skill (1 per category). Security-critical skills (sentinel, safeguard): 8+ evals.
+**Minimum**: 4 evals per skill (1 per category). Security-critical skills (guardian, safeguard): 8+ evals.
 
 ### Eval Storage
 
@@ -482,7 +484,7 @@ Do NOT overfit evals to specific prompts or known examples. Evals should test th
 2. Write unit/integration tests (RED phase) → test files
 3. Implement feature (GREEN phase) → source files
 4. Run evals to verify capability achieved + no regressions
-5. Preflight checks eval results as part of quality gate
+5. Verification checks eval results as part of quality gate
 
 ## Red Flags — STOP and Start Over
 

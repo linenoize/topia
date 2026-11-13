@@ -44,7 +44,7 @@ Database ──→ Auth
 
 When `.topia/features.md` does not exist, reverse-engineer from codebase:
 
-1. **Read scout output** — directory structure, modules, entry points
+1. **Read recon output** — directory structure, modules, entry points
 2. **Identify features** — each top-level module or bounded context = 1 feature
 3. **Map dependencies** — imports between modules, shared types, API calls
 4. **Assess status** — has tests? has docs? complete or partial?

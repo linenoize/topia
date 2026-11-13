@@ -1,6 +1,6 @@
 ---
 name: rescue
-description: "Legacy refactoring orchestrator. Use when user says 'refactor', 'modernize', 'clean up this mess', 'rescue', or when dealing with old/messy/legacy code. Multi-session workflow — autopsy, safety net, incremental surgery, progress tracking."
+description: "Use when a legacy codebase needs modernizing over several sessions: 'rescue this legacy app', 'modernize this old code', 'this module is unmaintainable'. Runs autopsy, sets up safety nets, then refactors one module per session. For one focused refactor use surgeon; not for new features."
 context: fork
 agent: general-purpose
 metadata:
@@ -74,18 +74,20 @@ Read choices from ARGUMENTS: `module <name>`, `skip <name>`, `status`. Record sk
 
 ## Execution
 
-### Step 0 — Initialize TodoWrite
+### Step 0 — Create the task list
 
-Rescue is multi-session. On first invocation, build full todo list. On resume, read RESCUE-STATE.md and restore todo list to current phase.
+Rescue is multi-session. On first invocation, build full todo list. On resume, read RESCUE-STATE.md and restore the task list to the current phase.
+
+Create one task per entry with the task list tool (TaskCreate/TaskUpdate in Claude Code, the host todo tool elsewhere). Mark each `in_progress` when its phase starts and `completed` when it ends.
 
 ```
-TodoWrite([
+[
   { content: "RECON: Run autopsy, onboard, and save initial state", status: "pending", activeForm: "Assessing codebase health" },
   { content: "SAFETY NET: Add characterization tests and rollback points", status: "pending", activeForm: "Building safety net" },
   { content: "SURGERY [Module N]: Refactor one module with surgeon", status: "pending", activeForm: "Performing surgery on module N" },
   { content: "CLEANUP: Remove @legacy and @bridge markers", status: "pending", activeForm: "Cleaning up markers" },
   { content: "VERIFY: Run full test suite and compare health scores", status: "pending", activeForm: "Verifying rescue outcome" }
-])
+]
 ```
 
 Note: SURGERY todos are added dynamically — one per module identified in Phase 0. Each module gets its own todo entry.
@@ -149,7 +151,7 @@ Bash: git tag Topia-rescue-baseline
 ```
 From autopsy.modules, filter: health < 60
 Sort: ascending health score (worst first)
-Add one TodoWrite entry per module:
+Add one task per module:
   { content: "SURGERY [module.name]: [recommended_pattern]", status: "pending", ... }
 ```
 

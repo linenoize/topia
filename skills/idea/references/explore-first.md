@@ -26,7 +26,7 @@ For every question Q the agent emits, there MUST be prior tool-call evidence in 
 - At least 1 `Read`, `Glob`, or `Grep` related to Q's domain, OR
 - An explicit declaration: *"Q cannot be answered from project artifacts because [specific reason]."*
 
-Without one of these, Q is BLOCKED. The receiving validator (preflight, completion-gate) checks the tool-call log for evidence before allowing the question to count toward the 5-question budget.
+Without one of these, Q is BLOCKED. The receiving validator (verification, completion-gate) checks the tool-call log for evidence before allowing the question to count toward the 5-question budget.
 
 This prevents lazy questioning. The gate is "tried to infer" — not "must succeed in inferring." If the file simply doesn't have the answer, that's fine; the attempt is the gate.
 

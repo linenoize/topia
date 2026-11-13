@@ -1,6 +1,6 @@
 ---
 name: deploy
-description: "Deploy application to target platform. Use when user explicitly says 'deploy', 'push to production', 'ship it'. Handles Vercel, Netlify, AWS, GCP, DigitalOcean, and VPS with pre-deploy verification and health checks."
+description: "Use when pushing an app to a host: 'deploy to Vercel', 'push this to production', 'set up deploys to Fly.io'. Checks tests and security first, deploys to Vercel, Netlify, AWS, GCP, DigitalOcean or a VPS, then runs health checks. For deploy plus announcement, use launch."
 disable-model-invocation: true
 metadata:
   author: topia
@@ -21,7 +21,7 @@ Deploy applications to target platforms. Handles the full deployment flow — en
 
 <HARD-GATE>
 - Tests MUST pass (via `topia:verification`) before deploy runs
-- Sentinel MUST pass (no CRITICAL issues) before deploy runs
+- Guardian MUST pass (no CRITICAL issues) before deploy runs
 - Both are non-negotiable. Failure = stop + report, never skip
 </HARD-GATE>
 
@@ -62,7 +62,7 @@ If verification fails → STOP. Do NOT proceed. Report failure with test output.
 Call `topia:guardian` to run security scan.
 
 ```
-If sentinel returns CRITICAL issues → STOP. Do NOT proceed. Report issues.
+If guardian returns CRITICAL issues → STOP. Do NOT proceed. Report issues.
 ```
 
 Both gates MUST pass. No exceptions.
@@ -231,7 +231,7 @@ Deploy Report with platform, status (success/failed/rollback), deployed URL, bui
 
 ## Constraints
 
-1. MUST verify tests + sentinel pass before deploying — non-negotiable
+1. MUST verify tests + guardian pass before deploying — non-negotiable
 2. MUST have rollback strategy documented before production deploy
 3. MUST verify deploy is live and responding before declaring success
 4. MUST NOT deploy with known CRITICAL security findings
@@ -255,7 +255,7 @@ Known failure modes for this skill. Check these before declaring done.
 
 | Failure Mode | Severity | Mitigation |
 |---|---|---|
-| Deploying without verification passing | CRITICAL | HARD-GATE blocks this — both verification AND sentinel must pass first |
+| Deploying without verification passing | CRITICAL | HARD-GATE blocks this — both verification AND guardian must pass first |
 | Platform auto-detected wrongly and wrong command runs | HIGH | Verify config files explicitly; ask user if multiple platforms detected |
 | HTTP 5xx on live URL treated as non-critical | HIGH | 5xx = deployment likely failed — report FAILED, do not proceed to monitoring/marketing |
 | Not setting up watchdog monitoring after deploy | MEDIUM | Step 5 is mandatory — post-deploy monitoring is part of deploy, not optional |

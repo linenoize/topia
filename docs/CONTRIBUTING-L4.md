@@ -31,12 +31,12 @@ L4 packs must integrate with the existing nexus — not operate as isolated util
 
 Typical connection patterns:
 - Pack skill is called by `build` (L1) when domain detected
-- Pack skill calls `scout` (L2) for codebase scan
+- Pack skill calls `recon` (L2) for codebase scan
 - Pack skill calls `verification` (L3) after changes
 - Pack skill calls `guardian` (L2) for domain-specific security
 
 ❌ **Fail:** Pack with 0 inbound connections from L1-L3 (no orchestrator calls it)
-✅ **Pass:** Pack called by `build` on stack detection, calls `scout` + `verification`
+✅ **Pass:** Pack called by `build` on stack detection, calls `recon` + `verification`
 
 ---
 
@@ -92,23 +92,23 @@ metadata:
 ### Frontend Packs (`@Topia/ui`, `@Topia/mobile`)
 ```
 build (L1) ← detects React/Vue/Svelte/SwiftUI → calls pack skill
-pack skill → scout (L2): scan component library
+pack skill → recon (L2): scan component library
 pack skill → verification (L3): run component tests
-pack skill → sentinel (L2): check for XSS/CSRF patterns
+pack skill → guardian (L2): check for XSS/CSRF patterns
 ```
 
 ### Backend Packs (`@Topia/backend`)
 ```
 build (L1) ← detects Express/FastAPI/Django → calls pack skill
-pack skill → scout (L2): scan API routes and models
+pack skill → recon (L2): scan API routes and models
 pack skill → db (L2): schema and migration check
-pack skill → sentinel (L2): security audit
+pack skill → guardian (L2): security audit
 ```
 
 ### Data/AI Packs (`@Topia/ai-ml`, `@Topia/analytics`)
 ```
 build (L1) ← detects ML framework → calls pack skill
-pack skill → scout (L2): find model files and data pipelines
+pack skill → recon (L2): find model files and data pipelines
 pack skill → perf (L2): inference performance check
 pack skill → verification (L3): run model tests
 ```
@@ -118,7 +118,7 @@ pack skill → verification (L3): run model tests
 deploy (L2) ← calls pack skill for platform-specific deploy
 launch (L1) ← calls pack skill for infrastructure setup
 pack skill → watchdog (L3): setup platform monitoring
-pack skill → sentinel (L2): infrastructure security scan
+pack skill → guardian (L2): infrastructure security scan
 ```
 
 ---
@@ -190,7 +190,7 @@ Pack PRs are reviewed against these criteria:
 
 Skills: market-data-validator, risk-calculator, backtest-runner, portfolio-analyzer
 Domain: Algorithmic trading — financial data validation, risk management, backtesting
-Synapses: called by build (L1), calls scout (L2) + sentinel (L2) + perf (L2)
+Synapses: called by build (L1), calls recon (L2) + guardian (L2) + perf (L2)
 Why L4 not L3: Trading domain knowledge is not language-agnostic — belongs in L4
 
 # BAD: @Topia/code-helpers

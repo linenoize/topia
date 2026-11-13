@@ -13,7 +13,7 @@ These tools are the primary drivers for implementing features, fixing bugs, and 
 | `fix` | **Action Hub**: Specialized in writing implementation code, applying bug fixes, and verifying with tests. |
 | `debug` | **Root Cause Analysis**: Traces errors through code using structured reasoning and hands off to `fix`. |
 | `test` | **TDD Specialist**: Writes failing tests first (red) and verifies they pass after implementation (green). |
-| `scout` | **Fast Scanner**: Read-only codebase explorer used to find files, patterns, and dependencies. |
+| `recon` | **Fast Scanner**: Read-only codebase explorer used to find files, patterns, and dependencies. |
 | `verification` | **Runner**: Executes linting, type-checks, tests, and builds to ensure nothing is broken. |
 | `db` | **Database Specialist**: Manages migrations, rollback scripts, and validates queries. |
 | `git` | **Utility**: Handles semantic commits, PR descriptions, and branch management. |

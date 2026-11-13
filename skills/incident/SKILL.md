@@ -1,6 +1,6 @@
 ---
 name: incident
-description: "Structured incident response. Use when user reports an outage, production error, or says 'incident', 'something is down', 'users are affected'. Triage severity, contain blast radius, root-cause, document timeline, generate postmortem."
+description: "Use when production is down or degraded right now: 'the site is down', 'users are getting 500s', 'we have an outage'. Triages severity, contains the damage first, finds the root cause, and writes a timeline and postmortem. For a bug that is not urgent, use debug."
 disable-model-invocation: true
 metadata:
   author: topia
@@ -179,7 +179,7 @@ Strategy: Rollback to commit abc123 (pre-deploy from 14:32)
 Status: CONTAINED at 15:07 — watchdog confirms ALL_HEALTHY
 
 ### Security Check
-sentinel: PASS — no data exposure detected
+guardian: PASS — no data exposure detected
 
 ### Root Cause (from autopsy)
 Connection pool exhausted — new feature added synchronous DB call in middleware,
@@ -204,7 +204,7 @@ File: src/middleware/auth.ts:47
 1. MUST triage before any other action — severity determines urgency, approach, and escalation path
 2. MUST contain before root-cause — investigating while system is down prolongs the incident
 3. MUST invoke watchdog to verify containment — never assume contained without measurement
-4. MUST invoke sentinel before closing — every incident has a potential security dimension
+4. MUST invoke guardian before closing — every incident has a potential security dimension
 5. MUST NOT make code changes during incident response — incident investigates only; fixes are a separate task
 6. MUST generate postmortem for every P1 and P2 — P3 optional
 
@@ -214,7 +214,7 @@ File: src/middleware/auth.ts:47
 |------|----------|------------|
 | Triage Gate | Severity classified (P1/P2/P3) before any other step | Classify before proceeding |
 | Containment Gate | watchdog confirms HEALTHY/DEGRADED-improving before RCA | Return to containment if still DOWN |
-| Security Gate | sentinel ran before closing incident | Run sentinel — do not skip |
+| Security Gate | guardian ran before closing incident | Run guardian — do not skip |
 | Postmortem Gate | All sections populated (Timeline, RCA, Prevention Actions) before status = Resolved | Complete or note as DRAFT |
 
 ## Returns
@@ -236,7 +236,7 @@ Known failure modes for this skill. Check these before declaring done.
 | Starting RCA before containment confirmed | CRITICAL | HARD-GATE: check CONTAINED status before calling autopsy |
 | Declaring incident resolved without watchdog verification | HIGH | MUST call watchdog after containment — not just assume |
 | Postmortem Prevention Actions without owners or dates | MEDIUM | Every action needs owner + due date — otherwise it never happens |
-| Skipping sentinel because "looks like a performance issue" | HIGH | Security dimension is not always obvious — always run sentinel |
+| Skipping guardian because "looks like a performance issue" | HIGH | Security dimension is not always obvious — always run guardian |
 | P1 triage without 15-minute containment urgency | HIGH | P1 SLA = 15 min to contain — flag if containment exceeds threshold |
 
 ## Done When

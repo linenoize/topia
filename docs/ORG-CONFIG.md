@@ -31,7 +31,7 @@ Defines who can override what. `completion-gate` and `guardian` consult this whe
 
 | Role | What it gates |
 |---|---|
-| `admin` | Can override any gate including `sentinel BLOCK` |
+| `admin` | Can override any gate including `guardian BLOCK` |
 | `maintainer` | Can override `readiness` and `review`; cannot override `guardian` |
 | `contributor` | Cannot override any blocking gate |
 | `reviewer` | Read + comment only |
@@ -64,7 +64,7 @@ For this repo, **PR accepter validation** is the maintainer-owned gate stack bef
 ### `## Governance Level`
 Master toggle. Three values:
 
-| Level | sentinel | preflight | completion-gate | quarantine |
+| Level | guardian | verification | completion-gate | quarantine |
 |---|---|---|---|---|
 | **Loose** | advise | advise | advise | advise |
 | **Moderate** *(default)* | **block** on HIGH/CRITICAL | **block** on critical | **block** on missing evidence | advise |
@@ -157,5 +157,5 @@ node compiler/bin/topia.js setup --global --preset gentle
 - **Template + full field reference**: [`.topia/org/org.md`](../.topia/org/org.md) — the live file in this repo, pre-filled with realistic defaults
 - **PR accepter validation**: [`PR-ACCEPTER-VALIDATION.md`](PR-ACCEPTER-VALIDATION.md) — maintainer checklist for every PR + retrospective commit batches
 - **Hook architecture**: [`docs/HOOKS.md`](HOOKS.md)
-- **Sentinel skill spec**: [`skills/guardian/SKILL.md`](../skills/guardian/SKILL.md)
-- **Preflight skill spec**: [`skills/readiness/SKILL.md`](../skills/readiness/SKILL.md)
+- **Guardian skill spec**: [`skills/guardian/SKILL.md`](../skills/guardian/SKILL.md)
+- **Verification skill spec**: [`skills/verification/SKILL.md`](../skills/verification/SKILL.md)

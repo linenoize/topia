@@ -1,6 +1,6 @@
 ---
 name: improve-architecture
-description: "Find architectural friction in a codebase and propose deepening opportunities. Use when user wants to improve architecture, find refactor candidates, consolidate shallow modules, or make a codebase more testable. Outputs scored proposals (depth/leverage/locality) that surgeon and review can consume."
+description: "Use when you want refactor candidates or a more testable structure: 'where is our architecture weak', 'what should we refactor', 'too many shallow modules'. Finds friction and returns scored proposals that surgeon or review can act on. Proposes only; does not change code."
 metadata:
   author: topia
   version: "0.1.0"
@@ -35,7 +35,7 @@ These eight terms have precise meanings. Banned aliases: "boundary" (overloaded 
 
 ## Triggers
 
-- Called by `build` Phase 5 (quality gate) when refactor signals appear in scout output
+- Called by `build` Phase 5 (quality gate) when refactor signals appear in recon output
 - Called by `surgeon` before any deepening session — produces the proposal surgeon executes
 - Called by `audit` to compute the architecture sub-score
 - Called by `review` when a reviewer flag mentions "shallow", "wrapper", "indirection"
@@ -66,7 +66,7 @@ These eight terms have precise meanings. Banned aliases: "boundary" (overloaded 
 
 ## Inputs
 
-- Required: target module path (e.g. `src/auth/`) OR signal `codebase.scanned` from a recent scout pass
+- Required: target module path (e.g. `src/auth/`) OR signal `codebase.scanned` from a recent recon pass
 - Optional: `docs/architecture/` from `architecture-mapper` (preferred starting map when present; or invoke mapper when missing)
 - Optional: signal `architecture.mapped` from a recent mapping run
 - Optional: existing `CONTEXT.md` (domain glossary, used to name modules in their domain language)

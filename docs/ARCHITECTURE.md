@@ -37,13 +37,13 @@ They are activated (read) in three ways:
    - Agent follows the matching skill's Workflow steps
 
 **2. Implicit detection** — `build` detects domain context in Phase 1.5
-   - Scout output reveals domain signals (e.g., `three.js` in dependencies)
+   - Recon output reveals domain signals (e.g., `three.js` in dependencies)
    - Cook matches against L4 pack mapping table
    - Agent reads matching PACK.md and applies its constraints/patterns
    - Domain patterns supplement build's standard phases
 
 **L4 calling rules:**
-- L4 CAN call L3 utilities (scout, verification, hallucination-guard)
+- L4 CAN call L3 utilities (recon, verification, hallucination-guard)
 - L4 CANNOT call L1 or L2 skills
 - L4 CANNOT call other L4 packs (no cross-pack dependencies)
 - If L4 pack file not found on disk, skip silently (graceful degradation)
@@ -131,7 +131,7 @@ Rules:
 | debug can't find cause | problem-solver (different reasoning) |
 | docs-seeker can't find | research (broader web search) |
 | browser-pilot can't capture | verification (CLI checks) |
-| scout can't find files | research + docs-seeker |
+| recon can't find files | research + docs-seeker |
 | test can't run (env broken) | deploy fix env → test again |
 | review finds too many issues | plan re-scope → fix priorities |
 
@@ -151,9 +151,9 @@ Rules:
 
 | Group | Skills |
 |-------|--------|
-| CREATION | plan, scout, brainstorm, design, skill-forge, idea, mcp-builder, graft |
+| CREATION | plan, recon, brainstorm, design, skill-forge, idea, mcp-builder, integrate |
 | DEVELOPMENT | debug, fix, test, review, db |
-| QUALITY | sentinel, preflight, onboard, audit, perf, review-intake, logic-guardian |
+| QUALITY | guardian, verification, onboard, audit, perf, review-intake, logic-guardian |
 | DELIVERY | deploy, marketing, incident, docs, stack |
 | RESCUE | autopsy, safeguard, surgeon |
 | SECURITY | adversary |
@@ -286,20 +286,20 @@ review → fix          (bug found during review)
 review → review-intake (external feedback received on reviewed code)
 review-intake → fix   (verified feedback → apply changes)
 review-intake → test  (reviewer found untested edge case)
-review-intake → sentinel (reviewer flagged security concern)
+review-intake → guardian (reviewer flagged security concern)
 fix → test            (verify after fix)
 deploy → test         (pre-deploy verification)
-debug → scout         (find related code)
-marketing → scout     (analyze assets)
-plan → scout          (scan before planning)
+debug → recon         (find related code)
+marketing → recon     (analyze assets)
+plan → recon          (scan before planning)
 fix → review          (self-review complex fix)
-review → scout        (more context needed)
+review → recon        (more context needed)
 surgeon → safeguard   (untested module found)
-preflight → sentinel  (security sub-check)
-audit → sentinel      (security phase delegation)
+verification → guardian  (security sub-check)
+audit → guardian      (security phase delegation)
 audit → autopsy       (complexity/health phase)
 audit → dependency-doctor (deps phase delegation)
-audit → scout         (discovery phase)
+audit → recon         (discovery phase)
 audit → journal       (save audit report)
 
 # perf
@@ -307,7 +307,7 @@ perf ← build           (Phase 5 quality gate)
 perf ← audit          (performance dimension delegation)
 perf ← review         (performance patterns detected in diff)
 perf ← deploy         (pre-deploy perf regression check)
-perf → scout          (find hotpath files)
+perf → recon          (find hotpath files)
 perf → browser-pilot  (Lighthouse / Core Web Vitals)
 perf → verification   (run benchmark scripts if configured)
 
@@ -315,7 +315,7 @@ perf → verification   (run benchmark scripts if configured)
 db ← build             (schema change detected in diff)
 db ← deploy           (pre-deploy migration safety check)
 db ← audit            (database health dimension)
-db → scout            (find schema/migration files)
+db → recon            (find schema/migration files)
 db → verification     (run migration in test env)
 db → hallucination-guard (verify SQL syntax and ORM methods)
 
@@ -325,19 +325,19 @@ incident ← deploy     (health check fails post-deploy)
 incident → watchdog   (current system state — what's down)
 incident → autopsy    (root cause after containment)
 incident → journal    (record incident timeline)
-incident → sentinel   (check for security dimension)
+incident → guardian   (check for security dimension)
 
 # design
 design ← build         (frontend task detected, no design-system.md)
 design ← review       (AI anti-pattern detected in diff)
 design ← perf         (Lighthouse Accessibility BLOCK)
-design → scout        (detect platform, tokens, component library)
+design → recon        (detect platform, tokens, component library)
 design → asset-creator (generate base visual assets from design system)
 
 # skill-forge
 skill-forge ← build    (feature being built IS a new skill)
 skill-forge ← plan    (plan identifies need for reusable skill)
-skill-forge → scout   (scan existing skills for overlap)
+skill-forge → recon   (scan existing skills for overlap)
 skill-forge → plan    (structure complex multi-phase skills)
 skill-forge → hallucination-guard (verify referenced skills exist)
 skill-forge → verification (validate SKILL.md format)
@@ -346,11 +346,11 @@ skill-forge → journal (record skill creation ADR)
 # review-intake
 review-intake ← build  (Phase 5: external review arrives)
 review-intake ← review (self-review surfaces issues to address)
-review-intake → scout  (verify reviewer claims against codebase)
+review-intake → recon  (verify reviewer claims against codebase)
 review-intake → fix    (apply verified changes)
 review-intake → test   (add tests for reviewer-found edge cases)
 review-intake → hallucination-guard (verify suggested APIs exist)
-review-intake → sentinel (re-check security if reviewer flagged)
+review-intake → guardian (re-check security if reviewer flagged)
 
 # completion-gate
 completion-gate ← build    (Phase 5d: validate agent claims)
@@ -361,7 +361,7 @@ worktree ← team           (Phase 2: create worktrees for streams)
 worktree ← build           (optional isolation for complex features)
 
 # sast
-sast ← sentinel           (deep analysis beyond regex patterns)
+sast ← guardian           (deep analysis beyond regex patterns)
 sast ← audit              (security dimension in full audit)
 sast ← build               (security-sensitive code paths)
 sast ← review             (security patterns detected in diff)
@@ -377,7 +377,7 @@ logic-guardian ← fix      (pre-edit gate on manifested files)
 logic-guardian ← surgeon  (pre-refactor on logic modules)
 logic-guardian ← team     (validate logic integrity across streams)
 logic-guardian ← review   (check if diff removes manifested logic)
-logic-guardian → scout    (scan project for logic files)
+logic-guardian → recon    (scan project for logic files)
 logic-guardian → verification (run tests after logic edits)
 logic-guardian → hallucination-guard (verify references after edit)
 logic-guardian → journal  (record logic changes as ADRs)
@@ -400,12 +400,12 @@ scaffold → test       (Phase 6: test generation)
 scaffold → docs       (Phase 7: documentation)
 scaffold → git        (Phase 8: initial commit)
 scaffold → verification (Phase 9: build + test verification)
-scaffold → sentinel   (Phase 9: security scan)
+scaffold → guardian   (Phase 9: security scan)
 
 # docs (Documentation Lifecycle)
 docs ← build           (Phase 8: auto-update docs after feature)
 docs ← scaffold       (Phase 7: generate initial docs)
-docs → scout          (scan codebase for doc-worthy exports)
+docs → recon          (scan codebase for doc-worthy exports)
 docs → doc-processor  (generate PDF/DOCX from markdown)
 docs → docs           (commit doc changes)
 
@@ -417,7 +417,7 @@ git ← launch          (tag and release)
 
 # mcp-builder (MCP Server Builder)
 mcp-builder ← build    (building an MCP server)
-mcp-builder → scout   (scan for existing MCP patterns)
+mcp-builder → recon   (scan for existing MCP patterns)
 mcp-builder → test    (generate MCP server tests)
 mcp-builder → docs    (generate MCP server documentation)
 mcp-builder → hallucination-guard (verify SDK imports exist)
@@ -426,11 +426,11 @@ mcp-builder → hallucination-guard (verify SDK imports exist)
 doc-processor ← docs  (PDF/DOCX generation)
 doc-processor ← marketing (generate branded PDFs)
 
-# graft (Repo Porting)
-graft → scout         (scan target repo before porting)
-graft → review        (validate grafted code quality)
-graft → journal       (record grafting decision as ADR)
-graft → sentinel      (security check on ported code)
+# integrate (Repo Porting)
+integrate → recon         (scan target repo before porting)
+integrate → review        (validate grafted code quality)
+integrate → journal       (record grafting decision as ADR)
+integrate → guardian      (security check on ported code)
 
 # New connections
 brainstorm → design   (ideas feed into design system generation)
@@ -438,7 +438,7 @@ idea → design           (requirements feed into UI design)
 rescue → retro        (post-rescue retrospective)
 launch → retro        (post-launch retrospective)
 scaffold → skill-forge (scaffold identifies reusable skill patterns)
-sentinel → plan       (security.blocked triggers re-planning)
+guardian → plan       (security.blocked triggers re-planning)
 ```
 
 ## Master Plan + Phase Files (Amateur-Proof Architecture)

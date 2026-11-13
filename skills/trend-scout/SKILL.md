@@ -1,6 +1,6 @@
 ---
 name: trend-scout
-description: "Scan market trends, competitor activity, and emerging patterns. Monitors Product Hunt, GitHub Trending, HackerNews, and social platforms."
+description: "Use when researching the market around a product: 'what are competitors doing', 'what is trending in this space', 'how do people feel about X'. Scans Product Hunt, GitHub Trending, Hacker News and social sites. For library or API docs, use docs-seeker."
 metadata:
   author: topia
   version: "0.2.0"

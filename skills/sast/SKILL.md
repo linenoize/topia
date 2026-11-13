@@ -1,6 +1,6 @@
 ---
 name: sast
-description: "Static analysis tool runner. Wraps ESLint, Semgrep, Bandit, Clippy, and language-specific analyzers with unified severity output. Use when deeper code analysis needed beyond pattern matching."
+description: "Use when you want real static analysis tools run, beyond pattern checks: 'run semgrep', 'run bandit on the Python code', 'deep security scan'. Wraps ESLint, Semgrep, Bandit, Clippy and similar tools and reports on one scale: BLOCK, WARN, INFO."
 metadata:
   author: topia
   version: "1.0.0"
@@ -16,7 +16,7 @@ metadata:
 
 Unified static analysis tool runner. While `guardian` does regex-based security pattern matching and `verification` runs lint/type/test/build, SAST goes deeper — running dedicated static analysis tools that understand data flow, taint tracking, and language-specific vulnerability patterns.
 
-Sentinel catches obvious patterns (hardcoded secrets, SQL string concat). SAST catches subtle ones (tainted data flowing through 3 function calls to a sink, unsafe deserialization behind a wrapper).
+Guardian catches obvious patterns (hardcoded secrets, SQL string concat). SAST catches subtle ones (tainted data flowing through 3 function calls to a sink, unsafe deserialization behind a wrapper).
 
 ## Triggers
 

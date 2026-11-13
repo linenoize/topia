@@ -1,6 +1,6 @@
 ---
 name: build
-description: "Feature implementation orchestrator. ALWAYS use this skill for ANY code change — implement, build, add feature, create, fix bug, or any task that modifies source code. This is the default route for 70% of all requests. Runs full TDD cycle: understand → plan → test → implement → quality → verify → commit."
+description: "Use when building a feature or a multi-step change that needs tests: 'implement X', 'add support for Y', 'build the Z flow'. Plans, writes a failing test, codes, checks and commits. For a known one-line change use fix; for a bug with an unknown cause use debug first."
 context: fork
 agent: general-purpose
 metadata:
@@ -87,14 +87,14 @@ FULL HOTFIX CHAIN (when incident is active):
 2. BRANCH    → create hotfix branch via worktree (isolate from main)
 3. FIX       → `topia:fix` (minimal change only — no refactoring, no scope creep)
 4. VERIFY    → `topia:verification` (full test suite on hotfix branch)
-5. SENTINEL  → `topia:guardian` (security check — fix may introduce new surface)
+5. GUARDIAN  → `topia:guardian` (security check — fix may introduce new surface)
 6. DEPLOY    → `topia:deploy` (deploy hotfix to production)
 7. WATCHDOG  → `topia:watchdog` (confirm health check passes post-deploy)
 8. POSTMORTEM → `topia:journal` (record root cause + fix pattern)
 
 HARD-GATES:
 - Do NOT skip CONTAIN if users are actively affected
-- Do NOT skip SENTINEL on hotfix — rushed fixes frequently introduce new vulnerabilities
+- Do NOT skip GUARDIAN on hotfix — rushed fixes frequently introduce new vulnerabilities
 - Do NOT merge hotfix to main without VERIFY passing
 - Do NOT skip POSTMORTEM — hotfix without learning = same incident next month
 ```
@@ -139,7 +139,7 @@ Fast mode:           Phase 1 → 4 → 6 → 7 (auto-detected, see below)
 Multi-session:       Phase 0 (resume) → 3 → 4 → 5 → 6 → 7 (one plan phase per session)
 ```
 
-Determine complexity BEFORE starting using the Rigor Assessment below. Create TodoWrite with applicable phases.
+Determine complexity BEFORE starting using the Rigor Assessment below. Create one task per applicable phase with the task list tool (TaskCreate/TaskUpdate in Claude Code, the host todo tool elsewhere).
 
 ### Rigor Assessment (Progressive Scaling)
 
@@ -217,9 +217,9 @@ IF all of these are true:
 THEN: Fast Mode activated
   - Skip Phase 2 (PLAN) — change is too small for a formal plan
   - Skip Phase 3 (TEST) — unless existing tests cover the area
-  - Skip Phase 5b (SENTINEL) — non-security code
+  - Skip Phase 5b (GUARDIAN) — non-security code
   - Skip Phase 8 (BRIDGE) — not worth persisting
-  - KEEP Phase 5a (PREFLIGHT) and Phase 6 (VERIFY) — always run quality checks
+  - KEEP Phase 5a (spec + logic check) and Phase 6 (VERIFY) — always run quality checks
 ```
 
 **Announce fast mode**: "Fast mode: small change detected (<30 LOC, single file, non-security). Streamlined pipeline."
@@ -237,7 +237,7 @@ Auto-trigger: no `.topia/` dir (first run) OR build just failed with env-looking
 
 **REQUIRED SUB-SKILLS**: Use `topia:recon`. For non-trivial tasks, use `topia:idea`.
 
-1. Create TodoWrite with all applicable phases for this task
+1. Create one task per applicable phase with the task list tool (TaskCreate/TaskUpdate in Claude Code, the host todo tool elsewhere)
 2. Mark Phase 1 as `in_progress`
 2.5. **Recall gate**: Recall: `topia:recall` with the task's keywords BEFORE asking the user anything. If past sessions surface relevant decisions, bugs, or rejected approaches → present to user as "we've seen this before: …" and proceed with that context. If nothing is found, continue without comment.
 3. **idea gate**: Feature Request / Integration / Greenfield → invoke `topia:idea`. Task > 50 words or business terms (users, revenue, workflow) → invoke `topia:idea`. Bug Fix / simple Refactor → skip. idea produces `.topia/features/<name>/requirements.md` for Phase 2. **Synthesis-mode auto-trigger**: if user pasted a spec > 200 words, conversation has > 1000 words on this feature, `.topia/features/<name>/requirements.md` already exists (continuation), or user said "synthesize"/"just write the spec" → idea Step 1.4 activates Synthesis Mode (extract + cite sources + confirm), skipping the 5-question elicitation. Build does NOT need to choose mode — idea detects automatically.
@@ -273,7 +273,7 @@ Skip if: bug fix with clear repro steps | user said "just do it" | fast mode + <
 After recon completes:
 
 1. If `.topia/active-packs.json` exists, `Read` it first (workspace-enabled packs from onboard/install).
-2. Match scout output and the task description against the pack-detection signal table; **union** with `enabled[]`, dedupe, **cap at 2 packs** (see pack-detection.md).
+2. Match recon output and the task description against the pack-detection signal table; **union** with `enabled[]`, dedupe, **cap at 2 packs** (see pack-detection.md).
 
 This phase is lightweight — Read + pattern match. It does NOT replace Phase 1 (recon) or Phase 2 (plan). If 0 packs match after union: skip silently.
 
@@ -534,7 +534,7 @@ During Phase 5 quality checks, if a gate finding traces to an **upstream artifac
 4. Get user approval on the corrected upstream artifact (a Decision Stop in a background run)
 5. Resume Phase 5 from the beginning (re-run all gates — upstream change may invalidate prior PASS results)
 
-### 5a. Preflight (Spec Compliance + Logic) — STAGE 1
+### 5a. Spec Compliance + Logic — STAGE 1
 **REQUIRED SUB-SKILL**: Use `topia:readiness`
 - Spec compliance: compare approved plan vs actual diff
 - Logic review, error handling, completeness
@@ -576,7 +576,7 @@ Projects can define phase-specific rules in `.topia/phase-rules.md` that apply O
 
 ## Phase 5: QUALITY
 - Review must check for N+1 queries on any ORM code
-- Sentinel must verify CORS configuration on new routes
+- Guardian must verify CORS configuration on new routes
 ```
 
 **Loading**: Build reads `.topia/phase-rules.md` during Phase 0 (resume check). Rules for each phase are injected into the sub-skill's context when that phase starts. If file doesn't exist → skip silently.
@@ -587,7 +587,7 @@ Invoke `topia:context-lifecycle` (Boundary Save mode) after Phase 2, 4, and 5 wh
 
 ## Phase Transition Protocol (MANDATORY)
 
-Before entering ANY Phase N+1, assert: Phase N `completed` in TodoWrite | gate condition met | no BLOCK from sub-skills | no unresolved CRITICAL findings. If any fails → STOP, log "BLOCKED at Phase N→N+1: [assertion]", fix, re-check.
+Before entering ANY Phase N+1, assert: Phase N `completed` in the task list | gate condition met | no BLOCK from sub-skills | no unresolved CRITICAL findings. If any fails → STOP, log "BLOCKED at Phase N→N+1: [assertion]", fix, re-check.
 
 **Key transitions:** 1→2: recon done | 2→3: plan approved | 1→3 (bugfix): CP1 confirmed | 3→4: failing tests exist + CP2 confirmed (bugfix) | 4→5: all tests pass | 5→6: no CRITICAL findings | 6→7: lint+types+build green + CP3 confirmed (bugfix).
 

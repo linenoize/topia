@@ -5,7 +5,7 @@ Cross-cutting behavioral rules for all Topia skills. These are non-negotiable.
 ## Layer Discipline
 
 1. L3 utilities MUST NOT call L1 or L2 skills (except documented L3→L3 coordination)
-2. L1 orchestrators MUST use TodoWrite to track phase progress
+2. L1 orchestrators MUST track phase progress with the task list tool (TaskCreate/TaskUpdate in Claude Code, the host todo tool elsewhere)
 3. Only ONE L1 orchestrator active at a time (except `team` meta-orchestration)
 
 ## Quality Gates

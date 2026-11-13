@@ -1,6 +1,6 @@
 ---
 name: design
-description: "Design system reasoning. Maps product domain to style, palette, typography, and platform-specific patterns. Generates .topia/design-system.md as the shared design contract for all UI-generating skills."
+description: "Use when a product needs a visual direction before UI is built: 'pick a style for this app', 'set up a palette and typography', 'create a design system'. Maps the product domain to style, palette, type and platform patterns in .topia/design-system.md. To critique or polish existing UI, prefer impeccable if installed."
 metadata:
   author: topia
   version: "0.5.0"
@@ -73,7 +73,7 @@ When `references/ui-pro-max-data/` is available:
 
 ### Step 1 — Discover
 
-Invoke `scout` to detect:
+Invoke `recon` to detect:
 - **Platform target**: `web` | `ios` (SwiftUI) | `android` (Compose) | `react-native` | `multi-platform`
 - **Existing design tokens**: check for `tokens.json`, `design-system/`, `theme.ts`, `tailwind.config.*`, `variables.css`
 - **Component library in use**: shadcn/ui | Radix | MUI | Ant Design | custom | none

@@ -135,12 +135,12 @@ describe('intent-router', () => {
   }
 
   test('suggests the skill the wording points at, from the table shipped in hooks/lib', () => {
-    const { stdout, exitCode } = route('{"prompt": "fix the crash and add a unit test"}', {
+    const { stdout, exitCode } = route('{"prompt": "add support for gzip, fix the crash and add a unit test"}', {
       CLAUDE_PLUGIN_ROOT: '/nonexistent',
     });
     assert.strictEqual(exitCode, 0);
     const text = context(stdout);
-    assert.match(text, /^🧭 \[Topia intent-router\] Suggested: topia:build \(L1, sonnet\) — wording: "fix", "add"/);
+    assert.match(text, /^🧭 \[Topia intent-router\] Suggested: topia:build \(L1, sonnet\) — wording: "add support for"/);
     assert.match(text, /Also consider: test, debug/);
     // build is `context: fork`, so the hook says its report comes back later.
     assert.match(text, /Runs in the background: its report arrives later as a task notification/);

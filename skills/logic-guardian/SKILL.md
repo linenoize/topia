@@ -1,6 +1,6 @@
 ---
 name: logic-guardian
-description: "Protects complex business logic from accidental deletion or overwrite. Use when editing payment, trading, state-machine, or other load-bearing business logic where a single deleted line can cause silent data corruption. Maintains a logic manifest, enforces pre-edit gates, validates post-edit diffs."
+description: "Use when editing payment, billing, trading, state-machine or other business logic where one deleted line can silently corrupt data. Keeps a manifest of the logic that must survive, asks what an edit will preserve, and checks the diff after."
 metadata:
   author: topia
   version: "0.3.0"
@@ -106,7 +106,7 @@ Before ANY edit to a manifested file:
 
 Scan the project and build the manifest:
 
-1. Use `scout` to find logic-heavy files:
+1. Use `recon` to find logic-heavy files:
    - Search for files with complex conditionals, state machines, strategy patterns
    - Look for files matching: `**/logic/**`, `**/strategy/**`, `**/engine/**`, `**/core/**`, `**/scenarios/**`, `**/rules/**`, `**/pipeline/**`, `**/trailing/**`, `**/signals/**`
    - Also search for files with high cyclomatic complexity (many if/else/switch branches)
@@ -264,6 +264,6 @@ Ensure the next session can pick up where this one left off:
 
 ## Cost Profile
 
-~1,000-2,000 tokens for manifest load + pre-edit gate. ~3,000-5,000 tokens for full project scan (Phase 3). Sonnet for code analysis; haiku for file scanning via scout.
+~1,000-2,000 tokens for manifest load + pre-edit gate. ~3,000-5,000 tokens for full project scan (Phase 3). Sonnet for code analysis; haiku for file scanning via recon.
 
 **Scope guardrail:** logic-guardian protects existing logic — it does not implement new features or refactor code.

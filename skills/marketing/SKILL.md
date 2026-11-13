@@ -1,6 +1,6 @@
 ---
 name: marketing
-description: "Create marketing assets and execute launch strategy. Generates landing copy, social banners, SEO meta, blog posts, and video scripts."
+description: "Use when writing launch or promotional material: 'write landing page copy', 'draft social posts for the release', 'SEO meta for the site', 'a blog post announcing this'. Bases every claim on what the code actually does."
 metadata:
   author: topia
   version: "0.6.0"
@@ -38,7 +38,7 @@ Create marketing assets and execute launch strategy. Marketing generates landing
 
 ### Step 1 — Understand the product
 
-Call `topia:recon` to scan the codebase. Ask scout to extract:
+Call `topia:recon` to scan the codebase. Ask recon to extract:
 - Feature list (what the product actually does)
 - README summary
 - Target audience signals (from code, comments, config)
@@ -104,7 +104,7 @@ Using product understanding, market research, and **brand voice contract**, prod
 **Value propositions** (3 items)
 - Icon/emoji, title, 1-sentence description each
 
-**Feature list** (pulled from Step 1 scout output)
+**Feature list** (pulled from Step 1 recon output)
 - Name + benefit phrasing for each feature
 
 **Social proof section** (placeholder copy if no real testimonials)
@@ -310,7 +310,7 @@ Known failure modes for this skill. Check these before declaring done.
 |---|---|---|
 | Fabricating statistics, benchmarks, or testimonials | CRITICAL | Constraint 3: no fabrication — if no real stats exist, use honest placeholder copy |
 | Generating copy before deploy verified live | HIGH | Constraint 2: deploy must be confirmed live before marketing runs |
-| Copy not based on actual codebase features (invented value props) | HIGH | scout must run in Step 1 — features extracted from actual code, not assumptions |
+| Copy not based on actual codebase features (invented value props) | HIGH | recon must run in Step 1 — features extracted from actual code, not assumptions |
 | Missing SEO keyword analysis (no research call) | MEDIUM | Step 2: research call for keyword data is mandatory for SEO section |
 | Files saved without user approval | MEDIUM | Step 7: present ALL assets to user, wait for approval before writing files |
 | Counter-playbook without detection mechanism | HIGH | Every scenario needs a monitoring method — "watch for price drops" is useless without specifying WHERE to watch and HOW to automate |
@@ -319,7 +319,7 @@ Known failure modes for this skill. Check these before declaring done.
 
 ## Done When
 
-- scout completed and actual feature list extracted
+- recon completed and actual feature list extracted
 - Brand voice contract established (or existing one loaded)
 - Competitor/trend analysis done via trend-scout + research
 - Competitive response playbook generated (if competitors exist) with pre-built asset checklist

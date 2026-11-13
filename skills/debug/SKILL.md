@@ -1,6 +1,6 @@
 ---
 name: debug
-description: "Root cause analysis for bugs and unexpected behavior. Traces errors through code, uses structured reasoning, and hands off to fix when cause is found. Core of the debug↔fix chain."
+description: "Use when something is broken and the cause is unknown: 'why does this crash', 'this test fails and I don't know why', a stack trace to explain. Traces the error, tests hypotheses and reports the root cause. Investigates only; fix applies the change."
 metadata:
   author: topia
   version: "1.2.0"
@@ -21,7 +21,7 @@ Root cause analysis ONLY. Debug investigates — it does NOT fix. It traces erro
 <HARD-GATE>
 Do NOT fix the code. Debug investigates only. Any code change is out of scope.
 If root cause cannot be identified after 3 hypothesis cycles:
-- Emit `agent.stuck` signal — `scout` zoom-out mode surfaces broader module map (structural pivot); `adversary` oracle-mode dispatches a stateless second-model pass (semantic pivot); both fire in parallel
+- Emit `agent.stuck` signal — `recon` zoom-out mode surfaces broader module map (structural pivot); `adversary` oracle-mode dispatches a stateless second-model pass (semantic pivot); both fire in parallel
 - If `oracle.response` arrives with confidence=high and cites file:line, treat as new hypothesis H_oracle and test directly (skip 3-cycle gate — it's externally validated)
 - Otherwise, escalate to `topia:problem-solver` for structured 5-Whys or Fishbone analysis
 - Or escalate to `topia:sequential-thinking` for multi-variable analysis
@@ -48,7 +48,7 @@ If root cause cannot be identified after 3 hypothesis cycles:
 - `browser-pilot` (L3): capture browser console errors, network failures, visual bugs
 - `sequential-thinking` (L3): multi-variable root cause analysis
 - `journal` (L3): after root cause found — record error pattern for future recognition
-- `adversary` (L2): on `agent.stuck` — oracle-mode dispatches stateless second-model pass to break confirmation-bias loop (parallel with scout zoom-out)
+- `adversary` (L2): on `agent.stuck` — oracle-mode dispatches stateless second-model pass to break confirmation-bias loop (parallel with recon zoom-out)
 - `stack` (L2): bug lives in a Docker Compose service — bounded container logs, status, or a one-service restart/rebuild to reproduce
 
 ## Called By (inbound)

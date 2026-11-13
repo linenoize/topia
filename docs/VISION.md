@@ -139,7 +139,7 @@ The skill must fit one of these phases: planning, coding, testing, reviewing, de
 A skill must either call at least one existing skill OR be called by at least two existing skills — and ideally both. Connections must be meaningful (actual data flow), not ceremonial.
 
 ❌ **Fail example:** `code-formatter` — no inbound, no outbound, pure L3 with 0 connections
-✅ **Pass example:** `audit` — calls `guardian`, `dependency-doctor`, `autopsy`, `scout`, `journal`; called by `build`, `launch`
+✅ **Pass example:** `audit` — calls `guardian`, `dependency-doctor`, `autopsy`, `recon`, `journal`; called by `build`, `launch`
 
 ### Gate 3 — Non-Redundancy
 > Can this skill's function be achieved by composing 2 existing skills?
@@ -213,9 +213,9 @@ Topia operates on three time horizons. The roadmap is intentionally non-prescrip
 
 - ✅ **Native hooks across 4 platforms** — `Topia hooks install` wires `readiness`, `guardian`, `completion-gate`, `dependency-doctor` as pre-tool-use hooks on Claude Code, Cursor, Windsurf, Antigravity
 - ✅ **Three presets** — `strict` (blocking), `gentle` (warnings, default), `off` (uninstall). Idempotent with full user-hook restore
-- ✅ **logic-guardian auto-seeding** — `Topia init` writes `.topia/INVARIANTS.md` with project-detected rules; preflight reads as a hard gate
+- ✅ **logic-guardian auto-seeding** — `Topia init` writes `.topia/INVARIANTS.md` with project-detected rules; verification reads as a hard gate
 
-**Why this matters:** Principle P6 ("Constraints Block Rationalization") is now enforced at the tool-use layer, not just in skill prompts. The AI cannot "forget" to run preflight — the hook fires before every edit.
+**Why this matters:** Principle P6 ("Constraints Block Rationalization") is now enforced at the tool-use layer, not just in skill prompts. The AI cannot "forget" to run verification — the hook fires before every edit.
 
 **Constraint:** Hooks run on user tools, not hypothetical Topia commands.
 

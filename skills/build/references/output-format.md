@@ -11,7 +11,7 @@ Also defines the NEXUS Deliverables table format used when build is invoked by `
 - **Phases**: [list of completed phases]
 - **Files Changed**: [count] ([list])
 - **Tests**: [passed]/[total] ([coverage]%)
-- **Quality**: preflight [PASS/WARN] | sentinel [PASS/WARN] | review [PASS/WARN]
+- **Quality**: verification [PASS/WARN] | guardian [PASS/WARN] | review [PASS/WARN]
 - **Commit**: [hash] — [message]
 
 ### Deliverables (NEXUS response — when invoked by team)
@@ -70,7 +70,7 @@ chain_metadata:
     commit_hash: "[actual git hash]"
     files_changed_count: [N]
     test_results: { passed: [N], failed: [N], coverage: [N] }
-    quality_gates: { preflight: "[PASS/WARN/FAIL]", sentinel: "[PASS/WARN/FAIL]", review: "[PASS/WARN/FAIL]" }
+    quality_gates: { verification: "[PASS/WARN/FAIL]", guardian: "[PASS/WARN/FAIL]", review: "[PASS/WARN/FAIL]" }
     phase_count: [N]
     concerns: []  # populated if DONE_WITH_CONCERNS
   suggested_next:  # 1-3 data-driven recommendations based on THIS output
@@ -80,7 +80,7 @@ chain_metadata:
 ```
 
 **Rules for suggested_next:**
-- Base suggestions on ACTUAL output data (sentinel WARN → suggest deeper security review, low coverage → suggest more tests)
+- Base suggestions on ACTUAL output data (guardian WARN → suggest deeper security review, low coverage → suggest more tests)
 - Never suggest skills that already ran successfully in this session
 - Status-aware: BLOCKED → suggest debug/fix, DONE → suggest review/deploy/test
 - Max 3 suggestions, ordered by priority

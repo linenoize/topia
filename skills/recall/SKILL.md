@@ -1,6 +1,6 @@
 ---
 name: recall
-description: "Read-only memory recall from Topia's files: .topia/ progress, decisions, conventions, and learnings, plus .remember/ when present. Use at session start, when resuming work, or before architecture decisions. Writes go through journal and session-bridge."
+description: "Use when starting a session, resuming work, or before an architecture decision: 'where did we leave off', 'what did we decide about auth'. Reads .topia/ progress, decisions, conventions and learnings, plus .remember/ when present. Read-only; journal and session-bridge do the writing."
 metadata:
   author: topia
   version: "1.0.0"

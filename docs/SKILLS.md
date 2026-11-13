@@ -27,7 +27,7 @@ Each skill is marked by who invokes it in practice:
 | Build a feature / fix a bug / refactor | 👤 [`build`](#-build) |
 | Explore ideas before committing to an approach | 👤 [`brainstorm`](#-brainstorm) → 👤 [`plan`](#-plan) |
 | Plan a multi-phase implementation | 👤 [`plan`](#-plan) |
-| Understand the codebase | 👤 [`scout`](#-scout) |
+| Understand the codebase | 👤 [`recon`](#-recon) |
 | Find a root cause | 👤 [`debug`](#-debug) |
 | Write tests (TDD) | 🔄 [`test`](#-test) |
 | Review code quality | 👤 [`review`](#-review) |
@@ -36,10 +36,10 @@ Each skill is marked by who invokes it in practice:
 | Gather requirements | 👤 [`idea`](#-idea) |
 | Set up a new project | 👤 [`scaffold`](#-scaffold) |
 | Rescue legacy code | 👤 [`rescue`](#-rescue) |
-| Port code from another repo | 👤 [`integrate`](#-graft) |
+| Port code from another repo | 👤 [`integrate`](#-integrate) |
 | Parallel work across 5+ files | 👤 [`team`](#-team) |
 | Handle a production incident | 👤 [`incident`](#-incident) |
-| Run a security audit | 👤 [`guardian`](#-sentinel) or 👤 [`audit`](#-audit) |
+| Run a security audit | 👤 [`guardian`](#-guardian) or 👤 [`audit`](#-audit) |
 | Generate docs | 👤 [`docs`](#-docs) |
 | Walk through a change (show-and-tell) | 👤 [`docs`](#-docs) |
 | Answer many decisions at once | 👤 [`decision-form`](#-decision-form) |
@@ -60,7 +60,7 @@ Meta-enforcement layer. Routes every action through the correct skill before cod
 ## L1 — Orchestrators (5)
 
 ### 👤 build
-Feature implementation orchestrator — handles 70% of requests. Runs the full TDD cycle: scout → plan → test → implement → verify → commit.
+Feature implementation orchestrator — handles 70% of requests. Runs the full TDD cycle: recon → plan → test → implement → verify → commit.
 **Use when:** building, fixing, refactoring, adding features, modifying source code.
 
 ### 👤 team
@@ -91,7 +91,7 @@ Requirements elicitation — asks 5 probing questions, maps stakeholders, produc
 Creates structured implementation plans — master plan + phase files. Each session handles one phase.
 **Use when:** work spans 3+ phases or 5+ files.
 
-### 👤 scout
+### 👤 recon
 Fast codebase scanner. Finds files, patterns, dependencies, project structure. Read-only.
 **Use when:** before planning, fixing, reviewing, or refactoring — get context first.
 
@@ -127,11 +127,11 @@ Code quality review. Checks correctness, security, performance, conventions, cov
 Database workflow specialist. Migration generation (up + down), breaking change detection, index recommendations, SQL injection scanning.
 **Use when:** schema changes detected. Auto-called by `build` when diff includes schema files.
 
-### 🤖 sentinel
+### 🤖 guardian
 Security gatekeeper. Blocks unsafe code BEFORE commit. Secret scanning, OWASP top 10, dependency audit.
 **Use when:** auto-fires via pre-commit hook (when `topia hooks install` is active). Direct invocation: ad-hoc security check.
 
-### 🤖 preflight
+### 🤖 verification
 Pre-commit quality gate. Catches "almost right" code — logic, error handling, regressions, completeness.
 **Use when:** auto-fires via pre-commit hook. Direct invocation: dry-run the gate.
 
@@ -199,7 +199,7 @@ Pre-implementation red-team analysis. Challenges plans BEFORE code is written �
 Engineering retrospective. Analyzes commit history, work patterns, code quality metrics. Read-only.
 **Use when:** weekly / monthly / quarterly review.
 
-### 👤 graft
+### 👤 integrate
 Clone, port, or convert features from any GitHub repo into your project. Understand before copy, challenge before implement.
 **Use when:** stealing patterns from other repos. Four modes: port, compare, copy, improve.
 
