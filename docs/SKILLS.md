@@ -3,7 +3,7 @@
 > **Need a skill?** Invoke via `/topia <skill-name>` in Claude Code, or `@topia:<skill-name>` in Cursor / Codex / Antigravity.
 > Every skill has a `SKILL.md` at `skills/<name>/SKILL.md` — read that for the full spec.
 
-**Total:** 72 skills across 5 layers · 323+ synapses + 49 pulses
+**Total:** 73 skills across 5 layers · 323+ synapses + 49 pulses
 **Quick find:** use Ctrl+F on this page
 
 ---
@@ -41,6 +41,8 @@ Each skill is marked by who invokes it in practice:
 | Handle a production incident | 👤 [`incident`](#-incident) |
 | Run a security audit | 👤 [`guardian`](#-sentinel) or 👤 [`audit`](#-audit) |
 | Generate docs | 👤 [`docs`](#-docs) |
+| Walk through a change (show-and-tell) | 👤 [`docs`](#-docs) |
+| Answer many decisions at once | 👤 [`decision-form`](#-decision-form) |
 | Onboard an existing codebase | 👤 [`onboard`](#-onboard) |
 | Map / reverse-engineer legacy architecture | 👤 [`architecture-mapper`](#-architecture-mapper) |
 | Recall past decisions | 🔄 [`neural-memory`](#-neural-memory) or 🔄 [`journal`](#-journal) |
@@ -182,8 +184,8 @@ Protects complex business logic from accidental deletion. Maintains logic manife
 **Use when:** auto-fires when `.topia/logic-manifest.json` is present and you edit a protected file.
 
 ### 👤 docs
-Auto-generate and maintain project documentation. Keeps docs in sync with code.
-**Use when:** after shipping features or before releases.
+Auto-generate and maintain project documentation. Keeps docs in sync with code. Show-and-tell mode writes a walkthrough of a change, checked against git.
+**Use when:** after shipping features or before releases, or when you ask to see what changed and how to try it.
 
 ### 👤 mcp-builder
 Build MCP servers from specs. TypeScript (official SDK) or Python (FastMCP). Multi-provider adapter pattern.
@@ -219,7 +221,7 @@ Generate and parse office documents — PDF, DOCX, XLSX, PPTX, CSV. Pure format 
 
 ---
 
-## L3 — Utilities (27)
+## L3 — Utilities (28)
 
 | Marker | Skill | Purpose |
 |--------|-------|---------|
@@ -228,6 +230,7 @@ Generate and parse office documents — PDF, DOCX, XLSX, PPTX, CSV. Pure format 
 | 👤 | **trend-scout** | Market intelligence — Product Hunt, GitHub Trending, HN, Reddit |
 | 🔄 | **problem-solver** | Structured reasoning frameworks (5 Whys, Fishbone, First Principles, SCAMPER) with bias detection |
 | 🔄 | **sequential-thinking** | Multi-variable analysis for >3 interdependent factors with cascading effects |
+| 👤 | **decision-form** | One offline HTML form for 5+ decisions, recommended answers preselected; exports a block Claude parses |
 | 🔄 | **verification** | Universal verification — lint, type-check, tests, build. 3-level quality gate |
 | 🤖 | **hallucination-guard** | Post-generation validation — phantom imports, typosquatting |
 | 🤖 | **completion-gate** | Lie detector — validates every completion claim has evidence |

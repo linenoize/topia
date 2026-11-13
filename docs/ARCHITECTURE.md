@@ -7,7 +7,7 @@
 | **L0** | **Router** | **1** | **L1-L3 (routing)** | **Every message** | **Stateless (rule-based)** |
 | L1 | Orchestrators | 5 | L2, L3 | L0, User | Stateful (workflow) |
 | L2 | Workflow Hubs | 30 | L2 (cross-hub), L3 | L1, L2 | Stateful (task) |
-| L3 | Utilities | 27 | Nothing (pure)* | L1, L2 | Stateless |
+| L3 | Utilities | 28 | Nothing (pure)* | L1, L2 | Stateless |
 | L4 | Extension Packs | 14 | L3 | L2 (domain match) | Config-based |
 
 ### L0 — The Enforcement Layer
@@ -110,7 +110,7 @@ Rules:
 - Skills without `model:` produce no model field in any adapter
 - Unknown values pass through unchanged (forward-compatibility for new models)
 
-**Version bumps (e.g. Opus 4.7 → 4.8):** Skill frontmatter stays on tiers (`opus`/`sonnet`/`haiku`). Claude Code/Cursor resolve tiers to the current Anthropic model. When Anthropic ships a new version, update this table and any hardcoded example IDs in docs/snippets — not the 72 skill files.
+**Version bumps (e.g. Opus 4.7 → 4.8):** Skill frontmatter stays on tiers (`opus`/`sonnet`/`haiku`). Claude Code/Cursor resolve tiers to the current Anthropic model. When Anthropic ships a new version, update this table and any hardcoded example IDs in docs/snippets — not the 73 skill files.
 
 **Telemetry:** Session-end metrics and `models_used` resolve tiers from `skills/<name>/SKILL.md` first (then `agents/<name>.md`). Agent subagent wrappers should match their skill tier so reports reflect intended cost profile.
 
@@ -164,7 +164,7 @@ Rules:
 | Group | Skills |
 |-------|--------|
 | KNOWLEDGE | research, docs-seeker, trend-scout |
-| REASONING | problem-solver, sequential-thinking |
+| REASONING | problem-solver, sequential-thinking, decision-form |
 | VALIDATION | verification, hallucination-guard, integrity-check, completion-gate, constraint-check, sast |
 | STATE | context-engine, context-pack, journal, session-bridge, neural-memory |
 | MONITORING | watchdog, scope-guard |

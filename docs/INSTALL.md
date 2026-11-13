@@ -13,7 +13,7 @@ Two steps in chat — **no terminal** for most users.
 
 Restart if `/topia:build` does not appear.
 
-**You get:** 72 skills, plugin hooks, `.topia/` file memory.
+**You get:** 73 skills, plugin hooks, `.topia/` file memory.
 
 **You do not get yet:** machine-wide dispatch hooks, customized team policy, agora-code MCP.
 

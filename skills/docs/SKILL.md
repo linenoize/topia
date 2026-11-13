@@ -1,13 +1,13 @@
 ---
 name: docs
-description: "Auto-generate and maintain project documentation. Creates README, API docs, architecture docs, changelogs, and keeps them in sync with code changes. The \"docs are never outdated\" skill."
+description: "Auto-generate and maintain project documentation. Creates README, API docs, architecture docs, changelogs, and keeps them in sync with code changes. Also use when the person asks for a show-and-tell or walkthrough of a change they can try step by step."
 metadata:
   author: topia
-  version: "0.3.0"
+  version: "0.4.0"
   layer: L2
   model: sonnet
   group: delivery
-  tools: "Read, Write, Edit, Glob, Grep"
+  tools: "Read, Write, Edit, Glob, Grep, Bash"
   emit: docs.updated
 ---
 
@@ -30,12 +30,14 @@ Docs MUST be generated from actual code, not invented. Every statement in genera
 - `/topia docs update` — sync docs with recent code changes
 - `/topia docs api` — generate API documentation
 - `/topia docs changelog` — auto-generate changelog from git history
+- `/topia docs show-and-tell [range]` — walkthrough of a change, **only when the person asks** ("show me what changed", "walk me through it", "show and tell")
 
 ## Calls (outbound)
 
 - `recon` (L2): scan codebase for documentation targets (routes, exports, components, configs)
 - `doc-processor` (L3): generate PDF/DOCX exports if requested
-- `git` (L3): read commit history for changelog generation
+- `git` (L3): read commit history for changelog generation and show-and-tell ranges
+- `browser-pilot` (L3): show-and-tell screenshots of UI changes, when Playwright is available
 
 ## Called By (inbound)
 
@@ -62,6 +64,10 @@ Generate or update API documentation specifically.
 ### Changelog Mode — `/topia docs changelog`
 
 Auto-generate changelog from git commit history.
+
+### Show-and-tell Mode — `/topia docs show-and-tell [range]`
+
+A walkthrough of one change or feature for the person to review: what changed and why, how to try it step by step, what to look for, and known limits. Markdown by default. One self-contained HTML file if asked. On request only.
 
 ## Executable Steps
 
@@ -277,6 +283,34 @@ Add context to raw changelog:
 
 Append to or update `CHANGELOG.md`.
 
+### Show-and-tell Mode
+
+On request only. `build`, `launch` and `scaffold` never start this mode on their own. A one-line fix does not need it. Offer it in one line when a change spans several files or adds something the person will use.
+
+#### Step 1 — Pin the range
+
+Find the commits the person means: a branch (`main..HEAD`), a tag range (`v3.12.0..HEAD`), or named SHAs. Read `git log --stat <range>` and the diff of each file you will cite. Uncommitted work: ask them to commit first, or cite files only and say the range is the working tree.
+
+#### Step 2 — Try it yourself
+
+Run every "try it" step before you write it down, and note what you actually saw. A step you could not run goes under known limits as "not tried: <why>". For UI changes, call `browser-pilot` for screenshots when Playwright is available. Otherwise say there are none.
+
+#### Step 3 — Write the spec
+
+JSON with `title`, `summary`, `range`, `changes[]` (each with `what`, `why`, and `files` and/or `commits`), `tryIt[]`, `lookFor[]`, `limits[]` and optional `screenshots[]`. Full shape: `references/show-and-tell.md`.
+
+#### Step 4 — Build and check
+
+```bash
+node {scripts_dir}/build-walkthrough.js --spec walkthrough.json --root <repo> [--format html] --json
+```
+
+`{scripts_dir}` is this skill's `scripts/` folder. The script refuses (exit 3) any change with no evidence, any commit not in the repo or outside `range`, and any file that neither exists nor appears in the range's diff. Fix the claim, do not skip the check. Output goes to `.topia/show-and-tell/<id>.md|html`.
+
+#### Step 5 — Hand over
+
+Give the path. For Markdown, also paste the summary and the Try it steps into chat.
+
 ## Output Format
 
 ### Init Mode Output
@@ -309,6 +343,9 @@ Docs Update Report:
 ### Changelog Mode Output
 `CHANGELOG.md` — Keep a Changelog format grouped by: Added, Fixed, Changed, Removed.
 
+### Show-and-tell Mode Output
+`.topia/show-and-tell/<id>.md` (or `.html`) with sections: summary, What changed and why (each item cites files or commits), Try it (numbered, with commands and what to expect), What to look for, Known limits, Screenshots (if any), Commits (from `git log`).
+
 ## Constraints
 
 1. MUST generate docs from actual code — never invent features or APIs that don't exist
@@ -317,6 +354,8 @@ Docs Update Report:
 4. MUST include Quick Start in every README — users need to get running in < 2 minutes
 5. MUST NOT generate docs for code that doesn't exist yet (unless explicitly creating spec docs)
 6. API docs MUST match actual route signatures — wrong API docs are worse than no docs
+7. Show-and-tell MUST run only when the person asks — an unrequested walkthrough after every build is noise
+8. Show-and-tell MUST cite a file or commit for every change and MUST NOT list a try-it step nobody ran — a walkthrough of what should work is a sales pitch
 
 ## Returns
 
@@ -326,6 +365,7 @@ Docs Update Report:
 | ARCHITECTURE.md | Markdown | project root (if 10+ files) |
 | API reference | Markdown | `docs/API.md` |
 | Changelog entry | Markdown (Keep a Changelog) | `CHANGELOG.md` |
+| Show-and-tell walkthrough | Markdown or self-contained HTML | `.topia/show-and-tell/<id>.md` / `.html` |
 | Docs update report | Markdown | inline (chat output) |
 
 **Scope guardrail:** Documents only what exists in the codebase — never invents features, endpoints, or APIs.
@@ -342,6 +382,9 @@ Docs Update Report:
 | Changelog with orphan PR links | LOW | Validate PR numbers exist before linking |
 | Cross-document inconsistency (README says X, CLAUDE.md says Y) | HIGH | Step 7: Cross-Doc Consistency Pass — verify stats, versions, and feature lists match across all docs |
 | Updating one doc but not others (stats drift) | HIGH | After any doc update, sweep all related docs for stale stats — especially README ↔ CLAUDE.md ↔ landing page |
+| Show-and-tell describes intended behavior, not shipped behavior | CRITICAL | Constraint 8: build-walkthrough.js verifies every cited commit and file; try-it steps are run first |
+| Show-and-tell fires after every build | MEDIUM | Constraint 7: request-only; at most a one-line offer |
+| Screenshot step silently skipped for UI work | MEDIUM | Call `browser-pilot`; if Playwright is missing, say "no screenshots" under known limits |
 
 ## Done When
 
@@ -368,6 +411,12 @@ Docs Update Report:
 - Commits grouped by type
 - Formatted as Keep a Changelog
 - CHANGELOG.md updated
+
+### Show-and-tell Mode
+- The person asked for it
+- Every try-it step was run, or is listed under known limits as not tried
+- build-walkthrough.js exited 0 with evidence checked (no `--skip-verify` unless the person accepted that)
+- Path given; summary and steps pasted for Markdown output
 
 ## Cost Profile
 

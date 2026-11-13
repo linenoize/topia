@@ -92,6 +92,7 @@ High-level multi-feature planning — organize features into milestones.
 - `neural-memory` | Before architecture decisions | Recall past decisions on similar problems
 - `recall` (L3): unified cross-source recall before planning
 - `documentation` (L2): generate leadership package after plan approval
+- `decision-form` (L3): when 5+ open choices block the phase files, or the person asks for a form
 
 ## Called By (inbound)
 
@@ -272,7 +273,7 @@ When build encounters unexpected conditions during execution:
 **Step 1** — Problem Statement: what problem, who has it, current workaround?
 **Step 2** — User Stories: primary + 2-3 secondary + edge cases. Format: `As a [persona], I want to [action] so that [benefit]`
 **Step 3** — Acceptance Criteria: `GIVEN [context] WHEN [action] THEN [result]` — happy path + errors + performance
-**Step 4** — Scope Definition: In scope / Out of scope / Dependencies / Open questions
+**Step 4** — Scope Definition: In scope / Out of scope / Dependencies / Open questions. If 5+ open questions have clear options, send them as one form via `topia:decision-form` instead of a numbered list.
 **Step 5** — Write Spec File: save to `.topia/features/<feature-name>/spec.md`
 
 After spec approved → transition to Implementation Mode.

@@ -270,6 +270,23 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     ]
   },
   {
+    "name": "decision-form",
+    "layer": "L3",
+    "model": "sonnet",
+    "description": "Use when five or more related decisions are waiting on the person at once, or when they ask for a form, checklist or one page to answer questions on. Not for one or two questions, which belong in chat.",
+    "userInvocable": true,
+    "forked": false,
+    "keywords": [
+      "decision form",
+      "form for these",
+      "answer in a browser",
+      "batch of decisions",
+      "questions as a form"
+    ],
+    "prompts": [],
+    "chain": []
+  },
+  {
     "name": "dependency-doctor",
     "layer": "L3",
     "model": "haiku",
@@ -349,14 +366,18 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "docs",
     "layer": "L2",
     "model": "sonnet",
-    "description": "Auto-generate and maintain project documentation. Creates README, API docs, architecture docs, changelogs, and keeps them in sync with code changes. The \\\"docs are never outdated\\\" skill.",
+    "description": "Auto-generate and maintain project documentation. Creates README, API docs, architecture docs, changelogs, and keeps them in sync with code changes. Also use when the person asks for a show-and-tell or walkthrough of a change they can try step by step.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
       "document",
       "readme",
       "api docs",
-      "changelog"
+      "changelog",
+      "show and tell",
+      "show-and-tell",
+      "walk me through",
+      "walkthrough"
     ],
     "prompts": [],
     "chain": []

@@ -1,6 +1,6 @@
 ---
 name: topia-docs
-description: "Auto-generate and maintain project documentation. Creates README, API docs, architecture docs, changelogs, and keeps them in sync with code changes. The \\\"docs are never outdated\\\" skill."
+description: "Auto-generate and maintain project documentation. Creates README, API docs, architecture docs, changelogs, and keeps them in sync with code changes. Also use when the person asks for a show-and-tell or walkthrough of a change they can try step by step."
 disable-model-invocation: true
 ---
 

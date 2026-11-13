@@ -4,7 +4,7 @@
 
 <p align="center">
   <strong>Topia — internal skill toolkit for AI coding assistants.</strong><br>
-  72 skills · 323 synapses · 49 pulses · 10 extension packs · optional persistent memory via agora-code MCP
+  73 skills · 326 synapses · 49 pulses · 10 extension packs · optional persistent memory via agora-code MCP
 </p>
 
 <p align="center">
@@ -124,7 +124,7 @@ From a Topia clone or plugin cache path:
 
 ```bash
 node compiler/bin/topia.js doctor
-# ✓ 72 skills, 323 synapses, 49 pulses — nexus is healthy
+# ✓ 73 skills, 326 synapses, 49 pulses — nexus is healthy
 ```
 
 Claude-only users can use `/topia doctor` in chat instead.
@@ -213,7 +213,7 @@ The 8-step build flow (route → recall → plan → test → implement → gate
 | Skill | Purpose |
 |---|---|
 | `research` | Web search for technologies + best practices. |
-| `docs` | Auto-generate + maintain README, API, architecture docs. |
+| `docs` | Auto-generate + maintain README, API, architecture docs. Show-and-tell walkthroughs on request. |
 | `docs-seeker` | Locate API references, changelogs, migration guides. |
 | `documentation` | Leadership-ready packages, user stories, Jira CSV. |
 | `onboard` | Generate CLAUDE.md + .topia/ context for a new project. |
@@ -232,6 +232,7 @@ The 8-step build flow (route → recall → plan → test → implement → gate
 |---|---|
 | `plan` | Master plan + phase files for multi-phase features. |
 | `idea` | Requirements elicitation — 5-question gate, cross-session memory. |
+| `decision-form` | One offline HTML form for 5+ decisions; paste one answer block back. |
 | `review` | Code review with `file:line` findings. |
 | `review-intake` | Process external PR comments / issue triage. |
 | `retro` | Engineering retrospective on commit history. |
