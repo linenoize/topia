@@ -70,8 +70,10 @@ function resolveSkillModel(skillName, pluginRoot) {
     if (meta) return meta[1];
   }
 
-  const agentFile = path.join(root, 'agents', \`\${skillName}.md\`);
-  if (fs.existsSync(agentFile)) {
+  // Skill agents are agents/<skill>-agent.md; role agents keep their own name.
+  for (const file of [\`\${skillName}-agent.md\`, \`\${skillName}.md\`]) {
+    const agentFile = path.join(root, 'agents', file);
+    if (!fs.existsSync(agentFile)) continue;
     const content = fs.readFileSync(agentFile, 'utf-8');
     const match = content.match(/^model:\\s*(\\w+)/m);
     if (match) return match[1];

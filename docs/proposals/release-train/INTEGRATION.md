@@ -327,7 +327,7 @@ profile applied at runtime**, never baked into plugin content.
 5. [ ] Register pulses `release.assembled` / `release.validated` /
        `release.promoted` with real listeners (or whitelist) →
        `node scripts/validate-signals.js` must pass.
-6. [ ] `agents/release-train.md` mirror (read-mostly assemble/validate; write
+6. [ ] `agents/release-train-agent.md` mirror (read-mostly assemble/validate; write
        only under `.topia/release/`).
 7. [ ] `node scripts/validate-skills.js && node scripts/validate-nexus.js && npm test`.
 8. [ ] Bump stats (skill count, hook count): `README.md`, `docs/index.html`,

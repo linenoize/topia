@@ -121,6 +121,14 @@ test('a run is read from a skill id or a Topia subagent type', async () => {
   expect(ranSkill('topia:no-such-skill')).toBe(null)
 })
 
+test('a topia:<skill>-agent subagent counts as its skill', async () => {
+  expect(ranSkill('topia:build-agent')).toBe('build')
+  expect(ranSkill('topia:verification-agent')).toBe('verification')
+  expect(ranSkill('topia:context-lifecycle-agent')).toBe('context-lifecycle')
+  expect(ranSkill('topia:reviewer')).toBe(null)
+  expect(ranSkill('topia:no-such-agent')).toBe(null)
+})
+
 test('the person writes the prompt; a notification does not', async () => {
   expect(isWritten({ kind: 'composer' })).toBe(true)
   expect(isWritten({ kind: 'plugin', asUser: true })).toBe(true)

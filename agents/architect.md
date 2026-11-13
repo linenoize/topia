@@ -1,6 +1,6 @@
 ---
 name: architect
-description: "Architecture and planning agent. Spawned by plan, brainstorm, team, autopsy for strategic analysis, system design, and trade-off evaluation."
+description: "Use when a Topia skill (plan, brainstorm, team, autopsy) needs a subagent for system design, strategic analysis or trade-off evaluation. Designs and plans; does not write code."
 model: opus
 subagent_type: Plan
 ---

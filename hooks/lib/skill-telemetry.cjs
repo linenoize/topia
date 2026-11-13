@@ -4,7 +4,8 @@
  * A skill reaches the model three ways, and each leaves a different trace:
  *   1. Skill tool    — PostToolUse { tool_name: 'Skill', tool_input: { skill } }
  *   2. Subagent      — PostToolUse { tool_name: 'Agent' | 'Task',
- *                                    tool_input: { subagent_type: 'topia:x' } }
+ *                                    tool_input: { subagent_type: 'topia:x-agent' } }
+ *                      The `-agent` suffix is dropped, so it counts as skill x.
  *   3. Slash command — a user record in the transcript:
  *                        <command-name>/topia:x</command-name>
  *                      The skill body is expanded inline; no Skill tool runs.
@@ -17,6 +18,8 @@
 const { CATALOG } = require('./skill-catalog.cjs');
 
 const TOPIA_NS = /^topia:/i;
+// Agents that run a skill are named `<skill>-agent` (topia:build-agent).
+const AGENT_SUFFIX = /-agent$/i;
 const SKILL_LOAD_MARKER = 'Base directory for this skill';
 
 /** Strip the `topia:` namespace; other plugins keep theirs (`remember:remember`). */
@@ -43,7 +46,8 @@ function extractToolSkillInvocation(hookData = {}) {
     // Only Topia's own agents are skills; general-purpose / Explore are not.
     const type = typeof input.subagent_type === 'string' ? input.subagent_type.trim() : '';
     if (!TOPIA_NS.test(type)) return null;
-    const skill = normalizeSkillName(type);
+    // `topia:build-agent` runs the build skill, so it counts as `build`.
+    const skill = normalizeSkillName(type).replace(AGENT_SUFFIX, '');
     return skill ? { skill, via: 'agent' } : null;
   }
 

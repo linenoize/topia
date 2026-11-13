@@ -59,7 +59,7 @@ metadata:
   (emitted by `scanner`/`recon`, same as `improve-architecture`) and
   `emit: docs.updated` (already emitted by `docs`). The only **new** signal
   is `architecture.mapped`.
-- Mirror agent at `agents/architecture-mapper.md` (read-mostly).
+- Mirror agent at `agents/architecture-mapper-agent.md` (read-mostly).
 
 ### 17 commands → modes, not 17 plugin commands
 
@@ -112,7 +112,7 @@ re-map. As a Topia mode it becomes `/topia architecture-mapper refresh`.
        - 17 command bodies → `skills/architecture-mapper/references/passes/*.md`
        - `references/stacks/*.md` (node-express-mongo, python-web, generic) → `references/stacks/`
        - cross-linking conventions → `references/conventions.md`
-3. [x] Add `agents/architecture-mapper.md` (mirror; read-mostly).
+3. [x] Add `agents/architecture-mapper-agent.md` (mirror; read-mostly).
 4. [x] Register the new `architecture.mapped` signal in the nexus so
        `validate-mesh.js` / `validate-nexus.js` pass; confirm
        `codebase.scanned` / `docs.updated` wiring.

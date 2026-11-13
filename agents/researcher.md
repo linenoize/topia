@@ -1,6 +1,6 @@
 ---
 name: researcher
-description: "Web research and documentation agent. Spawned by research, docs-seeker, trend-scout for external information gathering. Min 3 sources per conclusion."
+description: "Use when a Topia skill (research, trend-scout) needs a lightweight subagent to gather and cross-check outside information. At least 3 sources per conclusion; does not write code."
 model: haiku
 subagent_type: general-purpose
 ---
