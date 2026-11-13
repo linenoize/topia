@@ -1,27 +1,31 @@
 // Topia Secrets Scan Hook
-// PreToolUse hook on Bash — intercepts git commit commands
-// Scans staged files for hardcoded secrets before allowing commit
+// Claude Code: PreToolUse on Bash. Cursor: beforeShellExecution.
+// Intercepts git commit commands and scans staged files for hardcoded secrets.
 //
 // Patterns based on gitleaks + common AI-generated secret leaks.
 // Zero false-positive tolerance on BLOCK patterns.
 
 const { spawnSync } = require('child_process');
 const fs = require('fs');
+const { isCursorRuntime, writeHookResponse } = require('../lib/cursor-io.cjs');
 
-// Claude Code (and Cursor) pass the hook input as JSON on stdin. CLAUDE_TOOL_INPUT
+// Claude Code and Cursor pass the hook input as JSON on stdin. CLAUDE_TOOL_INPUT
 // is kept only as a fallback for older wiring; Claude Code never sets it.
-function readCommand() {
+function readEvent() {
   try {
     const raw = fs.readFileSync(0, 'utf8');
-    if (raw.trim()) {
-      const event = JSON.parse(raw);
-      const toolInput = event.tool_input || event.toolInput || {};
-      if (typeof toolInput.command === 'string') return toolInput.command;
-      if (typeof event.command === 'string') return event.command;
-    }
+    if (raw.trim()) return JSON.parse(raw);
   } catch {
     // No stdin or not JSON: fall back below.
   }
+  return {};
+}
+
+function readCommand(event) {
+  // Claude Code: tool_input.command. Cursor beforeShellExecution: command at the top level.
+  const toolInput = event.tool_input || event.toolInput || {};
+  if (typeof toolInput.command === 'string') return toolInput.command;
+  if (typeof event.command === 'string') return event.command;
   try {
     return JSON.parse(process.env.CLAUDE_TOOL_INPUT || '{}').command || '';
   } catch {
@@ -29,7 +33,29 @@ function readCommand() {
   }
 }
 
-const command = readCommand().trim();
+// The folder the command runs in. Cursor runs plugin hooks from the plugin
+// folder, so the event's cwd is the only reliable pointer to the repo.
+function commandCwd(event) {
+  const cwd = typeof event.cwd === 'string' ? event.cwd : '';
+  try {
+    if (cwd && fs.statSync(cwd).isDirectory()) return cwd;
+  } catch {
+    // Missing folder: use our own cwd.
+  }
+  return process.cwd();
+}
+
+const event = readEvent();
+const cursor = isCursorRuntime(event);
+
+// Cursor permission hooks block on empty or invalid JSON, so always answer.
+// https://cursor.com/docs/hooks
+function allowAndExit() {
+  if (cursor) writeHookResponse({ permission: 'allow' });
+  process.exit(0);
+}
+
+const command = readCommand(event).trim();
 
 // A git commit anywhere in the line: chained (`cd x && git commit`), after a
 // PowerShell `;`, or with `git -C <dir>` / `git -c k=v` options first.
@@ -37,13 +63,15 @@ const GIT_COMMIT_RE = /(?:^|[\s;&|(])git(?:\s+-[Cc]\s+\S+)*\s+commit\b/;
 
 if (!GIT_COMMIT_RE.test(command)) {
   // Not a commit — pass through
-  process.exit(0);
+  allowAndExit();
 }
+
+const cwd = commandCwd(event);
 
 // Get staged files
 let stagedFiles;
 try {
-  const result = spawnSync('git', ['diff', '--cached', '--name-only'], { encoding: 'utf-8' });
+  const result = spawnSync('git', ['diff', '--cached', '--name-only'], { cwd, encoding: 'utf-8' });
   if (result.status !== 0) throw new Error();
   stagedFiles = result.stdout
     .trim()
@@ -51,11 +79,11 @@ try {
     .filter(f => f.length > 0);
 } catch {
   // Not in a git repo or no staged files — pass through
-  process.exit(0);
+  allowAndExit();
 }
 
 if (stagedFiles.length === 0) {
-  process.exit(0);
+  allowAndExit();
 }
 
 // Secret patterns (high-confidence, low false-positive)
@@ -87,7 +115,7 @@ for (const file of stagedFiles) {
 
   let content;
   try {
-    const result = spawnSync('git', ['show', `:${file}`], { encoding: 'utf-8', maxBuffer: 1024 * 1024 });
+    const result = spawnSync('git', ['show', `:${file}`], { cwd, encoding: 'utf-8', maxBuffer: 1024 * 1024 });
     if (result.status !== 0) continue;
     content = result.stdout;
   } catch {
@@ -111,6 +139,20 @@ for (const file of stagedFiles) {
 }
 
 if (findings.length > 0) {
+  if (cursor) {
+    // A JSON deny with exit 0: Cursor uses the JSON, so both messages arrive.
+    // No snippets here, so the secret is not copied into the chat.
+    const where = findings.map((f) => `${f.file}:${f.line} (${f.pattern})`).join(', ');
+    writeHookResponse({
+      permission: 'deny',
+      user_message: `Topia blocked this commit: staged files contain secrets (${where}).`,
+      agent_message:
+        `[Topia secrets-scan] BLOCKED — hardcoded secrets in staged files: ${where}. ` +
+        'Remove them, load them from environment variables, and stage the files again.',
+    });
+    process.exit(0);
+  }
+
   console.error('\n\u{1F6A8} [Topia secrets-scan] BLOCKED — hardcoded secrets detected in staged files:\n');
   for (const f of findings) {
     console.error(`  ${f.file}:${f.line} — ${f.pattern}`);
@@ -124,4 +166,4 @@ if (findings.length > 0) {
 }
 
 // No secrets found — allow commit
-process.exit(0);
+allowAndExit();

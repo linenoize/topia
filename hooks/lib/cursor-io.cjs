@@ -15,8 +15,11 @@ const CLAUDE_STDIN_TIMEOUT_MS = 500;
 function isCursorRuntime(event = {}) {
   if (process.env.CURSOR_HOOK === '1' || process.env.CURSOR_AGENT === '1') return true;
   if (process.env.CURSOR_VERSION || process.env.CURSOR_PROJECT_DIR) return true;
-  if (event?.cursor_version || event?.hook_event_name) return true;
-  return false;
+  if (event?.cursor_version) return true;
+  // Claude Code sends `hook_event_name` too, in PascalCase (`PreToolUse`).
+  // Cursor's event names are camelCase (`beforeReadFile`, `preToolUse`).
+  const name = event?.hook_event_name;
+  return typeof name === 'string' && /^[a-z]/.test(name);
 }
 
 /**

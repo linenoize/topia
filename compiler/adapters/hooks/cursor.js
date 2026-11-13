@@ -3,7 +3,11 @@
  *
  * Emits:
  *   - `.cursor/rules/Topia-*.mdc` — discipline rule injection (readiness, guardian, dependency-doctor)
- *   - `.cursor/hooks.json` — native lifecycle hooks for metrics + token tracking
+ *   - `.cursor/hooks.json` — native hooks: lifecycle + metrics, plus tool-level guards
+ *     (beforeReadFile → pre-tool-guard, beforeShellExecution → secrets-scan / git-push-checkpoint)
+ *
+ * The same plan also produces the plugin's `hooks/hooks-cursor.json` (see buildPluginHooksJson).
+ * Event names, input and output: https://cursor.com/docs/hooks
  */
 
 import { existsSync } from 'node:fs';
@@ -23,26 +27,74 @@ export function detect(projectRoot) {
   return existsSync(path.join(projectRoot, '.cursor'));
 }
 
-function hookCommand(topiaRoot, hookName) {
-  const runHook = path.join(topiaRoot, 'hooks', 'run-hook.cjs');
-  return `node ${JSON.stringify(runHook)} ${hookName}`;
+/**
+ * Which Topia hook runs on which Cursor event. One plan for both the project
+ * file and the plugin file, so they cannot drift.
+ *
+ * - beforeShellExecution matchers are tested against the full command string.
+ * - postToolUse matchers are tested against the tool name. Cursor calls its
+ *   subagent tool `Task`; `Skill` is kept for parity with Claude Code.
+ * - auto-format and typecheck are deliberately absent (inert pending a decision).
+ * - No `stop` follow-up message: it would start a new agent turn every time.
+ */
+export const CURSOR_HOOK_PLAN = Object.freeze([
+  { event: 'sessionStart', hook: 'session-start' },
+  { event: 'beforeReadFile', hook: 'pre-tool-guard' },
+  { event: 'beforeShellExecution', hook: 'secrets-scan', matcher: 'commit' },
+  { event: 'beforeShellExecution', hook: 'git-push-checkpoint', matcher: 'push' },
+  { event: 'postToolUse', hook: 'token-meter', matcher: '.*' },
+  { event: 'postToolUse', hook: 'metrics-collector', matcher: 'Skill|Task' },
+  { event: 'preCompact', hook: 'pre-compact' },
+  { event: 'sessionEnd', hook: 'post-session-reflect' },
+  { event: 'stop', hook: 'post-session-reflect' },
+]);
+
+const PLAN_HOOKS = [...new Set(CURSOR_HOOK_PLAN.map((p) => p.hook))];
+
+function buildHooks(commandFor) {
+  const hooks = {};
+  for (const { event, hook, matcher } of CURSOR_HOOK_PLAN) {
+    const entry = { command: commandFor(hook) };
+    if (matcher) entry.matcher = matcher;
+    (hooks[event] ??= []).push(entry);
+  }
+  return hooks;
+}
+
+/**
+ * Project hooks run from the project root with an absolute path to Topia.
+ * Cursor runs hook commands through PowerShell on Windows and sh elsewhere.
+ * Forward slashes work for Node on every OS, and single quotes are literal in
+ * both shells (double quotes would let PowerShell expand a `$` in the path).
+ */
+function projectHookCommand(topiaRoot, hookName) {
+  const runHook = path.join(topiaRoot, 'hooks', 'run-hook.cjs').split(path.sep).join('/');
+  const quoted = runHook.includes("'") ? JSON.stringify(runHook) : `'${runHook}'`;
+  return `node ${quoted} ${hookName}`;
+}
+
+/**
+ * Plugin hooks cannot name the plugin folder in shell syntax: PowerShell reads
+ * `${CURSOR_PLUGIN_ROOT}` as an empty PowerShell variable, and `stop` hooks run
+ * from the workspace root rather than the plugin folder. So Node reads the
+ * CURSOR_PLUGIN_ROOT environment variable itself. The fallback `.` covers a
+ * Cursor build that runs plugin hooks from the plugin folder without the variable.
+ * The script has no spaces, `$`, or double quotes, so PowerShell and sh pass it as is.
+ */
+export function pluginHookCommand(hookName) {
+  return `node -e "require(require('path').resolve(process.env.CURSOR_PLUGIN_ROOT||'.','hooks','run-hook.cjs'))" ${hookName}`;
+}
+
+/** Contents of the plugin's hooks/hooks-cursor.json. */
+export function buildPluginHooksJson() {
+  return { version: 1, hooks: buildHooks(pluginHookCommand) };
 }
 
 function buildHooksJson(topiaRoot) {
-  const cmd = (name) => ({ command: hookCommand(topiaRoot, name) });
   return {
     version: 1,
     'Topia-managed': true,
-    hooks: {
-      sessionStart: [cmd('session-start')],
-      postToolUse: [
-        { ...cmd('token-meter'), matcher: '.*' },
-        { ...cmd('metrics-collector'), matcher: 'Skill' },
-      ],
-      preCompact: [cmd('pre-compact')],
-      sessionEnd: [cmd('post-session-reflect')],
-      stop: [cmd('post-session-reflect')],
-    },
+    hooks: buildHooks((name) => projectHookCommand(topiaRoot, name)),
   };
 }
 
@@ -109,7 +161,7 @@ export async function emit({ preset, projectRoot, topiaRoot }) {
   };
 
   const notes = [
-    'Native `.cursor/hooks.json` installed for metrics + token tracking (sessionStart, postToolUse, preCompact, sessionEnd).',
+    'Native `.cursor/hooks.json` installed: metrics + token tracking (sessionStart, postToolUse, preCompact, sessionEnd, stop), sensitive-file reads (beforeReadFile), and commit secrets + push checkpoint (beforeShellExecution).',
     'Invoke `/topia completion-gate` manually before wrapping up — no native completion-gate on Cursor.',
     `Auto-attach mode: ${preset}. Rules emit ${mode} guidance to the agent.`,
   ];
@@ -166,13 +218,7 @@ export async function status(projectRoot) {
   const rulesDir = path.join(projectRoot, RULES_REL_DIR);
   const hooksPath = path.join(projectRoot, HOOKS_REL_PATH);
   const expectedRules = ['readiness', 'guardian', 'dependency-doctor'];
-  const expectedMetricsHooks = [
-    'session-start',
-    'token-meter',
-    'metrics-collector',
-    'pre-compact',
-    'post-session-reflect',
-  ];
+  const expectedMetricsHooks = PLAN_HOOKS;
 
   let wired = [];
   let missing = [...expectedRules];

@@ -1,5 +1,6 @@
 // Topia Git Push Checkpoint Hook
-// PreToolUse on Bash — when command is `git push`, write headless checkpoint before push runs.
+// Claude Code: PreToolUse on Bash. Cursor: beforeShellExecution.
+// When the command is `git push`, write a headless checkpoint before the push runs.
 
 const { readStdinJson, isCursorRuntime, writeHookResponse, emitHookOutput } = require('../lib/cursor-io.cjs');
 const { runCheckpointFromHook } = require('../lib/checkpoint-runner.cjs');
@@ -10,7 +11,8 @@ const GIT_PUSH_RE = /\bgit\s+push\b/;
 async function main() {
   const hookData = await readStdinJson();
   const toolInput = hookData.tool_input || hookData.toolInput || {};
-  const command = (toolInput.command || process.env.CLAUDE_TOOL_INPUT || '').trim();
+  // Cursor beforeShellExecution sends `command` at the top level.
+  const command = String(toolInput.command || hookData.command || process.env.CLAUDE_TOOL_INPUT || '').trim();
 
   let parsedCommand = command;
   if (!parsedCommand && process.env.CLAUDE_TOOL_INPUT) {
@@ -54,4 +56,8 @@ async function main() {
   process.exit(0);
 }
 
-main().catch(() => process.exit(0));
+main().catch(() => {
+  // Cursor blocks the command when a permission hook prints nothing.
+  if (isCursorRuntime()) writeHookResponse({ permission: 'allow' });
+  process.exit(0);
+});
