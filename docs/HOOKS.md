@@ -174,12 +174,13 @@ Hooks point at a **stable launcher shim** that Topia installs at `<scope>/.claud
 | `beforeReadFile` | — | pre-tool-guard | Denies private keys and certificates. Flags `.env`-style files. |
 | `beforeShellExecution` | `commit` | secrets-scan | Denies a `git commit` when staged files hold secrets |
 | `beforeShellExecution` | `push` | git-push-checkpoint | Writes `.topia/checkpoint.md` before a push, tells the agent |
+| `afterFileEdit` | — | auto-format | Formats the edited file with the project's own Prettier, if the project has one |
 | `postToolUse` | `.*` | token-meter | Token estimate per tool call |
 | `postToolUse` | `Skill\|Task` | metrics-collector | Skill and subagent calls. Cursor's subagent tool is `Task`. |
 | `preCompact` | — | pre-compact | Records measured context tokens |
 | `sessionEnd`, `stop` | — | post-session-reflect | Flushes metrics to `.topia/metrics/` |
 
-Not wired on purpose: `auto-format` and `typecheck` (inert pending a decision), `afterFileEdit`, and a `stop` follow-up message. A follow-up would start a new agent turn every time.
+Not wired on purpose: `typecheck` (Cursor's `afterFileEdit` cannot pass errors back to the agent) and a `stop` follow-up message (it would start a new agent turn every time).
 
 Invoke `/topia completion-gate` manually before wrapping up — no native completion-gate on Cursor.
 

@@ -199,11 +199,11 @@ describe('cursor tool-level hooks', () => {
     assert.ok(re.test('Skill'));
   });
 
-  test('auto-format and typecheck stay unwired', async () => {
+  test('auto-format runs after file edits; typecheck stays unwired', async () => {
     const hooks = await emittedHooks();
+    assert.deepStrictEqual(hookNames(hooks.afterFileEdit), ['auto-format']);
     const all = Object.values(hooks).flatMap(hookNames);
-    assert.ok(!all.includes('auto-format'));
-    assert.ok(!all.includes('typecheck'));
+    assert.ok(!all.includes('typecheck'), 'afterFileEdit cannot pass errors back to the agent');
   });
 
   test('no completion follow-up on stop', async () => {
@@ -225,7 +225,7 @@ describe('cursor tool-level hooks', () => {
     assert.ok(!/no tool-level hooks/i.test(cap.notes));
     assert.strictEqual(cap.preToolBash, true);
     assert.strictEqual(cap.preToolRead, true);
-    assert.strictEqual(cap.postToolEdit, false, 'afterFileEdit is not wired');
+    assert.strictEqual(cap.postToolEdit, true, 'afterFileEdit runs auto-format');
   });
 });
 

@@ -34,7 +34,9 @@ export function detect(projectRoot) {
  * - beforeShellExecution matchers are tested against the full command string.
  * - postToolUse matchers are tested against the tool name. Cursor calls its
  *   subagent tool `Task`; `Skill` is kept for parity with Claude Code.
- * - auto-format and typecheck are deliberately absent (inert pending a decision).
+ * - auto-format runs on afterFileEdit (it only acts when the project has its
+ *   own Prettier). typecheck is absent: Cursor's afterFileEdit cannot pass
+ *   errors back to the agent, so it would spend CPU for nothing.
  * - No `stop` follow-up message: it would start a new agent turn every time.
  */
 export const CURSOR_HOOK_PLAN = Object.freeze([
@@ -42,6 +44,7 @@ export const CURSOR_HOOK_PLAN = Object.freeze([
   { event: 'beforeReadFile', hook: 'pre-tool-guard' },
   { event: 'beforeShellExecution', hook: 'secrets-scan', matcher: 'commit' },
   { event: 'beforeShellExecution', hook: 'git-push-checkpoint', matcher: 'push' },
+  { event: 'afterFileEdit', hook: 'auto-format' },
   { event: 'postToolUse', hook: 'token-meter', matcher: '.*' },
   { event: 'postToolUse', hook: 'metrics-collector', matcher: 'Skill|Task' },
   { event: 'preCompact', hook: 'pre-compact' },

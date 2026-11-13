@@ -54,6 +54,8 @@ import {
   ordersStatus,
   tipText,
   tipsKey,
+  trunkGuardReason,
+  trunkGuardText,
 } from './lib/standing-orders'
 import { joinStatus } from './lib/status'
 import type { StatusSlot } from './lib/status'
@@ -546,6 +548,20 @@ export const register: Register = (on, options) => {
 
     return ran
   })
+
+  // While the trunk order is on, a force delete or a delete of a long-lived
+  // branch asks the user first. A failure here leaves the decision to the
+  // checks below it.
+  on('tool.check', { tool: ['Bash', 'PowerShell'] } as never, async ($, e, next) => {
+    const below = await next(e as never)
+    if ((below as { decision?: string }).decision === 'deny') return below
+    const command = ((e as { input?: unknown }).input as { command?: unknown } | null)?.command
+    if (typeof command !== 'string' || !(await isOn($, config, 'standingOrders'))) return below
+    const orders = (await read($, standingOrders)) ?? (await loadOrders($))
+    if (!orders.trunk) return below
+    const reason = trunkGuardReason(command)
+    return reason === null ? below : { decision: 'ask' as const, reason: trunkGuardText(reason) }
+  }).catch(($, e, next) => next(e as never))
 
   on('turn.complete', async ($, e, next) => {
     if (await isOn($, config, 'gitBand')) void refreshGit($)

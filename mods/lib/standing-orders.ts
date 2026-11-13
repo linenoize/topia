@@ -45,14 +45,25 @@ export const RULES: Record<OrderId, { label: string; about: string; text: string
   },
   trunk: {
     label: 'Land finished work on local main',
-    about: 'Finished agent and worktree branches are merged into your local main branch and cleaned up. Nothing is pushed unless you ask.',
+    about:
+      'When a task is done, its branch is merged into your local main and deleted, but only if git confirms every ' +
+      'commit is in main. Long-lived branches such as dev and prototypes are never touched, and nothing is pushed.',
     text:
-      'When a task is done and its checks pass, land the work on the local main branch (main, or the repo\'s ' +
-      'default branch): commit what is finished, merge each finished agent or worktree branch into local main, ' +
-      'then delete the merged worktrees and branches. Then report how many commits local main is ahead of and ' +
-      'behind its remote. Never push unless the user asks (the commit-and-push order, when on, counts as asking). ' +
-      'Never force, rebase shared commits or otherwise rewrite history. If a merge conflicts, stop: leave the ' +
-      'branches and worktrees in place and report the conflict.',
+      'When a task is done and its checks pass, land it on the local main branch (main, or the repo\'s default ' +
+      'branch). Scope: only the branch this task was done on, plus agent or worktree branches this session made ' +
+      'for it. Never merge or delete any other branch, even one that looks finished. Never touch main, master, ' +
+      'dev, develop, development, staging, production, release/*, hotfix/* or any branch whose name contains ' +
+      'proto, spike, experiment, wip, keep, archive or sandbox. Steps: commit the finished work on the task ' +
+      'branch, switch to local main, merge the task branch, then delete it with git branch -d (git refuses ' +
+      'unless every commit is in main) and remove its worktree with git worktree remove (git refuses if the ' +
+      'worktree has uncommitted or untracked files). Never use git branch -D, git worktree remove --force or ' +
+      'git push --delete. If git refuses a delete, leave the branch and say why. Report each deleted branch with ' +
+      'its last commit hash (restore with git branch <name> <hash>) and how many commits local main is ahead of ' +
+      'and behind its remote. Never push main: pushing it is a separate step the user asks for. If the ' +
+      'commit-and-push order is also on, push the task branch before the merge, never main after it. Never force, ' +
+      'rebase shared commits or otherwise rewrite history. If a merge conflicts, run git merge --abort, leave the ' +
+      'branches and worktrees in place and report the conflict. If the task was done on main itself, there is ' +
+      'nothing to merge or delete.',
   },
   decisions: {
     label: 'Ask decisions one at a time, with a default',
@@ -179,4 +190,65 @@ const ASKED: Record<OrderId, string> = {
 
 export function tipText(id: OrderId): string {
   return `${ASKED[id]} The "${id}" standing order does this for you in every session of this project. ${RULES[id].about}`
+}
+
+// ── trunk guard ─────────────────────────────────────────────────────────────
+// While the trunk order is on, a shell line that could delete work the order
+// must not touch goes to the user for a yes/no instead of running. The order's
+// text asks for the same; this check holds even if Claude reads it loosely.
+
+// Long-lived branches the trunk order never deletes.
+export const PROTECTED_BRANCH =
+  /^(?:main|master|trunk|dev|develop|development|staging|stage|prod|production|qa|uat)$|^(?:release|hotfix|support)\/|proto|spike|experiment|wip|keep|archive|sandbox/i
+
+// git options that take a separate value before the subcommand.
+const GIT_VALUE_OPTIONS = new Set(['-C', '-c', '--git-dir', '--work-tree', '--namespace', '--exec-path'])
+
+function words(segment: string): string[] {
+  return (segment.match(/"[^"]*"|'[^']*'|\S+/g) ?? []).map(w => w.replace(/^(["'])(.*)\1$/, '$2'))
+}
+
+// The git subcommand and its arguments, or null when the segment is not git.
+function gitArgs(segment: string): { sub: string; args: string[] } | null {
+  const w = words(segment)
+  const at = w.findIndex(x => /^(?:.*[\/])?git(?:\.exe)?$/i.test(x))
+  if (at < 0) return null
+  let i = at + 1
+  while (i < w.length && w[i].startsWith('-')) {
+    i += GIT_VALUE_OPTIONS.has(w[i]) ? 2 : 1
+  }
+  if (i >= w.length) return null
+  return { sub: w[i], args: w.slice(i + 1) }
+}
+
+function hasShortFlag(args: string[], letter: string) {
+  return args.some(a => /^-[A-Za-z]+$/.test(a) && a.includes(letter))
+}
+
+// Why this line needs the user's yes while trunk is on, or null when it does not.
+export function trunkGuardReason(command: string): string | null {
+  for (const segment of command.split(/&&|\|\||[;|\n]/)) {
+    const git = gitArgs(segment)
+    if (git === null) continue
+    const { sub, args } = git
+    if (sub === 'branch') {
+      const deletes = hasShortFlag(args, 'd') || hasShortFlag(args, 'D') || args.includes('--delete')
+      if (!deletes) continue
+      const forced = hasShortFlag(args, 'D') || hasShortFlag(args, 'f') || args.includes('--force')
+      if (forced) return 'it force-deletes a branch, which can delete commits that are not in main'
+      const named = args.filter(a => !a.startsWith('-')).find(a => PROTECTED_BRANCH.test(a))
+      if (named !== undefined) return `it deletes "${named}", a long-lived branch the trunk order never deletes`
+    }
+    if (sub === 'worktree' && args[0] === 'remove' && (hasShortFlag(args.slice(1), 'f') || args.includes('--force'))) {
+      return 'it force-removes a worktree, which deletes its uncommitted and untracked files'
+    }
+    if (sub === 'push' && (args.includes('--delete') || hasShortFlag(args, 'd') || args.some(a => /^\+?:[^/]/.test(a)))) {
+      return 'it deletes a branch on the remote'
+    }
+  }
+  return null
+}
+
+export function trunkGuardText(reason: string) {
+  return `Topia trunk order: this needs your OK because ${reason}. Approve only if you meant it.`
 }

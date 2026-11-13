@@ -4,6 +4,21 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
+## [3.13.1] — 2026-11-13
+
+### Changed
+
+- **`trunk` touches only the task's own branch.** It merges the branch the task was done on (and agent or worktree branches made for it) into local main, then deletes only those, with `git branch -d` and `git worktree remove`. Git refuses both for unmerged commits or uncommitted files, and the branch is left in place. Long-lived branches (main, dev, develop, staging, release/*, hotfix/*, and names with proto, spike, experiment, wip, keep, archive or sandbox) are never touched. Each deleted branch is reported with its last commit hash so it can be restored. `trunk` never pushes main, even with the commit-and-push order on: that order pushes the task branch before the merge.
+- **A guard backs the `trunk` order.** While it is on, `git branch -D`, a forced or protected-branch delete, `git worktree remove --force` and remote branch deletes ask you first instead of running.
+
+### Fixed
+
+- **`auto-format` and `typecheck` now run.** They read `CLAUDE_TOOL_INPUT`, which Claude Code never sets, so they never ran. They now read the hook input and use only the project's own Prettier or TypeScript (listed in `package.json` and installed), never `npx`, which could download a package. `auto-format` finishes before Claude's next step, so the next edit sees the formatted file. `typecheck` runs in the background, runs once after a burst of edits, and tells Claude about errors on its next turn. In Cursor, `auto-format` runs on `afterFileEdit`.
+- The stack skill's sharp-edges row no longer quotes the command it warns against (Hermes's scanner flagged it).
+- The topia-sf marketplace test skips when `topia-sf/` is absent (mirrors).
+
+---
+
 ## [3.13.0] — 2026-11-13
 
 Memory that works with no setup, skills that run in the background, and Topia teaching its own standing orders.

@@ -21,6 +21,11 @@
         "matcher": "push"
       }
     ],
+    "afterFileEdit": [
+      {
+        "command": "node -e \"require(require('path').resolve(process.env.CURSOR_PLUGIN_ROOT||'.','hooks','run-hook.cjs'))\" auto-format"
+      }
+    ],
     "postToolUse": [
       {
         "command": "node -e \"require(require('path').resolve(process.env.CURSOR_PLUGIN_ROOT||'.','hooks','run-hook.cjs'))\" token-meter",

@@ -6,7 +6,7 @@
 
 import assert from 'node:assert';
 import { execFileSync, spawnSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { describe, test } from 'node:test';
@@ -221,6 +221,129 @@ describe('secrets-scan: reads the command from stdin', () => {
       assert.strictEqual(scan(dir, 'git log --grep commit').status, 0);
     } finally {
       rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});
+
+// --- Auto-format and typecheck ---
+// They read the edited file from stdin and run only the project's own Prettier
+// or TypeScript, found through package.json. Fake tools stand in for the real ones.
+
+describe('auto-format and typecheck: local tools only', () => {
+  /** A project with an optional fake tool package whose bin script is `body`. */
+  function project({ dep, pkg, bin, body, tsconfig = false }) {
+    const dir = mkdtempSync(path.join(tmpdir(), 'topia-localtool-'));
+    const manifest = { name: 'fixture', version: '1.0.0', devDependencies: dep ? { [dep]: '*' } : {} };
+    writeFileSync(path.join(dir, 'package.json'), JSON.stringify(manifest));
+    if (pkg) {
+      const pkgDir = path.join(dir, 'node_modules', pkg);
+      mkdirSync(pkgDir, { recursive: true });
+      writeFileSync(path.join(pkgDir, 'package.json'), JSON.stringify({ name: pkg, bin: { [bin]: 'cli.cjs' } }));
+      writeFileSync(path.join(pkgDir, 'cli.cjs'), body);
+    }
+    if (tsconfig) writeFileSync(path.join(dir, 'tsconfig.json'), '{}');
+    return dir;
+  }
+
+  function run(hook, dir, file, env = {}) {
+    const hookPath = path.join(HOOKS_DIR, hook, 'index.cjs');
+    return spawnSync('node', [hookPath], {
+      cwd: dir,
+      input: JSON.stringify({
+        hook_event_name: 'PostToolUse',
+        tool_name: 'Edit',
+        cwd: dir,
+        tool_input: { file_path: file },
+      }),
+      encoding: 'utf-8',
+      env: cleanEnv({ TOPIA_TYPECHECK_SETTLE_MS: '0', ...env }),
+      timeout: 10000,
+    });
+  }
+
+  // Fake Prettier: replaces the file named last on the command line.
+  const FAKE_PRETTIER = "const f=process.argv[process.argv.length-1];require('fs').writeFileSync(f,'formatted\\n');";
+  // Fake tsc: one error, exit 2, like tsc --noEmit with a type error.
+  const FAKE_TSC =
+    "console.log('src/a.ts(1,7): error TS2322: Type string is not assignable to type number.');process.exit(2);";
+
+  test('auto-format runs the project Prettier on the edited file', () => {
+    const dir = project({ dep: 'prettier', pkg: 'prettier', bin: 'prettier', body: FAKE_PRETTIER });
+    try {
+      const file = path.join(dir, 'a.js');
+      writeFileSync(file, 'let  x\n');
+      const res = run('auto-format', dir, 'a.js');
+      assert.strictEqual(res.status, 0, res.stderr);
+      assert.strictEqual(readFileSync(file, 'utf-8'), 'formatted\n');
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  test('auto-format leaves the file alone when package.json does not list prettier', () => {
+    const dir = project({ pkg: 'prettier', bin: 'prettier', body: FAKE_PRETTIER });
+    try {
+      const file = path.join(dir, 'a.js');
+      writeFileSync(file, 'let  x\n');
+      assert.strictEqual(run('auto-format', dir, 'a.js').status, 0);
+      assert.strictEqual(readFileSync(file, 'utf-8'), 'let  x\n');
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  test('auto-format reads Cursor afterFileEdit input (file_path at the top level)', () => {
+    const dir = project({ dep: 'prettier', pkg: 'prettier', bin: 'prettier', body: FAKE_PRETTIER });
+    try {
+      const file = path.join(dir, 'a.css');
+      writeFileSync(file, 'a{}\n');
+      const res = spawnSync('node', [path.join(HOOKS_DIR, 'auto-format', 'index.cjs')], {
+        cwd: dir,
+        input: JSON.stringify({
+          hook_event_name: 'afterFileEdit',
+          cursor_version: '3.0.0',
+          file_path: file,
+          edits: [],
+        }),
+        encoding: 'utf-8',
+        env: cleanEnv(),
+        timeout: 10000,
+      });
+      assert.strictEqual(res.status, 0, res.stderr);
+      assert.strictEqual(readFileSync(file, 'utf-8'), 'formatted\n');
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  test('typecheck tells Claude about errors through additionalContext', () => {
+    const dir = project({ dep: 'typescript', pkg: 'typescript', bin: 'tsc', body: FAKE_TSC, tsconfig: true });
+    try {
+      mkdirSync(path.join(dir, 'src'));
+      writeFileSync(path.join(dir, 'src', 'a.ts'), 'const n: number = "x"\n');
+      const res = run('typecheck', dir, 'src/a.ts');
+      assert.strictEqual(res.status, 0, res.stderr);
+      const out = JSON.parse(res.stdout);
+      assert.strictEqual(out.hookSpecificOutput.hookEventName, 'PostToolUse');
+      assert.match(out.hookSpecificOutput.additionalContext, /TS2322/);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  test('typecheck stays silent without typescript in package.json or without tsconfig.json', () => {
+    const noDep = project({ pkg: 'typescript', bin: 'tsc', body: FAKE_TSC, tsconfig: true });
+    const noConfig = project({ dep: 'typescript', pkg: 'typescript', bin: 'tsc', body: FAKE_TSC });
+    try {
+      for (const dir of [noDep, noConfig]) {
+        writeFileSync(path.join(dir, 'a.ts'), 'x\n');
+        const res = run('typecheck', dir, 'a.ts');
+        assert.strictEqual(res.status, 0);
+        assert.strictEqual(res.stdout.trim(), '');
+      }
+    } finally {
+      rmSync(noDep, { recursive: true, force: true });
+      rmSync(noConfig, { recursive: true, force: true });
     }
   });
 });

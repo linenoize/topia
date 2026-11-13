@@ -1,50 +1,45 @@
 // Topia Auto-Format Hook
-// PostToolUse hook on Edit/Write — runs Prettier on JS/TS files after modification
+// PostToolUse on Edit|Write: formats the edited file with the project's own Prettier.
 //
-// Only runs if Prettier is available in the project.
-// Silent pass-through if not applicable.
+// Runs only when the project lists prettier in package.json and has it
+// installed. Otherwise it exits at once and does nothing. It runs before
+// Claude's next step (not in the background), so the next edit sees the
+// formatted file.
 
 const { spawnSync } = require('child_process');
+const fs = require('fs');
 const path = require('path');
+const { findLocalTool, readEvent, editedFile } = require('../lib/local-tool.cjs');
 
-const input = JSON.parse(process.env.CLAUDE_TOOL_INPUT || '{}');
-const filePath = input.file_path || input.filePath || '';
+const FORMATS = /\.(js|jsx|mjs|cjs|ts|tsx|mts|cts|json|css|scss|less|md|html|vue|yaml|yml|graphql)$/i;
 
-// Only format JS/TS/JSON/CSS files
-if (!/\.(js|jsx|ts|tsx|json|css|scss|md|html|yaml|yml)$/i.test(filePath)) {
-  process.exit(0);
-}
+const file = editedFile(readEvent());
+if (!file || !FORMATS.test(file) || !fs.existsSync(file)) process.exit(0);
+if (/[\\/]node_modules[\\/]/.test(file)) process.exit(0);
 
-// Check if file exists and is within a project with Prettier
-const dir = path.dirname(filePath);
+const tool = findLocalTool(path.dirname(file), 'prettier');
+if (!tool) process.exit(0);
 
-// Try to find prettier in the project
-let hasPrettier = false;
-try {
-  const result = spawnSync('npx', ['prettier', '--version'], { cwd: dir, encoding: 'utf-8', stdio: 'pipe', timeout: 5000 });
-  if (result.status === 0) {
-    hasPrettier = true;
+// --ignore-unknown: skip files Prettier has no parser for. .prettierignore is honoured.
+const run = spawnSync(process.execPath, [tool.script, '--write', '--ignore-unknown', file], {
+  cwd: tool.root,
+  encoding: 'utf-8',
+  stdio: 'pipe',
+  timeout: 15000,
+});
+
+if (run.status !== 0 && !run.error) {
+  // A syntax error the formatter could not parse is worth telling Claude about.
+  const first = `${run.stderr || run.stdout || ''}`.trim().split('\n').slice(0, 3).join('\n');
+  if (first) {
+    process.stdout.write(
+      JSON.stringify({
+        hookSpecificOutput: {
+          hookEventName: 'PostToolUse',
+          additionalContext: `[Topia auto-format] Prettier could not format ${path.basename(file)}:\n${first}`,
+        },
+      }),
+    );
   }
-} catch {
-  // No Prettier available — skip silently
 }
-
-if (!hasPrettier) {
-  process.exit(0);
-}
-
-// Run Prettier on the file
-try {
-  spawnSync('npx', ['prettier', '--write', filePath], {
-    cwd: dir,
-    encoding: 'utf-8',
-    stdio: 'pipe',
-    timeout: 10000,
-  });
-  // Silent success — formatted files are seamless
-} catch (e) {
-  // Prettier failed — non-critical, just warn
-  console.log(`[Topia auto-format] Prettier failed on ${path.basename(filePath)}: ${e.message.split('\n')[0]}`);
-}
-
 process.exit(0);

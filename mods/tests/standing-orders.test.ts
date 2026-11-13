@@ -15,6 +15,7 @@ import {
   ordersKey,
   tipText,
   tipsKey,
+  trunkGuardReason,
 } from '../lib/standing-orders.ts'
 
 type On = Parameters<TestBody>[1]
@@ -268,4 +269,35 @@ test('/orders explains what standing orders are, and lists trunk and decisions',
 
   const turned = await $.command.run(ordersCommand('decisions on'))
   expect(turned.text).toContain('"decisions" is now on')
+})
+
+test('trunk guard asks before force deletes and protected branch deletes', async () => {
+  const asks = [
+    'git branch -D feature/x',
+    'git branch -d -f feature/x',
+    'git branch --delete --force feature/x',
+    'git branch -df feature/x',
+    'git branch -d dev',
+    'git branch -d prototype-ui',
+    'git branch -d release/2.0',
+    'cd repo && git -C . branch -d develop',
+    'git worktree remove --force .claude/worktrees/a',
+    'git worktree remove -f ../wt',
+    'git push origin --delete feature/x',
+    'git push origin :feature/x',
+    'Set-Location x; git branch -D old',
+  ]
+  for (const line of asks) expect(trunkGuardReason(line)).not.toBeNull()
+  const passes = [
+    'git branch -d feature/login',
+    'git branch',
+    'git branch -a',
+    'git worktree remove .claude/worktrees/agent-1',
+    'git push origin main',
+    'git merge feature/login',
+    'git log --grep "branch -D"',
+    'git status',
+    'npm test',
+  ]
+  for (const line of passes) expect(trunkGuardReason(line)).toBeNull()
 })

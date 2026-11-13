@@ -61,11 +61,12 @@ export const CAPABILITIES = Object.freeze({
     preToolEdit: 'rule-injection',
     preToolRead: true,
     preToolBash: true,
-    postToolEdit: false,
+    postToolEdit: true,
     stop: false,
     notes:
-      'beforeReadFile runs pre-tool-guard; beforeShellExecution runs secrets-scan and git-push-checkpoint. ' +
-      'Edits still rely on auto-attach `.mdc` rules (afterFileEdit is not wired). No completion-gate on stop.',
+      'beforeReadFile runs pre-tool-guard; beforeShellExecution runs secrets-scan and git-push-checkpoint; ' +
+      'afterFileEdit runs auto-format (only with the project’s own Prettier). No typecheck feedback, since ' +
+      'afterFileEdit cannot reply to the agent. No completion-gate on stop.',
   },
   windsurf: {
     maturity: 'beta',
