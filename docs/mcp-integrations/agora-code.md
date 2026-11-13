@@ -23,7 +23,7 @@ agora-code is not a replacement — it's a **back-end upgrade** that 4 Topia ski
 | ADR / `journal` | `store_learning` | New row in DB |
 | `build` / `idea` start | `recall_learnings` | Semantic search before work |
 | Session end | `complete_session` via `journal` | Archives session |
-| Git commit (opt-in) | `agora-learn-commit` hook if `.topia/agora-commit-learn.flag` | `learn-from-commit` |
+| Git commit | `commit-memory` hook always appends the commit to `.topia/learnings.jsonl`; it also runs agora if `.topia/agora-commit-learn.flag` is set | `learn-from-commit` (opt-in) |
 
 `.topia/` remains the human-readable source of truth; agora is the searchable cross-session index. `topia memory seed` bridges them once; `journal` keeps them aligned after.
 
@@ -124,7 +124,7 @@ Topia's runtime layer (preflight, sentinel, completion-gate, quarantine) is the 
 | agora-code's MCP tools (`store_learning`, `recall_learnings`, etc.) | **Use** via skill cross-refs (already wired in `journal`, `build`, `idea`, `neural-memory`) |
 | agora-code's `inject` on SessionStart | **Topia session-start hook** runs `agora-code inject --quiet` when MCP registered |
 | agora-code's `summarize` CLI | **Available** — invoke from skills when reading large files |
-| agora-code's `learn-from-commit` | **Opt-in** — `PostToolUse` hook when `.topia/agora-commit-learn.flag` or `TOPIA_AGORA_COMMIT_LEARN=1` |
+| agora-code's `learn-from-commit` | **Opt-in** — `commit-memory` PostToolUse hook also calls it when `.topia/agora-commit-learn.flag` or `TOPIA_AGORA_COMMIT_LEARN=1` |
 
 You avoid agora's full `install-hooks` chain (PreToolUse/PostToolUse collision with Topia discipline hooks). Session context injection and `.topia/` seeding are orchestrated by Topia instead.
 

@@ -8,6 +8,7 @@ const { execFileSync } = require('child_process');
 const { isCursorRuntime, writeHookResponse } = require('../lib/cursor-io.cjs');
 const { isAgoraMemoryRegistered, agoraCodeOnPath } = require('../lib/agora-detect.cjs');
 const { resolveTopiaDir, topiaDirForWrite } = require('../lib/topia-paths.cjs');
+const memory = require('../lib/memory-sources.cjs');
 const autofix = require('../lib/autofix.cjs');
 const { watchFilePath } = require('../lib/metrics-buffer.cjs');
 
@@ -278,28 +279,63 @@ function detectAutoFinalize() {
   console.log('      Disable auto-finalize with TOPIA_NO_AUTOFINALIZE=1 (or unset TOPIA_AUTO_FINALIZE)');
 }
 
-const hasTopiaState = fs.existsSync(TopiaDirRead) || fs.existsSync(TopiaDirWrite);
-if (hasTopiaState) {
+// Project state. Each .topia/ file is capped (newest entries + a byte cap) so
+// a long-lived project does not flood the context; topia:recall reads the rest.
+function injectTopiaState() {
+  const hasTopiaState = fs.existsSync(TopiaDirRead) || fs.existsSync(TopiaDirWrite);
+  if (!hasTopiaState) {
+    console.log('[topia: No .topia/ directory found. Run /topia onboard to set up project context.]');
+    return;
+  }
   const TopiaDir = TopiaDirRead;
+  // tail = newest `## ` entries (append-only logs); head = reference docs.
   const stateFiles = [
-    'progress.md',
-    'decisions.md',
-    'conventions.md',
-    'RESCUE-STATE.md',
-    'DEVELOPER-GUIDE.md',
-    'logic-manifest.json'
+    ['progress.md', 'tail'],
+    ['decisions.md', 'tail'],
+    ['conventions.md', 'tail'],
+    ['RESCUE-STATE.md', 'head'],
+    ['DEVELOPER-GUIDE.md', 'head'],
+    ['logic-manifest.json', 'head'],
   ];
   const loaded = [];
+  let budget = memory.TOTAL_BYTES;
+  let trimmed = false;
 
-  for (const file of stateFiles) {
-    const filePath = path.join(TopiaDir, file);
-    if (fs.existsSync(filePath)) {
-      const content = fs.readFileSync(filePath, 'utf-8').trim();
-      if (content.length > 0) {
-        console.log(`\n=== .topia/${file} ===\n${content}`);
-        loaded.push(file);
+  for (const [file, mode] of stateFiles) {
+    try {
+      const content = memory.readText(path.join(TopiaDir, file));
+      if (!content) continue;
+      if (budget <= 0) {
+        trimmed = true;
+        continue;
       }
+      const cap = Math.min(memory.FILE_BYTES, budget);
+      const part =
+        mode === 'tail' ? memory.tailEntries(content, memory.TAIL_ENTRIES, cap) : memory.headBytes(content, cap);
+      if (!part.text) continue;
+      budget -= Buffer.byteLength(part.text, 'utf-8');
+      if (part.cut) trimmed = true;
+      console.log(`\n=== .topia/${file}${part.cut ? ' (newest part)' : ''} ===\n${part.text}`);
+      loaded.push(file);
+    } catch {
+      /* unreadable file — skip silently */
     }
+  }
+
+  try {
+    const learnings = memory.learningsTail(path.join(TopiaDir, 'learnings.jsonl'));
+    if (learnings.lines.length > 0) {
+      console.log(`\n=== .topia/learnings.jsonl (last ${learnings.lines.length} of ${learnings.total}) ===`);
+      for (const line of learnings.lines) console.log(`- ${line}`);
+      if (learnings.total > learnings.lines.length) trimmed = true;
+      loaded.push('learnings.jsonl');
+    }
+  } catch {
+    /* non-critical */
+  }
+
+  if (trimmed) {
+    console.log('[topia: older entries are not shown. Use topia:recall or Grep .topia/ for the rest.]');
   }
 
   // Inject active behavioral context mode
@@ -332,40 +368,43 @@ if (hasTopiaState) {
     } catch { /* non-critical */ }
   }
 
-if (loaded.length > 0) {
+  if (loaded.length > 0) {
     console.log(`\n[topia: injected project state from ${loaded.join(', ')}]`);
   } else {
     console.log('[topia: .topia/ directory found but no state files yet. Run /topia onboard to populate.]');
   }
-} else {
-  console.log('[topia: No .topia/ directory found. Run /topia onboard to set up project context.]');
 }
 
-if (isAgoraMemoryRegistered(cwd) && agoraCodeOnPath()) {
-  try {
+try {
+  injectTopiaState();
+} catch {
+  /* non-critical */
+}
+
+// Optional agora-code context — only when it is registered AND on PATH.
+try {
+  if (isAgoraMemoryRegistered(cwd) && agoraCodeOnPath()) {
     const agoraCtx = execFileSync('agora-code', ['inject', '--quiet'], {
       cwd,
       encoding: 'utf-8',
       stdio: ['pipe', 'pipe', 'pipe'],
+      timeout: 5000,
     }).trim();
     if (agoraCtx) {
-      console.log(`\n=== agora-code session context ===\n${agoraCtx}`);
+      console.log(`\n=== agora-code session context ===\n${memory.headBytes(agoraCtx, memory.FILE_BYTES).text}`);
     }
-  } catch { /* non-critical */ }
-}
+  }
+} catch { /* non-critical */ }
 
-const agoraOn = isAgoraMemoryRegistered(cwd);
-console.log('');
-console.log('[topia: Memory checklist]');
-if (agoraOn) {
-  console.log('  1. MUST invoke topia:recall before large reads or architecture work (first user turn if not done)');
-  console.log('  2. agora-memory is registered — recall merges .topia/ + MCP learnings');
-  console.log('  3. After decisions: topia:journal then neural-memory Capture');
-} else {
-  console.log('  1. Invoke topia:recall (unified .topia/ + .remember/ + MCP)');
-  console.log('  2. If agora-memory MCP registered: recall_learnings before large reads');
-  console.log('  3. After decisions: topia:journal then neural-memory Capture');
-}
+// Memory block — names only the sources found on disk. MCP backends are named
+// only when their registration is found in an MCP config file.
+try {
+  const lines = memory.memoryBlock({ root: cwd, home: os.homedir(), topiaDir: TopiaDirRead });
+  if (lines.length > 0) {
+    console.log('');
+    for (const line of lines) console.log(line);
+  }
+} catch { /* non-critical */ }
 
 const sessionText = hookLines.join('\n').trim();
 if (isCursorRuntime()) {

@@ -52,7 +52,7 @@
       "payload": { "hook_event_name": "PostToolUse", "tool_name": "Edit", "tool_input": { "file_path": "/tmp/proj/does-not-exist.ts" }, "tool_response": { "ok": true }, "cwd": "/tmp/proj", "session_id": "s-test" }
     },
     {
-      "hook": "agora-learn-commit",
+      "hook": "commit-memory",
       "event": "PostToolUse",
       "payload": { "hook_event_name": "PostToolUse", "tool_name": "Bash", "tool_input": { "command": "git commit -m wip" }, "tool_response": { "ok": true }, "cwd": "/tmp/proj", "session_id": "s-test" }
     },
