@@ -39,6 +39,7 @@ Output is a Requirements Document → hand off to topia:plan for implementation 
 - `brainstorm` (L2): when multiple approaches exist for a requirement
 - `design` (L2): when requirements include UI/UX components — hand off visual requirements
 - `problem-solver` (L3): structured reasoning when requirements have conflicting constraints
+- `decision-form` (L3): after the 5 Questions, when scope or NFR choices leave 5+ multiple-choice picks (or the person asks for a form) — never in place of the 5 Questions
 
 ## Called By (inbound)
 
@@ -232,6 +233,7 @@ Every question the user answers burns attention you don't get back. Protect it.
    - Wrong framework? → check config files, don't ask.
 4. **Cache the answer.** Write each Q→A pair into the Requirements Document verbatim. If the user restarts the idea session on the same feature, reuse the cached answers — never re-ask what was already answered.
 5. **Bundle yes/no questions after Q1 if the user is concise.** A user who replies "y" / "n" / "skip" in 1-2 words tolerates a bundle. A user who replies with paragraphs wants the slow pace — keep one-at-a-time.
+6. **A form, not a sixth question.** If the person asks for a form, or scope and NFR work leaves 5+ multiple-choice picks you cannot infer, send them all as one form via `topia:decision-form`, each with a recommended default. Never use the form in place of the 5 Questions.
 
 Every Q should earn its slot: removing it must leave the Requirements Document materially worse. If it wouldn't, cut the question.
 

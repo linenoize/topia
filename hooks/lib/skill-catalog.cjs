@@ -126,6 +126,14 @@ const CATALOG = [
     "slashAlias": "topia-debug"
   },
   {
+    "name": "decision-form",
+    "description": "Use when five or more related decisions are waiting on the person at once, or when they ask for a form, checklist or one page to answer questions on. Not for one or two questions, which belong in chat.",
+    "model": "sonnet",
+    "layer": "L3",
+    "userInvocable": true,
+    "slashAlias": "topia-decision-form"
+  },
+  {
     "name": "dependency-doctor",
     "description": "Dependency health management. Detects package manager, checks outdated packages and vulnerabilities, and produces a prioritized update plan.",
     "model": "haiku",
@@ -159,7 +167,7 @@ const CATALOG = [
   },
   {
     "name": "docs",
-    "description": "Auto-generate and maintain project documentation. Creates README, API docs, architecture docs, changelogs, and keeps them in sync with code changes. The \\\"docs are never outdated\\\" skill.",
+    "description": "Auto-generate and maintain project documentation. Creates README, API docs, architecture docs, changelogs, and keeps them in sync with code changes. Also use when the person asks for a show-and-tell or walkthrough of a change they can try step by step.",
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,

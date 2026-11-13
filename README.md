@@ -4,7 +4,7 @@
 
 <p align="center">
   <strong>Topia — internal skill toolkit for AI coding assistants.</strong><br>
-  71 skills · 315 synapses · 49 pulses · 10 extension packs · optional persistent memory via agora-code MCP
+  72 skills · 318 synapses · 49 pulses · 10 extension packs · optional persistent memory via agora-code MCP
 </p>
 
 <p align="center">
@@ -124,7 +124,7 @@ From a Topia clone or plugin cache path:
 
 ```bash
 node compiler/bin/topia.js doctor
-# ✓ 71 skills, 315 synapses, 49 pulses — nexus is healthy
+# ✓ 72 skills, 318 synapses, 49 pulses — nexus is healthy
 ```
 
 Claude-only users can use `/topia doctor` in chat instead.
@@ -212,7 +212,7 @@ The 8-step build flow (route → recall → plan → test → implement → gate
 | Skill | Purpose |
 |---|---|
 | `research` | Web search for technologies + best practices. |
-| `docs` | Auto-generate + maintain README, API, architecture docs. |
+| `docs` | Auto-generate + maintain README, API, architecture docs. Show-and-tell walkthroughs on request. |
 | `docs-seeker` | Locate API references, changelogs, migration guides. |
 | `documentation` | Leadership-ready packages, user stories, Jira CSV. |
 | `onboard` | Generate CLAUDE.md + .topia/ context for a new project. |
@@ -231,6 +231,7 @@ The 8-step build flow (route → recall → plan → test → implement → gate
 |---|---|
 | `plan` | Master plan + phase files for multi-phase features. |
 | `idea` | Requirements elicitation — 5-question gate, cross-session memory. |
+| `decision-form` | One offline HTML form for 5+ decisions; paste one answer block back. |
 | `review` | Code review with `file:line` findings. |
 | `review-intake` | Process external PR comments / issue triage. |
 | `retro` | Engineering retrospective on commit history. |
@@ -372,9 +373,9 @@ The `org/` tree holds stable team and policy configuration. `guardian` and `read
 ## Numbers
 
 ```
-Skills:            71 (L0:1 · L1:5 · L2:33 · L3:32)
+Skills:            72 (L0:1 · L1:5 · L2:33 · L3:33)
 Extension Packs:   10
-Synapses:          315 (4.4 avg/skill)
+Synapses:          318 (4.4 avg/skill)
 Pulses:            49 (60 emit/listen edges)
 Platforms:         Claude Code, Cursor, Codex, Antigravity, OpenCode, OpenClaw, Generic
 Tests:             1,035 passing
