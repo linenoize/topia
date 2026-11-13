@@ -20,7 +20,7 @@ Post-generation validation that verifies AI-generated code references actually e
 
 - Called by `build` after code generation, before commit
 - Called by `fix` after applying fixes
-- Called by `readiness` as import verification sub-check
+- Called by `verification` as import verification sub-check (review stage)
 - Called by `review` during code review
 - Auto-trigger: when new import statements are added to codebase
 
@@ -33,7 +33,7 @@ Post-generation validation that verifies AI-generated code references actually e
 
 - `build` (L1): after code generation, before commit
 - `fix` (L2): after applying fixes
-- `readiness` (L2): import verification sub-check
+- `verification` (L2): import verification sub-check
 - `review` (L2): during code review
 - `db` (L2): verify SQL syntax and ORM method calls are real
 - `review-intake` (L2): verify imports in code submitted for review
@@ -144,7 +144,7 @@ Flag any match with edit distance ≤ 2 from these known pairs.
 
 ### Step 4 — Verify API calls
 
-For any API endpoint or SDK method call found in the diff, use `topia:docs-seeker` (Context7) to confirm:
+For any API endpoint or SDK method call found in the diff, use `topia:research` (API docs mode, Context7 when available) to confirm:
 - The method/function exists in the library's documented API
 - The parameter signature matches usage in code
 
@@ -213,7 +213,7 @@ Known failure modes for this skill. Check these before declaring done.
 - Internal imports: file existence AND symbol export verified
 - External packages: manifest presence checked for every package
 - Suspicious package names flagged (edit distance ≤2 from popular packages)
-- API signatures checked via docs-seeker for new SDK/library calls
+- API signatures checked via research (API docs mode) for new SDK/library calls
 - Hallucination Guard Report emitted with PASS/WARN/BLOCK and verified count
 
 ## Cost Profile

@@ -206,7 +206,7 @@ function resolveContextWindow({ peak = null, model = null, explicit = null, env 
 }
 
 /**
- * Pressure from measured context use. Mirrors context-engine Step 6b:
+ * Pressure from measured context use (the levels context-lifecycle reads):
  * >35% left is safe, 25–35% left is a warning, <25% left is critical.
  */
 function pressureFromPercent(percentUsed) {

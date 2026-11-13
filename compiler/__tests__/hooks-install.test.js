@@ -291,7 +291,7 @@ describe('hookStatus (claude adapter)', () => {
     const claude = result.results.find((r) => r.platform === 'claude');
     assert.strictEqual(claude.installed, true);
     assert.strictEqual(claude.preset, 'gentle');
-    assert.ok(claude.events.PreToolUse.includes('readiness'));
+    assert.ok(claude.events.PreToolUse.includes('verification'));
     assert.ok(claude.events.Stop.includes('completion-gate'));
   });
 

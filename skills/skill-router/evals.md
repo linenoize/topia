@@ -5,7 +5,7 @@
 ### Prompt
 User: "Review this PR and check code quality before we merge — look for issues and whether we're ready."
 
-Discovery surfaces overlapping candidates whose descriptions all mention review / quality / check: `review`, `audit`, and `readiness` (and optionally `guardian`). Intent classification picks a primary via L1 > L2 > L3 and routing table.
+Discovery surfaces overlapping candidates whose descriptions all mention review / quality / check: `review`, `audit`, and `verification` (and optionally `guardian`). Intent classification picks a primary via L1 > L2 > L3 and routing table.
 
 ### Expected Reasoning
 Agent detects ≥2 stack candidates (description/intent overlap or alternates within ~30% of top score). Runs Step 2.5 Stack Consolidation: picks one primary (typically `review` or `audit` per routing table), loads HARD-GATE digests from `skill-index.json` for near-matches only, diffs unique gates, emits Stack Brief ≤300 tokens, announces `Stack consolidated: primary topia:X; folded Y, Z`, then Skill-invokes **only** the primary.

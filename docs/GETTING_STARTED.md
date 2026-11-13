@@ -120,7 +120,7 @@ Compare vanilla AI coding vs topia:
 |---------|-----------|
 | Claude writes code first | `recon` reads codebase first |
 | Tests written last (or skipped) | `test` writes FAILING tests first (enforced) |
-| Commit whenever | `readiness` + `guardian` must pass |
+| Commit whenever | `verification` + `guardian` must pass |
 | "Looks done" = done | `completion-gate` validates evidence |
 
 **The toolkit makes Claude disciplined.** Not smarter — just less sloppy.
@@ -146,7 +146,7 @@ Presets:
 - `strict` — blocks commits that fail gates
 - `off`    → uninstall
 
-Now `readiness`, `guardian`, and `completion-gate` auto-fire on supported platforms. See [`HOOKS.md`](HOOKS.md) for parity by IDE.
+Now `verification`, `guardian`, and `completion-gate` auto-fire on supported platforms. See [`HOOKS.md`](HOOKS.md) for parity by IDE.
 
 ---
 
@@ -179,7 +179,7 @@ A: Both work. `/topia build add login` is explicit. "Add login to the app" works
 A: Topia writes to its own namespace (`.topia/`, plugin cache, `.cursor/rules/`, etc.). Your existing setup is untouched. Uninstall cleanly with `topia hooks uninstall`.
 
 **Q: Does Topia work offline?**
-A: Yes. All skills are local Markdown. Only `research`, `docs-seeker`, `trend-scout` need network.
+A: Yes. All skills are local Markdown. Only `research` and `trend-scout` need network.
 
 **Q: I hit a bug. Where do I report it?**
 A: Open an issue on GitHub. Include the SKILL.md path, the failing command, and verbose output (`topia doctor --hooks` is a good first attachment).

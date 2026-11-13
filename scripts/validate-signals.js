@@ -12,7 +12,7 @@ const SIGNAL_NAME_PATTERN = /^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)+$/;
  * Covers external entry points + observability-only signals.
  */
 export const INTENTIONAL_BROADCAST_SIGNALS = new Set([
-  'output.density.set', // context-engine → orchestrators (dynamic consumption)
+  'output.density.set', // context-lifecycle → orchestrators (dynamic consumption)
   'triage.classified', // review-intake → observability
   'agent.brief.ready', // review-intake → external issue tracker
   'outofscope.recorded', // idea/review-intake → observability
@@ -27,7 +27,6 @@ export const INTENTIONAL_BROADCAST_SIGNALS = new Set([
   'autopilot.downgraded', // legacy — kept as a no-op allowlist entry for back-compat in tests
   'context.checkpoint.written', // hooks — observability
   'context.compacted', // post-compact / context-lifecycle — observability
-  'context.pressure.high', // context-watch / context-engine — observability until runtime bus
 ]);
 
 /**
@@ -39,6 +38,7 @@ export const EXTERNAL_TRIGGER_SIGNALS = new Set([
   'business.context.loaded', // consulting-analysis entry point
   'marketing.campaign.start', // niche-finder entry point — fired by orchestrator/user
   'external.content.received', // quarantine entry point — fired by MCP/WebFetch/upload hooks
+  'context.pressure.high', // context-lifecycle entry point — fired by the context-watch hook
 ]);
 
 /**

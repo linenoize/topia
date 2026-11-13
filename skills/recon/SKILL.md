@@ -223,7 +223,7 @@ Produce structured output for the calling skill. Mark the tasks completed.
 - `build` (L1): Phase 1 UNDERSTAND — scan codebase
 - `team` (L1): understand full project scope
 - `guardian` (L2): scan changed files for security issues
-- `readiness` (L2): find affected code paths
+- `verification` (L2): find affected code paths (review stage regression check)
 - `onboard` (L2): full project scan for CLAUDE.md generation
 - `autopsy` (L2): comprehensive health assessment
 - `surgeon` (L2): scan module before refactoring

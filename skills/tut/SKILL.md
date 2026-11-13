@@ -93,7 +93,7 @@ After the menu, add a 1-sentence "what does this do?" for any item the user is u
 - **finalize** — opt-in extras. Wires dispatch hooks system-wide, adds `.topia/` to your repo's `.gitignore`, and offers optional extras. Memory in `.topia/` already works without it. Reversible.
 - **onboard** — analyzes this repository (stack, conventions, test framework, recent commits) and writes a CLAUDE.md plus `.topia/` context files so future sessions don't have to re-discover the project from scratch.
 - **doctor** — sanity-check: nexus integrity, gitignore coverage, tracked-state-files audit, hook health. Surfaces any fixes.
-- **org-config** — interview-driven setup for `.topia/org/org.md`; guardian and readiness enforce your team's rules at commit time.
+- **org-config** — interview-driven setup for `.topia/org/org.md`; guardian and verification enforce your team's rules at commit time.
 - **faq** — the docs/visualization entry-point listing.
 
 ### Step 4 — Ask if they want to start

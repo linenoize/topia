@@ -1,7 +1,7 @@
 ---
 name: context-pack
 description: "Creates structured handoff briefings between agents. Use when delegating complex work to subagents that would otherwise lose context. Packages task context, constraints, and progress into a compact packet that subagents can consume without re-reading the full conversation. Prevents the 'lost context' problem in multi-agent delegation."
-user-invocable: false
+disable-model-invocation: true
 metadata:
   author: topia
   version: "0.3.0"
@@ -26,7 +26,7 @@ When a parent agent delegates work to a subagent, critical context gets lost —
 ## Calls (outbound)
 
 - `session-bridge` (L3): read persisted state for inclusion in packet
-- `context-engine` (L3): check current context budget before deciding packet size
+- `context-lifecycle` (L3): check current context pressure before deciding packet size
 
 ## Called By (inbound)
 

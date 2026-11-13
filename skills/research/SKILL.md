@@ -1,13 +1,13 @@
 ---
 name: research
-description: "Web search and external knowledge lookup. Gathers data on technologies, libraries, best practices, and competitor solutions."
+description: "Use when an answer depends on facts outside the repo: how a library or API works in a given version, what an error message means, whether a method is deprecated, or how tools and approaches compare. Checks Context7 docs first for API questions, then official sources, and cites every finding."
 metadata:
   author: topia
-  version: "0.4.0"
+  version: "0.5.0"
   layer: L3
   model: haiku
   group: knowledge
-  tools: "Read, Glob, Grep, WebFetch, WebSearch"
+  tools: "Read, Glob, Grep, WebFetch, WebSearch, ToolSearch"
 ---
 
 # research
@@ -16,9 +16,14 @@ metadata:
 
 Web research utility. Receives a research question, executes targeted searches, deep-dives into top results, and returns structured findings with sources. Stateless — no memory between calls.
 
+Two modes:
+
+- **API docs** (formerly `docs-seeker`): a library, API, method or error message. Returns the signature, a minimal example, and version or deprecation notes. Use this when the question is "how do I call X" or "what does this error mean".
+- **General research** (default): technologies, best practices, comparisons, competitor solutions. Needs several independent sources.
+
 ## Calls (outbound)
 
-None — pure L3 utility using `WebSearch` and `WebFetch` tools directly.
+None — pure L3 utility using `WebSearch`, `WebFetch`, and Context7 tools when present.
 
 ## Called By (inbound)
 
@@ -31,6 +36,10 @@ None — pure L3 utility using `WebSearch` and `WebFetch` tools directly.
 - `integrate` (L2): research source repo patterns before grafting
 - `mcp-builder` (L2): research MCP standards and existing implementations
 - `scaffold` (L1): research project templates and best practices
+- `debug` (L2): API docs mode — look up unclear errors or deprecated APIs
+- `fix` (L2): API docs mode — check correct API usage before applying changes
+- `review` (L2): API docs mode — verify API usage is current and correct
+- `adversary` (L2): API docs mode — verify framework/API assumptions in a plan
 
 ## Execution
 
@@ -39,7 +48,72 @@ None — pure L3 utility using `WebSearch` and `WebFetch` tools directly.
 ```
 research_question: string   — what to research
 focus: string (optional)    — narrow the scope (e.g., "security", "performance")
+mode: string (optional)     — "api-docs" | "general"; inferred if omitted
+version: string (optional)  — library version, for API docs mode
 ```
+
+Pick API docs mode when the input names a library, API, method, or quotes an error message. Otherwise use general research.
+
+## Mode: API docs
+
+### D1 — Identify the target
+
+Extract the library or framework name, the version if given, and the specific API, method or error.
+
+### D2 — Context7 (if available)
+
+Context7 servers go by different names depending on how they are installed (a plugin, Docker MCP, a direct server). Do not assume a name.
+
+1. Look for tools whose names end in `resolve-library-id` and in `get-library-docs` or `query-docs` (for example `mcp__<server>__resolve-library-id`). If they are not loaded yet, search for them with ToolSearch (query `resolve-library-id`).
+2. If found: call the `resolve-library-id` tool with the library name. Pick the best match (exact name, then source reputation, then snippet count).
+3. Call the `get-library-docs` or `query-docs` tool with that library ID and the specific question as the topic.
+4. If the answer includes the signature and an example, go to D5.
+
+If no such tools exist, go straight to D3. Do not report the missing tools as an error.
+
+### D3 — llms.txt
+
+Many projects publish AI-oriented docs:
+
+- GitHub repos: `https://context7.com/{org}/{repo}/llms.txt` (e.g. `context7.com/vercel/next.js/llms.txt`)
+- Doc sites: `https://context7.com/websites/{normalized-domain}/llms.txt`
+- Append `?topic={query}` for focused results (e.g. `context7.com/shadcn-ui/ui/llms.txt?topic=date-picker`)
+- Or the project's own: `WebSearch "[library] llms.txt"`, then common paths such as `docs.[lib].com/llms.txt`
+
+Fetch it with `WebFetch`. If it lists many section URLs, fetch only the sections that match the question.
+
+### D4 — Web search
+
+1. `WebSearch`: "[library] [method] official documentation", "[library] [version] [query]", "[error message] [library]"
+2. Prefer official docs, the official repo, and the package registry page.
+3. `WebFetch` the top 1-3 official sources.
+
+If docs are thin but the source is available, read the source (or a `npx repomix` dump of it) for signatures and examples.
+
+### D5 — Extract and report
+
+From whichever source answered, extract the exact signature (parameter and return types), a minimal working example, version notes (added, changed, deprecated), and known pitfalls. Always give the source URL. If the API is deprecated, say so and name the replacement.
+
+```
+## Documentation: [Library/API]
+- **Version**: [requested or "latest"]
+- **Source**: [URL or Context7 library ID]
+
+### API Reference
+- **Signature**: `fn(param: Type): ReturnType`
+- **Parameters**: `param` — description
+- **Returns**: description
+
+### Usage Example
+[minimal snippet from the docs]
+
+### Known Issues / Deprecations
+- [warning, deprecation, or common mistake]
+```
+
+API docs mode does not need three independent sources. One official source is enough; say which one.
+
+## Mode: General research
 
 ### Step 0 — Prior learnings (optional)
 
@@ -130,6 +204,8 @@ Return structured findings in the output format below.
 - Flag conflicting information — never silently pick one side
 - Max 5 WebFetch calls per invocation
 - If no useful results found, report that explicitly rather than fabricating
+- (API docs) Try Context7 tools first when present, then llms.txt, then web search; never hardcode a Context7 server prefix
+- (API docs) If the requested version's docs are not available, say so
 
 ## Output Format
 
@@ -166,9 +242,17 @@ Known failure modes for this skill. Check these before declaring done.
 | Exceeding 5 WebFetch calls per invocation | MEDIUM | Hard limit: prioritize top 3-5 URLs from search, fetch only the most relevant |
 | Single-source conclusions presented as fact | HIGH | HARD-GATE: minimum 3 complementary sources from different source types. Single source = `low` confidence |
 | All sources from same domain (e.g., 3 Stack Overflow links) | MEDIUM | Source diversity rule: never 3+ URLs from the same domain. Spread across official/community/blog/repo |
+| (API docs) Calling a Context7 tool by a guessed server name | MEDIUM | D2: find tools by name suffix or ToolSearch; skip Context7 if none exist |
+| (API docs) Deprecated API returned without saying so | HIGH | D5: state "deprecated in X, use Y" with a link |
+| (API docs) Docs for the wrong version | HIGH | Check the version; say so when version-specific docs are missing |
 
 ## Done When
 
+API docs mode:
+- Context7 tried when available, else llms.txt or official docs fetched
+- Signature, minimal example, version/deprecation notes and source URL reported
+
+General research:
 - 2-3 search queries formulated and executed
 - Top 3-5 URLs identified and fetched (max 5 WebFetch calls)
 - Conflicting information between sources explicitly flagged

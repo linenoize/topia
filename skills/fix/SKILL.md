@@ -9,7 +9,7 @@ metadata:
   group: development
   tools: "Read, Write, Edit, Bash, Glob, Grep"
   emit: code.changed, agent.stuck
-  listen: bug.diagnosed, review.issues, readiness.blocked, security.blocked, oracle.response
+  listen: bug.diagnosed, review.issues, verification.blocked, security.blocked, oracle.response
 ---
 
 # fix
@@ -37,7 +37,7 @@ If unsure whether the test is wrong or the implementation is wrong → call `top
 - `test` (L2): verify fix with tests after applying changes
 - `review` (L2): self-review for complex or risky fixes
 - `verification` (L3): validate fix doesn't break existing functionality
-- `docs-seeker` (L3): check correct API usage before applying changes
+- `research` (L3): API docs mode — check correct API usage before applying changes
 - `hallucination-guard` (L3): verify imports after code changes
 - `logic-guardian` (L2): pre-edit gate before modifying manifest-listed logic files
 - `recon` (L2): find related code before applying changes
@@ -183,7 +183,7 @@ If `topia:debug` left `#region agent-debug` markers in the code:
 Verify correctness of the changes just made.
 
 - Call `topia:hallucination-guard` to verify all imports introduced or modified are real and correctly named
-- Call `topia:docs-seeker` if any external API, library method, or SDK call was added or changed
+- Call `topia:research` (API docs mode) if any external API, library method, or SDK call was added or changed
 - For complex or risky fixes (auth, data mutation, async logic): call `topia:review` for a full quality check
 
 ### Step 6b: Capture Fix Pattern

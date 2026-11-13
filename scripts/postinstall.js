@@ -37,7 +37,9 @@ console.log('');
 console.log(`  ${dim}That one command will:${reset}`);
 console.log(`    ${dim}• check for rune-kit conflicts (offer migration if found)${reset}`);
 console.log(`    ${dim}• register via linenoize marketplace (or claude plugin add . fallback)${reset}`);
-console.log(`    ${dim}• wire discipline hooks globally (readiness / guardian / completion-gate / quarantine)${reset}`);
+console.log(
+  `    ${dim}• wire discipline hooks globally (verification / guardian / completion-gate / quarantine)${reset}`,
+);
 console.log(`    ${dim}• install agora-code MCP for persistent memory (if Python 3.10+ is present)${reset}`);
 console.log(`    ${dim}• verify with topia doctor${reset}`);
 console.log('');

@@ -123,7 +123,7 @@ Write to `.topia/bugfix-briefs/<ticket>.md`:
 3. Test (RED) — failing regression test
 4. Checkpoint 2 — confirm fix method before implementation
 5. Fix — minimal change
-6. Quality — readiness, guardian, review, completion-gate
+6. Quality — verification, guardian, review, completion-gate
 7. Verify — lint, types, tests, build
 8. Checkpoint 3 — pre-commit review
 9. Commit — per commit policy

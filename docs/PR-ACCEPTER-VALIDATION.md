@@ -15,14 +15,14 @@ Policy source: [`.topia/org/org.md`](../.topia/org/org.md). Field reference: [`O
 | Security-tagged paths | Security team + 1 |
 | Hotfix (P1/P2) | Single maintainer OK; still run `guardian` + CI |
 
-Maintainers may override `readiness` / `review`; they **cannot** override `guardian` BLOCK.
+Maintainers may override `verification` / `review`; they **cannot** override `guardian` BLOCK.
 
 ## Mental model
 
 | Gate | Job | Blocks merge when |
 |------|-----|-------------------|
 | `guardian` | Security / secrets / OWASP / CVE | BLOCK |
-| `readiness` | Logic gaps, missing tests, regressions | BLOCK |
+| `verification` | Logic gaps, missing tests, regressions | BLOCK |
 | `completion-gate` | Claims without evidence (esp. agent PRs) | UNCONFIRMED |
 | `verification` + CI | Lint / types / tests / build green | Fail |
 | `review` | Correctness + blast radius | Any BLOCK/HIGH unfixed |
@@ -36,7 +36,7 @@ author opens PR + /topia build
         ▼
 accepter scopes ALL commits (main...HEAD)
         │
-        ├─ /topia readiness ──┐
+        ├─ /topia verification ┐
         │                     ├── any BLOCK → request changes
         └─ /topia guardian ───┘
         │
@@ -67,7 +67,7 @@ Note authors, security-sensitive paths, and high-blast symbols.
 
 ### 2. Hard gates (parallel)
 
-- `/topia readiness` on the PR diff
+- `/topia verification` on the PR diff
 - `/topia guardian` on the PR diff (OWASP per org policy)
 
 Any BLOCK → request changes; do not merge.
@@ -131,7 +131,7 @@ Fallback: group by author + day if commits were direct-to-main.
 ### 4. Per cluster (synthetic PR)
 
 1. Check out the merge commit / PR branch range
-2. Run ongoing checklist steps 2–4 (`guardian` ‖ `readiness` → `review` → evidence/CI)
+2. Run ongoing checklist steps 2–4 (`guardian` ‖ `verification` → `review` → evidence/CI)
 3. Record: cluster id, gate verdicts, BLOCK findings, PASS/FAIL
 
 ### 5. Validation report
@@ -146,7 +146,7 @@ FAIL clusters → open fix PRs via `/topia fix` / `/topia build`. Do not rewrite
 
 | Skill / doc | Role |
 |-------------|------|
-| [`skills/readiness/SKILL.md`](../skills/readiness/SKILL.md) | Pre-merge quality gate |
+| [`skills/verification/SKILL.md`](../skills/verification/SKILL.md) | Pre-merge quality gate |
 | [`skills/guardian/SKILL.md`](../skills/guardian/SKILL.md) | Security hard stop |
 | [`skills/review/SKILL.md`](../skills/review/SKILL.md) | Judgment pass + test-gap delegation |
 | [`skills/completion-gate/SKILL.md`](../skills/completion-gate/SKILL.md) | Evidence for agent claims |

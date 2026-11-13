@@ -25,7 +25,7 @@ Oracle-mode listens to `agent.stuck` and starts the dispatch flow automatically.
 
 ### 1. Pre-bundle gate
 
-Emit `context.preview` to `context-engine` with the planned file list and prompt. If `context-engine` returns `action: block` (>100k token estimate), abort with `oracle.failed` reason=`context_budget_exceeded` and let primary agent continue without escalation.
+Emit `context.preview` via `context-lifecycle` (Cost Preview) with the planned file list and prompt. If it returns `action: block` (>100k token estimate), abort with `oracle.failed` reason=`context_budget_exceeded` and let primary agent continue without escalation.
 
 ### 2. Build the bundle
 
@@ -72,7 +72,7 @@ debug Phase 3 (3rd disproved):
   emit agent.stuck
   ↓
 adversary oracle-mode (this skill):
-  emit context.preview → context-engine
+  emit context.preview → context-lifecycle
   emit oracle.dispatched → session-bridge (if opus)
   ... reply ...
   emit oracle.response

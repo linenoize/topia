@@ -10,7 +10,7 @@
       "name": "topia",
       "displayName": "Topia",
       "source": { "source": "url", "url": "https://github.com/linenoize/topia.git" },
-      "description": "73-skill Topia Nexus for Claude Code — TDD rails, readiness/guardian/completion-gate hooks, Maestro routing, optional agora-code neural memory",
+      "description": "73-skill Topia Nexus for Claude Code — TDD rails, verification/guardian/completion-gate hooks, Maestro routing, optional agora-code neural memory",
       "version": "3.13.0",
       "author": {
         "name": "topia"

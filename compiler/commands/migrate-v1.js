@@ -11,15 +11,15 @@ const MIGRATED_FLAG = 'migrated-from-v1.flag';
 export const V1_SKILL_MAP = {
   sentinel: 'guardian',
   'sentinel-env': 'guardian-env',
-  preflight: 'readiness',
+  preflight: 'verification',
   graft: 'integrate',
   scout: 'recon',
 };
 
 /** v1 pulse wire IDs → v2 (applied before skill word-boundary rewrites). */
 export const V1_PULSE_MAP = {
-  'preflight.passed': 'readiness.passed',
-  'preflight.blocked': 'readiness.blocked',
+  'preflight.passed': 'verification.complete',
+  'preflight.blocked': 'verification.blocked',
   'graft.complete': 'integrate.complete',
 };
 

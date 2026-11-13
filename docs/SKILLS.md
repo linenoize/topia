@@ -226,18 +226,18 @@ Generate and parse office documents — PDF, DOCX, XLSX, PPTX, CSV. Pure format 
 | Marker | Skill | Purpose |
 |--------|-------|---------|
 | 🔄 | **research** | Web research — min 3 sources per conclusion, max 5 WebFetch calls |
-| 🔄 | **docs-seeker** | Documentation lookup — Context7 → llms.txt → WebSearch |
+| 🔄 | **docs-seeker** | Old name — now `research` API docs mode |
 | 👤 | **trend-scout** | Market intelligence — Product Hunt, GitHub Trending, HN, Reddit |
 | 🔄 | **problem-solver** | Structured reasoning frameworks (5 Whys, Fishbone, First Principles, SCAMPER) with bias detection |
-| 🔄 | **sequential-thinking** | Multi-variable analysis for >3 interdependent factors with cascading effects |
+| 🔄 | **sequential-thinking** | Old name — now `problem-solver` sequential mode |
 | 👤 | **decision-form** | One offline HTML form for 5+ decisions, recommended answers preselected; exports a block Claude parses |
 | 🔄 | **verification** | Universal verification — lint, type-check, tests, build. 3-level quality gate |
 | 🤖 | **hallucination-guard** | Post-generation validation — phantom imports, typosquatting |
 | 🤖 | **completion-gate** | Lie detector — validates every completion claim has evidence |
-| 🤖 | **constraint-check** | Audits whether HARD-GATEs and constraints were followed |
+| 🤖 | **constraint-check** | Old name — now `completion-gate` process audit |
 | 🔄 | **sast** | Static analysis runner — ESLint, Semgrep, Bandit, Clippy, govulncheck |
 | 🤖 | **integrity-check** | Detects prompt injection, memory poisoning in `.topia/` files |
-| 🤖 | **context-engine** | Context window management, artifact folding, auto-compaction |
+| 🤖 | **context-engine** | Old name — now part of `context-lifecycle` |
 | 🤖 | **context-lifecycle** | Automated save/compact/resume at phase boundaries, push, and post-compact |
 | 🤖 | **context-pack** | Structured handoff briefings between agents |
 | 🔄 | **journal** | Persistent state tracking — ADRs, decisions, progress |

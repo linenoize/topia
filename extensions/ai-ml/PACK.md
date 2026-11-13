@@ -48,7 +48,7 @@ AI-powered features fail in predictable ways: LLM calls without retry logic that
 
 ```
 Calls → research (L3): lookup model documentation and best practices
-Calls → docs-seeker (L3): API reference for LLM providers
+Calls → research (L3): API docs mode — API reference for LLM providers
 Calls → verification (L3): validate pipeline correctness
 Calls → @Topia/devops (L4): ai-agents → edge-serverless for agent deployment (Workers, Lambda)
 Calls → @Topia/backend (L4): ai-agents → API patterns for agent endpoints and WebSocket handlers

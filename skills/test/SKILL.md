@@ -345,7 +345,7 @@ Save eval files as `skills/<name>/evals.md`. Each eval is a numbered scenario (E
 - `fix` (L2): verify fix passes tests
 - `review` (L2): untested edge case found → write test for it
 - `deploy` (L2): pre-deployment full test suite
-- `readiness` (L2): run targeted regression tests on affected code
+- `verification` (L2): run targeted regression tests on affected code (review stage)
 - `surgeon` (L2): verify refactored code
 - `launch` (L1): pre-deployment test suite
 - `safeguard` (L2): writing characterization tests for legacy code
@@ -613,7 +613,7 @@ chain_metadata:
     status: "[RED | GREEN]"  # RED = TDD failing (expected), GREEN = all pass
   suggested_next:  # status-aware — pick based on RED or GREEN
     # When GREEN:
-    - skill: "topia:readiness"
+    - skill: "topia:verification"
       reason: "[grounded in results — e.g., 'All 15 tests GREEN, check edge case completeness']"
       consumes: ["test_results", "test_files"]
     # When RED (TDD expected):

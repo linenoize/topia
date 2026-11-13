@@ -28,7 +28,7 @@ Restart if `/topia:build` does not appear.
 | If you skip finalize | Effect |
 |----------------------|--------|
 | Skills | Still work via `/topia:*` |
-| Dispatch hooks in other repos | **Not wired** — readiness/guardian won't auto-fire outside active plugin sessions |
+| Dispatch hooks in other repos | **Not wired** — verification/guardian won't auto-fire outside active plugin sessions |
 | Team policy in gates | **Template only** — run `/topia org-config` later |
 | agora-code | Not installed unless you do it manually |
 
@@ -48,7 +48,7 @@ Deep dive: [`INSTALL-CLAUDE-CODE.md`](INSTALL-CLAUDE-CODE.md) · [`commands/fina
 
 ## Team policy (`org.md`)
 
-Topia is built for **shared discipline**: one committed policy file drives what `guardian` and `readiness` block or warn on.
+Topia is built for **shared discipline**: one committed policy file drives what `guardian` and `verification` block or warn on.
 
 | For teams | Action |
 |-----------|--------|
@@ -57,7 +57,7 @@ Topia is built for **shared discipline**: one committed policy file drives what 
 | Change policy | Edit `org.md`, re-run finalize or `topia setup --global` |
 | Accept / audit PRs (maintainer) | Follow [`PR-ACCEPTER-VALIDATION.md`](PR-ACCEPTER-VALIDATION.md) — gates before merge; no self-merge |
 
-Without a configured `org.md`, organization checks in guardian/readiness are skipped or use the shipped template.
+Without a configured `org.md`, organization checks in guardian/verification are skipped or use the shipped template.
 
 ---
 

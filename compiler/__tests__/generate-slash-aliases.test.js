@@ -27,10 +27,19 @@ describe('skill-catalog', () => {
   });
 
   test('loadSkillCatalog excludes user-invocable false skills from invocable set', () => {
-    const catalog = loadSkillCatalog(REPO);
-    const router = catalog.find((s) => s.name === 'skill-router');
-    assert.ok(router);
-    assert.equal(router.userInvocable, false);
+    const scratch = mkdtempSync(join(tmpdir(), 'topia-catalog-'));
+    try {
+      mkdirSync(join(scratch, 'skills', 'quiet'), { recursive: true });
+      writeFileSync(
+        join(scratch, 'skills', 'quiet', 'SKILL.md'),
+        '---\nname: quiet\ndescription: "Background notes."\nuser-invocable: false\nmetadata:\n  layer: L3\n---\n\n# quiet\n',
+      );
+      const quiet = loadSkillCatalog(scratch).find((s) => s.name === 'quiet');
+      assert.ok(quiet);
+      assert.equal(quiet.userInvocable, false);
+    } finally {
+      rmSync(scratch, { recursive: true, force: true });
+    }
   });
 
   test('loadSkillCatalog marks context: fork skills as forked', () => {

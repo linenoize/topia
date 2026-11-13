@@ -26,7 +26,7 @@ Restart Claude Code if `/topia:build` does not appear.
 
 | Missing until Step 2 | Practical impact |
 |----------------------|------------------|
-| Dispatch hooks in `~/.claude/settings.json` | `readiness` / `guardian` may **not** run automatically in repos where the plugin isn't active |
+| Dispatch hooks in `~/.claude/settings.json` | `verification` / `guardian` may **not** run automatically in repos where the plugin isn't active |
 | Custom `.topia/org/org.md` | Security and review gates use **no org policy** or the generic template |
 | agora-code MCP | No cross-project semantic memory (file `.topia/` only) |
 
@@ -46,7 +46,7 @@ Finalize enables (you choose in the prompt):
 
 | Option | Default | What it does |
 |--------|---------|--------------|
-| System-wide dispatch hooks | **On (recommended)** | `readiness`, `guardian`, `completion-gate`, `dependency-doctor` globally, gentle preset |
+| System-wide dispatch hooks | **On (recommended)** | `verification`, `guardian`, `completion-gate`, `dependency-doctor` globally, gentle preset |
 | Team org policy | **On for teams** | Runs `/topia org-config` → writes `.topia/org/org.md` |
 | agora-code MCP | Off unless you want it | Python 3.10+ persistent memory |
 | Project `.gitignore` | Off unless you want it | Topia ignore rules in current repo |
@@ -88,7 +88,7 @@ If `.rune/` exists: `/topia migrate-from-rune` first.
 - CVE and deploy SLAs?
 - Strict vs moderate governance?
 
-`/topia org-config` asks these questions and writes the file. Without it, `guardian` and `readiness` log "no org config" and skip organization enforcement.
+`/topia org-config` asks these questions and writes the file. Without it, `guardian` and `verification` log "no org config" and skip organization enforcement.
 
 Read: [`ORG-CONFIG.md`](ORG-CONFIG.md). Maintainers accepting PRs: [`PR-ACCEPTER-VALIDATION.md`](PR-ACCEPTER-VALIDATION.md).
 

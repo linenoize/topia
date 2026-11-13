@@ -126,6 +126,7 @@ describe('nexus integrity', () => {
     // Collect all names referenced via crossRefs OR mentioned in body text as topia:name
     const referenced = new Set();
     const refPattern = /[Tt]opia:([a-z][\w-]*)/g;
+    const skillFilePattern = /\$\{CLAUDE_SKILL_DIR\}\/\.\.\/([a-z][\w-]*)\//g;
     for (const skill of allParsed) {
       // From parsed crossRefs
       for (const ref of skill.crossRefs) {
@@ -136,12 +137,16 @@ describe('nexus integrity', () => {
       while ((match = refPattern.exec(skill.body)) !== null) {
         referenced.add(match[1]);
       }
+      // Hidden skills (disable-model-invocation) are referenced by file path
+      for (const m of skill.body.matchAll(skillFilePattern)) referenced.add(m[1]);
     }
     // Skills that are dispatched dynamically by skill-router (not via explicit topia:X refs)
-    const dynamicDispatch = new Set(['constraint-check', 'context-engine', 'sast', 'scope-guard', 'worktree']);
+    const dynamicDispatch = new Set(['sast', 'scope-guard', 'worktree']);
+    // Old names kept as pointer stubs (metadata.merged-into) exist only for people typing them
+    const isStub = (s) => Boolean(s.frontmatter.metadata?.['merged-into']);
     // A skill is orphan only if it's never referenced and not dynamically dispatched
     const orphans = allParsed.filter(
-      (s) => !referenced.has(s.name) && !dynamicDispatch.has(s.name) && s.layer !== 'L0',
+      (s) => !referenced.has(s.name) && !dynamicDispatch.has(s.name) && !isStub(s) && s.layer !== 'L0',
     );
     assert.strictEqual(orphans.length, 0, `orphan skills (never referenced): ${orphans.map((s) => s.name).join(', ')}`);
   });

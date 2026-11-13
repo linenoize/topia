@@ -1,6 +1,6 @@
 # Org Config — `.topia/org/org.md`
 
-The single file where your team's policies, roles, approval flows, and governance level live. `guardian` and `readiness` read this **at compile time** and bake your rules into their runtime hooks — so the rules a developer hits at commit time match what the doc says.
+The single file where your team's policies, roles, approval flows, and governance level live. `guardian` and `verification` read this (in Claude Code directly; compiled platforms also get it baked in at compile time) — so the rules a developer hits at commit time match what the doc says.
 
 It's the only file under `.topia/` that gets committed to git (the rest is per-session state). You can — and should — edit it for each project.
 
@@ -32,7 +32,7 @@ Defines who can override what. `completion-gate` and `guardian` consult this whe
 | Role | What it gates |
 |---|---|
 | `admin` | Can override any gate including `guardian BLOCK` |
-| `maintainer` | Can override `readiness` and `review`; cannot override `guardian` |
+| `maintainer` | Can override `verification` and `review`; cannot override `guardian` |
 | `contributor` | Cannot override any blocking gate |
 | `reviewer` | Read + comment only |
 
@@ -59,7 +59,7 @@ Read by `git` skill for semantic commit + branch-name validation.
 ### `## Approval Flows`
 Each flow defines who → does what → who approves. `build`, `team`, and `review-intake` consult these to know when to pause for human approval vs proceed autonomously.
 
-For this repo, **PR accepter validation** is the maintainer-owned gate stack before merge (full-branch `readiness` ‖ `guardian` → `review` → evidence/CI), plus a risk-triaged retrospective for commit batches. Operating procedure: [`PR-ACCEPTER-VALIDATION.md`](PR-ACCEPTER-VALIDATION.md).
+For this repo, **PR accepter validation** is the maintainer-owned gate stack before merge (full-branch `verification` ‖ `guardian` → `review` → evidence/CI), plus a risk-triaged retrospective for commit batches. Operating procedure: [`PR-ACCEPTER-VALIDATION.md`](PR-ACCEPTER-VALIDATION.md).
 
 ### `## Governance Level`
 Master toggle. Three values:
@@ -91,7 +91,7 @@ node compiler/bin/topia.js doctor    # verifies the parse succeeded
 ## What happens if it's missing
 
 If `.topia/org/org.md` doesn't exist:
-- `guardian` and `readiness` fall back to their default rules (the conservative defaults you'd expect: block secrets, require tests, etc.)
+- `guardian` and `verification` fall back to their default rules (the conservative defaults you'd expect: block secrets, require tests, etc.)
 - `topia doctor` does **not** complain — it's optional.
 - You get no team attribution, no custom approval flows, no governance overrides.
 
@@ -114,7 +114,7 @@ Run `topia doctor` to see the parser's view of your file:
 node compiler/bin/topia.js doctor
 ```
 
-If parsing fails outright, `guardian` / `readiness` skip the `<ORG-POLICY>` injection and fall back to defaults. Your code keeps working; you just don't get the custom rules.
+If parsing fails outright, `guardian` / `verification` skip the `<ORG-POLICY>` injection and fall back to defaults. Your code keeps working; you just don't get the custom rules.
 
 ---
 
@@ -158,4 +158,4 @@ node compiler/bin/topia.js setup --global --preset gentle
 - **PR accepter validation**: [`PR-ACCEPTER-VALIDATION.md`](PR-ACCEPTER-VALIDATION.md) — maintainer checklist for every PR + retrospective commit batches
 - **Hook architecture**: [`docs/HOOKS.md`](HOOKS.md)
 - **Guardian skill spec**: [`skills/guardian/SKILL.md`](../skills/guardian/SKILL.md)
-- **Verification skill spec**: [`skills/verification/SKILL.md`](../skills/verification/SKILL.md)
+- **Pre-commit gate spec**: [`skills/verification/SKILL.md`](../skills/verification/SKILL.md) (Step R8)

@@ -12,7 +12,7 @@
 ---
 metadata:
   emit: code.changed
-  listen: bug.diagnosed, review.issues, readiness.blocked
+  listen: bug.diagnosed, review.issues, verification.blocked
 ---
 ```
 
@@ -32,13 +32,13 @@ When `debug` finishes and emits `bug.diagnosed`, the nexus routes the event to e
 | `plan.ready` | plan | build | Phase plan approved and saved |
 | `phase.complete` | build, team | session-bridge | A phase finished; checkpoint state |
 | `checkpoint.request` | build | session-bridge, context-lifecycle | Context pressure — save before compact |
-| `context.pressure.high` | context-engine | context-lifecycle | ORANGE/RED tool-call pressure (advisory) |
+| `context.pressure.high` | context-watch hook | context-lifecycle | ORANGE/RED tool-call pressure (advisory) |
 | `context.checkpoint.written` | pre-compact hook, git-push hook | *(observability)* | Headless `.topia/checkpoint.md` written |
 | `context.compacted` | context-lifecycle | *(observability)* | Post-compact resume confirmed |
 | `project.onboarded` | onboard | plan | First-session setup done |
 | `invariants.seeded` | onboard | logic-guardian | `.topia/INVARIANTS.md` populated |
 | `invariants.loaded` | session-bridge | logic-guardian | Invariants read at session start |
-| `output.density.set` | context-engine | *(orchestrators dynamically)* | Output mode set (e.g. caveman) — orchestrators (build/team/rescue) honor for session/workstream scope |
+| `output.density.set` | context-lifecycle | *(orchestrators dynamically)* | Output mode set (e.g. caveman) — orchestrators (build/team/rescue) honor for session/workstream scope |
 | `triage.classified` | review-intake | *(observability)* | Issue triaged into state machine (ready-for-agent / ready-for-human / needs-info / wontfix) |
 | `agent.brief.ready` | review-intake | *(external — issue tracker)* | AGENT-BRIEF generated and posted to issue tracker comment for AFK pickup |
 | `outofscope.recorded` | idea (Step 1.6), review-intake (Phase 4.5) | *(observability — discovered via file scan, not listen)* | New `.out-of-scope/<slug>.md` written; future idea/review-intake invocations find it via Step 1.5 lexical match |
@@ -47,12 +47,11 @@ When `debug` finishes and emits `bug.diagnosed`, the nexus routes the event to e
 
 | Pulse | Emitted by | Listened by | Meaning |
 |--------|-----------|-------------|---------|
-| `code.changed` | fix | readiness, guardian, review, test, verification | Code was edited |
+| `code.changed` | fix | guardian, review, test, verification | Code was edited |
 | `review.complete` | review | build | Review done, no issues |
 | `review.issues` | review | fix | Review found problems |
 | `bug.diagnosed` | debug | fix | Root cause identified |
-| `readiness.passed` | readiness | build | Quality gate green |
-| `readiness.blocked` | readiness | fix | Quality gate blocked |
+| `verification.blocked` | verification | fix | Pre-commit gate blocked |
 | `tests.passed` | test | deploy | Test suite green |
 | `tests.failed` | test | debug | Test suite red |
 | `verification.complete` | verification | build | Lint + types + tests all passed |

@@ -134,7 +134,7 @@ Parse the output to extract:
 
 For each package with a **major** version bump (e.g. v2 → v3):
 
-Use `topia:docs-seeker` to look up migration guides if available, or note:
+Use `topia:research` (API docs mode) to look up migration guides if available, or note:
 - "Breaking change analysis required before updating [package] from v[X] to v[Y]"
 
 Do not blindly recommend major updates without flagging migration risk.

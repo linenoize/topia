@@ -36,7 +36,7 @@ Comprehensive project health audit across 8 dimensions (7 project + 1 nexus anal
 - `perf` (L2): Phase 4 — performance regression check
 - `db` (L2): Phase 5 — database health dimension (schema, migrations, indexes)
 - `journal` (L3): record audit date, overall score, and verdict
-- `constraint-check` (L3): audit HARD-GATE compliance across project skills
+- `completion-gate` (L3): process audit — HARD-GATE compliance across project skills
 - `sast` (L3): Phase 2 — deep static analysis (Semgrep, Bandit, ESLint security rules)
 - `retro` (L2): Phase 6 — engineering velocity and health dimension (topia:retro)
 - `browser-pilot` (L3): DX Review Mode — real browser testing of docs, setup guides, error pages

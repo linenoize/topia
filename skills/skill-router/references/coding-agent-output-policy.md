@@ -271,7 +271,7 @@ Allowed as structured protocol only — one block / one line, no investigation d
 
 ### Caveman vs this policy
 
-- **Caveman** (`context-engine`) = output *density* (strip filler, articles, hedging).
+- **Caveman** (`context-lifecycle`) = output *density* (strip filler, articles, hedging).
 - **This policy** = operating *persona* and *response contract* (repository operator; artifact-first sections).
 
 Both may apply at once. Caveman must not reintroduce status-narrator prose. Density compression does not waive RESULT/FILES/EVIDENCE/EXCEPTIONS (or skill-defined formats).

@@ -1,9 +1,9 @@
 ---
 name: problem-solver
-description: "Structured reasoning frameworks for complex problems. 19 analytical frameworks, 12 cognitive bias detectors, 10 decomposition methods, 10 mental models, Cynefin domain classification, ethical dimension check, and 6 communication patterns. McKinsey-grade problem solving for AI coding assistants."
+description: "Use when a problem resists a straight answer: a bug with no clear root cause after a few tries, a choice between options with real trade-offs, a decision whose factors depend on each other, or a messy problem that needs breaking down. Picks a framework (5 Whys, decision matrix, pre-mortem, issue tree, dependency-ordered analysis), checks for bias, and ranks solutions."
 metadata:
   author: topia
-  version: "0.4.0"
+  version: "0.5.0"
   layer: L3
   model: sonnet
   group: reasoning
@@ -18,15 +18,17 @@ Structured reasoning utility for problems that resist straightforward analysis. 
 
 Inspired by McKinsey problem-solving methodology and cognitive science research on decision-making errors.
 
+Sequential mode (Step 3d, formerly the `sequential-thinking` skill) handles decisions where the factors depend on each other: settle them in dependency order, then check second-order effects.
+
 ## Calls (outbound)
 
 None — pure L3 reasoning utility.
 
 ## Called By (inbound)
 
-- `debug` (L2): complex bugs that resist standard debugging
-- `brainstorm` (L2): structured frameworks for creative exploration
-- `plan` (L2): complex architecture decisions with many trade-offs
+- `debug` (L2): complex bugs that resist standard debugging; sequential mode for multi-factor root causes
+- `brainstorm` (L2): structured frameworks for creative exploration; sequential mode for approaches with many interacting variables
+- `plan` (L2): complex architecture decisions with many trade-offs (sequential mode)
 - `idea` (L2): requirement analysis when scope is ambiguous
 
 ## Execution
@@ -37,7 +39,7 @@ None — pure L3 reasoning utility.
 problem: string         — clear statement of the problem to analyze
 context: string         — (optional) relevant background, constraints, symptoms observed
 goal: string            — (optional) desired outcome or success criteria
-mode: string            — (optional) "analyze" | "decide" | "decompose" | "communicate"
+mode: string            — (optional) "analyze" | "decide" | "decompose" | "sequential" | "communicate"
 ```
 
 ### Step 1 — Receive and Classify
@@ -53,6 +55,7 @@ Classify the problem type:
 | Decomposition | "break down", "understand", "structure" | Decomposition Methods (Step 3c) |
 | Creative / stuck | "stuck", "no ideas", "exhausted options" | SCAMPER, Collision-Zone, Inversion |
 | Architecture / scale | "design", "architecture", "will it scale" | First Principles, Scale Game |
+| Interdependent decision | "trade-off", "depends on", "if we pick A then B", 3+ factors that constrain each other | Sequential mode (Step 3d) |
 
 ### Step 1.5 — Domain Classification (Cynefin)
 
@@ -229,6 +232,37 @@ All decompositions MUST pass the MECE test:
 - **ME** (Mutually Exclusive): branches don't overlap
 - **CE** (Collectively Exhaustive): branches cover all possibilities
 
+### Step 3d — Sequential Mode (when mode = "sequential")
+
+Use when more than 3 factors interact and choosing one changes which options are valid for the others (typical in architecture and stack choices). For a single-dimension question, Step 3a or 3b is cheaper.
+
+1. **Reversibility first.** Two-way door (cheap to undo): light pass, skip steps 5-6, set a review date. One-way door: full pass. Partly reversible: full pass on the irreversible parts only.
+2. **List the variables.** For each: name, possible values, and whether it is controllable or fixed. Group related variables if there are more than 8.
+3. **Map dependencies.** Write each as `[A] → [B]: constrains | influences — reason`. "Constrains" removes options for B; "influences" only changes their cost. Variables with the most outgoing dependencies come first. If there is a cycle, say so and break it by treating one variable as a fixed assumption.
+4. **Settle variables in dependency order.** Never settle B before everything that constrains B. For each step, keep a running state:
+   ```
+   State after step N:
+   - A: [value] because [reason] (confidence X%)
+   - B: [value] because [reason] (confidence X%)
+   - Remaining: C, D
+   ```
+5. **Second-order check** (one-way doors). For each settled variable ask "and then what?" Flag effects that contradict the goal, create a feedback loop, hit people not considered, or would flip an earlier choice. If one does, revisit that variable.
+6. **Bias check for ordering.** Anchoring: would starting from a different variable change the result? Status quo: is the current approach held to the same standard? Overconfidence: flag any resolution above 90% confidence without strong evidence.
+7. **Synthesize.** Combine the steps into one recommendation, list what stayed ambiguous and what would resolve it, and give the key assumption and a review date.
+
+Add to the report:
+
+```
+### Sequential Analysis
+- Reversibility: [two-way / one-way / partial]
+- Dependency map: A → B (constrains), C → A (influences)
+1. A (no dependencies) → [value] (X%)
+2. B (given A=[value]) → [value] (X%)
+- Second-order: [variable] → [effect] (risk low/medium/high)
+- Ambiguities: [what is unresolved and what would resolve it]
+- Key assumption: [...] | Review date: [...]
+```
+
 ### Step 4 — Apply Framework
 
 Execute the selected framework with discipline. For each framework, follow the steps defined in Step 3a/3b/3c.
@@ -305,6 +339,7 @@ Structure the output report using the selected pattern.
 - Do not produce more than 3 recommended solutions — prioritize quality over quantity
 - Max 5 evaluation criteria in Weighted Matrix — more causes choice overload
 - Decompositions MUST pass MECE test — no overlapping or missing branches
+- (sequential) Never settle a variable before the variables that constrain it; classify reversibility first
 
 ## Output Format
 
@@ -362,6 +397,9 @@ Structure the output report using the selected pattern.
 | Strawmanning the least-favored option | MEDIUM | Steel Manning: build strongest case for option you dislike before dismissing |
 | Running full PESTLE on a purely technical problem | LOW | PESTLE is for macro-environment — skip for algorithm/implementation choices |
 | Skipping ethics check on user-facing decisions | MEDIUM | Step 5.5: lightweight check — warnings not gates, but don't skip for stakeholder-affecting decisions |
+| (sequential) Settling a variable before what constrains it | CRITICAL | Step 3d: sort by dependency first; reference earlier steps' state |
+| (sequential) Dependency cycle not flagged | HIGH | Name the cycle; fix one variable as an assumption |
+| (sequential) Full analysis on a two-way door | MEDIUM | Step 3d.1: light pass and a review date |
 
 ## Done When
 
@@ -373,6 +411,7 @@ Structure the output report using the selected pattern.
 - Mental models cross-checked (1-2 relevant models applied)
 - 2-3 solutions ranked by impact/effort ratio with bias risk noted
 - Next Action identified (single most important immediate step)
+- (sequential) Dependency map, running state per step, and second-order check (one-way doors) included
 - Analysis Report emitted with communication structure
 
 ## Cost Profile

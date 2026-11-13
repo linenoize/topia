@@ -1,10 +1,10 @@
 ---
 name: skill-router
-description: "Meta-enforcement layer that routes EVERY agent action through the correct skill. MUST check this routing table before ANY response involving code, files, or technical decisions. Default: route to topia:build for code tasks. Prevents rationalization, enforces check-before-act discipline."
-user-invocable: false
+description: "Use when you need Topia's routing table: which skill handles a request, how compound requests are ordered, how forked skills run in the background (Step 4.5), and the default response format. Reference for alias commands and other skills; a person can type /topia:skill-router to see it."
+disable-model-invocation: true
 metadata:
   author: topia
-  version: "1.6.0"
+  version: "1.7.0"
   layer: L0
   model: haiku
   group: orchestrator
@@ -24,6 +24,10 @@ Recent skill usage: !`cat .topia/metrics/skills.json 2>/dev/null | head -20 || e
 The missing enforcement layer for topia. While individual skills have HARD-GATEs and constraints, nothing forces the agent to *check* for the right skill before acting. `skill-router` fixes this by intercepting every user request and routing it through the correct skill(s) before any code is written, any file is read, or any clarifying question is asked.
 
 This is L0 — it sits above L1 orchestrators. It doesn't do work itself; it ensures the right skill does the work.
+
+**In Claude Code** this skill is hidden from Claude's skill list (`disable-model-invocation`). Claude picks skills from their own descriptions; this file is the reference routing table that alias commands and other skills cite (for example "skill-router Step 4.5"). Skills that are hidden too (completion-gate, context-pack, integrity-check, quarantine, scope-guard, worktree) are used by reading their SKILL.md, not through the Skill tool.
+
+**On platforms that load it as an always-on rule** (Cursor, OpenClaw and others), it still works as the routing layer described below.
 
 ## Operating Posture
 
@@ -69,9 +73,8 @@ Omit empty sections. Keep descriptions specific and falsifiable. No preamble, re
 
 ## Triggers
 
-- **ALWAYS** — This skill is conceptually active on every user message
-- Loaded via system prompt or plugin description, not invoked manually
-- The agent MUST internalize this routing table and apply it before every response
+- Claude Code: read on demand — when an alias command or another skill cites a step here, or a person types `/topia:skill-router`
+- Other platforms: loaded as an always-on rule or injected into the system prompt
 
 ## Calls (outbound connections)
 
@@ -79,7 +82,7 @@ Omit empty sections. Keep descriptions specific and falsifiable. No preamble, re
 
 ## Called By (inbound connections)
 
-- None — this is the entry point. Nothing calls skill-router; it IS the first check.
+- None — this is the entry point. Alias commands and skills cite its steps by reading this file.
 
 ## Workflow
 
@@ -110,7 +113,7 @@ Before standard routing, check if adaptive routing rules exist:
 
 **Override constraints**:
 - Overrides MUST NOT bypass layer discipline (L3 cannot call L1)
-- Overrides MUST NOT skip quality gates (guardian, readiness, verification)
+- Overrides MUST NOT skip quality gates (guardian, verification, completion-gate)
 - Overrides MUST NOT route to non-existent skills
 - If an override seems wrong, announce it and let user decide to keep or disable
 
@@ -243,12 +246,13 @@ These are rarely invoked directly — they're called by higher-level skills:
 | `topia:recon` | build, plan, team, architecture-mapper | Codebase scanning |
 | `topia:architecture-mapper` | onboard (escalation), audit, improve-architecture, build | Architecture knowledge base mapping |
 | `topia:fix` | debug, build | Apply code changes |
-| `topia:readiness` | build | Quality gate |
-| `topia:verification` | build, fix | Run lint/test/build |
+| `topia:verification` | build, fix | Run lint/test/build; full mode adds the pre-commit review (formerly readiness) |
 | `topia:hallucination-guard` | build, fix | Verify imports |
-| `topia:completion-gate` | build | Validate claims |
+| completion-gate (hidden: read `${CLAUDE_SKILL_DIR}/../completion-gate/SKILL.md`) | build, team | Validate claims; process audit (formerly constraint-check) |
 | `topia:guardian-env` | build, scaffold, onboard | Environment pre-flight |
-| `topia:research` / `topia:docs-seeker` | any | Look up docs |
+| `topia:research` | any | Look up docs (API docs mode, formerly docs-seeker) or general research |
+| `topia:problem-solver` | debug, plan, brainstorm | Structured reasoning; sequential mode for interdependent factors (formerly sequential-thinking) |
+| `topia:context-lifecycle` | build, team | Save points, compact timing, cost preview, caveman mode (formerly context-engine) |
 | `topia:session-bridge` | build, team | Save context (in-session state handoff) |
 | `topia:journal` | build, team | Persistent work log within a session |
 | `topia:neural-memory` | user | Optional; only if the Neural Memory MCP is installed |
@@ -397,9 +401,9 @@ The agent MUST NOT bypass routing with these excuses:
 
 Once routed:
 1. Announce: "Using `topia:<skill>` to [purpose]"
-2. Invoke the skill via Skill tool
+2. Invoke the skill via Skill tool (a hidden skill: read its SKILL.md and follow it)
 3. Follow the skill's workflow exactly
-4. If the skill has a checklist/phases, track via TodoWrite
+4. If the skill has a checklist/phases, track it with the task tools (TaskCreate / TaskUpdate; TodoWrite on older versions)
 
 ### Step 4.5 — Forked Skills Run in the Background (Claude Code)
 
@@ -473,7 +477,7 @@ When NO chain_metadata is present (skill didn't emit one, or legacy invocation),
 | `plan` | `adversary` | Plan created — stress-test before implementation |
 | `adversary` | `documentation` | Plan red-teamed — generate leadership package and Jira CSV |
 | `documentation` | `build` | Package approved — start implementation |
-| `test` (GREEN) | `readiness` | Tests pass — check for edge cases and completeness |
+| `test` (GREEN) | `verification` | Tests pass — run the full pre-commit gate (checks + review) |
 | `review` (issues found) | `fix` | Issues identified — apply fixes |
 | `guardian` (findings) | `fix` | Security issues — remediate |
 
@@ -503,7 +507,7 @@ When routing a request through L1/L2 skills, skill-router SHOULD detect domain s
 6. When `chain_metadata.domain` matches an **active** pack, prefer loading that pack's patterns over generic suggestions.
 
 **Rules:**
-- Hard limit: 1 hop. NEVER chain recommendations (fix→test→readiness→...). Suggest ONE, let the user decide.
+- Hard limit: 1 hop. NEVER chain recommendations (fix→test→verification→...). Suggest ONE, let the user decide.
 - Announcement format: "Suggested next: `topia:<skill>` — [1-line reason]. Run it? (skip to continue)"
 - User can disable with "no suggestions" or "just do what I asked"
 - Inside `build` orchestration: skip recommendations — build already manages transitions
@@ -544,7 +548,7 @@ For multi-skill chains:
 ## Constraints
 
 1. MUST check routing table before EVERY response that involves code, files, or technical decisions
-2. MUST invoke skill via Skill tool — "mentally applying" a skill is NOT acceptable
+2. MUST invoke skill via Skill tool (or read a hidden skill's SKILL.md) — "mentally applying" a skill is NOT acceptable
 3. MUST NOT write code without routing through at least one skill first
 4. MUST NOT skip routing because "it's faster" — speed without correctness wastes more time
 5. MUST re-route on intent change — if user shifts from "plan" to "implement", switch skills

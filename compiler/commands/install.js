@@ -424,7 +424,7 @@ export async function runInstall({ topiaRoot, projectRoot = process.cwd(), args 
     console.log('    2. Run `topia visualize` to explore the Nexus graph in your browser.');
   }
   console.log('    3. Edit `.topia/org/org.md` to define your team / policy / approval flow.');
-  console.log('       (guardian + readiness read this at compile time. See docs/ORG-CONFIG.md.)');
+  console.log('       (guardian + verification read this. See docs/ORG-CONFIG.md.)');
   if (!plugin.ok && plugin.skipped) {
     console.log('    3. Install Claude Code, then:');
     console.log('         /plugin marketplace add linenoize/topia');

@@ -16,7 +16,7 @@ metadata:
 
 Catch environment mismatches before they waste debugging time. Validates that the developer's machine has the right runtime versions, tools, ports, and configuration to run the project. Prevents the entire class of "works on my machine" failures that masquerade as code bugs.
 
-This is the environment counterpart to `guardian` (which checks code security) and `readiness` (which checks code quality). guardian-env checks the MACHINE, not the code.
+This is the environment counterpart to `guardian` (which checks code security) and `verification` (which checks code quality). guardian-env checks the MACHINE, not the code.
 
 ## Triggers
 

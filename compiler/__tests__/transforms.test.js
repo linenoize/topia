@@ -56,6 +56,24 @@ describe('transformCrossReferences', () => {
     const result = transformCrossReferences(input, mockAdapter);
     assert.strictEqual(result, input);
   });
+
+  test('rewrites a sibling SKILL.md path to the platform reference', () => {
+    const input = 'Read `${CLAUDE_SKILL_DIR}/../completion-gate/SKILL.md` and follow it.';
+    const result = transformCrossReferences(input, mockAdapter);
+    assert.strictEqual(result, 'Read `@Topia-completion-gate.mdc` and follow it.');
+  });
+
+  test('rewrites a bare sibling SKILL.md path', () => {
+    const input = 'Follow ${CLAUDE_SKILL_DIR}/../worktree/SKILL.md first.';
+    const result = transformCrossReferences(input, mockAdapter);
+    assert.strictEqual(result, 'Follow @Topia-worktree.mdc first.');
+  });
+
+  test('leaves other CLAUDE_SKILL_DIR paths alone', () => {
+    const input = 'Run `${CLAUDE_SKILL_DIR}/scripts/build.js`.';
+    const result = transformCrossReferences(input, mockAdapter);
+    assert.strictEqual(result, input);
+  });
 });
 
 // --- Tool name transform ---

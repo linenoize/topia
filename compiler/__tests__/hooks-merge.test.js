@@ -62,7 +62,7 @@ describe('buildPreset', () => {
     assert.ok(preset.hooks.PostToolUse);
     assert.ok(preset.hooks.Stop);
     const editGroup = preset.hooks.PreToolUse.find((g) => g.matcher === 'Edit|Write');
-    assert.ok(editGroup.hooks[0].command.includes('readiness'));
+    assert.ok(editGroup.hooks[0].command.includes('verification'));
     assert.ok(editGroup.hooks[0].command.includes('--gentle'));
   });
 
@@ -165,7 +165,7 @@ describe('mergePreset', () => {
     const commands = editGroup.hooks.map((h) => h.command);
     assert.ok(commands.includes('user-lint.sh'), 'user hook preserved');
     assert.ok(
-      commands.some((c) => c.includes('readiness') && !c.includes('--gentle')),
+      commands.some((c) => c.includes('verification') && !c.includes('--gentle')),
       'strict preflight installed',
     );
     assert.ok(!commands.some((c) => c.includes('--gentle')), 'no gentle entries remain');
@@ -187,7 +187,7 @@ describe('mergePreset', () => {
     const groups = merged.hooks.PreToolUse.filter((g) => g.matcher === 'Edit|Write');
     assert.strictEqual(groups.length, 1, 'no duplicate matcher group');
     assert.ok(groups[0].hooks.some((h) => h.command === 'user-guard.sh'));
-    assert.ok(groups[0].hooks.some((h) => h.command.includes('readiness')));
+    assert.ok(groups[0].hooks.some((h) => h.command.includes('verification')));
   });
 });
 
@@ -196,7 +196,7 @@ describe('summarizeTopiaHooks', () => {
     const merged = mergePreset({}, buildPreset('gentle'));
     const summary = summarizeTopiaHooks(merged);
     assert.strictEqual(summary.total, 5);
-    assert.ok(summary.events.PreToolUse.includes('readiness'));
+    assert.ok(summary.events.PreToolUse.includes('verification'));
     assert.ok(summary.events.PreToolUse.includes('guardian'));
     assert.ok(summary.events.PostToolUse.includes('dependency-doctor'));
     assert.ok(summary.events.PostToolUse.includes('quarantine'));

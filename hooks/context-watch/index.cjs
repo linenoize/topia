@@ -1,5 +1,5 @@
 // Topia Context Watch Hook
-// Counts all PreToolUse calls — detects context pressure aligned with context-engine thresholds.
+// Counts all PreToolUse calls — a rough context-pressure signal for context-lifecycle.
 // H3 Intelligence: tool distribution + pressure level for metrics at session end.
 
 const fs = require('fs');
@@ -9,7 +9,7 @@ const { readEvents, appendEvent, watchFilePath } = require('../lib/metrics-buffe
 const cwd = process.cwd();
 const counterFile = watchFilePath(cwd);
 
-// Aligned with skills/context-engine/SKILL.md
+// Levels used by skills/context-lifecycle/SKILL.md (Reading context pressure)
 const THRESHOLDS = {
   green: 50,
   yellow: 80,
@@ -40,7 +40,7 @@ function buildWarning(count, level, estimatedIo) {
   if (level === 'red') {
     return (
       `[Topia context-watch] ${count} tool calls — context RED. ` +
-      `Invoke topia:context-lifecycle (or context-engine) for Save + /compact.${ioHint}`
+      `Invoke topia:context-lifecycle for Save + /compact.${ioHint}`
     );
   }
   if (level === 'orange') {

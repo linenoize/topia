@@ -2,7 +2,7 @@
  * Cursor hooks adapter.
  *
  * Emits:
- *   - `.cursor/rules/Topia-*.mdc` — discipline rule injection (readiness, guardian, dependency-doctor)
+ *   - `.cursor/rules/Topia-*.mdc` — discipline rule injection (verification, guardian, dependency-doctor)
  *   - `.cursor/hooks.json` — native hooks: lifecycle + metrics, plus tool-level guards
  *     (beforeReadFile → pre-tool-guard, beforeShellExecution → secrets-scan / git-push-checkpoint)
  *
@@ -119,12 +119,12 @@ export async function emit({ preset, projectRoot, topiaRoot }) {
 
   const rules = [
     {
-      name: 'Topia-readiness',
+      name: 'Topia-verification',
       globs: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx', '**/*.py', '**/*.go', '**/*.rs'],
       alwaysApply: true,
-      skill: 'readiness',
-      description: 'Run Topia readiness check before editing source files.',
-      detail: `Before editing any source file, mentally run through Topia's readiness checklist: logic preserved, error handling present, no regressions introduced. ${mode} if any concern surfaces.`,
+      skill: 'verification',
+      description: 'Run the Topia verification checklist when editing source files.',
+      detail: `When editing any source file, keep Topia's verification review checklist in mind: logic preserved, error handling present, no regressions introduced. ${mode} if any concern surfaces.`,
     },
     {
       name: 'Topia-guardian',
@@ -158,6 +158,9 @@ export async function emit({ preset, projectRoot, topiaRoot }) {
     content: renderMdc({ ...r, mode }),
   }));
 
+  // readiness merged into verification: drop the old Topia-managed rule file.
+  const legacy = await legacyRuleRemovals(rulesDir, ['Topia-readiness.mdc']);
+
   const hooksFile = {
     path: path.join(projectRoot, HOOKS_REL_PATH),
     content: `${JSON.stringify(buildHooksJson(resolvedRoot), null, 2)}\n`,
@@ -169,7 +172,20 @@ export async function emit({ preset, projectRoot, topiaRoot }) {
     `Auto-attach mode: ${preset}. Rules emit ${mode} guidance to the agent.`,
   ];
 
-  return { files: [...mdcFiles, hooksFile], notes };
+  return { files: [...mdcFiles, ...legacy, hooksFile], notes };
+}
+
+async function legacyRuleRemovals(dir, names) {
+  const out = [];
+  for (const name of names) {
+    const abs = path.join(dir, name);
+    if (!existsSync(abs)) continue;
+    const content = await readFile(abs, 'utf-8');
+    if (content.includes(AUTO_SIGNATURE) || content.includes('Topia-managed: true')) {
+      out.push({ path: abs, content: null });
+    }
+  }
+  return out;
 }
 
 function isTopiaHooksJson(content) {
@@ -220,7 +236,7 @@ export async function uninstall({ projectRoot }) {
 export async function status(projectRoot) {
   const rulesDir = path.join(projectRoot, RULES_REL_DIR);
   const hooksPath = path.join(projectRoot, HOOKS_REL_PATH);
-  const expectedRules = ['readiness', 'guardian', 'dependency-doctor'];
+  const expectedRules = ['verification', 'guardian', 'dependency-doctor'];
   const expectedMetricsHooks = PLAN_HOOKS;
 
   let wired = [];

@@ -190,8 +190,8 @@ No table here.
     assert.strictEqual(result.governanceLevel.level, 'moderate');
     assert.ok(result.approvalFlows.pr_accepter_validation, 'Expected pr_accepter_validation flow');
     assert.ok(
-      result.approvalFlows.pr_accepter_validation.includes('/topia readiness'),
-      'Expected readiness in PR accepter flow',
+      result.approvalFlows.pr_accepter_validation.includes('/topia verification'),
+      'Expected verification in PR accepter flow',
     );
     assert.ok(
       result.approvalFlows.pr_accepter_validation.includes('/topia guardian'),
@@ -220,11 +220,11 @@ No table here.
   });
 });
 
-// ─── Guardian + readiness org integration ─────────────────────────
+// ─── Guardian + verification org integration ──────────────────────
 
-describe('guardian/readiness org policy integration', () => {
+describe('guardian/verification org policy integration', () => {
   const guardianPath = path.join(SKILLS_DIR, 'guardian', 'SKILL.md');
-  const readinessPath = path.join(SKILLS_DIR, 'readiness', 'SKILL.md');
+  const verificationPath = path.join(SKILLS_DIR, 'verification', 'SKILL.md');
 
   test('guardian references .topia/org/org.md', () => {
     const content = readFileSync(guardianPath, 'utf-8');
@@ -247,25 +247,25 @@ describe('guardian/readiness org policy integration', () => {
     assert.ok(content.includes('no org config'), 'guardian should handle missing org config');
   });
 
-  test('readiness references .topia/org/org.md', () => {
-    const content = readFileSync(readinessPath, 'utf-8');
+  test('verification references .topia/org/org.md', () => {
+    const content = readFileSync(verificationPath, 'utf-8');
     assert.ok(
       content.includes('.topia/org/org.md'),
-      'readiness should reference .topia/org/org.md for org requirements',
+      'verification should reference .topia/org/org.md for org requirements',
     );
   });
 
-  test('readiness has Organization Approval Requirements step', () => {
-    const content = readFileSync(readinessPath, 'utf-8');
+  test('verification has Organization Approval Requirements step', () => {
+    const content = readFileSync(verificationPath, 'utf-8');
     assert.ok(
       content.includes('Organization Approval Requirements'),
-      'readiness should have Organization Approval Requirements step',
+      'verification should have Organization Approval Requirements step',
     );
   });
 
-  test('readiness handles missing org config gracefully', () => {
-    const content = readFileSync(readinessPath, 'utf-8');
-    assert.ok(content.includes('no org config'), 'readiness should handle missing org config');
+  test('verification handles missing org config gracefully', () => {
+    const content = readFileSync(verificationPath, 'utf-8');
+    assert.ok(content.includes('no org config'), 'verification should handle missing org config');
   });
 
   test('guardian step is numbered 4.86 (between contract 4.85 and six-gate 4.9)', () => {
@@ -273,8 +273,11 @@ describe('guardian/readiness org policy integration', () => {
     assert.ok(content.includes('Step 4.86'), 'guardian org policy step should be numbered 4.86');
   });
 
-  test('readiness step is numbered 4.6 (between domain hooks 4.5 and composite score 4.8)', () => {
-    const content = readFileSync(readinessPath, 'utf-8');
-    assert.ok(content.includes('Step 4.6'), 'readiness org requirements step should be numbered 4.6');
+  test('verification org step is R8 (between domain checks R7 and security R9)', () => {
+    const content = readFileSync(verificationPath, 'utf-8');
+    assert.ok(
+      content.includes('Step R8 — Organization Approval Requirements'),
+      'verification org requirements step should be Step R8',
+    );
   });
 });

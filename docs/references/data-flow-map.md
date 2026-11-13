@@ -58,8 +58,8 @@ review --[quality_score]--> build   # build decides if more review needed
 
 ### Test → Preflight Chain (results → completeness)
 ```
-test --[test_results]--> readiness   # readiness checks edge cases (GREEN only)
-test --[test_files]--> readiness     # readiness scopes review to test files
+test --[test_results]--> verification   # verification review checks edge cases (GREEN only)
+test --[test_files]--> verification     # verification scopes review to test files
 test --[test_results]--> fix         # fix implements to pass (RED → GREEN)
 ```
 

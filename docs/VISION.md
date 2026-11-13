@@ -211,7 +211,7 @@ Topia operates on three time horizons. The roadmap is intentionally non-prescrip
 
 **Goal:** Move workflow discipline from "invoke the skill" (opt-in) to "the platform fires it" (automatic).
 
-- ✅ **Native hooks across 4 platforms** — `Topia hooks install` wires `readiness`, `guardian`, `completion-gate`, `dependency-doctor` as pre-tool-use hooks on Claude Code, Cursor, Windsurf, Antigravity
+- ✅ **Native hooks across 4 platforms** — `Topia hooks install` wires `verification`, `guardian`, `completion-gate`, `dependency-doctor` as pre-tool-use hooks on Claude Code, Cursor, Windsurf, Antigravity
 - ✅ **Three presets** — `strict` (blocking), `gentle` (warnings, default), `off` (uninstall). Idempotent with full user-hook restore
 - ✅ **logic-guardian auto-seeding** — `Topia init` writes `.topia/INVARIANTS.md` with project-detected rules; verification reads as a hard gate
 

@@ -32,14 +32,12 @@ Solve the #1 developer complaint: context loss across sessions. Session-bridge a
 
 # Exception: L3→L3 coordination (same pattern as hallucination-guard → research)
 - `integrity-check` (L3): verify .topia/ file integrity before loading state
-- `context-engine` (L3): coordinate compaction timing with context budget
 - `context-lifecycle` (L3): orchestrate save/compact/resume when hooks write checkpoints
 
 ## Called By (inbound)
 
 - `build` (L1): auto-save decisions during feature implementation
 - `rescue` (L1): state management throughout refactoring
-- `context-engine` (L3): save state before compaction
 - `context-lifecycle` (L3): resume after hook-written checkpoints and post-compact
 - `context-pack` (L3): coordinate state for sub-agent handoff
 - `adversary` (L2): (oracle-mode) detach protocol when target model is opus-class for non-blocking dispatch
@@ -345,11 +343,11 @@ If no files found: suggest running `/topia onboard` to initialize the project. E
 
 #### Step 1.5 — Integrity verification
 
-Before loading state files, invoke `integrity-check` (L3) to verify `.topia/` files haven't been tampered:
+Before loading state files, run integrity-check (L3; hidden skill, so read `${CLAUDE_SKILL_DIR}/../integrity-check/SKILL.md` and follow it) to verify `.topia/` files haven't been tampered:
 
 ```
-REQUIRED SUB-SKILL: topia:integrity-check
-→ Invoke integrity-check on all .topia/*.md files found in Step 1.
+REQUIRED: integrity-check — ${CLAUDE_SKILL_DIR}/../integrity-check/SKILL.md
+→ Follow it on all .topia/*.md files found in Step 1.
 → Capture: status (CLEAN | SUSPICIOUS | TAINTED), findings list.
 ```
 

@@ -51,7 +51,7 @@ test('parse verification SKILL.md', () => {
   console.log('verification toolRefs:', parsed.toolRefs.length);
 
   assert.strictEqual(parsed.name, 'verification');
-  assert.strictEqual(parsed.layer, 'L3');
+  assert.strictEqual(parsed.layer, 'L2');
 });
 
 describe('signals parsing', () => {
