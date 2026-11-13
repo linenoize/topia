@@ -140,7 +140,10 @@ describe('intent-router', () => {
     });
     assert.strictEqual(exitCode, 0);
     const text = context(stdout);
-    assert.match(text, /^🧭 \[Topia intent-router\] Suggested: topia:build \(L1, sonnet\) — wording: "add support for"/);
+    assert.match(
+      text,
+      /^🧭 \[Topia intent-router\] Suggested: topia:build \(L1, sonnet\) — wording: "add support for"/,
+    );
     assert.match(text, /Also consider: test, debug/);
     // build is `context: fork`, so the hook says its report comes back later.
     assert.match(text, /Runs in the background: its report arrives later as a task notification/);
@@ -148,7 +151,12 @@ describe('intent-router', () => {
 
   test('logs the hint to routing.jsonl: skill ids and timing, never the prompt', () => {
     rmSync(LOG, { force: true });
-    route(JSON.stringify({ prompt: 'fix the crash for alice@example.com and add a unit test', session_id: 'sess-1' }));
+    route(
+      JSON.stringify({
+        prompt: 'add support for gzip, fix the crash for alice@example.com and add a unit test',
+        session_id: 'sess-1',
+      }),
+    );
     const lines = logLines();
     assert.strictEqual(lines.length, 1);
     const row = JSON.parse(lines[0]);
@@ -157,7 +165,7 @@ describe('intent-router', () => {
     assert.deepStrictEqual(row.skills, ['build', 'test', 'debug']);
     assert.strictEqual(row.bare, false);
     assert.ok(Number.isInteger(row.ms) && row.ms >= 0);
-    for (const word of ['crash', 'alice', 'example.com', 'unit']) assert.ok(!lines[0].includes(word), word);
+    for (const word of ['gzip', 'crash', 'alice', 'example.com', 'unit']) assert.ok(!lines[0].includes(word), word);
   });
 
   test('a bare slash command gets the redirect, logged as bare', () => {
