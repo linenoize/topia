@@ -29,6 +29,7 @@ Auto-generate project context for AI sessions. Scans the codebase and creates a 
 - `guardian-env` (L3): validate developer environment (runtime versions, required tools, env vars) so the onboarded project is actually runnable
 - `autopsy` (L2): when project appears messy or undocumented — health assessment
 - `architecture-mapper` (L2): optional escalation for complex/legacy repos lacking `docs/architecture/` (see Escalation below)
+- `stack` (L2): project has a compose file — record services, profiles and health; check `.env` keys against `.env.example`
 
 ## Called By (inbound)
 

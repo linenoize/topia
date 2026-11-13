@@ -85,6 +85,7 @@ These are entry-points the user runs in their shell. They do not invoke a skill 
 
 ### Delivery
 - 👤 `/topia deploy` — multi-platform deploy with health checks.
+- 👤 `/topia stack` — Docker Compose ops: rebuild, restart, logs, health, safe prune, server.sh / server.ps1, keys-only `.env` check, ports rule.
 - 👤 `/topia marketing` — landing copy, social, SEO, video scripts.
 - 👤 `/topia incident <issue>` — structured incident response (triage → contain → root cause → postmortem).
 

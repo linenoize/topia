@@ -35,6 +35,7 @@ None — guardian-env is a pure read-only utility. It checks and reports, never 
 - `build` (L1): Phase 0.5 — first run detection (no `.topia/` directory exists)
 - `scaffold` (L1): post-bootstrap environment validation
 - `onboard` (L2): developer onboarding verification
+- `stack` (L2): Docker Compose pre-flight — `docker compose` missing or a host port already in use
 - User: `/topia env-check` direct invocation
 
 ## Execution
@@ -178,6 +179,8 @@ Compare required env vars against actual configuration:
 4. Check for dangerous patterns:
    - `.env` committed to git (check `.gitignore`) → BLOCK (security risk)
    - Placeholder values still present (`your-api-key-here`, `changeme`, `xxx`) → WARN
+
+For steps 1-3, the `stack` skill ships a keys-only checker: `node skills/stack/scripts/env-sync.js --root <project>`. It prints key names only and exits 5 when keys are missing.
 
 ### Step 6: Disk Space and System Resources
 

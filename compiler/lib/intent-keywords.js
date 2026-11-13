@@ -50,6 +50,16 @@ export const INTENT_KEYWORDS = {
   integrate: ['integrate', 'port from', 'port this', 'steal the', 'from that repo'],
   safeguard: ['characterization test', 'safety net', 'rollback point'],
   'org-config': ['org config', 'team roles', 'governance', 'approval flow'],
+  stack: [
+    'docker compose',
+    'compose stack',
+    'container logs',
+    'restart the stack',
+    'rebuild the container',
+    'server.sh',
+    'env.example',
+    'published ports',
+  ],
 
   // L3 utilities a prompt can name directly
   'asset-creator': ['svg', 'icon', 'og image', 'banner', 'favicon'],

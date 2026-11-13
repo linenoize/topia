@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-07-20T02:48:36.099Z",
+  "generated": "2026-11-13T18:46:26.735Z",
   "skills": [
     {
       "name": "adversary",
@@ -497,6 +497,14 @@
       "layer": "L3",
       "userInvocable": true,
       "slashAlias": "topia-slides"
+    },
+    {
+      "name": "stack",
+      "description": "Use when a project runs on Docker Compose and someone wants to start, stop, rebuild or restart services, read container logs, check health, free disk space, write server.sh / server.ps1 start scripts, check .env against .env.example, or review which ports are published.",
+      "model": "sonnet",
+      "layer": "L2",
+      "userInvocable": true,
+      "slashAlias": "topia-stack"
     },
     {
       "name": "surgeon",

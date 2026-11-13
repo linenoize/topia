@@ -49,6 +49,7 @@ If root cause cannot be identified after 3 hypothesis cycles:
 - `sequential-thinking` (L3): multi-variable root cause analysis
 - `neural-memory` (L3): after root cause found — capture error pattern for future recognition
 - `adversary` (L2): on `agent.stuck` — oracle-mode dispatches stateless second-model pass to break confirmation-bias loop (parallel with scout zoom-out)
+- `stack` (L2): bug lives in a Docker Compose service — bounded container logs, status, or a one-service restart/rebuild to reproduce
 
 ## Called By (inbound)
 
@@ -56,6 +57,7 @@ If root cause cannot be identified after 3 hypothesis cycles:
 - `fix` (L2): root cause unclear, can't fix blindly — needs diagnosis first
 - `test` (L2): test fails unexpectedly, unclear why
 - `surgeon` (L2): diagnose issues in legacy modules
+- `stack` (L2): container logs show an error or crash loop whose cause is not obvious
 
 ## Cross-Hub Connections
 

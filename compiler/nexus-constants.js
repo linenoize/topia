@@ -7,8 +7,8 @@
  */
 
 export const NEXUS_STATS = {
-  skills: 71,
-  synapses: 315,
+  skills: 72,
+  synapses: 323,
   pulses: 49,
   packs: 10,
 };
