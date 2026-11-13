@@ -1,6 +1,6 @@
 ---
 name: coder
-description: "Code writing and editing agent. Spawned by fix, test, surgeon when they need to write actual code. Follows parent skill instructions precisely."
+description: "Use when a Topia skill (fix, test, surgeon, build) needs a subagent to write or edit code by following the parent skill's instructions exactly."
 model: sonnet
 subagent_type: general-purpose
 ---

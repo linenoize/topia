@@ -123,6 +123,29 @@ describe('extractToolSkillInvocation — Skill and Agent tools', () => {
     );
   });
 
+  test('a topia:<skill>-agent subagent counts as that skill', () => {
+    assert.deepEqual(
+      extractToolSkillInvocation({ tool_name: 'Agent', tool_input: { subagent_type: 'topia:build-agent' } }),
+      { skill: 'build', via: 'agent' },
+    );
+    // Merged skills: the survivor's agent counts as the survivor.
+    assert.equal(
+      extractToolSkillInvocation({ tool_name: 'Agent', tool_input: { subagent_type: 'topia:verification-agent' } })
+        .skill,
+      'verification',
+    );
+    assert.equal(
+      extractToolSkillInvocation({ tool_name: 'Task', tool_input: { subagent_type: 'topia:context-lifecycle-agent' } })
+        .skill,
+      'context-lifecycle',
+    );
+    // Role agents keep their own name.
+    assert.equal(
+      extractToolSkillInvocation({ tool_name: 'Agent', tool_input: { subagent_type: 'topia:reviewer' } }).skill,
+      'reviewer',
+    );
+  });
+
   test('non-Topia subagents and other tools are not skills', () => {
     assert.equal(
       extractToolSkillInvocation({ tool_name: 'Agent', tool_input: { subagent_type: 'general-purpose' } }),
@@ -366,7 +389,12 @@ describe('end to end — real hooks, isolated tmpdir', () => {
     );
     runHook(
       'metrics-collector',
-      { ...base, hook_event_name: 'PostToolUse', tool_name: 'Agent', tool_input: { subagent_type: 'topia:guardian' } },
+      {
+        ...base,
+        hook_event_name: 'PostToolUse',
+        tool_name: 'Agent',
+        tool_input: { subagent_type: 'topia:guardian-agent' },
+      },
       ctx,
     );
     runHook(

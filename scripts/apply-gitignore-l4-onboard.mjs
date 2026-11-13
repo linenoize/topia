@@ -1005,9 +1005,9 @@ onboard = onboard.replace(
 fs.writeFileSync(path.join(root, onboardPath), onboard, 'utf8');
 console.log('patched', onboardPath);
 
-// agents/onboard.md
+// agents/onboard-agent.md
 patch(
-  'agents/onboard.md',
+  'agents/onboard-agent.md',
   `7. **Suggest L4 Packs** — recommend extension packs based on detected stack
 8. **Context Budget Check** — audit baseline context cost`,
   `7. **Activate L4 Packs** — write .topia/active-packs.json from detect-l4-packs.js
@@ -1016,7 +1016,7 @@ patch(
 );
 
 patch(
-  'agents/onboard.md',
+  'agents/onboard-agent.md',
   `10. **Commit** — \`git add CLAUDE.md .topia/ && git commit\``,
   `10. **Commit** — \`git add CLAUDE.md .topia/org/\` only (active-packs.json stays local)`,
   true,

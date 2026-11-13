@@ -1,6 +1,6 @@
 ---
 name: scanner
-description: "Fast codebase scanner for file discovery and pattern matching. Spawned by scout, onboard, and other skills needing project structure analysis. Read-only, max 10 file reads."
+description: "Use when a Topia skill (recon, onboard, others) needs a quick read-only subagent to find files, patterns and project structure. Reads at most 10 files."
 model: haiku
 subagent_type: Explore
 ---

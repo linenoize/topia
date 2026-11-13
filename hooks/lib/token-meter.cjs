@@ -201,6 +201,7 @@ function estimateSkillLoadTokens(skillName, pluginRoot) {
   const fs = require('fs');
   const path = require('path');
   const candidates = [
+    path.join(pluginRoot, 'agents', `${skillName}-agent.md`),
     path.join(pluginRoot, 'agents', `${skillName}.md`),
     path.join(pluginRoot, 'skills', skillName, 'SKILL.md'),
   ];

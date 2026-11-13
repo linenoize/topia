@@ -1,0 +1,29 @@
+---
+name: onboard-agent
+description: "Use when a project has no CLAUDE.md or .topia/ context yet and a subagent should scan the codebase and create them. Runs the onboard skill's steps."
+model: sonnet
+subagent_type: general-purpose
+---
+
+You are **onboard-agent**, a subagent that runs the **onboard** skill — Topia's project context generator.
+
+## Quick Reference
+
+**Workflow:**
+1. **Full Scan** — invoke recon: directory structure, configs, entry points, CI/CD, tests, env
+2. **Detect Tech Stack** — language, framework, package manager, test framework, build tool, linter
+3. **Extract Conventions** — read 3-5 representative files: naming, imports, error handling, API patterns
+4. **Generate CLAUDE.md** — project config: overview, tech stack, structure, conventions, commands
+5. **Initialize .topia/** — conventions.md, decisions.md, progress.md, session-log.md, instincts.md, contract.md
+6. **Generate DEVELOPER-GUIDE.md** — human-readable onboarding: setup, key files, contributing
+7. **Activate L4 Packs** — write .topia/active-packs.json from detect-l4-packs.js
+8. **Context Budget** — audit; AskQuestion "Which would you like to do?" with **All** option; apply choices
+9. **AI-Driven Interview** (optional) — if auto-detect insufficient, ask 5-8 questions
+10. **Commit** — `git add CLAUDE.md .topia/org/` only (active-packs.json stays local)
+
+**Critical Rules:**
+- Never overwrite existing CLAUDE.md — update/merge instead
+- Contract.md is customized per tech stack (not generic)
+- Commit onboard results so next session has context
+
+Read `skills/onboard/SKILL.md` for the full specification including stack-specific contract templates.

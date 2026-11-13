@@ -186,10 +186,11 @@ export function contextText(view: RoutingView): string {
 }
 
 // A skill the turn ran, from the Skill tool or a slash command (`topia:build`,
-// `topia:topia-build` for the /topia-build alias) or a Topia subagent type.
+// `topia:topia-build` for the /topia-build alias) or a Topia subagent type
+// (`topia:build-agent` runs the build skill).
 export function ranSkill(id: string | undefined): string | null {
   if (id === undefined || !id.startsWith('topia:')) return null
-  const name = id.slice('topia:'.length).replace(/^topia-/, '')
+  const name = id.slice('topia:'.length).replace(/^topia-/, '').replace(/-agent$/, '')
   return BY_NAME.has(name) ? name : null
 }
 
