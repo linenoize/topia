@@ -1,7 +1,7 @@
 {
   "name": "linenoize",
   "description": "Topia skill toolkit — 73 interconnected skills, discipline hooks, optional agora-code memory",
-  "version": "3.12.1",
+  "version": "3.13.0",
   "owner": {
     "name": "linenoize"
   },
@@ -11,7 +11,7 @@
       "displayName": "Topia",
       "source": { "source": "url", "url": "https://github.com/linenoize/topia.git" },
       "description": "73-skill Topia Nexus for Claude Code — TDD rails, readiness/guardian/completion-gate hooks, Maestro routing, optional agora-code neural memory",
-      "version": "3.12.1",
+      "version": "3.13.0",
       "author": {
         "name": "topia"
       },
@@ -25,7 +25,7 @@
       "displayName": "Topia Salesforce",
       "source": "./topia-sf",
       "description": "Optional Salesforce add-on for Topia — MCP server, person-gated tools, and project guards. Install topia first.",
-      "version": "3.12.1",
+      "version": "3.13.0",
       "author": {
         "name": "topia"
       },

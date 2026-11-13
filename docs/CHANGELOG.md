@@ -4,6 +4,32 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
+## [3.13.0] — 2026-11-13
+
+Memory that works with no setup, skills that run in the background, and Topia teaching its own standing orders.
+
+### Added
+
+- **`topia:stack`** — day-to-day Docker Compose upkeep: rebuild or restart one service, bounded logs, health after every start, safe prune (never volumes unless you name the project). It can write a `server.sh` + `server.ps1` pair, check `.env` against `.env.example` by key name only (values are never printed or compared), and flag database, cache and admin ports published beyond localhost.
+- **`topia:decision-form`** — for a batch of decisions, one offline HTML page with the recommended answers preselected. Export copies a short answer block to paste back into chat; the parser rejects a cut-off or mismatched paste.
+- **Show-and-tell** — `topia:docs` has an on-request mode that walks through a change from its real commits and files: what changed, how to try it, what to look for, known limits.
+- **Standing-order tips** — when you ask by hand for something an order does (fan out, commit and push, land on main…) three times in a project, a one-time tip offers to turn that order on. `/orders` now explains what orders are, and each order has a one-line description.
+- **Two new orders** — `trunk` lands finished agent and worktree branches on local main and cleans them up, never pushing unless asked. `decisions` asks one decision at a time, each with a recommended default; "ok" accepts it.
+- **Parked MCP servers** — onboard reads `~/.claude/topia/mcp-catalog.json`, offers the parked servers and plugins that fit the project, and turns on only what you pick, for that project only. `mcp-catalog.js park <server>` moves a server out of user scope.
+- **Cursor tool-level hooks** — the privacy guard runs on `beforeReadFile`, and the secrets scan and push checkpoint on `beforeShellExecution`.
+- **topia-sf in VS Code** — turning Salesforce on or off asks in a dialog where the band above the prompt isn't drawn.
+
+### Changed
+
+- **Memory needs no setup.** Skills recall with `topia:recall` and record with `topia:journal` over the `.topia/` files. They no longer tell the model to call a neural-memory or agora MCP that isn't installed; those are optional backends, used only when their tools are present. Session start shows the newest entries with a size cap and lists only memory sources that exist. A new `commit-memory` hook (Node only) appends each commit to `.topia/learnings.jsonl`, bounded and silent on failure. It replaces `agora-learn-commit`.
+- **`build`, `launch`, `rescue` and `team` are ready to run in the background** (Claude Code's default for forked skills since 2.1.218). A forked skill can't ask questions, so where they used to ask, they now stop with a report and a resume line, and the main conversation asks you. `launch` always takes two runs, and deploys only on an approval you type, at the commit it checked.
+- **"Where did we leave off", "what's left", or "status" on its own** route to `topia:recall`. "git status" and "HTTP status" don't.
+- 73 skills, 317 synapses.
+
+### Fixed
+
+- **Claude Code hook events were mistaken for Cursor's**, so the privacy guard's block reason still went to stdout, where Claude drops it. 3.12.1's fix now takes effect. The hook dispatcher had the same mistake.
+
 ## [3.12.1] — 2026-11-13
 
 A clearer status line, and three hooks that weren't reaching Claude now do.
