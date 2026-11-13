@@ -251,13 +251,14 @@ These are rarely invoked directly — they're called by higher-level skills:
 | `topia:research` / `topia:docs-seeker` | any | Look up docs |
 | `topia:session-bridge` | build, team | Save context (in-session state handoff) |
 | `topia:journal` | build, team | Persistent work log within a session |
-| `topia:neural-memory` | build, team, any L1/L2 | Cross-session cognitive persistence via Neural Memory MCP — semantic complement to session-bridge and journal |
-| `topia:recall` | build, plan, recon, session-start | Unified read-only recall across `.topia/`, `.remember/`, neural-memory, agora-memory |
+| `topia:neural-memory` | user | Optional; only if the Neural Memory MCP is installed |
+| `topia:recall` | build, plan, recon, session-start | Read-only recall from `.topia/` and `.remember/` files |
 | `topia:git` | build, scaffold, team, launch | Semantic commits, PRs, branches |
 | `topia:doc-processor` | docs, marketing | PDF/DOCX/XLSX/PPTX generation |
 | "Done" / "ship it" / "xong" | — | `topia:verification` → commit |
 | "recall", "what did we do", "session context", "pick up where we left off", "where did we leave off", "where were we", "what's left", "resume", or "status" as the whole prompt | `topia:recall` | Unified cross-source memory read: where work stands and what is left. Not "git status", "HTTP status" or a status bar |
-| "remember", "brain", "nmem", "cross-project memory", "store learning" | `topia:neural-memory` | Persist or query semantic graph memory |
+| "remember this", "store learning", "note this decision" | `topia:journal` | Record to `.topia/` files |
+| "nmem", "neural memory" | `topia:neural-memory` | Optional; only if the Neural Memory MCP is installed |
 
 #### Domain Extension Packs (L4)
 
@@ -410,7 +411,7 @@ Once routed:
 
 **After invoking:**
 3. Say in one line that it is running in the background and the report will follow. Do not claim any result yet.
-4. Do not start a step that needs its output in the same turn: completion-gate, deploy, review of its diff, Step 5 capture.
+4. Do not start a step that needs its output in the same turn: completion-gate, deploy, review of its diff, the Step 5 record.
 5. You may help with other work meanwhile. Do not edit files the run is changing. Do not commit, checkout, merge, reset or stash until its report arrives.
 6. If asked for progress, say it is still running. `.topia/progress.md` may help. Never make up results.
 
@@ -421,18 +422,12 @@ Once routed:
 
 Claude Code waits for the result in the same turn instead under `claude -p`, the Agent SDK, `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=1`, or when the same skill is already running. Steps 7-9 still apply, just sooner.
 
-### Step 5 — Post-Completion Neural Memory Capture
+### Step 5 — Post-Completion Record
 
-After ANY L1 or L2 workflow completes (build, team, launch, rescue, scaffold, plan, design, debug, fix, review, deploy, guardian, readiness, perf, db, idea, docs, mcp-builder, integrate, etc.). For a background skill, "completes" means its task notification has arrived with a final status, not that the Skill call returned:
+After an L1 or L2 workflow that made a decision worth keeping (an architecture choice, a root cause, a rejected approach):
 
-1. Trigger `topia:neural-memory` in **Capture Mode** automatically
-2. Save 2–5 memories covering: key decisions made, bugs fixed, patterns applied, architectural choices
-3. Use rich cognitive language (causal, temporal, decisional) — NOT flat facts
-4. Tag memories with [project-name, skill-used, topic]
-5. This step is MANDATORY even if the user did not ask for it
-6. Exception: skip if the workflow produced zero technical output (e.g., only a clarifying question was asked)
-
-**Capture Mode trigger phrase**: "Session artifact — capturing to Neural Memory."
+1. Record: `topia:journal` (or `topia:session-bridge` for progress and checkpoints)
+2. Skip when nothing durable came out of the work. Commits are recorded automatically by the `commit-memory` hook.
 
 ## Routing Exceptions
 

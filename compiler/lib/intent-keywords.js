@@ -89,8 +89,8 @@ export const INTENT_KEYWORDS = {
   git: ['commit', 'pull request', 'pr', 'branch', 'rebase', 'merge conflict'],
   'guardian-env': ['environment check', 'works on my machine', 'env vars', 'port in use'],
   'hallucination-guard': ['hallucinated', 'phantom import', 'fake package', 'typosquat'],
-  journal: ['adr', 'decision record', 'journal', 'log the decision'],
-  'neural-memory': ['remember this', 'capture learning', 'neural memory'],
+  journal: ['adr', 'decision record', 'journal', 'log the decision', 'remember this', 'capture learning'],
+  'neural-memory': ['neural memory', 'nmem'],
   'problem-solver': ['5 whys', 'root cause analysis', 'first principles', 'fishbone'],
   recall: [
     'recall',

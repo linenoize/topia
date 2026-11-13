@@ -47,7 +47,7 @@ If root cause cannot be identified after 3 hypothesis cycles:
 - `problem-solver` (L3): structured reasoning (5 Whys, Fishbone) for complex bugs
 - `browser-pilot` (L3): capture browser console errors, network failures, visual bugs
 - `sequential-thinking` (L3): multi-variable root cause analysis
-- `neural-memory` (L3): after root cause found — capture error pattern for future recognition
+- `journal` (L3): after root cause found — record error pattern for future recognition
 - `adversary` (L2): on `agent.stuck` — oracle-mode dispatches stateless second-model pass to break confirmation-bias loop (parallel with scout zoom-out)
 - `stack` (L2): bug lives in a Docker Compose service — bounded container logs, status, or a one-service restart/rebuild to reproduce
 
@@ -259,7 +259,7 @@ Narrow to the single actual cause.
 
 ### Step 5b: Capture Error Pattern
 
-Call `neural-memory` (Capture Mode) to save the error pattern: root cause, symptoms, and fix approach. Tag with [project-name, error, technology].
+Record: `topia:journal` — one `error` row with root cause, symptoms, and fix approach.
 
 ### Step 6: 3-Fix Escalation Rule
 

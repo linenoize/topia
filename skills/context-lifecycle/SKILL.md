@@ -1,6 +1,6 @@
 ---
 name: context-lifecycle
-description: "Automated context boundary orchestration. Runs at phase ends, pre/post-compact, and after git push. Chunks work across sessions via session-bridge, context-pack, and neural-memory without losing continuity."
+description: "Automated context boundary orchestration. Runs at phase ends, pre/post-compact, and after git push. Chunks work across sessions via session-bridge and context-pack without losing continuity."
 user-invocable: true
 metadata:
   author: topia
@@ -32,7 +32,6 @@ Orchestrate **when** to save state, **when** to recommend `/compact`, and **how*
 - `session-bridge` (L3): Save Mode, Checkpoint Mode, Load Mode
 - `context-engine` (L3): health classification before compact recommendation
 - `context-pack` (L3): handoff briefings before subagent spawn
-- `neural-memory` (L3): Flush Mode before compaction when MCP available
 - `recall` (L3): minimal unified recall at session start after compact
 
 ## Called By (inbound)
@@ -51,8 +50,7 @@ Orchestrate **when** to save state, **when** to recommend `/compact`, and **how*
 2. If ORANGE or RED → invoke `topia:session-bridge` (Save Mode) with current phase, files touched, decisions, remaining tasks.
 3. If RED → recommend `/compact` immediately after Save.
 4. If spawning a subagent next → invoke `topia:context-pack` for a &lt;1500 token handoff.
-5. If neural-memory MCP configured → invoke `topia:neural-memory` (Flush Mode) before compact.
-6. Emit advisory: next safe boundary for compact or new session.
+5. Emit advisory: next safe boundary for compact or new session.
 
 ## Mode: Hook Resume (pre-compact / git push)
 
@@ -68,7 +66,7 @@ Hooks have already written `.topia/checkpoint.md`. Agent MUST:
 After `/compact`, PostCompact hook re-injects checkpoint preview. Agent MUST:
 
 1. Read full `.topia/checkpoint.md`.
-2. Optionally invoke `topia:recall` (minimal) for neural-memory / agora if configured.
+2. Optionally Recall: `topia:recall` (minimal) for decisions made before the compact.
 3. Mark checkpoint consumed after successful resume:
    - Rename to `.topia/checkpoint-[date].resolved.md` (keep last 3 resolved).
 4. Emit `context.compacted` (observability) when resume is confirmed.

@@ -34,7 +34,6 @@ Solve the #1 developer complaint: context loss across sessions. Session-bridge a
 - `integrity-check` (L3): verify .topia/ file integrity before loading state
 - `context-engine` (L3): coordinate compaction timing with context budget
 - `context-lifecycle` (L3): orchestrate save/compact/resume when hooks write checkpoints
-- `neural-memory` (L3): cross-project pattern extraction in Save Mode Step 6
 
 ## Called By (inbound)
 
@@ -43,7 +42,6 @@ Solve the #1 developer complaint: context loss across sessions. Session-bridge a
 - `context-engine` (L3): save state before compaction
 - `context-lifecycle` (L3): resume after hook-written checkpoints and post-compact
 - `context-pack` (L3): coordinate state for sub-agent handoff
-- `neural-memory` (L3): sync key decisions back to `.topia/` files after Capture Mode
 - `adversary` (L2): (oracle-mode) detach protocol when target model is opus-class for non-blocking dispatch
 - `logic-guardian` (L2): save manifest state so next session loads it immediately
 
@@ -206,7 +204,7 @@ Extract atomic "instincts" — learned trigger→action patterns — from this s
 | Project-specific convention discovered | "This codebase uses X pattern for Y" | 0.4–0.6 |
 | One-off preference (may not generalize) | User chose a specific library once | 0.3–0.4 |
 
-**Promotion to global**: When the same instinct (matching trigger+action) appears in `.topia/instincts.md` across 2+ projects at confidence ≥0.8, promote it to Neural Memory via Step 6 with tag `[cross-project, instinct]`. Until then, it stays project-local.
+**Promotion**: When an instinct (matching trigger+action) reaches confidence ≥0.8, promote it to `.topia/conventions.md` (Step 3). Until then, it stays in `instincts.md`.
 
 **Pruning**: At session start (Load Mode Step 1), review instincts older than 30 days with confidence <0.5 — remove them. Instincts that conflict with current conventions should be removed immediately.
 
@@ -306,23 +304,20 @@ Maintain a running **cumulative notes** file at `.topia/cumulative-notes.md` tha
 
 **Why**: Individual state files (decisions.md, progress.md) capture discrete events. Cumulative notes capture the **emergent understanding** that develops over many sessions — the kind of knowledge that's lost when context resets. This is the project's "institutional memory."
 
-#### Step 6 — Cross-Project Knowledge Extraction (Neural Memory Bridge)
+#### Step 6 — Transferable Patterns
 
-Before committing, extract generalizable patterns from this session for cross-project reuse:
+Before committing, pull out patterns worth finding again:
 
 1. Review the session's decisions, conventions, and completed tasks
-2. Identify 1-3 patterns that are NOT project-specific but would help in OTHER projects:
+2. Identify 1-3 patterns that would help in later work:
    - Technology choices with reasoning ("Chose Redis over Memcached because X")
    - Architecture patterns ("Fan-out queue pattern solved Y")
    - Failure modes discovered ("React 19 useEffect cleanup breaks when Z")
    - Performance insights ("N+1 query pattern in Prisma solved by include")
-3. For each generalizable pattern, save to Neural Memory:
-   - Use `nmem_remember` with rich cognitive language (causal, comparative, decisional)
-   - Tags: `[cross-project, <technology>, <pattern-type>]`
-   - Priority: 6-7 (important enough to surface in other projects)
-4. Skip if session was purely project-specific (config changes, bug fixes with no transferable insight)
+3. Append each as a row in `.topia/learnings.jsonl` (Step 5.8), with causal language and a `pattern-` key
+4. Skip if session was purely routine (config changes, bug fixes with no transferable insight)
 
-**Why**: This turns every project session into learning that compounds across ALL projects. A pattern discovered in Project A auto-surfaces when Project B faces a similar problem.
+**Why**: Grep and `topia:recall` find these rows in later sessions, with no server to run.
 
 #### Step 7 — Commit
 

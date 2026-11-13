@@ -226,7 +226,7 @@ Topia operates on three time horizons. The roadmap is intentionally non-prescrip
 *Topia is successful when these are true. Not when the feature list is long.*
 
 ### Graph Health
-- **Connection density** ≥ 3.0 connections/skill (currently: 4.44 at 326 synapses / 73 skills — above the 3.0 target) — do not let this drop below 2.5
+- **Connection density** ≥ 3.0 connections/skill (currently: 4.44 at 317 synapses / 73 skills — above the 3.0 target) — do not let this drop below 2.5
 - **Dead nodes** = 0 — every skill has ≥1 inbound and ≥1 outbound connection
 - **Max chain depth used** < 6 in practice (ceiling is 8) — if chains regularly hit 8, the toolkit needs restructuring
 - **Bloat Index** = 0.00 — dead nodes / total skills

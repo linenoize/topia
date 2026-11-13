@@ -21,6 +21,9 @@ const TOPIA_FILES = [
   'instincts.md',
 ];
 
+// Append-only logs: the newest entries are at the end, so keep the tail.
+const TAIL_FILES = new Set(['progress.md', 'decisions.md', 'session-log.md']);
+
 const REMEMBER_FILES = ['now.md', 'recent.md', 'remember.md'];
 
 /**
@@ -39,18 +42,26 @@ function latestTodayFile(dir) {
 /**
  * @param {string} filePath
  * @param {number} maxChars
+ * @param {{ tail?: boolean }} [opts] keep the end of the file (newest log entries)
  * @returns {{ path: string, content: string, truncated: boolean } | null}
  */
-function readSnippet(filePath, maxChars = 4000) {
+function readSnippet(filePath, maxChars = 4000, opts = {}) {
   if (!existsSync(filePath)) return null;
-  const raw = readFileSync(filePath, 'utf-8').trim();
+  let raw;
+  try {
+    raw = readFileSync(filePath, 'utf-8').trim();
+  } catch {
+    return null;
+  }
   if (!raw) return null;
   const truncated = raw.length > maxChars;
-  return {
-    path: filePath,
-    content: truncated ? `${raw.slice(0, maxChars)}\n\n…[truncated]` : raw,
-    truncated,
-  };
+  let content = raw;
+  if (truncated && opts.tail) {
+    content = `…[older entries truncated; Grep the file for them]\n\n${raw.slice(-maxChars)}`;
+  } else if (truncated) {
+    content = `${raw.slice(0, maxChars)}\n\n…[truncated]`;
+  }
+  return { path: filePath, content, truncated };
 }
 
 /**
@@ -84,7 +95,7 @@ export function gatherMemories(root, opts = {}) {
 
   const topiaDir = resolveTopiaDir(root);
   for (const file of TOPIA_FILES) {
-    const snippet = readSnippet(path.join(topiaDir, file), maxChars);
+    const snippet = readSnippet(path.join(topiaDir, file), maxChars, { tail: TAIL_FILES.has(file) });
     if (snippet) {
       sources.push({ source: '.topia', kind: 'state', name: file, ...snippet });
     }
@@ -132,10 +143,6 @@ export function gatherMemories(root, opts = {}) {
     gatheredAt: new Date().toISOString(),
     sources,
     missing,
-    mcpHint: {
-      neuralMemory: 'nmem_recall (if neural-memory MCP registered)',
-      agoraMemory: 'recall_learnings (if agora-memory MCP registered)',
-    },
   };
 }
 
@@ -158,7 +165,6 @@ if (isMain) {
     process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
   } else if (result.sources.length === 0) {
     process.stdout.write('No file-based memories found.\n');
-    process.stdout.write('Optional MCP: nmem_recall / recall_learnings when registered.\n');
   } else {
     for (const item of result.sources) {
       process.stdout.write(`\n=== ${item.source}/${item.name} ===\n${item.content}\n`);

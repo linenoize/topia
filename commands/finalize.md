@@ -22,7 +22,7 @@ You still have:
 |------------------------|---------------------------|
 | All `/topia:*` skills and `/topia` router | **Dispatch hooks** (`readiness`, `guardian`, `completion-gate`, `dependency-doctor`) in repos that are not actively loading the plugin |
 | Plugin hooks (session-start, secrets-scan, quarantine, metrics, …) | **Cross-repo discipline** — opening a random folder in Claude may not auto-run readiness/guardian on edits |
-| File-based `.topia/` memory in projects you onboard | **agora-code MCP** (persistent semantic memory) unless installed manually |
+| File-based `.topia/` memory (session start, recall, commit capture) — no setup needed | **agora-code MCP** (optional extra search backend) unless installed manually |
 | Manual `/topia guardian`, `/topia readiness`, etc. | **Project `.gitignore` helpers** for Topia state files |
 | | **Interview-driven `org.md`** — guardian/readiness use generic template policy until you run org-config |
 
@@ -32,7 +32,7 @@ You still have:
 
 1. **System-wide dispatch hooks** (recommended) — `readiness`, `guardian`, `completion-gate`, `dependency-doctor` in `~/.claude/settings.json` (gentle preset by default).
 2. **Team org policy** (recommended for teams) — invokes **org-config** to interview and write `.topia/org/org.md`.
-3. **agora-code MCP** (optional) — Python 3.10+ persistent memory.
+3. **agora-code MCP** (optional) — Python 3.10+ extra search backend. Memory works without it.
 4. **Project `.gitignore`** (optional) — Topia-managed ignore rules in the current repo.
 5. **`doctor`** verify at the end.
 
@@ -81,7 +81,7 @@ Use **AskUserQuestion** (multiSelect: true). Present these as **recommended defa
 |--------|----------------|---------|
 | **System-wide dispatch hooks (gentle)** | readiness / guardian / completion-gate / dependency-doctor globally | **recommended — on** |
 | **Team org policy (`org.md`)** | Runs `/topia org-config` interview → `.topia/org/org.md` for guardian/readiness | **recommended for teams — on** |
-| **agora-code persistent memory** | Python MCP | optional |
+| **agora-code search backend** | Python MCP; memory works without it | optional |
 | **Project `.gitignore` rules** | Topia entries in `./.gitignore` | optional |
 
 If the user picks **none**, explain the [skip table](#if-you-skip-finalize), write `.topia/.finalized`, and exit.

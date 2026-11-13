@@ -205,7 +205,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "context-lifecycle",
     "layer": "L3",
     "model": "haiku",
-    "description": "Automated context boundary orchestration. Runs at phase ends, pre/post-compact, and after git push. Chunks work across sessions via session-bridge, context-pack, and neural-memory without losing continuity.",
+    "description": "Automated context boundary orchestration. Runs at phase ends, pre/post-compact, and after git push. Chunks work across sessions via session-bridge and context-pack without losing continuity.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
@@ -614,7 +614,9 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "adr",
       "decision record",
       "journal",
-      "log the decision"
+      "log the decision",
+      "remember this",
+      "capture learning"
     ],
     "prompts": [],
     "chain": []
@@ -695,13 +697,12 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "neural-memory",
     "layer": "L3",
     "model": "haiku",
-    "description": "Cross-session cognitive persistence via Neural Memory MCP. Captures decisions, patterns, errors, and insights with rich semantic links. Provides recall, hypothesis tracking, and evidence-based reasoning across projects.",
+    "description": "Optional; only if the Neural Memory MCP is installed. Semantic memory through nmem_* tools: recall, capture, and hypothesis tracking. Use only when mcp__neural-memory__* tools are present; otherwise use recall and journal.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
-      "remember this",
-      "capture learning",
-      "neural memory"
+      "neural memory",
+      "nmem"
     ],
     "prompts": [],
     "chain": []
@@ -824,7 +825,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "recall",
     "layer": "L3",
     "model": "haiku",
-    "description": "Unified cross-source memory recall: .remember/, .topia/, neural-memory, and agora-memory. Use at session start or before architecture decisions. Read-only orchestrator — writes stay on neural-memory Capture and session-bridge Save.",
+    "description": "Read-only memory recall from Topia's files: .topia/ progress, decisions, conventions, and learnings, plus .remember/ when present. Use at session start, when resuming work, or before architecture decisions. Writes go through journal and session-bridge.",
     "userInvocable": true,
     "forked": false,
     "keywords": [

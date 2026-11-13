@@ -38,7 +38,7 @@ If status is BLOCK, output the report and STOP. Do not hand off to commit. The c
 - `integrity-check` (L3): agentic security validation of .topia/ state files
 - `sast` (L3): deep static analysis with Semgrep, Bandit, ESLint security rules
 - `quarantine` (L3): listens for repeated untrusted MCP namespace quarantine signals
-- `neural-memory` (ext): after any BLOCK finding — capture vulnerability pattern + root cause so the same vector isn't introduced again in future sessions
+- `journal` (L3): after any BLOCK finding — record vulnerability pattern + root cause so the same vector isn't introduced again in future sessions
 
 ## Called By (inbound)
 

@@ -61,7 +61,7 @@ Tools for gathering information, making decisions, and maintaining persistent pr
 | `problem-solver` | **Thinker**: Applies 19 analytical frameworks (e.g., McKinsey-grade) to complex problems. |
 | `sequential-thinking` | **Logician**: Breaks interconnected decisions into ordered logical steps. |
 | `journal` | **Persistence**: Tracks ADRs (Architecture Decision Records) and decisions across sessions. |
-| `neural-memory` | **Memory**: Provides cross-session recall of patterns, insights, and semantic links. |
+| `neural-memory` | **Memory** (optional): only if the Neural Memory MCP is installed. Default memory is `recall` + `journal`. |
 | `trend-scout` | **Market Watch**: Scans GitHub Trending, Product Hunt, etc., for emerging patterns. |
 | `autopsy` | **Assessor**: Full health assessment of legacy codebases with rescue planning. |
 

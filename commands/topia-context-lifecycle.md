@@ -1,6 +1,6 @@
 ---
 name: topia-context-lifecycle
-description: "Automated context boundary orchestration. Runs at phase ends, pre/post-compact, and after git push. Chunks work across sessions via session-bridge, context-pack, and neural-memory without losing continuity."
+description: "Automated context boundary orchestration. Runs at phase ends, pre/post-compact, and after git push. Chunks work across sessions via session-bridge and context-pack without losing continuity."
 disable-model-invocation: true
 ---
 

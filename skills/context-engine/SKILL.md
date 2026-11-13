@@ -43,7 +43,6 @@ Context-engine also manages **behavioral mode injection** via `contexts/` direct
 # Exception: L3→L3 coordination
 - `session-bridge` (L3): coordinate state save when context critical
 - `context-lifecycle` (L3): Boundary Save and compact/resume orchestration at ORANGE/RED
-- `neural-memory` (L3): Flush Mode before compaction to preserve decisions
 
 ## Called By (inbound)
 
@@ -329,7 +328,7 @@ When ORANGE or RED is reached, use this table to determine whether compaction is
 When context hits RED during Phase 4 (implementation), compaction IS possible at **clean split points**:
 
 1. **Find a clean boundary**: completed task within the phase (file fully written + tests pass for that file)
-2. **Flush state first**: call `session-bridge` to save progress, then call `neural-memory` to capture decisions
+2. **Flush state first**: call `session-bridge` to save progress and decisions to `.topia/`
 3. **Split 70/30**: preserve 70% of remaining context for continuation, summarize 30% of completed work
 4. **Never break tool pairs**: compaction MUST NOT split a `tool_use` from its `tool_result` — always keep pairs together
 5. **Inject continuation marker**: after compaction, include: "Resuming Phase 4. Tasks [1-3] complete. Currently on task 4. Plan file: `.topia/plan-X-phaseN.md`"
@@ -506,7 +505,7 @@ Known failure modes for this skill. Check these before declaring done.
 | Premature compaction from over-estimated utilization | MEDIUM | Tool count is directional only — sessions with heavy Read calls may need lower thresholds; only block at confirmed RED |
 | Not activating large-file adjustment on Python/Java codebases | MEDIUM | Track Read calls returning >500 lines; if ≥3 occur, switch to adjusted (0.8x) thresholds for the session |
 | Mid-loop compaction breaks tool_use/tool_result pair | CRITICAL | Always keep tool pairs together — splitting causes orphaned results and context corruption |
-| Mid-loop compaction without flushing state first | HIGH | session-bridge + neural-memory MUST run before compaction — losing unsaved decisions is worse than hitting context limit |
+| Mid-loop compaction without flushing state first | HIGH | session-bridge MUST run before compaction — losing unsaved decisions is worse than hitting context limit |
 | (preview) Caller bundles before requesting preview | HIGH | Constraint 4 enforces order; reject preview-after-build calls with explicit error |
 | (preview) Estimated tokens off by 2x for non-English content | LOW | Document calibration in `references/preview-gate.md`; safe both directions (block-too-eager or block-too-late but hard cap at dispatch saves us) |
 | Caveman activated in first response of a task | MEDIUM | First response = user calibration baseline. Verbose first; caveman from response 2+ (see `references/caveman-mode.md`) |

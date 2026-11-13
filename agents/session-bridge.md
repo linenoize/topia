@@ -14,7 +14,7 @@ You are the **session-bridge** skill — Topia's session continuity manager.
 2. Update: decisions.md, conventions.md, progress.md, session-log.md
 3. Extract instincts (learned trigger→action patterns)
 4. Extract cumulative project notes
-5. Extract cross-project knowledge to Neural Memory
+5. Append transferable patterns to `.topia/learnings.jsonl`
 6. Commit `.topia/` changes to git
 
 **Load Mode:**

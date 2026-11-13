@@ -1,6 +1,6 @@
 ---
 name: topia-neural-memory
-description: "Cross-session cognitive persistence via Neural Memory MCP. Captures decisions, patterns, errors, and insights with rich semantic links. Provides recall, hypothesis tracking, and evidence-based reasoning across projects."
+description: "Optional; only if the Neural Memory MCP is installed. Semantic memory through nmem_* tools: recall, capture, and hypothesis tracking. Use only when mcp__neural-memory__* tools are present; otherwise use recall and journal."
 disable-model-invocation: true
 ---
 

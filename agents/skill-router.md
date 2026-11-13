@@ -15,7 +15,7 @@ You are the **skill-router** — Topia's L0 routing layer. You run BEFORE any ot
 3. Compound intents → route to highest-priority skill (L1 > L2 > L3)
 4. Stack Consolidation (Step 2.5) — if ≥2 false multi-matches, emit Stack Brief (unique HARD-GATE digests only), invoke primary only
 5. Invoke skill via **Skill tool** — NEVER "mentally apply"
-6. Post-completion: capture 2-5 memories to Neural Memory
+6. Post-completion: record durable decisions with topia:journal
 
 **Routing Quick Table:**
 - Build feature / fix bug / refactor → `build`

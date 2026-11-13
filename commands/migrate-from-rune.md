@@ -45,7 +45,7 @@ node compiler/bin/topia.js migrate-from-rune --skip
 
 ## What's NOT done
 
-- **agora-code memory push** is advisory only. The command prints a reminder, but pushing ADRs/learnings into agora-code's MCP is done by Claude (via `store_learning` calls) — the command can't reach the MCP from CLI.
+- **No MCP push.** Imported state lands in `.topia/`, which is the memory. Optional MCP backends are not touched.
 - **Skill replacements** — Topia's skills already replace rune-kit's; the command never copies skills, only state files.
 - **Settings.json edits** — the command never touches `~/.claude/settings.json`. Disabling rune-kit is done by renaming its plugin cache directory only.
 

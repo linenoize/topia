@@ -45,7 +45,7 @@ Each skill is marked by who invokes it in practice:
 | Answer many decisions at once | 👤 [`decision-form`](#-decision-form) |
 | Onboard an existing codebase | 👤 [`onboard`](#-onboard) |
 | Map / reverse-engineer legacy architecture | 👤 [`architecture-mapper`](#-architecture-mapper) |
-| Recall past decisions | 🔄 [`neural-memory`](#-neural-memory) or 🔄 [`journal`](#-journal) |
+| Recall past decisions | 🔄 `recall` or 🔄 [`journal`](#-journal) |
 
 ---
 
@@ -242,7 +242,7 @@ Generate and parse office documents — PDF, DOCX, XLSX, PPTX, CSV. Pure format 
 | 🤖 | **context-pack** | Structured handoff briefings between agents |
 | 🔄 | **journal** | Persistent state tracking — ADRs, decisions, progress |
 | 🤖 | **session-bridge** | Cross-session context persistence to `.topia/` files |
-| 🔄 | **neural-memory** | Semantic memory graph via Neural Memory MCP (and agora-code MCP when registered) |
+| 🔄 | **neural-memory** | Optional; only if the Neural Memory MCP is installed |
 | 🔄 | **worktree** | Git worktree lifecycle — parallel development isolation |
 | 🤖 | **watchdog** | Post-deploy monitoring — health checks, response time, error detection |
 | 🤖 | **scope-guard** | Passive scope monitor — flags out-of-scope files against plan |

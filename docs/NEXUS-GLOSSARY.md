@@ -22,7 +22,7 @@ Canonical terminology for Topia v2. Use these terms in docs, CLI output, and ski
 
 | Term | Definition |
 |------|------------|
-| **Neural Memory** | L3 skill + Neural Memory MCP (nmem_*); optional agora-memory. journal = human ADR trail; indexes via Capture. |
+| **Neural Memory** | Optional L3 skill; only if the Neural Memory MCP (nmem_*) is installed. Default memory is `.topia/` files (recall reads, journal writes). |
 | **8 Pillars** | The eight dimensions of the `audit` skill health check (security, dependencies, architecture, performance, infrastructure, documentation, nexus analytics, governance). |
 
 ## Skill layers
