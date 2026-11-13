@@ -75,7 +75,7 @@ Add stricter rules when:
 Tightening options:
 
 1. **Egress hardening**: extend `permissions.deny` to block `WebFetch` to non-allowlisted domains
-2. **Manual review gate**: invoke `integrity-check` after each `Read` of `**/uploads/**` content
+2. **Manual review gate**: run `/topia:integrity-check` after each `Read` of `**/uploads/**` content
 3. **Allowlist trim**: remove MCPs from `trusted-mcp-allowlist.txt` you no longer fully trust
 
 ## When to Loosen

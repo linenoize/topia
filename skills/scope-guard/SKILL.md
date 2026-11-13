@@ -1,7 +1,7 @@
 ---
 name: scope-guard
 description: "Detects scope creep by quantifying drift percentage. Auto-triggered by L1 orchestrators when files exceed the original plan. Compares git changes against plan, classifies drift into 4 tiers: ON_TRACK, MINOR_DRIFT, SIGNIFICANT_DRIFT, OUT_OF_CONTROL."
-user-invocable: false
+disable-model-invocation: true
 metadata:
   author: topia
   version: "0.4.0"
@@ -16,6 +16,8 @@ metadata:
 ## Purpose
 
 Passive scope monitor. Reads the original task plan, inspects current git diff to see what files have changed, and compares them against the planned scope. Flags any unplanned additions as scope creep with specific file-level detail.
+
+In Claude Code this skill is hidden from Claude's skill list. Orchestrators read this file and follow it; a person can still type `/topia:scope-guard`.
 
 ## Called By (inbound)
 
@@ -34,7 +36,7 @@ None — pure L3 monitoring utility.
 
 Read the original task/plan from one of these sources (check in order):
 
-1. TodoWrite task list — read active todos as the planned scope
+1. The session task list — call `TaskList` (Claude Code task tools; `TodoWrite` on older versions or other platforms) and read open and completed tasks as the planned scope
 2. `.topia/progress.md` — use `Read` on `.topia/progress.md` (or equivalent path)
 3. If neither exists, ask the calling skill to provide the plan as a text description
 
@@ -156,12 +158,12 @@ Known failure modes for this skill. Check these before declaring done.
 | Classifying test files for planned code as out-of-scope | MEDIUM | Test files for planned source files are always IN_SCOPE — natural dependency |
 | Classifying lock file changes as out-of-scope | LOW | package-lock.json, yarn.lock, Cargo.lock are always IN_SCOPE |
 | Over-escalating drift (e.g., 1 extra file = OUT_OF_CONTROL) | LOW | Use drift percentage, not gut feeling. 1 extra file out of 10 = 10% = MINOR_DRIFT, not panic |
-| Plan not loadable (no TodoWrite, no progress.md) | MEDIUM | Ask calling skill for plan as text description before proceeding |
+| Plan not loadable (no task list, no progress.md) | MEDIUM | Ask calling skill for plan as text description before proceeding |
 | Scope check against plan but not against stated intent | MEDIUM | Plan-based scope guard catches file drift; review Step 6.6 (Scope Drift Detection) catches intent drift. Both should run for full coverage |
 
 ## Done When
 
-- Plan loaded from TodoWrite active tasks or .topia/progress.md
+- Plan loaded from the task list (TaskList) or .topia/progress.md
 - git diff --stat and --cached output parsed for all changed files
 - Each changed file classified IN_SCOPE or OUT_OF_SCOPE with reasoning
 - Drift percentage computed and classified (ON_TRACK / MINOR_DRIFT / SIGNIFICANT_DRIFT / OUT_OF_CONTROL)

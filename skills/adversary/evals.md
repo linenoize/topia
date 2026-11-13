@@ -44,7 +44,7 @@ Synthetic scenarios for verifying adversary skill behavior. Each eval has setup,
 
 **Expected**:
 - Adversary listens to `agent.stuck`, dispatches oracle-mode
-- `context.preview` emitted FIRST → context-engine returns action=proceed
+- `context.preview` emitted FIRST → context-lifecycle returns action=proceed
 - Bundle built per `context-bundle-format.md` (regex-validated)
 - `oracle.dispatched` emitted with `{sessionId, sourceSkill: debug, targetModel}`
 - Reply received and validated — every claim has file:line citation

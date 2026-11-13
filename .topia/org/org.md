@@ -1,13 +1,13 @@
 ---
 name: topia
-description: "Internal team / org configuration for the topia project. Fill in the fields below; `guardian` and `readiness` consume this at compile time and enforce its rules as runtime gates."
+description: "Internal team / org configuration for the topia project. Fill in the fields below; `guardian` and `verification` read this and enforce its rules as runtime gates."
 version: "1.0.0"
 ---
 
 # Organization: topia
 
 > **What is this file?** Your team's policies, roles, approval flows, and
-> governance level — read at compile time by `guardian` and `readiness` and
+> governance level — read at compile time by `guardian` and `verification` and
 > baked into their runtime hooks. See [`docs/ORG-CONFIG.md`](../../docs/ORG-CONFIG.md)
 > for what each section drives and when to edit it.
 >
@@ -70,7 +70,7 @@ version: "1.0.0"
 ### PR accepter validation
 ```
 scope ALL commits (git log/diff main...HEAD)
-→ /topia readiness ‖ /topia guardian (BLOCK stops merge; maintainer cannot override guardian)
+→ /topia verification ‖ /topia guardian (BLOCK stops merge; maintainer cannot override guardian)
 → /topia review full branch (file:line or per-file approval; blast≥50 + behavior change → /topia adversary)
 → completion-gate if agent claims "tests pass / fixed / done"
 → confirm CI green (npm run ci)
@@ -96,7 +96,7 @@ on-call opens PR → maintainer runs guardian + CI (single reviewer OK for P1/P2
 define window (git log A..B or --since)
 → cluster by PR (prefer gh pr list --state merged)
 → triage P0 secrets/auth/crypto/deps/CI-red → P1 blast/LOC → P2 sample-or-skip
-→ per cluster: replay readiness ‖ guardian → review → evidence/CI
+→ per cluster: replay verification ‖ guardian → review → evidence/CI
 → report PASS|FAIL|SKIP(risk); FAIL → /topia fix|/topia build (no history rewrite by default)
 ```
 
@@ -123,7 +123,7 @@ Governance levels Topia recognises:
 
 For this org:
 - `guardian`: **enforce mode** — BLOCK on secrets, OWASP critical, CVE HIGH+
-- `readiness`: **enforce mode** — BLOCK on logic gaps, missing tests, regressions
+- `verification`: **enforce mode** — BLOCK on logic gaps, missing tests, regressions
 - `completion-gate`: **enforce mode** — BLOCK if agent claims lack evidence
 - `quarantine`: **advisory** — print warnings, do not block
 - `scope-guard`: **advisory** — flag drift, do not block

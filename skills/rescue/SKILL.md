@@ -60,7 +60,6 @@ Read choices from ARGUMENTS: `module <name>`, `skip <name>`, `status`. Record sk
 - `onboard` (L2): generate context for unfamiliar legacy project
 - `dependency-doctor` (L3): audit dependencies in legacy project
 - `context-pack` (L3): create structured handoff briefings before spawning subagents
-- `context-engine` (L3): context budget management between refactoring sessions
 - `context-lifecycle` (L3): Boundary Save between refactoring sessions
 - `scope-guard` (L3): verify rescue changes stay within declared module scope
 - `recall` | Phase start | Recall past refactoring patterns and decisions

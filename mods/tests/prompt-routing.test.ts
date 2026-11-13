@@ -43,7 +43,7 @@ test('a draft points at build first, then the most specific words', async () => 
   expect(prediction.skills[0]?.keywords).toEqual(['fix', 'add'])
   expect(prediction.skills[1]?.keywords).toEqual(['unit test'])
   // build's usual hand-offs, less the skills already shown
-  expect(prediction.chain).toEqual(['plan', 'fix', 'readiness', 'guardian', 'review', 'completion-gate', 'verification'])
+  expect(prediction.chain).toEqual(['plan', 'fix', 'verification', 'guardian', 'review', 'completion-gate'])
 })
 
 test('plain endings count: tests, crashes, deployed', async () => {
@@ -110,8 +110,8 @@ test('each matched span is underlined once, in its skill color', async () => {
 })
 
 test('predicted vs ran', async () => {
-  const turn = { predicted: ['build', 'test'], chain: ['readiness'], ran: ['build', 'readiness', 'git'], isDone: true }
-  expect(compare(turn)).toEqual({ hit: ['build'], missed: ['test'], chained: ['readiness'], extra: ['git'] })
+  const turn = { predicted: ['build', 'test'], chain: ['verification'], ran: ['build', 'verification', 'git'], isDone: true }
+  expect(compare(turn)).toEqual({ hit: ['build'], missed: ['test'], chained: ['verification'], extra: ['git'] })
 })
 
 test('a run is read from a skill id or a Topia subagent type', async () => {
@@ -156,7 +156,7 @@ test('a submitted prompt carries the hint, and the band follows the turn', { opt
   expect(entered.context?.[0]).toContain('[topia prompt-routing]')
 
   await $.skill.prompt({ skill: 'topia:build', text: '' })
-  await $.skill.prompt({ skill: 'topia:readiness', text: '' })
+  await $.skill.prompt({ skill: 'topia:verification', text: '' })
 
   for (const surface of ['terminal', 'desktop'] as const) {
     const ui = await $.ui.mount({ plugin: 'topia', surface, ...BAND })
@@ -170,7 +170,7 @@ test('a submitted prompt carries the hint, and the band follows the turn', { opt
   const ui = await $.ui.mount({ plugin: 'topia', surface: 'terminal', ...BAND })
   expect((await ui.find({ key: 'route-build' }))?.text).toBe('build ✓')
   expect((await ui.find({ key: 'route-test' }))?.text).toBe('test ✗')
-  expect((await ui.find({ key: 'route-readiness' }))?.text).toBe('readiness')
+  expect((await ui.find({ key: 'route-verification' }))?.text).toBe('verification')
   await ui.unmount()
 })
 
@@ -210,7 +210,7 @@ const ROUTER_BLOCK = [
   '',
   '🧭 [Topia intent-router] Suggested: topia:build (L1, sonnet) — wording: "fix", "add"',
   '   Slash: /topia-build or /topia:build',
-  '   Chain: build → plan → fix → readiness → guardian',
+  '   Chain: build → plan → fix → verification → guardian',
   '   Runs in the background: its report arrives later as a task notification. Wait for it before any follow-up step.',
   '   Also consider: test, debug',
   '   Keyword reading only; skill-router decides the route.',

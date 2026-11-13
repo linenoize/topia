@@ -105,7 +105,7 @@ export function buildPreset(preset, opts = {}) {
           hooks: [
             {
               type: 'command',
-              command: `${dispatchCmd} readiness${flag}`,
+              command: `${dispatchCmd} verification${flag}`,
               async: preset === 'gentle',
             },
           ],
@@ -162,7 +162,7 @@ export function buildPreset(preset, opts = {}) {
 /**
  * Skills wired by presets — used by `Topia hooks status` to verify skill existence.
  */
-export const WIRED_SKILLS = ['readiness', 'guardian', 'dependency-doctor', 'completion-gate', 'quarantine'];
+export const WIRED_SKILLS = ['verification', 'guardian', 'dependency-doctor', 'completion-gate', 'quarantine'];
 
 /**
  * Detect if a hook command entry is Topia-managed.

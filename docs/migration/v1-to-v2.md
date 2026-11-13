@@ -53,7 +53,7 @@ node compiler/bin/topia.js build --platform cursor
 
 ## Hooks
 
-`topia hooks install` wires `readiness` and `guardian`. v1 dispatch names (`preflight`, `sentinel`) still work with a deprecation warning.
+`topia hooks install` wires `verification` (named `readiness` in v2-v3.13) and `guardian`. v1 dispatch names (`preflight`, `sentinel`) still work with a deprecation warning.
 
 ## From rune-kit
 

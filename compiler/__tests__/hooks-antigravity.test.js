@@ -64,7 +64,7 @@ describe('antigravity adapter', () => {
     const result = await installHooks(tmpRoot, { preset: 'gentle', platform: 'antigravity' });
     assert.strictEqual(result.written, true);
     const files = await readdir(path.join(tmpRoot, RULES_DIR));
-    assert.ok(files.includes('Topia-readiness.md'));
+    assert.ok(files.includes('Topia-verification.md'));
     assert.ok(files.includes('Topia-guardian.md'));
     assert.ok(files.includes('Topia-dependency-doctor.md'));
   });
@@ -72,9 +72,9 @@ describe('antigravity adapter', () => {
   test('idempotent re-install', async () => {
     await seedAntigravity(tmpRoot);
     await installHooks(tmpRoot, { preset: 'gentle', platform: 'antigravity' });
-    const first = await readFile(path.join(tmpRoot, RULES_DIR, 'Topia-readiness.md'), 'utf-8');
+    const first = await readFile(path.join(tmpRoot, RULES_DIR, 'Topia-verification.md'), 'utf-8');
     await installHooks(tmpRoot, { preset: 'gentle', platform: 'antigravity' });
-    const second = await readFile(path.join(tmpRoot, RULES_DIR, 'Topia-readiness.md'), 'utf-8');
+    const second = await readFile(path.join(tmpRoot, RULES_DIR, 'Topia-verification.md'), 'utf-8');
     assert.strictEqual(first, second);
   });
 
@@ -109,7 +109,7 @@ describe('antigravity adapter', () => {
     const r = result.results.find((x) => x.platform === 'antigravity');
     assert.strictEqual(r.installed, true);
     assert.strictEqual(r.preset, 'strict');
-    assert.ok(r.wired.includes('readiness'));
+    assert.ok(r.wired.includes('verification'));
   });
 
   test('status reports not installed when .antigravity missing', async () => {

@@ -31,7 +31,7 @@ export async function emit({ preset, projectRoot }) {
   const rulesDir = path.join(projectRoot, RULES_REL_DIR);
 
   const rules = [
-    { name: 'readiness', description: 'Run readiness check before any source edit.' },
+    { name: 'verification', description: 'Run the verification checklist on source edits.' },
     { name: 'guardian', description: 'Security review before shell / infra edits.' },
     { name: 'dependency-doctor', description: 'Dependency audit after manifest edits.' },
   ];
@@ -43,6 +43,15 @@ export async function emit({ preset, projectRoot }) {
           path: path.join(rulesDir, `${Topia_PREFIX}${r.name}.md`),
           content: renderRule(r, mode),
         }));
+
+  // readiness merged into verification: drop the old Topia-managed rule file.
+  const legacyPath = path.join(rulesDir, `${Topia_PREFIX}readiness.md`);
+  if (existsSync(legacyPath)) {
+    const legacy = await readFile(legacyPath, 'utf-8');
+    if (legacy.includes(AUTO_SIGNATURE) || legacy.includes('Topia-managed: true')) {
+      files.push({ path: legacyPath, content: null });
+    }
+  }
 
   const notes =
     preset === 'off'
@@ -78,14 +87,14 @@ export async function status(projectRoot) {
       installed: false,
       preset: null,
       wired: [],
-      missing: ['readiness', 'guardian', 'dependency-doctor'],
+      missing: ['verification', 'guardian', 'dependency-doctor'],
       notes: ['no .antigravity/rules directory'],
     };
   }
   const entries = await readdir(rulesDir, { withFileTypes: true });
   const TopiaFiles = entries.filter((e) => e.isFile() && e.name.startsWith(Topia_PREFIX) && e.name.endsWith('.md'));
   const wired = TopiaFiles.map((f) => f.name.replace(Topia_PREFIX, '').replace('.md', ''));
-  const expected = ['readiness', 'guardian', 'dependency-doctor'];
+  const expected = ['verification', 'guardian', 'dependency-doctor'];
   const missing = expected.filter((s) => !wired.includes(s));
 
   let preset = null;

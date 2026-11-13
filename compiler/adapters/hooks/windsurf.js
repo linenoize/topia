@@ -5,7 +5,7 @@
  * scripts — and `.windsurf/rules/*.md` — cascade rules that inject context.
  *
  * We emit BOTH:
- *   - Workflows: `Topia-<skill>.md` so the user can manually run `/Topia-preflight`
+ *   - Workflows: `Topia-<skill>.md` so the user can manually run `/Topia-verification`
  *   - Rules:     `Topia-<skill>-rule.md` that cascade-inject "run the workflow first"
  *     reminders on matching globs
  *
@@ -38,7 +38,7 @@ export async function emit({ preset, projectRoot }) {
   const mode = preset === 'strict' ? 'BLOCK' : 'WARN';
   const skills = [
     {
-      name: 'readiness',
+      name: 'verification',
       trigger: 'editing source files',
       globs: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.py', '**/*.go', '**/*.rs'],
     },
@@ -68,6 +68,20 @@ export async function emit({ preset, projectRoot }) {
         path: path.join(rulesDir, `${Topia_PREFIX}${skill.name}-rule.md`),
         content: renderRule(skill, mode),
       });
+    }
+  }
+
+  // readiness merged into verification: drop the old Topia-managed files.
+  if (preset !== 'off') {
+    for (const legacyPath of [
+      path.join(workflowsDir, `${Topia_PREFIX}readiness.md`),
+      path.join(rulesDir, `${Topia_PREFIX}readiness-rule.md`),
+    ]) {
+      if (!existsSync(legacyPath)) continue;
+      const legacy = await readFile(legacyPath, 'utf-8');
+      if (legacy.includes(AUTO_SIGNATURE) || legacy.includes('Topia-managed: true')) {
+        files.push({ path: legacyPath, content: null });
+      }
     }
   }
 
@@ -107,14 +121,14 @@ export async function status(projectRoot) {
       installed: false,
       preset: null,
       wired: [],
-      missing: ['readiness', 'guardian', 'dependency-doctor'],
+      missing: ['verification', 'guardian', 'dependency-doctor'],
       notes: ['no .windsurf/workflows directory'],
     };
   }
   const entries = await readdir(dir, { withFileTypes: true });
   const TopiaFiles = entries.filter((e) => e.isFile() && e.name.startsWith(Topia_PREFIX) && e.name.endsWith('.md'));
   const wired = TopiaFiles.map((f) => f.name.replace(Topia_PREFIX, '').replace('.md', ''));
-  const expected = ['readiness', 'guardian', 'dependency-doctor'];
+  const expected = ['verification', 'guardian', 'dependency-doctor'];
   const missing = expected.filter((s) => !wired.includes(s));
 
   let preset = null;

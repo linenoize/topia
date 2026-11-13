@@ -229,7 +229,7 @@ describe('transcript-meter — measured context', () => {
     assert.equal(resolveContextWindow({ peak: 10, explicit: 128_000, env: {} }).source, 'payload');
   });
 
-  test('pressure from % used follows context-engine Step 6b', () => {
+  test('pressure from % used follows the context-lifecycle levels', () => {
     assert.equal(pressureFromPercent(51), 'yellow');
     assert.equal(pressureFromPercent(30), 'green');
     assert.equal(pressureFromPercent(70), 'orange');

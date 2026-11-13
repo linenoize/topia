@@ -11,7 +11,7 @@ metadata:
   group: orchestrator
   tools: "Read, Write, Edit, Bash, Glob, Grep"
   emit: phase.complete, checkpoint.request
-  listen: plan.ready, review.complete, ideas.ready, readiness.passed, verification.complete
+  listen: plan.ready, review.complete, ideas.ready, verification.complete
 ---
 
 # build
@@ -494,14 +494,14 @@ If the coder model needs info from other phases, it's in the Cross-Phase Context
 
 Quality checks run in **two stages** — spec compliance gates code review. Reviewing code quality before verifying it matches the spec wastes effort on code that may need rewriting.
 
-**Signal dispatch ordering**: When `fix` emits `code.changed`, 4 listeners react (readiness, guardian, test, review). Build coordinates dispatch order — do NOT let all 4 fire simultaneously:
-- **Stage 1**: readiness + guardian (parallel — independent checks)
+**Signal dispatch ordering**: When `fix` emits `code.changed`, 4 listeners react (verification, guardian, test, review). Build coordinates dispatch order — do NOT let all 4 fire simultaneously:
+- **Stage 1**: verification + guardian (parallel — independent checks)
 - **Stage 2**: test (after Stage 1 passes — no point testing non-compliant code)
 - **Stage 3**: review (after test passes — review verified code only)
 
 ```
 STAGE 1 (parallel):
-  Launch 5a (readiness) + 5b (guardian) simultaneously.
+  Launch 5a (verification, full mode) + 5b (guardian) simultaneously.
   Wait for BOTH to complete.
   If 5a returns BLOCK → fix spec gaps, re-run 5a. Code review CANNOT start on non-compliant code.
   If 5b returns BLOCK → fix security issue, re-run 5b.
@@ -522,7 +522,7 @@ Cycle 3: last attempt → re-run gate
 Cycle 4: STOP. Escalate to user with all 3 failed attempts + evidence.
 ```
 
-Track per-gate, not globally — readiness cycle 2 does not count against guardian cycle 1. If the SAME finding persists across 3 cycles, the fix approach is wrong — do NOT keep trying the same strategy. Cycle 2+ MUST try a different fix than Cycle 1.
+Track per-gate, not globally — verification cycle 2 does not count against guardian cycle 1. If the SAME finding persists across 3 cycles, the fix approach is wrong — do NOT keep trying the same strategy. Cycle 2+ MUST try a different fix than Cycle 1.
 
 ### Upstream Inconsistency Protocol
 
@@ -534,8 +534,8 @@ During Phase 5 quality checks, if a gate finding traces to an **upstream artifac
 4. Get user approval on the corrected upstream artifact (a Decision Stop in a background run)
 5. Resume Phase 5 from the beginning (re-run all gates — upstream change may invalidate prior PASS results)
 
-### 5a. Preflight (Spec Compliance + Logic) — STAGE 1
-**REQUIRED SUB-SKILL**: Use `topia:readiness`
+### 5a. Pre-commit Gate (Spec Compliance + Logic) — STAGE 1
+**REQUIRED SUB-SKILL**: Use `topia:verification` in full mode (checks + review stage)
 - Spec compliance: compare approved plan vs actual diff
 - Logic review, error handling, completeness
 - **Must pass before 5c (review) can start** — no point reviewing code quality if it doesn't match the spec
@@ -551,7 +551,7 @@ During Phase 5 quality checks, if a gate finding traces to an **upstream artifac
 - **Reviewer isolation** (when invoked via `team`): The review agent MUST be a separate context window from the implementing agent. Author reasoning contaminates review — the reviewer should never have seen the implementation's reasoning chain. Sonnet implements, a fresh Sonnet reviews.
 
 ### 5d. Completion Gate — STAGE 2
-**REQUIRED SUB-SKILL**: Use `topia:completion-gate`
+**REQUIRED**: completion-gate (hidden skill) — read `${CLAUDE_SKILL_DIR}/../completion-gate/SKILL.md` and follow it
 - Validate agent claims match evidence trail (tests ran, files changed, build passed)
 - No truncated code files (`// ...`, `// rest of code`, bare ellipsis) — agent MUST complete all output
 - Any UNCONFIRMED claim → BLOCK
@@ -583,7 +583,7 @@ Projects can define phase-specific rules in `.topia/phase-rules.md` that apply O
 
 ## Checkpoint Protocol (Opt-In)
 
-Invoke `topia:context-lifecycle` (Boundary Save mode) after Phase 2, 4, and 5 when task spans 3+ phases, context-watch is YELLOW+, or user requests checkpoints. It coordinates `session-bridge` Save and `/compact` guidance. Hooks also write `.topia/checkpoint.md` on pre-compact and `git push`. Before spawning subagents, invoke `topia:context-pack` for handoff briefings.
+Invoke `topia:context-lifecycle` (Boundary Save mode) after Phase 2, 4, and 5 when task spans 3+ phases, context-watch is YELLOW+, or user requests checkpoints. It coordinates `session-bridge` Save and `/compact` guidance. Hooks also write `.topia/checkpoint.md` on pre-compact and `git push`. Before spawning subagents, read `${CLAUDE_SKILL_DIR}/../context-pack/SKILL.md` and follow it for handoff briefings.
 
 ## Phase Transition Protocol (MANDATORY)
 
@@ -855,7 +855,7 @@ Mentally track tool call fingerprints. 3 identical calls → WARN. 5 identical c
 | 4 | `debug` | L2 | Unexpected errors (max 3 loops) |
 | 4 | `db` | L2 | Schema changes detected in diff |
 | 4 | `worktree` | L3 | Worktree isolation for parallel implementation |
-| 5a | `readiness` | L2 | Spec compliance + logic review |
+| 5a | `verification` | L2 | Full mode: checks + spec compliance + logic review |
 | 5b | `guardian` | L2 | Security scan |
 | 5c | `review` | L2 | Code quality review |
 | 5 | `scope-guard` | L3 | Verify changed files match approved plan scope (flag out-of-scope files before commit) |
@@ -863,15 +863,13 @@ Mentally track tool call fingerprints. 3 identical calls → WARN. 5 identical c
 | 5 | `audit` | L2 | Project health audit when scope warrants |
 | 5 | `review-intake` | L2 | Structured review intake for complex PRs OR Issue Triage Mode for issue tracker items (state machine: needs-triage / needs-info / ready-for-agent / ready-for-human / wontfix). When external feedback source is an issue (not PR comment), review-intake auto-detects and runs Issue Triage Mode — emits `triage.classified` + `agent.brief.ready` (for AFK pickup) |
 | 5 | `sast` | L3 | Static analysis security testing |
-| 5d | `completion-gate` | L3 | Validate agent claims against evidence trail |
-| 5 | `constraint-check` | L3 | Audit HARD-GATE compliance across workflow |
+| 5d | `completion-gate` | L3 | Validate agent claims against evidence trail; process audit of HARD-GATE compliance |
 | 6 | `verification` | L3 | Lint + types + tests + build |
 | 6 | `hallucination-guard` | L3 | Verify imports and API calls are real |
 | 7 | `journal` | L3 | Record architectural decisions |
 | 8 | `session-bridge` | L3 | Save context for future sessions |
 | any | `context-pack` | L3 | create structured handoff briefings before spawning subagents |
 | any | `skill-forge` | L2 | When new skill creation detected during build |
-| any | `context-engine` | L3 | Context budget management at phase boundaries |
 | any | `context-lifecycle` | L3 | Automated save/compact/resume at phase boundaries and after hook checkpoints |
 | any | `docs` | L2 | Generate or update documentation when scope warrants |
 | any | `git` | L3 | Stage and commit when user approves |
@@ -911,7 +909,7 @@ Mentally track tool call fingerprints. 3 identical calls → WARN. 5 identical c
 | Adversary Gate | adversary verdict before Phase 3 for features | Skip for bugfix/hotfix/refactor |
 | Phase File Gate | Active phase file only (multi-session) | Load only active phase |
 | Test-First Gate | Failing tests before Phase 4 | Write tests or get explicit skip |
-| Quality Gate | readiness + guardian + review before Phase 7 | Fix findings, re-run |
+| Quality Gate | verification + guardian + review before Phase 7 | Fix findings, re-run |
 | Verification Gate | lint + types + tests + build green before commit | Fix, re-run |
 
 ## Structured Output Contract (Prompt-as-API Pattern)
@@ -1008,7 +1006,7 @@ SELF-VALIDATION (run before emitting Build Report):
 - [ ] Plan approval gate was not bypassed — ARGUMENTS carry `approved <plan file>`, `go`, or `just do it` (a forked run cannot see conversation history, so ARGUMENTS are the only proof)
 - [ ] Every ask/confirm step either had its answer in ARGUMENTS or ended the run as a Decision Stop with a resume line
 - [ ] No Phase 4 code was written before Phase 3 tests (TDD order preserved)
-- [ ] All Phase 5 quality gates (readiness, guardian, review) ran — not just claimed
+- [ ] All Phase 5 quality gates (verification, guardian, review) ran — not just claimed
 - [ ] No quality gate exceeded 3 remediation cycles without user escalation
 - [ ] No upstream issue was fixed by code change alone — UPSTREAM findings re-invoked the source skill
 - [ ] Build Report contains actual commit hash, not placeholder
@@ -1017,7 +1015,7 @@ SELF-VALIDATION (run before emitting Build Report):
 ## Done When
 
 All applicable phases complete + Self-Validation passed:
-- User approved plan | All tests PASS (output shown) | readiness+guardian+review PASS | build green
+- User approved plan | All tests PASS (output shown) | verification+guardian+review PASS | build green
 - Build Report emitted with commit hash | Session state saved to .topia/ via session-bridge
 
 ## Cost Profile

@@ -1,6 +1,6 @@
 # Topia Hooks — Multi-Platform Auto-Discipline
 
-Topia skills are libraries by default. `Topia hooks install` turns them into a **runtime**: your IDE auto-invokes `readiness`, `guardian`, `dependency-doctor`, `completion-gate`, and `quarantine` at the right moments — before you commit insecure code, before you forget to run tests, before you ship a half-finished change, before you trust an untrusted external content blob.
+Topia skills are libraries by default. `Topia hooks install` turns them into a **runtime**: your IDE auto-invokes `verification`, `guardian`, `dependency-doctor`, `completion-gate`, and `quarantine` at the right moments — before you commit insecure code, before you forget to run tests, before you ship a half-finished change, before you trust an untrusted external content blob.
 
 Different AI IDEs expose different primitives. This doc explains what "auto-fire" actually means on each platform so you know what you're getting.
 
@@ -145,7 +145,7 @@ Hooks point at a **stable launcher shim** that Topia installs at `<scope>/.claud
 {
   "hooks": {
     "PreToolUse": [
-      { "matcher": "Edit|Write", "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/topia/hook-dispatch.cjs\" hook-dispatch readiness --gentle" }] },
+      { "matcher": "Edit|Write", "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/topia/hook-dispatch.cjs\" hook-dispatch verification --gentle" }] },
       { "matcher": "Bash",        "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/topia/hook-dispatch.cjs\" hook-dispatch guardian --gentle" }] }
     ],
     "PostToolUse": [
@@ -162,7 +162,7 @@ Hooks point at a **stable launcher shim** that Topia installs at `<scope>/.claud
 
 **Discipline rules** (three auto-attach `.mdc` files):
 
-- `Topia-readiness.mdc` — `alwaysApply: true`, fires before any source-file edit.
+- `Topia-verification.mdc` — `alwaysApply: true`, fires before any source-file edit. (Older installs had `Topia-readiness.mdc`; re-running install removes it.)
 - `Topia-guardian.mdc` — glob-scoped to shell / infra / env files.
 - `Topia-dependency-doctor.mdc` — scoped to manifest / lockfile edits.
 
@@ -255,7 +255,7 @@ These ship in plugin [`hooks/hooks.json`](../hooks/hooks.json) and automate chec
 
 | Hook | Event | Behavior |
 |------|-------|----------|
-| `context-watch` | `PreToolUse` (all tools) | Counts tool calls; YELLOW/ORANGE/RED warnings aligned with `context-engine` |
+| `context-watch` | `PreToolUse` (all tools) | Counts tool calls; YELLOW/ORANGE/RED warnings read by `context-lifecycle` |
 | `pre-compact` | `PreCompact` | Headless `checkpoint-from-hook.js` → `.topia/checkpoint.md` + metrics |
 | `post-compact` | `PostCompact` | Re-injects checkpoint + progress after `/compact` |
 | `git-push-checkpoint` | `PreToolUse` (`Bash`, `git push`) | Checkpoint before push; recommends compact or new session |

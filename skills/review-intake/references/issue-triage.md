@@ -99,7 +99,7 @@ Match state to action:
 
 | State | Action |
 |-------|--------|
-| `ready-for-agent` | Post AGENT-BRIEF comment on issue (use `topia:context-pack` agent-brief variant — see `context-pack/references/agent-brief.md`). Apply `ready-for-agent` label. |
+| `ready-for-agent` | Post AGENT-BRIEF comment on issue (use the context-pack agent-brief variant: read `${CLAUDE_SKILL_DIR}/../context-pack/references/agent-brief.md`). Apply `ready-for-agent` label. |
 | `ready-for-human` | Post AGENT-BRIEF + explicit "why this can't be delegated" reason (judgment call, external access, design decision, manual testing). Apply `ready-for-human` label. |
 | `needs-info` | Post triage notes (template below). Apply `needs-info` label. |
 | `wontfix` (bug) | Post a polite explanation comment, then close. **No `.out-of-scope/` write** — bug rejections (already fixed, not reproducible, not a bug) get a comment, not a KB file. |

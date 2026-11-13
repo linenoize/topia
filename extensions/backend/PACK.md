@@ -56,7 +56,7 @@ Backend codebases accumulate structural debt across six areas: inconsistent API 
 ## Connections
 
 ```
-Calls → docs-seeker (L3): lookup API documentation and framework guides
+Calls → research (L3): API docs mode — lookup API documentation and framework guides
 Calls → sentinel (L2): security audit on auth implementations
 Calls → watchdog (L3): monitor queue depth and cache hit ratios
 Calls → @Topia/devops (L4): container and serverless deployment config for backend services

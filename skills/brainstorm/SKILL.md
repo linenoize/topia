@@ -106,8 +106,7 @@ Direct API call ≠ Wrapper/middleware layer ≠ Reverse engineering ≠ Browser
 - `design` (L2): when selected approach has UI/UX implications — hand off visual decisions
 - `research` (L3): gather data for informed brainstorming (existing solutions, benchmarks)
 - `trend-scout` (L3): market context and trends for product-oriented brainstorming
-- `problem-solver` (L3): structured reasoning frameworks (SCAMPER, First Principles, 6 Hats)
-- `sequential-thinking` (L3): evaluating approaches with many variables
+- `problem-solver` (L3): structured reasoning frameworks (SCAMPER, First Principles, 6 Hats); sequential mode for approaches with many variables
 
 ## Called By (inbound)
 
@@ -275,7 +274,7 @@ Additionally in Rescue Mode:
 - At least 1 approach must be "hacky/unconventional" — wrappers, reverse engineering, browser automation, proxy layers, debug mode abuse, etc.
 - Label each approach with its **category tag** to prove diversity: `[Direct API]`, `[Wrapper]`, `[Reverse-Engineer]`, `[Proxy]`, `[Extension]`, `[Alternative Tool]`, etc.
 
-For approaches with many interacting variables, invoke `topia:sequential-thinking` to reason through trade-offs systematically.
+For approaches with many interacting variables, invoke `topia:problem-solver` in sequential mode to reason through trade-offs systematically.
 
 ### Step 3.5 — Diversity Gate (Design-It-Twice Mode only)
 

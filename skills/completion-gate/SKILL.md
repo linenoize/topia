@@ -1,10 +1,10 @@
 ---
 name: completion-gate
-description: "Validates agent claims against evidence trail. Use when verifying an agent has actually done what it claims — auto-fires at workflow end. Catches 'done' without proof, 'tests pass' without output, 'fixed' without verification. Called by build and team."
-user-invocable: false
+description: "Use when work is reported done and the claims need checking against real output, or to audit whether a workflow's hard gates were followed. Catches 'done' without proof, 'tests pass' without output, and skipped steps such as code written before its test. Runs at the end of build and team."
+disable-model-invocation: true
 metadata:
   author: topia
-  version: "1.8.0"
+  version: "1.9.0"
   layer: L3
   model: haiku
   group: validation
@@ -16,6 +16,10 @@ metadata:
 ## Purpose
 
 The lie detector for agent claims. Validates that what an agent says it did actually happened — with evidence. Catches the #1 failure mode in AI coding: claiming completion without proof.
+
+It also runs the **process audit** (Step 6, formerly `constraint-check`): did the workflow follow its hard gates, judged from the order of tool calls rather than from what the agent says? Claims checking asks "is there proof?"; the process audit asks "was the process followed?"
+
+In Claude Code this skill is hidden from Claude's skill list. Other skills read this file and follow it; a person can still type `/topia:completion-gate`.
 
 <HARD-GATE>
 Every claim requires evidence. No evidence = UNCONFIRMED = BLOCK.
@@ -29,7 +33,9 @@ Every claim requires evidence. No evidence = UNCONFIRMED = BLOCK.
 - Called by `build` in Phase 5d (quality gate)
 - Called by `team` before merging stream results
 - Called by any skill that reports "done" to an orchestrator
+- Called by `audit` (L2) for the process audit during the quality dimension
 - Auto-trigger: when agent says "done", "complete", "fixed", "passing"
+- `/topia:completion-gate`, or `/topia:constraint-check` (old name) for the process audit only
 
 ## Calls (outbound)
 
@@ -37,8 +43,10 @@ None — pure validator. Reads evidence, produces verdict.
 
 ## Called By (inbound)
 
-- `build` (L1): Phase 5d — validate completion claims before commit
-- `team` (L1): validate build reports from parallel streams
+- `build` (L1): Phase 5d — validate completion claims before commit; process audit at end of workflow
+- `team` (L1): validate build reports from parallel streams; verify stream agents followed their hard gates
+- `audit` (L2): process audit as part of the quality dimension
+- User: manual claim check or session audit
 
 ## Execution
 
@@ -255,6 +263,41 @@ Plan Diff: PLAN-ALIGNED | INCOMPLETE (2 unchecked tasks) | MISSING (1 file never
 
 **Skip if**: No active phase plan found (single-task, no master plan). **MANDATORY** for multi-phase master plans.
 
+### Step 6 — Process Audit (formerly constraint-check)
+
+Run at the end of a build or team workflow, when `audit` asks, or when a person types `/topia:constraint-check`. Skip for Nano/Fast rigor.
+
+1. **List the skills that ran.** Use the actual Skill calls and files read in the session, plus the build phases reached. Do not rely on the agent's summary.
+2. **Load their rules.** For each skill, read its SKILL.md and pull out `<HARD-GATE>` blocks (violation = BLOCK) and the numbered `## Constraints` list (violation = WARN).
+3. **Check each rule against the record**, not against the agent's account:
+
+| Rule type | How to check | Evidence |
+|---|---|---|
+| "Write tests before code" | Test file Write/Edit comes before the implementation Write/Edit | Tool call order |
+| "Get user approval" | A user message approving the plan comes before implementation | Conversation |
+| "Run verification" | A Bash call with lint/test/build output | Tool results |
+| "Show actual output" | Stdout appears in the response | Agent messages |
+| "Stay within scope" | Changed files vs the plan's file list | git diff + plan |
+| "Debug does not change code" | No Write/Edit during the debug phase | Tool calls |
+
+Common gates to check: test (tests before code), build (recon before plan, plan before code), plan (every code phase has a test entry), verification (BLOCK halts the commit), guardian (BLOCK halts the pipeline), debug (no code changes; escalate after 3 failed fixes), brainstorm (no implementation before approval).
+
+4. **Classify**: HARD-GATE broken = BLOCK; constraint broken = WARN; skipped recommendation = INFO.
+5. **Add to the report** under `### Process Audit`:
+
+```
+### Process Audit
+- **Status**: COMPLIANT | VIOLATIONS_FOUND | CRITICAL_VIOLATION
+| Skill | HARD-GATEs | Constraints | Status |
+|-------|-----------|-------------|--------|
+| test | 0/1 ✗ | 8/9 (1 WARN) | BLOCK |
+| build | 3/3 ✓ | 6/7 (1 WARN) | WARN |
+- BLOCK: [test] implementation written at tool call #12, test file created at #15 → delete implementation, restart test-first
+- WARN: [verification] "all tests pass" claimed without stdout → re-run and capture output
+```
+
+Any CRITICAL_VIOLATION makes the overall verdict CONTRADICTED.
+
 ## Verdict Rules
 
 ```
@@ -275,6 +318,8 @@ Completion Gate Report with status (CONFIRMED/UNCONFIRMED/CONTRADICTED), claim v
 3. MUST flag contradictions as CONTRADICTED — this is more serious than missing evidence
 4. MUST NOT accept "I verified it" as evidence — show the command output
 5. MUST be fast (haiku) — this runs on every build completion
+6. (process audit) MUST check every HARD-GATE of every skill that ran, using tool call order, not the agent's report
+7. (process audit) MUST give specific evidence (tool call number, file) for each violation
 
 ## Sharp Edges
 
@@ -292,6 +337,9 @@ Completion Gate Report with status (CONFIRMED/UNCONFIRMED/CONTRADICTED), claim v
 | Self-Validation skipped — skill has checks but gate ignores them | HIGH | Step 1c: extract Self-Validation from skill's SKILL.md, treat each as implicit claim. Missing = UNCONFIRMED |
 | Plan says done but phase file has unchecked tasks | HIGH | Step 5.5: diff changed files vs phase plan's Files Touched + Tasks sections |
 | Agent stuck in observation loop but claims "implemented" | HIGH | Step 1d: Execution Loop Audit detects low effect ratio and observation chains — flags in report even if claims pass |
+| Process audit trusts the agent's account of what it did | CRITICAL | Step 6: check tool call order and results, never the narrative |
+| Process audit checks only build's gates | HIGH | Step 6: audit every skill that ran, not just the orchestrator |
+| Optional step treated as a BLOCK | LOW | Only HARD-GATE = BLOCK; constraints = WARN; recommendations = INFO |
 
 ## Done When
 
@@ -300,6 +348,7 @@ Completion Gate Report with status (CONFIRMED/UNCONFIRMED/CONTRADICTED), claim v
 - Verdict table emitted with claim/evidence/verdict for each item
 - All 3 verification axes (Completeness/Correctness/Coherence) have at least one claim checked
 - Plan diff check passed (if multi-phase): all tasks checked, all planned files touched
+- Process audit section emitted (when Step 6 applies), each violation with evidence
 - Overall verdict: CONFIRMED / UNCONFIRMED / CONTRADICTED
 - If not CONFIRMED: specific gaps listed with remediation steps
 

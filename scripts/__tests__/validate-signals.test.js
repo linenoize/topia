@@ -249,7 +249,7 @@ metadata:
     test('output.density.set is registered as intentional broadcast', () => {
       assert.ok(
         INTENTIONAL_BROADCAST_SIGNALS.has('output.density.set'),
-        'context-engine emits output.density.set; orchestrators consume dynamically — must be whitelisted',
+        'context-lifecycle emits output.density.set; orchestrators consume dynamically — must be whitelisted',
       );
     });
 

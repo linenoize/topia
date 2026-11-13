@@ -15,7 +15,7 @@ Canonical terminology for Topia v2. Use these terms in docs, CLI output, and ski
 | Term | Definition |
 |------|------------|
 | **Maestro** | The routing layer (`skill-router` + L1 orchestrators) that keeps skills playing in harmony — like a conductor, not a pipeline. |
-| **Discipline rails** | Runtime hooks (`readiness`, `guardian`, `completion-gate`, etc.) that enforce gates before tool use. |
+| **Discipline rails** | Runtime hooks (`verification`, `guardian`, `completion-gate`, etc.) that enforce gates before tool use. |
 | **Adaptive graph** | When one path fails, the Nexus routes around it via alternate skills — resilience through redundancy. |
 
 ## Memory & audit

@@ -19,7 +19,7 @@ AI coding agents are smart but undisciplined. They skip steps, forget context ac
 
 - **Plan before code** — `idea` elicits requirements, `plan` writes phase files, `adversary` red-teams the plan, all before a line of code.
 - **Tests before commits** — `test` writes failing tests first (red), `fix` implements until green. TDD enforced, not suggested.
-- **Hooks block bad work** — `guardian` (secrets, OWASP), `readiness` (logic, regressions), `completion-gate` (validates agent claims have evidence). Auto-fire on tool use.
+- **Hooks block bad work** — `guardian` (secrets, OWASP), `verification` (lint, tests, logic, regressions), `completion-gate` (validates agent claims have evidence). Auto-fire on tool use.
 - **Memory survives sessions, with no setup** — `.topia/` files hold decisions and progress, a hook records each commit, session start shows the newest entries, and `recall` finds the rest. Optional [agora-code MCP](mcp-servers/agora-code/README.md) adds semantic search.
 
 One source of truth (`skills/`) compiles to six IDE rule formats — switch IDEs without rewriting your workflow rules.
@@ -62,8 +62,8 @@ Restart Claude Code if `/topia:build` does not appear.
 
 | What finalize adds | Why it matters |
 |--------------------|----------------|
-| **Dispatch hooks** (`readiness`, `guardian`, `completion-gate`, `dependency-doctor`) | Auto-fire on edits and shell commands **in every repo**, even when the plugin is not loaded |
-| **Team org policy** (interview → `.topia/org/org.md`) | `guardian` and `readiness` enforce *your* review, security, and deploy rules — not the template |
+| **Dispatch hooks** (`verification`, `guardian`, `completion-gate`, `dependency-doctor`) | Auto-fire on edits and shell commands **in every repo**, even when the plugin is not loaded |
+| **Team org policy** (interview → `.topia/org/org.md`) | `guardian` and `verification` enforce *your* review, security, and deploy rules — not the template |
 | **agora-code MCP** (optional) | Cross-session semantic memory |
 | **Project `.gitignore`** (optional) | Keeps `.topia/` session state out of git (except `org/`) |
 
@@ -85,7 +85,7 @@ Run in **that project's** Claude Code session:
 
 ### Team policy (`org.md`)
 
-[`.topia/org/org.md`](.topia/org/org.md) is where your team defines roles, reviewers, security SLAs, deploy windows, and governance level. Topia compiles it into `guardian` and `readiness` hooks — so "we require two reviewers on security files" becomes an actual gate, not a wiki page.
+[`.topia/org/org.md`](.topia/org/org.md) is where your team defines roles, reviewers, security SLAs, deploy windows, and governance level. `guardian` and `verification` read it — so "we require two reviewers on security files" becomes an actual gate, not a wiki page.
 
 - **Set up in chat:** `/topia org-config` (structured interview) or during `/topia finalize`
 - **Edit later:** change `org.md`, then refresh hooks (`/topia finalize` or `topia setup --global`)
@@ -194,7 +194,7 @@ The 8-step build flow (route → recall → plan → test → implement → gate
 | Skill | Purpose |
 |---|---|
 | `guardian` | Pre-commit security gate — OWASP, secrets, deps. |
-| `readiness` | Pre-commit quality gate — logic, regressions, completeness. |
+| `readiness` | Old name for `verification`'s review stage (hidden pointer). |
 | `guardian-env` | OS + runtime + tools + ports + env-var check before work starts. |
 | `sast` | Static-analysis wrapper (ESLint, Semgrep, Bandit, Clippy). |
 | `adversary` | Pre-implementation red-team analysis on high-risk plans. |
@@ -214,13 +214,13 @@ The 8-step build flow (route → recall → plan → test → implement → gate
 |---|---|
 | `research` | Web search for technologies + best practices. |
 | `docs` | Auto-generate + maintain README, API, architecture docs. Show-and-tell walkthroughs on request. |
-| `docs-seeker` | Locate API references, changelogs, migration guides. |
+| `docs-seeker` | Old name for `research`'s API docs mode (hidden pointer). |
 | `documentation` | Leadership-ready packages, user stories, Jira CSV. |
 | `onboard` | Generate CLAUDE.md + .topia/ context for a new project. |
 | `brainstorm` | Generate 2-3 approaches with trade-offs. |
 | `design` | Design-system generator (palette, typography, anti-patterns). |
 | `problem-solver` | 19 analytical frameworks + 12 bias detectors. |
-| `sequential-thinking` | Multi-variable analysis with dependency ordering. |
+| `sequential-thinking` | Old name for `problem-solver`'s sequential mode (hidden pointer). |
 | `journal` | ADRs, decisions, progress across sessions. |
 | `neural-memory` | Optional; only if the Neural Memory MCP is installed. |
 | `trend-scout` | Market intelligence (Product Hunt, GitHub Trending, HN, Reddit). |
@@ -254,11 +254,11 @@ The 8-step build flow (route → recall → plan → test → implement → gate
 |---|---|
 | `skill-router` | L0 — routes every action to the right skill. |
 | `skill-forge` | Build + verify new Topia skills. |
-| `context-engine` | Context-window management + compaction. |
+| `context-engine` | Old name for `context-lifecycle` (hidden pointer). |
 | `session-bridge` | Cross-session state persistence. |
 | `worktree` | Git worktree lifecycle for parallel streams. |
 | `integrity-check` | Detect adversarial content in `.topia/` files. |
-| `constraint-check` | Validate that HARD-GATEs were actually followed. |
+| `constraint-check` | Old name for `completion-gate`'s process audit (hidden pointer). |
 
 Full catalog with invocation markers (👤 user / 🔄 either / 🤖 agent): [`docs/SKILLS.md`](docs/SKILLS.md).
 
@@ -294,7 +294,7 @@ node compiler/bin/topia.js hooks uninstall                   # remove cleanly
 
 | Event | Skill | Fires |
 |---|---|---|
-| `PreToolUse(Edit\|Write)` | `readiness` | Before source-file edits |
+| `PreToolUse(Edit\|Write)` | `verification` | Before source-file edits |
 | `PreToolUse(Bash)` | `guardian` | Before shell commands |
 | `PostToolUse(Edit\|Write)` | `dependency-doctor` | After manifest edits |
 | `Stop` | `completion-gate` | End of session |
@@ -343,7 +343,7 @@ Only the `org/` tree is intended for commit; all other `.topia/*` (including `ac
 
 All `@Topia/*` packs ship with the plugin. **Onboard**, **`topia install`**, and **`topia init`** (non-Claude) run stack detection and write `.topia/active-packs.json` so each workspace declares which packs to lean on — not a separate install step. Re-run anytime with `topia packs detect`.
 
-The `org/` tree holds stable team and policy configuration. `guardian` and `readiness` consume it at compile time and inject an `<ORG-POLICY>` block into their runtime hooks. See [`.topia/org/org.md`](.topia/org/org.md) for the template.
+The `org/` tree holds stable team and policy configuration. `guardian` and `verification` read it (and on compiled platforms an `<ORG-POLICY>` block is injected into them). See [`.topia/org/org.md`](.topia/org/org.md) for the template.
 
 ---
 

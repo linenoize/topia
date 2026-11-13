@@ -43,7 +43,7 @@ Tools focused on keeping the codebase secure, compliant, and correctly deployed.
 | `watchdog` | **Monitor**: Verifies application health immediately after deployment. |
 | `dependency-doctor` | **Health Check**: Scans for outdated packages and CVEs with a prioritized update plan. |
 | `audit` | **Holistic Check**: Comprehensive audit across 8 dimensions (security, performance, etc.). |
-| `readiness` | **Pre-Commit Gate**: Catches "almost right" code — logic correctness, error handling, regressions, completeness. |
+| `readiness` | **Old name**: now the review stage of `verification` (hidden pointer). |
 | `perf` | **Perf Regression Gate**: Detects N+1 queries, sync-in-async, missing indexes, memory leaks, bundle bloat. |
 | `incident` | **Responder**: Structured incident response — triage, contain, verify, root-cause, postmortem. |
 
@@ -56,10 +56,10 @@ Tools for gathering information, making decisions, and maintaining persistent pr
 | :--- | :--- |
 | `research` | **Explorer**: Performs web searches and knowledge lookups for technologies and best practices. |
 | `docs` | **Documenter**: Maintains READMEs, API docs, architecture, and changelogs. |
-| `docs-seeker` | **Finder**: Locates specific documentation for APIs, libraries, and error messages. |
+| `docs-seeker` | **Old name**: now the API docs mode of `research` (hidden pointer). |
 | `onboard` | **Bootstrapper**: Generates `CLAUDE.md` and initial project context for AI sessions. |
 | `problem-solver` | **Thinker**: Applies 19 analytical frameworks (e.g., McKinsey-grade) to complex problems. |
-| `sequential-thinking` | **Logician**: Breaks interconnected decisions into ordered logical steps. |
+| `sequential-thinking` | **Old name**: now the sequential mode of `problem-solver` (hidden pointer). |
 | `journal` | **Persistence**: Tracks ADRs (Architecture Decision Records) and decisions across sessions. |
 | `neural-memory` | **Memory** (optional): only if the Neural Memory MCP is installed. Default memory is `recall` + `journal`. |
 | `trend-scout` | **Market Watch**: Scans GitHub Trending, Product Hunt, etc., for emerging patterns. |
@@ -131,8 +131,8 @@ Internal primitives that power the Topia infrastructure.
 | :--- | :--- |
 | `skill-router` | **Dispatcher**: The brain that routes every prompt to the correct specialized skill. |
 | `skill-forge` | **Builder**: Tool for creating and verifying new Topia skills. |
-| `context-engine` | **Manager**: Handles context compaction and window optimization. |
+| `context-engine` | **Old name**: now part of `context-lifecycle` (hidden pointer). |
 | `session-bridge` | **Bridge**: Universal persistence layer between session boundaries. |
 | `worktree` | **Isolation**: Manages git worktrees for parallel development streams. |
 | `integrity-check` | **Validator**: Verifies .topia/ files against poisoning or injection. |
-| `constraint-check` | **HARD-GATE Auditor**: Verifies a skill's mandatory constraints were actually followed (not just claimed). |
+| `constraint-check` | **Old name**: now the process audit in `completion-gate` (hidden pointer). |

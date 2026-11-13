@@ -161,19 +161,18 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "plan",
       "test",
       "fix",
-      "readiness",
+      "verification",
       "guardian",
       "review",
-      "completion-gate",
-      "verification"
+      "completion-gate"
     ]
   },
   {
     "name": "completion-gate",
     "layer": "L3",
     "model": "haiku",
-    "description": "Validates agent claims against evidence trail. Use when verifying an agent has actually done what it claims — auto-fires at workflow end. Catches 'done' without proof, 'tests pass' without output, 'fixed' without verification. Called by build and team.",
-    "userInvocable": false,
+    "description": "Use when work is reported done and the claims need checking against real output, or to audit whether a workflow's hard gates were followed. Catches 'done' without proof, 'tests pass' without output, and skipped steps such as code written before its test. Runs at the end of build and team.",
+    "userInvocable": true,
     "forked": false,
     "keywords": [],
     "prompts": [],
@@ -183,8 +182,8 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "constraint-check",
     "layer": "L3",
     "model": "haiku",
-    "description": "Meta-validator for HARD-GATEs. Use when auditing whether a skill's mandatory constraints were actually followed during a workflow (not just claimed). Called by build, team, and audit for discipline compliance.",
-    "userInvocable": false,
+    "description": "Old name for completion-gate's process audit. Use when you type /topia:constraint-check out of habit; it checks whether a workflow's hard gates were really followed.",
+    "userInvocable": true,
     "forked": false,
     "keywords": [],
     "prompts": [],
@@ -194,8 +193,8 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "context-engine",
     "layer": "L3",
     "model": "haiku",
-    "description": "Context window management. Auto-triggered when context is filling up. Triggers smart compaction and preserves critical information across compaction boundaries. Called by L1 orchestrators at context thresholds.",
-    "userInvocable": false,
+    "description": "Old name for context-lifecycle. Use when you type /topia:context-engine out of habit; it saves state and plans the next compact, cost preview or caveman mode through context-lifecycle.",
+    "userInvocable": true,
     "forked": false,
     "keywords": [],
     "prompts": [],
@@ -205,7 +204,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "context-lifecycle",
     "layer": "L3",
     "model": "haiku",
-    "description": "Automated context boundary orchestration. Runs at phase ends, pre/post-compact, and after git push. Chunks work across sessions via session-bridge and context-pack without losing continuity.",
+    "description": "Use when a long session needs a save point: at a phase end, before or after /compact, after git push, before handing work to a subagent, or before sending a large bundle to another model. Saves state, says when to compact, resumes from the checkpoint, and can switch to terse output.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
@@ -220,7 +219,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "layer": "L3",
     "model": "haiku",
     "description": "Creates structured handoff briefings between agents. Use when delegating complex work to subagents that would otherwise lose context. Packages task context, constraints, and progress into a compact packet that subagents can consume without re-reading the full conversation. Prevents the 'lost context' problem in multi-agent delegation.",
-    "userInvocable": false,
+    "userInvocable": true,
     "forked": false,
     "keywords": [],
     "prompts": [],
@@ -386,15 +385,10 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "docs-seeker",
     "layer": "L3",
     "model": "haiku",
-    "description": "Find documentation for APIs, libraries, and error messages. Looks up official docs, changelog entries, and migration guides.",
+    "description": "Old name for research's API docs mode. Use when you type /topia:docs-seeker out of habit; it looks up library or API documentation through research.",
     "userInvocable": true,
     "forked": false,
-    "keywords": [
-      "api reference",
-      "library docs",
-      "method signature",
-      "deprecated"
-    ],
+    "keywords": [],
     "prompts": [],
     "chain": []
   },
@@ -448,7 +442,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "prompts": [],
     "chain": [
       "test",
-      "readiness"
+      "verification"
     ]
   },
   {
@@ -597,7 +591,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "layer": "L3",
     "model": "haiku",
     "description": "Verify integrity of persisted state, skill outputs, and context bus data. Use when validating .topia/ files or sub-agent outputs against prompt injection, memory poisoning, identity spoofing, or adversarial payloads. Called by sentinel, team, session-bridge.",
-    "userInvocable": false,
+    "userInvocable": true,
     "forked": false,
     "keywords": [],
     "prompts": [],
@@ -782,14 +776,18 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "problem-solver",
     "layer": "L3",
     "model": "sonnet",
-    "description": "Structured reasoning frameworks for complex problems. 19 analytical frameworks, 12 cognitive bias detectors, 10 decomposition methods, 10 mental models, Cynefin domain classification, ethical dimension check, and 6 communication patterns. McKinsey-grade problem solving for AI coding assistants.",
+    "description": "Use when a problem resists a straight answer: a bug with no clear root cause after a few tries, a choice between options with real trade-offs, a decision whose factors depend on each other, or a messy problem that needs breaking down. Picks a framework (5 Whys, decision matrix, pre-mortem, issue tree, dependency-ordered analysis), checks for bias, and ranks solutions.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
       "5 whys",
       "root cause analysis",
       "first principles",
-      "fishbone"
+      "fishbone",
+      "trade-off",
+      "tradeoff",
+      "interdependent",
+      "second-order"
     ],
     "prompts": [],
     "chain": []
@@ -799,7 +797,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "layer": "L3",
     "model": "opus",
     "description": "Advisory wrap for tool results from untrusted external surfaces. Appends `[QUARANTINE-NOTICE]` to next-turn context after `mcp__*`, `WebFetch`, and `Read` of `**/uploads/**` so prior tool output is treated as data — not directives. Use when the session ingests MCP user-content (Zendesk, Intercom, support tickets), fetched HTML, or operator-uploaded files. Hook fires AFTER ingestion — advisory, not structural.",
-    "userInvocable": false,
+    "userInvocable": true,
     "forked": false,
     "keywords": [],
     "prompts": [],
@@ -809,15 +807,10 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "readiness",
     "layer": "L2",
     "model": "sonnet",
-    "description": "Pre-commit quality gate that catches 'almost right' code. Use when about to commit — auto-fires before commit to validate logic correctness, error handling, regressions, and completeness. Goes beyond linting.",
+    "description": "Old name for verification's review stage. Use when you type /topia:readiness out of habit; it runs the pre-commit gate: checks, then the logic, regression and completeness review.",
     "userInvocable": true,
     "forked": false,
-    "keywords": [
-      "pre-commit",
-      "quality gate",
-      "check before",
-      "ready to commit"
-    ],
+    "keywords": [],
     "prompts": [],
     "chain": []
   },
@@ -897,14 +890,18 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "research",
     "layer": "L3",
     "model": "haiku",
-    "description": "Web search and external knowledge lookup. Gathers data on technologies, libraries, best practices, and competitor solutions.",
+    "description": "Use when an answer depends on facts outside the repo: how a library or API works in a given version, what an error message means, whether a method is deprecated, or how tools and approaches compare. Checks Context7 docs first for API questions, then official sources, and cites every finding.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
       "research",
       "compare libraries",
       "best practice",
-      "look up"
+      "look up",
+      "api reference",
+      "library docs",
+      "method signature",
+      "deprecated"
     ],
     "prompts": [],
     "chain": []
@@ -1025,7 +1022,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "layer": "L3",
     "model": "haiku",
     "description": "Detects scope creep by quantifying drift percentage. Auto-triggered by L1 orchestrators when files exceed the original plan. Compares git changes against plan, classifies drift into 4 tiers: ON_TRACK, MINOR_DRIFT, SIGNIFICANT_DRIFT, OUT_OF_CONTROL.",
-    "userInvocable": false,
+    "userInvocable": true,
     "forked": false,
     "keywords": [],
     "prompts": [],
@@ -1035,15 +1032,10 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "sequential-thinking",
     "layer": "L3",
     "model": "sonnet",
-    "description": "Step-by-step complex reasoning for multi-variable problems. Breaks interconnected decisions into ordered logical steps with bias detection, reversibility classification, and second-order effect tracking.",
+    "description": "Old name for problem-solver's sequential mode. Use when you type /topia:sequential-thinking out of habit; it runs problem-solver on a decision whose factors depend on each other.",
     "userInvocable": true,
     "forked": false,
-    "keywords": [
-      "trade-off",
-      "tradeoff",
-      "interdependent",
-      "second-order"
-    ],
+    "keywords": [],
     "prompts": [],
     "chain": []
   },
@@ -1081,8 +1073,8 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "skill-router",
     "layer": "L0",
     "model": "haiku",
-    "description": "Meta-enforcement layer that routes EVERY agent action through the correct skill. MUST check this routing table before ANY response involving code, files, or technical decisions. Default: route to topia:build for code tasks. Prevents rationalization, enforces check-before-act discipline.",
-    "userInvocable": false,
+    "description": "Use when you need Topia's routing table: which skill handles a request, how compound requests are ordered, how forked skills run in the background (Step 4.5), and the default response format. Reference for alias commands and other skills; a person can type /topia:skill-router to see it.",
+    "userInvocable": true,
     "forked": false,
     "keywords": [],
     "prompts": [],
@@ -1180,7 +1172,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     ],
     "prompts": [],
     "chain": [
-      "readiness"
+      "verification"
     ]
   },
   {
@@ -1216,9 +1208,9 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
   },
   {
     "name": "verification",
-    "layer": "L3",
-    "model": "haiku",
-    "description": "Universal verification runner. Runs lint, type-check, tests, and build. Use after any code change to verify nothing is broken.",
+    "layer": "L2",
+    "model": "sonnet",
+    "description": "Use when code has changed and you need to know it works before calling it done or committing: runs lint, type-check, tests and build, then (in full mode, before a commit) reviews the diff for logic errors, missing error handling, regressions, incomplete work and org policy. One pre-commit gate with a PASS, WARN or BLOCK verdict.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
@@ -1226,7 +1218,11 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "run the tests",
       "lint",
       "type check",
-      "typecheck"
+      "typecheck",
+      "pre-commit",
+      "quality gate",
+      "check before",
+      "ready to commit"
     ],
     "prompts": [],
     "chain": []
@@ -1268,8 +1264,8 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "worktree",
     "layer": "L3",
     "model": "haiku",
-    "description": "Git worktree lifecycle management. Use when team needs parallel isolated workspaces for multi-stream development, or when an experiment must not touch the main working tree. Creates isolated workspaces, manages branches, handles cleanup. Called by team and build.",
-    "userInvocable": false,
+    "description": "Use when work must happen in an isolated copy of the repo: parallel streams that would otherwise edit the same checkout, or an experiment that must not touch the main working tree. Prefers Claude Code's native worktree tools and Agent isolation, with plain git commands as the fallback. Covers create, list and cleanup.",
+    "userInvocable": true,
     "forked": false,
     "keywords": [],
     "prompts": [],

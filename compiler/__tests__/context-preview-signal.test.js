@@ -1,6 +1,6 @@
 /**
  * Context preview signal (v2.15+) — verify the schema and threshold logic
- * for context-engine's preview-gate mode. Caller emits context.preview before
+ * for context-lifecycle's Cost Preview mode. Caller emits context.preview before
  * bundling expensive context, gating dispatch on token budget.
  *
  * Validates:

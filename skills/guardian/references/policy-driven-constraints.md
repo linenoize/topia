@@ -407,8 +407,8 @@ signals:
         # re-run constraint load in case policies changed between phases
     - skill_router.skill.requested
         # intercept before routing — check disabled-skills list
-    - readiness.check.requested
-        # piggyback on preflight to surface active policy summary
+    - verification.check.requested
+        # piggyback on verification to surface active policy summary
     - scaffold.file.creating
         # validate new file paths against file_pattern constraints before write
 

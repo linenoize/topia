@@ -44,7 +44,7 @@ Common issues and how to fix them.
 ## 2. Hooks Not Auto-Firing
 
 **Symptoms:**
-- You edit a file and `readiness` doesn't run.
+- You edit a file and `verification` doesn't run.
 - You run a shell command and `guardian` doesn't run.
 
 **Fixes:**

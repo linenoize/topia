@@ -51,9 +51,17 @@ describe('dispatchHook', () => {
     const io = makeIO({ stdinData: JSON.stringify({ tool_name: 'Edit' }) });
     const code = await dispatchHook(['preflight', '--gentle'], io);
     assert.strictEqual(code, 0);
-    assert.match(io.getOut(), /Topia-hook: readiness/);
+    assert.match(io.getOut(), /Topia-hook: verification/);
     assert.match(io.getOut(), /advisory/);
     assert.match(io.getOut(), /Edit/);
+  });
+
+  test('old readiness name resolves to verification without a warning', async () => {
+    const io = makeIO({ stdinData: JSON.stringify({ tool_name: 'Edit' }) });
+    const code = await dispatchHook(['readiness', '--gentle'], io);
+    assert.strictEqual(code, 0);
+    assert.match(io.getOut(), /Topia-hook: verification/);
+    assert.strictEqual(io.getErr(), '');
   });
 
   test('strict mode prints enforcing label', async () => {

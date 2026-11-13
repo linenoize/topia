@@ -19,11 +19,20 @@ import { WIRED_SKILLS } from './hooks/presets.js';
 
 /** v1 skill IDs accepted with deprecation warning (one release cycle). */
 const V1_SKILL_ALIASES = {
-  preflight: 'readiness',
+  preflight: 'verification',
   sentinel: 'guardian',
 };
 
-const ALLOWLIST = new Set([...WIRED_SKILLS, ...Object.keys(V1_SKILL_ALIASES)]);
+/**
+ * Names that merged into another skill. Accepted quietly: settings.json files
+ * written by older Topia versions still call `hook-dispatch readiness`, and
+ * re-running setup rewrites them, so a warning on every edit would only be noise.
+ */
+const MERGED_SKILL_ALIASES = {
+  readiness: 'verification',
+};
+
+const ALLOWLIST = new Set([...WIRED_SKILLS, ...Object.keys(V1_SKILL_ALIASES), ...Object.keys(MERGED_SKILL_ALIASES)]);
 
 function isCursorRuntime(event = {}) {
   if (process.env.CURSOR_HOOK === '1' || process.env.CURSOR_AGENT === '1') return true;
@@ -83,7 +92,7 @@ export async function dispatchHook(argv, io = {}) {
     return gentle ? 0 : 1;
   }
 
-  const resolvedSkill = V1_SKILL_ALIASES[skill] || skill;
+  const resolvedSkill = V1_SKILL_ALIASES[skill] || MERGED_SKILL_ALIASES[skill] || skill;
   if (V1_SKILL_ALIASES[skill]) {
     stderr.write(`Topia hook-dispatch: "${skill}" is deprecated — use "${resolvedSkill}" (v2.0)\n`);
   }

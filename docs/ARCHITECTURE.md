@@ -51,7 +51,7 @@ They are activated (read) in three ways:
 ### Exceptions
 
 - `team` (L1) can call other L1 orchestrators — meta-orchestration pattern.
-- *L3→L3 coordination: `context-engine` → `session-bridge`, `hallucination-guard` → `research`, `session-bridge` → `integrity-check` (documented in SKILL.md).
+- *L3→L3 coordination: `context-lifecycle` → `session-bridge`, `hallucination-guard` → `research`, `session-bridge` → `integrity-check` (documented in SKILL.md).
 
 ## Nexus Protocol
 
@@ -83,7 +83,7 @@ Mode-based execution variants that activate inside existing skills based on sign
 | Mode | Skill | Activation | Behavior |
 |------|-------|------------|----------|
 | **Artifact-First Output** | `skill-router` (L0) | Always-on posture; coding-class contracts for `CODE_CHANGE` / `DEBUG_REQUEST` / `REVIEW_REQUEST` / inspect-style explore | Repository-operator persona (not status narrator). Default finals: RESULT / FILES / EVIDENCE / EXCEPTIONS. Skill-defined formats (e.g. Cook Report) take precedence. Full policy: `skills/skill-router/references/coding-agent-output-policy.md`. |
-| **Caveman Output** | `context-engine` (broadcast) | Auto on context ORANGE / RED, manual via `/caveman` / "be brief" | Strips filler / articles / hedging while preserving full technical accuracy. ~75% output reduction. Auto-clarity exception for security warnings, irreversible-action confirmations, multi-step sequences. Density mode — orthogonal to Artifact-First Output; both may apply. |
+| **Caveman Output** | `context-lifecycle` (broadcast) | Auto on context ORANGE / RED, manual via `/caveman` / "be brief" | Strips filler / articles / hedging while preserving full technical accuracy. ~75% output reduction. Auto-clarity exception for security warnings, irreversible-action confirmations, multi-step sequences. Density mode — orthogonal to Artifact-First Output; both may apply. |
 | **Synthesis** | `idea` (Step 1.4) | Pasted spec > 200 words, conversation > 1000 words, continuation session, filled issue template, explicit "synthesize" | Extract Requirements Document from existing context with mandatory source citations, then confirm instead of re-interview. Skip 5-question elicitation if all 5 dimensions filled. |
 | **Vertical Slice** | `plan` (Step 3) | Default for any feature with 3+ phases | Tracer-bullet task decomposition: each task = end-to-end path through schema + API + UI + test, demoable on its own. AFK / HITL classification. Replaces horizontal layer planning. |
 | **Feedback Loop (Step 0)** | `debug` | Repro is slow / non-deterministic / multi-component / intermittent | Construct fast deterministic pass/fail signal from 10-rank ladder BEFORE forming hypotheses. Skip if existing repro is one command, deterministic, < 5s. > 10 min construction → 3-Fix Escalation (architecture, not bug). |
@@ -129,9 +129,9 @@ Rules:
 | If this fails... | Try this instead... |
 |-------------------|---------------------|
 | debug can't find cause | problem-solver (different reasoning) |
-| docs-seeker can't find | research (broader web search) |
+| research API docs mode can't find | research general mode (broader web search) |
 | browser-pilot can't capture | verification (CLI checks) |
-| scout can't find files | research + docs-seeker |
+| scout can't find files | research |
 | test can't run (env broken) | deploy fix env → test again |
 | review finds too many issues | plan re-scope → fix priorities |
 
@@ -163,10 +163,10 @@ Rules:
 
 | Group | Skills |
 |-------|--------|
-| KNOWLEDGE | research, docs-seeker, trend-scout |
-| REASONING | problem-solver, sequential-thinking, decision-form |
-| VALIDATION | verification, hallucination-guard, integrity-check, completion-gate, constraint-check, sast |
-| STATE | context-engine, context-pack, journal, session-bridge, neural-memory |
+| KNOWLEDGE | research, trend-scout |
+| REASONING | problem-solver, decision-form |
+| VALIDATION | verification, hallucination-guard, integrity-check, completion-gate, sast |
+| STATE | context-lifecycle, context-pack, journal, session-bridge, neural-memory |
 | MONITORING | watchdog, scope-guard |
 | MEDIA | browser-pilot, asset-creator, video-creator, slides |
 | DEPS | dependency-doctor |
@@ -219,10 +219,10 @@ Lowercase, dot-separated: `<domain>.<event>` (e.g. `code.changed`, `tests.failed
 
 | Pulse | Emitters | Listeners |
 |--------|----------|-----------|
-| `code.changed` | fix | test, guardian, review, readiness, verification |
+| `code.changed` | fix | test, guardian, review, verification |
 | `tests.passed` | test | deploy |
 | `tests.failed` | test | debug |
-| `tdd.horizontal.violation` | test | completion-gate, readiness |
+| `tdd.horizontal.violation` | test | completion-gate, verification |
 | `architecture.shallow.flagged` | improve-architecture, audit | surgeon, review |
 | `architecture.deletion.passed` | improve-architecture | audit |
 | `outofscope.match` | idea | review-intake, build, plan |
@@ -230,7 +230,7 @@ Lowercase, dot-separated: `<domain>.<event>` (e.g. `code.changed`, `tests.failed
 | `oracle.dispatched` | adversary | session-bridge |
 | `oracle.response` | adversary | debug, fix |
 | `oracle.failed` | adversary, session-bridge | debug, fix |
-| `context.preview` | context-engine | adversary, team, review, audit |
+| `context.preview` | context-lifecycle | adversary, team, review, audit |
 | `security.passed` | guardian | deploy |
 | `security.blocked` | guardian | fix, plan |
 | `review.complete` | review | build |
@@ -247,11 +247,11 @@ Lowercase, dot-separated: `<domain>.<event>` (e.g. `code.changed`, `tests.failed
 | `verification.complete` | verification | build |
 | `integrate.complete` | integrate | journal |
 | `ideas.ready` | brainstorm | build |
-| `readiness.passed` | readiness | build |
-| `readiness.blocked` | readiness | fix |
+| `verification.complete` | verification | build |
+| `verification.blocked` | verification | fix |
 | `project.onboarded` | onboard | plan |
 | `incident.detected` | watchdog | incident |
-| `output.density.set` | context-engine | *(orchestrators dynamically — build, team, rescue)* |
+| `output.density.set` | context-lifecycle | *(orchestrators dynamically — build, team, rescue)* |
 | `triage.classified` | review-intake | *(observability)* |
 | `agent.brief.ready` | review-intake | *(external — issue tracker)* |
 | `outofscope.recorded` | idea, review-intake | *(observability — discovered via .out-of-scope/ file scan)* |
@@ -366,10 +366,10 @@ sast ← audit              (security dimension in full audit)
 sast ← build               (security-sensitive code paths)
 sast ← review             (security patterns detected in diff)
 
-# constraint-check
-constraint-check ← build   (end-of-workflow discipline audit)
-constraint-check ← team   (verify stream agent compliance)
-constraint-check ← audit  (quality dimension assessment)
+# completion-gate (process audit, formerly constraint-check)
+completion-gate ← build   (end-of-workflow discipline audit)
+completion-gate ← team   (verify stream agent compliance)
+completion-gate ← audit  (quality dimension assessment)
 
 # logic-guardian
 logic-guardian ← build     (Phase 1.5: complex logic project detected)

@@ -47,7 +47,7 @@ describe('cursor adapter', () => {
     assert.deepStrictEqual(names, [
       'Topia-dependency-doctor.mdc',
       'Topia-guardian.mdc',
-      'Topia-readiness.mdc',
+      'Topia-verification.mdc',
       'hooks.json',
     ]);
     for (const file of plan.files) {
@@ -65,8 +65,8 @@ describe('cursor adapter', () => {
   test('emit(strict) renders WARN → BLOCK guidance', async () => {
     const gentle = await cursor.emit({ preset: 'gentle', projectRoot: tmpRoot, topiaRoot: Topia_ROOT });
     const strict = await cursor.emit({ preset: 'strict', projectRoot: tmpRoot, topiaRoot: Topia_ROOT });
-    const gentlePreflight = gentle.files.find((f) => f.path.endsWith('Topia-readiness.mdc')).content;
-    const strictPreflight = strict.files.find((f) => f.path.endsWith('Topia-readiness.mdc')).content;
+    const gentlePreflight = gentle.files.find((f) => f.path.endsWith('Topia-verification.mdc')).content;
+    const strictPreflight = strict.files.find((f) => f.path.endsWith('Topia-verification.mdc')).content;
     assert.ok(gentlePreflight.includes('WARN'));
     assert.ok(strictPreflight.includes('BLOCK'));
   });
@@ -89,7 +89,7 @@ describe('cursor adapter', () => {
     assert.strictEqual(result.written, true);
     const rulesDir = path.join(tmpRoot, RULES_DIR);
     const files = await readdir(rulesDir);
-    assert.ok(files.includes('Topia-readiness.mdc'));
+    assert.ok(files.includes('Topia-verification.mdc'));
     assert.ok(files.includes('Topia-guardian.mdc'));
     assert.ok(files.includes('Topia-dependency-doctor.mdc'));
     assert.ok(existsSync(path.join(tmpRoot, '.cursor', 'hooks.json')));
@@ -99,10 +99,23 @@ describe('cursor adapter', () => {
     await seedCursor(tmpRoot);
     await installHooks(tmpRoot, { preset: 'gentle', platform: 'cursor', topiaRoot: Topia_ROOT });
     const rulesDir = path.join(tmpRoot, RULES_DIR);
-    const first = await readFile(path.join(rulesDir, 'Topia-readiness.mdc'), 'utf-8');
+    const first = await readFile(path.join(rulesDir, 'Topia-verification.mdc'), 'utf-8');
     await installHooks(tmpRoot, { preset: 'gentle', platform: 'cursor', topiaRoot: Topia_ROOT });
-    const second = await readFile(path.join(rulesDir, 'Topia-readiness.mdc'), 'utf-8');
+    const second = await readFile(path.join(rulesDir, 'Topia-verification.mdc'), 'utf-8');
     assert.strictEqual(first, second);
+  });
+
+  test('install removes the old Topia-managed readiness rule, keeps a user file of that name', async () => {
+    await seedCursor(tmpRoot);
+    const rulesDir = path.join(tmpRoot, RULES_DIR);
+    await mkdir(rulesDir, { recursive: true });
+    await writeFile(path.join(rulesDir, 'Topia-readiness.mdc'), '---\nTopia-managed: true\n---\nold\n', 'utf-8');
+    await installHooks(tmpRoot, { preset: 'gentle', platform: 'cursor', topiaRoot: Topia_ROOT });
+    assert.ok(!existsSync(path.join(rulesDir, 'Topia-readiness.mdc')));
+
+    await writeFile(path.join(rulesDir, 'Topia-readiness.mdc'), 'my own notes\n', 'utf-8');
+    await installHooks(tmpRoot, { preset: 'gentle', platform: 'cursor', topiaRoot: Topia_ROOT });
+    assert.ok(existsSync(path.join(rulesDir, 'Topia-readiness.mdc')));
   });
 
   test('uninstall removes only Topia-managed .mdc files', async () => {
@@ -142,7 +155,7 @@ describe('cursor adapter', () => {
     const r = result.results.find((x) => x.platform === 'cursor');
     assert.strictEqual(r.installed, true);
     assert.strictEqual(r.preset, 'strict');
-    assert.ok(r.wired.includes('readiness'));
+    assert.ok(r.wired.includes('verification'));
     assert.ok(r.wired.includes('guardian'));
     assert.ok(r.wired.includes('dependency-doctor'));
   });
@@ -151,7 +164,7 @@ describe('cursor adapter', () => {
     const result = await hookStatus(tmpRoot, Topia_ROOT, { platform: 'cursor' });
     const r = result.results.find((x) => x.platform === 'cursor');
     assert.strictEqual(r.installed, false);
-    assert.ok(r.missing.includes('readiness'));
+    assert.ok(r.missing.includes('verification'));
   });
 
   test('status lists the tool-level guards once hooks.json is installed', async () => {

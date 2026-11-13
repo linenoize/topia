@@ -40,7 +40,7 @@ Each component is scored 0.0-1.0:
 
 ### 2. Finding Priority Score
 
-Used by: `review`, `guardian`, `readiness`, `audit`, `content-decay-detector` (adapted)
+Used by: `review`, `guardian`, `verification`, `audit`, `content-decay-detector` (adapted)
 
 ```
 priority = severity_weight × confidence × blast_radius
@@ -87,7 +87,7 @@ Where:
 
 ### 4. Context Pressure Score
 
-Used by: `context-engine`, `build` (budget-aware progression), `team` (agent allocation)
+Used by: `context-lifecycle`, `build` (budget-aware progression), `team` (agent allocation)
 
 ```
 pressure = tokens_used / context_limit

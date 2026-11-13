@@ -26,7 +26,7 @@ function sumCounts(a = {}, b = {}) {
 
 /**
  * Session pressure. Measured context wins whenever its window is known; the
- * tool-call count is a proxy (context-engine: "directional, not precise") and
+ * tool-call count is a proxy (directional, not precise) and
  * is reported with `pressure_source: 'tool_count'` so readers can tell.
  */
 function sessionPressure(tokens = {}, toolCountLevel = 'green') {

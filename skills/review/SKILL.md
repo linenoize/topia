@@ -36,7 +36,7 @@ Every review MUST cite at least one specific concern, suggestion, or explicit ap
 - `test` (L2): when untested edge cases found — write tests for them
 - `fix` (L2): when bugs found during review — trigger fix
 - `guardian` (L2): when security-critical code detected (auth, input, crypto)
-- `docs-seeker` (L3): verify API usage is current and correct
+- `research` (L3): API docs mode — verify API usage is current and correct
 - `hallucination-guard` (L3): verify imports and API calls in reviewed code
 - `design` (L2): when UI anti-patterns suggest missing design system — recommend design skill invocation
 - `perf` (L2): when performance patterns detected in frontend diff

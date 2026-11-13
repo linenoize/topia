@@ -39,7 +39,7 @@ So the picker question "install at user / project / local" is really just **"whi
 |-------|--------|-------|
 | `/topia:build`, `/topia:plan`, etc. in any repo | ✓ | Skills load whenever Claude Code starts |
 | `/topia onboard` in a fresh repo | ✓ | Writes `<repo>/.topia/` state |
-| Dispatch hooks (readiness, guardian, completion-gate) global | ✓ after `/topia finalize` | Finalize wires them into `~/.claude/settings.json` |
+| Dispatch hooks (verification, guardian, completion-gate) global | ✓ after `/topia finalize` | Finalize wires them into `~/.claude/settings.json` |
 | Dispatch hooks fire in repos *without* `.topia/` | ✓ after finalize | They're global once finalize ran |
 | Teammates on other machines get the same plugin | ✗ | They install separately |
 | Repo can be cloned and "just works" for new contributors | ✗ | Each contributor installs the plugin once |
@@ -63,7 +63,7 @@ The plugin entry is written to `<repo>/.claude/settings.json` and committed. Eve
 | Dispatch hooks fire in sibling repos | ✗ | Project scope can't reach other repos. If you also want that, ALSO install at user scope (you can do both). |
 | Discipline preset (gentle / strict) is per-repo | ✓ | Each project can pick its own |
 
-The big foot-gun: you finalize at project scope, switch to another repo, and the `readiness` / `guardian` hooks don't fire. That's not a bug — project scope is bounded. Add user scope on top if you want machine-wide discipline.
+The big foot-gun: you finalize at project scope, switch to another repo, and the `verification` / `guardian` hooks don't fire. That's not a bug — project scope is bounded. Add user scope on top if you want machine-wide discipline.
 
 ### Local scope
 
@@ -128,7 +128,7 @@ This is the key distinction users get wrong:
 |----------------|-------------------|----------------|
 | `cache/linenoize/topia/<version>/` | **Replaced** by each new version | Plugin source: skills, hooks, scripts, ref docs. Treat as read-only — edits here are discarded on the next install. |
 | `cache/.../docs/ORG-CONFIG.md` | Replaced (it's the *template*) | Reference doc showing the org-config schema. Read it, don't edit it here. |
-| `<project>/.topia/org/org.md` | **Yes** — always preserved | **Your actual org policy.** Where `guardian` / `readiness` read team rules from. Edit this one. |
+| `<project>/.topia/org/org.md` | **Yes** — always preserved | **Your actual org policy.** Where `guardian` / `verification` read team rules from. Edit this one. |
 | `<project>/.topia/*.md` (state, ADRs, decisions) | Yes — outside cache | Session state and project memory. Auto-managed by skills like `journal`, `session-bridge`, `onboard`. |
 | `~/.claude/settings.json` | Yes — separate file | Dispatch hooks (from `/topia finalize`), plugin enable flags. Survives any plugin upgrade. |
 | `<project>/.claude/settings.json` or `.local.json` | Yes — outside cache | Project- or local-scope plugin enable flags, per-repo dispatch hooks. |

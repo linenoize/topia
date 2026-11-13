@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Pre-flight cost check for expensive escalations. Before any caller bundles a large context for dispatch (oracle-mode second-opinion, parallel workstream spawn, multi-file review, cross-pack audit), `context-engine` emits `context.preview` with a token-cost estimate and an action recommendation. The caller decides whether to proceed, warn, or abort.
+Pre-flight cost check for expensive escalations. Before any caller bundles a large context for dispatch (oracle-mode second-opinion, parallel workstream spawn, multi-file review, cross-pack audit), `context-lifecycle` emits `context.preview` with a token-cost estimate and an action recommendation. The caller decides whether to proceed, warn, or abort.
 
 ## Why
 
@@ -78,9 +78,9 @@ else:
 
 ```
 Phase 0 (pre-bundle): emit context.preview { caller: adversary, files: [...], prompt: "..." }
-  context-engine returns { action: "proceed" }     → continue with bundle build
-  context-engine returns { action: "warn" }        → log warning, continue
-  context-engine returns { action: "block" }       → abort, emit oracle.failed reason=context_budget_exceeded
+  context-lifecycle returns { action: "proceed" }     → continue with bundle build
+  context-lifecycle returns { action: "warn" }        → log warning, continue
+  context-lifecycle returns { action: "block" }       → abort, emit oracle.failed reason=context_budget_exceeded
 ```
 
 ### `team` parallel workstream
@@ -133,7 +133,7 @@ context.preview:
 
 | Symptom | Reason | Mitigation |
 |---------|--------|------------|
-| Caller bundles before preview | Caller didn't follow contract | context-engine rejects late preview requests with explicit error |
+| Caller bundles before preview | Caller didn't follow contract | context-lifecycle rejects late preview requests with explicit error |
 | Estimate way off for non-English content | Tokenizer ratio assumes English | Document limitation; safe both directions due to dispatch-time hard cap |
 | Block action ignored by caller | Caller bug | Each caller's Done When MUST verify `action != block` before dispatch |
-| Threshold env-var malformed | User typo | context-engine logs warning, falls back to default |
+| Threshold env-var malformed | User typo | context-lifecycle logs warning, falls back to default |

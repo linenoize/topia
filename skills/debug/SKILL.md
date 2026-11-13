@@ -24,7 +24,7 @@ If root cause cannot be identified after 3 hypothesis cycles:
 - Emit `agent.stuck` signal — `scout` zoom-out mode surfaces broader module map (structural pivot); `adversary` oracle-mode dispatches a stateless second-model pass (semantic pivot); both fire in parallel
 - If `oracle.response` arrives with confidence=high and cites file:line, treat as new hypothesis H_oracle and test directly (skip 3-cycle gate — it's externally validated)
 - Otherwise, escalate to `topia:problem-solver` for structured 5-Whys or Fishbone analysis
-- Or escalate to `topia:sequential-thinking` for multi-variable analysis
+- Or escalate to `topia:problem-solver` (sequential mode) for multi-variable analysis
 - Report escalation in the Debug Report with all evidence gathered so far
 </HARD-GATE>
 
@@ -43,10 +43,9 @@ If root cause cannot be identified after 3 hypothesis cycles:
 - `test` (L2): write regression test after root cause confirmed
 - `brainstorm` (L2): 3-Fix Escalation when root cause is "wrong approach" — invoke with mode="rescue" for category-diverse alternatives
 - `plan` (L2): 3-Fix Escalation when root cause is "wrong module design" — invoke for redesign
-- `docs-seeker` (L3): lookup API docs for unclear errors or deprecated APIs
+- `research` (L3): API docs mode — lookup API docs for unclear errors or deprecated APIs
 - `problem-solver` (L3): structured reasoning (5 Whys, Fishbone) for complex bugs
 - `browser-pilot` (L3): capture browser console errors, network failures, visual bugs
-- `sequential-thinking` (L3): multi-variable root cause analysis
 - `journal` (L3): after root cause found — record error pattern for future recognition
 - `adversary` (L2): on `agent.stuck` — oracle-mode dispatches stateless second-model pass to break confirmation-bias loop (parallel with scout zoom-out)
 - `stack` (L2): bug lives in a Docker Compose service — bounded container logs, status, or a one-service restart/rebuild to reproduce
@@ -309,7 +308,7 @@ Produce structured output and hand off to topia:fix.
 <HARD-GATE>
 Debug is read-heavy by nature — but there are limits.
 
-After Step 4 (Test Hypotheses): if NO hypothesis is confirmed after 3 cycles of Steps 2-4, you MUST stop and escalate. Do NOT start cycle 4. Report all evidence gathered and escalate to problem-solver or sequential-thinking.
+After Step 4 (Test Hypotheses): if NO hypothesis is confirmed after 3 cycles of Steps 2-4, you MUST stop and escalate. Do NOT start cycle 4. Report all evidence gathered and escalate to problem-solver (sequential mode for multi-factor causes).
 
 Within any single step: 5+ consecutive Read/Grep calls without forming or testing a hypothesis = stuck. Stop reading, form a hypothesis from what you have, and test it. Incomplete hypotheses that get tested are better than perfect hypotheses that never form.
 </HARD-GATE>
@@ -359,7 +358,7 @@ ALL of these mean: STOP. Return to Step 2 (Gather Evidence).
 3. MUST gather evidence (file reads, grep, stack traces) before hypothesizing
 4. MUST form exactly 2-3 hypotheses, ordered by likelihood — no more, no fewer
 5. MUST mark each hypothesis CONFIRMED or RULED OUT with specific evidence
-6. MUST NOT exceed 3 hypothesis cycles — escalate to problem-solver or sequential-thinking
+6. MUST NOT exceed 3 hypothesis cycles — escalate to problem-solver
 7. MUST NOT say "I know what's wrong" without citing file:line evidence
 8. For deep stack errors: MUST use backward tracing (Step 2) — never fix at the crash site
 9. For multi-component systems: MUST instrument boundaries before hypothesizing
@@ -452,7 +451,7 @@ chain_metadata:
 | Forming hypothesis from error message alone without evidence | HIGH | Evidence-first rule: read files and grep logs BEFORE hypothesizing |
 | Modifying code while "investigating" | CRITICAL | HARD-GATE: any code change during debug = out of scope — hand off to fix |
 | Marking hypothesis CONFIRMED without file:line proof | HIGH | CONFIRMED requires specific evidence cited — "it makes sense" is not evidence |
-| Exceeding 3 hypothesis cycles without escalation | MEDIUM | After 3 cycles: escalate to topia:problem-solver or topia:sequential-thinking |
+| Exceeding 3 hypothesis cycles without escalation | MEDIUM | After 3 cycles: escalate to topia:problem-solver (sequential mode for interacting causes) |
 | Same bug "fixed" 3+ times without questioning architecture | CRITICAL | 3-Fix Escalation Rule: classify failure → same blocker category = brainstorm(rescue), different bugs = plan redesign |
 | Escalating to plan when the APPROACH is wrong (not the module) | HIGH | If all 3 fixes hit the same category of blocker (API limit, platform gap), the approach needs pivoting via brainstorm(rescue), not re-planning |
 | Not tracking fix attempt number for recurring bugs | HIGH | Debug Report MUST include Fix Attempt counter — enables escalation gate |

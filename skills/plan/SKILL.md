@@ -84,8 +84,7 @@ High-level multi-feature planning — organize features into milestones.
 - `brainstorm` (L2): when multiple valid approaches exist
 - `adversary` (L2): optional red-team gate on critical plan output (features touching auth, payments, or data integrity)
 - `research` (L3): external knowledge lookup
-- `sequential-thinking` (L3): complex architecture with many trade-offs
-- `problem-solver` (L3): structured reasoning for complex trade-off decisions
+- `problem-solver` (L3): structured reasoning for complex trade-off decisions; sequential mode for architecture with many interacting trade-offs
 - `scope-guard` (L3): verify plan scope matches approved boundaries
 - `test` (L2): define test strategy and coverage expectations in plan
 - L4 extension packs: domain-specific architecture patterns

@@ -9,7 +9,7 @@ A terse output mode that strips filler, articles, and pleasantries while preserv
 | Trigger | Source | Persistence |
 |---------|--------|-------------|
 | User says "caveman", "caveman mode", "be brief", "less tokens" | Explicit user signal | Until user says "stop caveman" / "normal mode" |
-| Context health = ORANGE or RED | Auto from `context-engine` Step 4-5 | Until context returns to GREEN after compaction |
+| Context health = ORANGE or RED | Auto from context-watch (ORANGE/RED) via `context-lifecycle` | Until context returns to GREEN after compaction |
 | Output budget exceeded for a workstream (e.g., team parallel worker) | Per-workstream override | Scoped to that workstream |
 
 Once active, **every response stays in caveman mode** until explicit deactivation. No drift back to verbose mid-session.
@@ -82,12 +82,12 @@ Expect 60-80% reduction on conversational responses. Code/docs/error messages ar
 > 
 > [next response resumes caveman]
 
-## Integration with context-engine
+## Integration with context-lifecycle
 
-Auto-activation flow (Step 4 ORANGE / Step 5 RED):
+Auto-activation flow (context-watch reports ORANGE or RED):
 
 ```
-1. context-engine detects ORANGE/RED
+1. context-watch (or the status line) shows ORANGE/RED
 2. Emit advisory: "Context [X]%. Activating caveman output mode."
 3. Set session flag: caveman_active = true
 4. All subsequent responses honor caveman rules

@@ -15,7 +15,7 @@ metadata:
 
 ## Purpose
 
-Turn `.topia/org/org.md` from a template into **your team's real policy file**. `guardian` and `readiness` read this at compile time and inject an `<ORG-POLICY>` block into their hooks — so commit-time gates match how your team actually works.
+Turn `.topia/org/org.md` from a template into **your team's real policy file**. `guardian` and `verification` read this (directly in Claude Code; other platforms also get an injected `<ORG-POLICY>` block at compile time) — so commit-time gates match how your team actually works.
 
 **For teams:** commit `org/org.md` (under `.topia/`) so every developer and every agent session shares the same rules. Solo devs can still run this to set governance level and security defaults.
 
@@ -54,7 +54,7 @@ Reviewers: <N> required | security files need security reviewer: <yes|no>
 Deploy: <window> | staging before prod: <yes|no>
 
 Written: .topia/org/org.md
-Teams: commit .topia/org/ so guardian/readiness enforce these rules in CI.
+Teams: commit .topia/org/ so guardian/verification enforce these rules in CI.
 
 Refresh hooks if gates feel stale:
   node "<topia>/compiler/bin/topia.js" setup --global --preset gentle --yes
@@ -125,7 +125,7 @@ Use `Write` or `Edit` — preserve markdown tables and section order.
 
 ### Step 4 — Confirm and flag
 
-1. Print a **short summary**: governance level, reviewers, deploy rules, what guardian/readiness will now enforce.
+1. Print a **short summary**: governance level, reviewers, deploy rules, what guardian/verification will now enforce.
 2. Write `.topia/org/.configured` with ISO timestamp.
 3. Remind teams: `git add .topia/org/` and commit so CI and teammates share policy.
 4. Link [`docs/ORG-CONFIG.md`](../../docs/ORG-CONFIG.md) for later edits.
@@ -145,7 +145,7 @@ Use `Write` or `Edit` — preserve markdown tables and section order.
 | Editing `org.md` alone does not refresh hooks | HIGH | Tell user to run `topia setup --global --preset gentle --yes` or `/topia finalize` after save |
 | Plugin cache `org.md` is a template, not live policy | MEDIUM | Always resolve project `.topia/org/org.md`; link `docs/ORG-CONFIG.md` for manual edits |
 | Solo dev picks "multi-team" by mistake | LOW | Round A shapes later questions — offer "use defaults" to skip team tables |
-| Governance level mismatch with team appetite | MEDIUM | Summarize what guardian/readiness will block before writing |
+| Governance level mismatch with team appetite | MEDIUM | Summarize what guardian/verification will block before writing |
 
 ## Done When
 

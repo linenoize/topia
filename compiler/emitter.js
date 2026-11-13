@@ -298,7 +298,7 @@ function buildOrgPolicyBlock(orgConfig, targetSkill) {
         lines.push(`- **${rule.key}**: ${rule.value}`);
       }
     }
-  } else if (targetSkill === 'readiness' || targetSkill === 'preflight') {
+  } else if (targetSkill === 'verification' || targetSkill === 'readiness' || targetSkill === 'preflight') {
     // Inject code review + deployment + approval flows
     const codeReview = orgConfig.policies.code_review || [];
     const deployment = orgConfig.policies.deployment || [];
@@ -444,8 +444,8 @@ function outputFileName(skillName, adapter) {
         stats.injectionsApplied += count;
       }
 
-      // Inject org policies into guardian/preflight (Business feature)
-      if (orgConfig && (parsed.name === 'guardian' || parsed.name === 'readiness')) {
+      // Inject org policies into guardian/verification (Business feature)
+      if (orgConfig && (parsed.name === 'guardian' || parsed.name === 'verification')) {
         const orgBlock = buildOrgPolicyBlock(orgConfig, parsed.name);
         if (orgBlock) {
           finalBody += orgBlock;

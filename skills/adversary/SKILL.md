@@ -37,9 +37,9 @@ Every finding MUST reference the specific plan section, file, or assumption it c
 - `guardian` (L2): deep security scan when adversary identifies auth/crypto/payment attack vectors in the plan
 - `perf` (L2): scalability analysis when adversary identifies potential bottleneck patterns
 - `recon` (L2): find existing code that might conflict with planned changes
-- `docs-seeker` (L3): verify framework/API assumptions in the plan are correct and current
+- `research` (L3): API docs mode — verify framework/API assumptions in the plan are correct and current
 - `hallucination-guard` (L3): verify that APIs, packages, or patterns referenced in the plan actually exist
-- `context-engine` (L3): (oracle-mode) emit `context.preview` before bundle build to gate token cost
+- `context-lifecycle` (L3): (oracle-mode) emit `context.preview` before bundle build to gate token cost
 - `session-bridge` (L3): (oracle-mode) detach protocol when target model is opus-class for non-blocking dispatch
 
 ## Called By (inbound)
@@ -249,7 +249,7 @@ Trigger: plan involves auth, crypto, payment, or user data handling.
 
 **Protocol**:
 
-1. **Pre-bundle gate** — emit `context.preview` to `context-engine` first; abort if action=block
+1. **Pre-bundle gate** — emit `context.preview` via `context-lifecycle` (Cost Preview) first; abort if action=block
 2. **Build context bundle** — see `references/context-bundle-format.md` for exact format
 3. **Dispatch** — emit `oracle.dispatched` signal; route via `session-bridge` detach if target model is opus-class (non-blocking)
 4. **Wait for response** — synchronous if model is sonnet-class, polled via `.topia/oracle-pending/<id>.json` if opus-class
@@ -293,7 +293,7 @@ See `references/oracle-mode.md` for the full protocol and integration with `debu
 5. MUST use concrete attack scenarios, not vague warnings ("could be a problem" is NOT a finding)
 6. MUST NOT block on MEDIUM/LOW findings — only CRITICAL and HIGH trigger REVISE verdict
 7. MUST include Strength Notes — adversary finds weaknesses AND acknowledges what's well-designed
-8. (oracle-mode) MUST emit `context.preview` BEFORE building the bundle — abort if context-engine action=block
+8. (oracle-mode) MUST emit `context.preview` BEFORE building the bundle — abort if context-lifecycle action=block
 9. (oracle-mode) MUST validate every Oracle reply citation against the provided files — reject uncited claims as `oracle.failed`
 
 ## Nexus Gates
