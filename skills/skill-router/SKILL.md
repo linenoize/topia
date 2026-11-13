@@ -228,6 +228,7 @@ For users who know exactly what they want:
 | Generate / update docs | `topia:docs` | L2 |
 | Generate leadership package / Jira CSV / User Stories | `topia:documentation` | L2 |
 | Build MCP server | `topia:mcp-builder` | L2 |
+| Docker Compose ops: rebuild / restart / logs / health / prune, server.sh scripts, `.env` vs `.env.example` keys, published ports | `topia:stack` | L2 |
 | Red-team / challenge a plan / stress-test | `topia:adversary` | L2 — requires opus |
 | Port / graft from repo / copy from external repo | `topia:integrate` | L2 — challenge gate before code |
 | Map architecture / reverse-engineer codebase / steel threads / legacy codebase / how does this repo work | `topia:architecture-mapper` | L2 — read-only mapping to `docs/architecture/` |
@@ -295,6 +296,7 @@ When the routed skill produces file changes, the **owner skill's constraints** a
 | `*.test.*`, `*.spec.*`, `__tests__/` | `topia:test` | Test patterns, assertions, no `test.skip`, coverage rules |
 | `migrations/`, `schema.*`, `*.prisma` | `topia:db` | Migration safety, rollback script, parameterized queries |
 | `Dockerfile`, `*.yml` (CI/CD), `terraform/` | `topia:deploy` | Deployment checklist, no hardcoded secrets |
+| `compose*.y*ml`, `docker-compose*.y*ml`, `server.sh`, `server.ps1` | `topia:stack` | Ports rule, no volume deletion without a named request, env keys only |
 | `docs/*.md`, `README.md`, `CHANGELOG.md` | `topia:docs` | Documentation patterns, no stale references |
 | `SKILL.md`, `PACK.md` | `topia:skill-forge` | Skill template compliance, frontmatter validation |
 | `.env*`, `*secret*`, `*credential*` | `topia:guardian` | Security scan mandatory, never commit secrets |

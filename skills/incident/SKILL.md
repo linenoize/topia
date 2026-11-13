@@ -31,6 +31,7 @@ Structured incident response for production issues. Follows a strict order: tria
 - `autopsy` (L2): root cause analysis after containment
 - `journal` (L3): record incident timeline and decisions
 - `guardian` (L2): check for security dimension (data exposure, unauthorized access)
+- `stack` (L2): service runs on Docker Compose — contain by restarting one service, pull bounded logs for the timeline
 - `neural-memory` (ext): after resolution — capture incident root cause + fix pattern cross-session so the same failure mode is never diagnosed twice
 
 ## Called By (inbound)

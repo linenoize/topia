@@ -4,7 +4,7 @@
 
 <p align="center">
   <strong>Topia — internal skill toolkit for AI coding assistants.</strong><br>
-  71 skills · 315 synapses · 49 pulses · 10 extension packs · optional persistent memory via agora-code MCP
+  72 skills · 323 synapses · 49 pulses · 10 extension packs · optional persistent memory via agora-code MCP
 </p>
 
 <p align="center">
@@ -124,7 +124,7 @@ From a Topia clone or plugin cache path:
 
 ```bash
 node compiler/bin/topia.js doctor
-# ✓ 71 skills, 315 synapses, 49 pulses — nexus is healthy
+# ✓ 72 skills, 323 synapses, 49 pulses — nexus is healthy
 ```
 
 Claude-only users can use `/topia doctor` in chat instead.
@@ -203,6 +203,7 @@ The 8-step build flow (route → recall → plan → test → implement → gate
 | `hallucination-guard` | Catch phantom imports, non-existent packages. |
 | `deploy` | Multi-platform deploy with health checks. |
 | `watchdog` | Post-deploy health monitoring. |
+| `stack` | Docker Compose ops: rebuild, restart, logs, health, safe prune, server scripts, keys-only `.env` check, ports rule. |
 | `incident` | Production incident response (triage → contain → root-cause → postmortem). |
 | `dependency-doctor` | Outdated packages + CVE scan + prioritized update plan. |
 | `audit` | 8-dimension project health audit. |
@@ -372,9 +373,9 @@ The `org/` tree holds stable team and policy configuration. `guardian` and `read
 ## Numbers
 
 ```
-Skills:            71 (L0:1 · L1:5 · L2:33 · L3:32)
+Skills:            72 (L0:1 · L1:5 · L2:34 · L3:32)
 Extension Packs:   10
-Synapses:          315 (4.4 avg/skill)
+Synapses:          323 (4.5 avg/skill)
 Pulses:            49 (60 emit/listen edges)
 Platforms:         Claude Code, Cursor, Codex, Antigravity, OpenCode, OpenClaw, Generic
 Tests:             1,035 passing

@@ -564,6 +564,15 @@ const CATALOG = [
     "slashAlias": "topia-slides"
   },
   {
+    "name": "stack",
+    "description": "Use when a project runs on Docker Compose and someone wants to start, stop, rebuild or restart services, read container logs, check health, free disk space, write server.sh / server.ps1 start scripts, check .env against .env.example, or review which ports are published.",
+    "model": "sonnet",
+    "layer": "L2",
+    "userInvocable": true,
+    "forked": false,
+    "slashAlias": "topia-stack"
+  },
+  {
     "name": "surgeon",
     "description": "Incremental refactorer. Use within a rescue workflow after safeguard has set up safety nets. Refactors ONE module per session using proven patterns — Strangler Fig, Branch by Abstraction, Expand-Migrate-Contract.",
     "model": "sonnet",

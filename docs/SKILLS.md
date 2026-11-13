@@ -3,7 +3,7 @@
 > **Need a skill?** Invoke via `/topia <skill-name>` in Claude Code, or `@topia:<skill-name>` in Cursor / Codex / Antigravity.
 > Every skill has a `SKILL.md` at `skills/<name>/SKILL.md` — read that for the full spec.
 
-**Total:** 71 skills across 5 layers · 315+ synapses + 49 pulses
+**Total:** 72 skills across 5 layers · 323+ synapses + 49 pulses
 **Quick find:** use Ctrl+F on this page
 
 ---
@@ -32,6 +32,7 @@ Each skill is marked by who invokes it in practice:
 | Write tests (TDD) | 🔄 [`test`](#-test) |
 | Review code quality | 👤 [`review`](#-review) |
 | Ship to production | 👤 [`launch`](#-launch) or 👤 [`deploy`](#-deploy) |
+| Rebuild, restart or read logs of a Docker Compose stack | 👤 [`stack`](#-stack) |
 | Gather requirements | 👤 [`idea`](#-idea) |
 | Set up a new project | 👤 [`scaffold`](#-scaffold) |
 | Rescue legacy code | 👤 [`rescue`](#-rescue) |
@@ -139,6 +140,10 @@ Auto-generate project context. Scans codebase, creates CLAUDE.md + `.topia/` dir
 ### 👤 deploy
 Deploy to target platform — Vercel, Netlify, Fly.io, AWS, VPS. Pre-deploy verification + security gates.
 **Use when:** shipping without the full launch orchestrator.
+
+### 👤 stack
+Docker Compose operator — rebuild one service or all, restart, bounded logs, health, safe prune. Writes `server.sh` + `server.ps1`. Checks `.env` against `.env.example` by key name only. Flags internal ports published to the network.
+**Use when:** running or debugging a compose stack day to day, or adding start/stop scripts.
 
 ### 👤 marketing
 Create marketing assets — landing copy, social posts, SEO meta, video scripts, slides.

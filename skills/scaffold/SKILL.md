@@ -44,6 +44,7 @@ Generated projects MUST build and pass tests. A scaffold that produces broken co
 - `guardian` (L2): Phase 9 — security scan on generated code
 - `context-pack` (L3): structured handoff briefings before parallel module generation
 - `mcp-builder` (L2): scaffold MCP servers when project includes MCP integration
+- `stack` (L2): generated project ships a compose file — write `server.sh` / `server.ps1`, apply the ports rule
 
 ## Called By (inbound)
 

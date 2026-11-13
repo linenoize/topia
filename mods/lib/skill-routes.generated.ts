@@ -1083,6 +1083,26 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "chain": []
   },
   {
+    "name": "stack",
+    "layer": "L2",
+    "model": "sonnet",
+    "description": "Use when a project runs on Docker Compose and someone wants to start, stop, rebuild or restart services, read container logs, check health, free disk space, write server.sh / server.ps1 start scripts, check .env against .env.example, or review which ports are published.",
+    "userInvocable": true,
+    "forked": false,
+    "keywords": [
+      "docker compose",
+      "compose stack",
+      "container logs",
+      "restart the stack",
+      "rebuild the container",
+      "server.sh",
+      "env.example",
+      "published ports"
+    ],
+    "prompts": [],
+    "chain": []
+  },
+  {
     "name": "surgeon",
     "layer": "L2",
     "model": "sonnet",

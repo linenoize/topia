@@ -110,7 +110,7 @@ Rules:
 - Skills without `model:` produce no model field in any adapter
 - Unknown values pass through unchanged (forward-compatibility for new models)
 
-**Version bumps (e.g. Opus 4.7 → 4.8):** Skill frontmatter stays on tiers (`opus`/`sonnet`/`haiku`). Claude Code/Cursor resolve tiers to the current Anthropic model. When Anthropic ships a new version, update this table and any hardcoded example IDs in docs/snippets — not the 71 skill files.
+**Version bumps (e.g. Opus 4.7 → 4.8):** Skill frontmatter stays on tiers (`opus`/`sonnet`/`haiku`). Claude Code/Cursor resolve tiers to the current Anthropic model. When Anthropic ships a new version, update this table and any hardcoded example IDs in docs/snippets — not the 72 skill files.
 
 **Telemetry:** Session-end metrics and `models_used` resolve tiers from `skills/<name>/SKILL.md` first (then `agents/<name>.md`). Agent subagent wrappers should match their skill tier so reports reflect intended cost profile.
 
@@ -154,7 +154,7 @@ Rules:
 | CREATION | plan, scout, brainstorm, design, skill-forge, idea, mcp-builder, graft |
 | DEVELOPMENT | debug, fix, test, review, db |
 | QUALITY | sentinel, preflight, onboard, audit, perf, review-intake, logic-guardian |
-| DELIVERY | deploy, marketing, incident, docs |
+| DELIVERY | deploy, marketing, incident, docs, stack |
 | RESCUE | autopsy, safeguard, surgeon |
 | SECURITY | adversary |
 | VELOCITY | retro |
