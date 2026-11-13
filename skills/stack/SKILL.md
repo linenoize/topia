@@ -175,7 +175,7 @@ Treat every `stack-inspect` port finding as WARN. A database, cache, queue, sear
 
 | Failure Mode | Severity | Mitigation |
 |---|---|---|
-| Secrets shown via `docker compose config` or `cat .env` | CRITICAL | Use `stack-inspect.js`; it renders with `--no-interpolate --no-env-resolution` and drops env blocks |
+| Secrets shown via `docker compose config` or by printing the env file | CRITICAL | Use `stack-inspect.js`; it renders with `--no-interpolate --no-env-resolution` and drops env blocks |
 | Volume deleted by a "cleanup" | CRITICAL | Constraint 3; templates need the typed project name for `--volumes` |
 | `restart` used after a `.env` change, so nothing changes | HIGH | Step 2 table: `up -d` recreates |
 | Profiled services missed (`--profile` not set) | MEDIUM | `stack-inspect` reads all profiles; pass `--profile` when acting on them |
