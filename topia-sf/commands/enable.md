@@ -13,8 +13,8 @@ Say this first, in these words:
 > Topia's Salesforce tools can change your org only after you approve the exact change in a dialog. That applies to Topia's tools, not to everything the assistant can do. The assistant can also run shell commands as you, and if your Salesforce CLI login can write, a shell command can write too. This approval slows that down, but it can't prevent it. To make it a hard limit, connect production with a read-only Salesforce user, and log in as a write-capable user only when you intend to make a change.
 
 1. Only a person turns this on. Do not write any file, store, or lock, and do not run the service's scripts yourself.
-2. On Claude Code, the person presses **Okay to continue** in the band. It applies only to the path it shows.
-3. Where there is no band, tell the person to run this themselves, in their own terminal:
+2. On Claude Code, the person presses **Okay to continue** in the band. The VS Code extension and the phone apps draw no band, so a dialog asks there instead. Only the person answers it, never a chat reply. It applies only to the path it shows.
+3. Where there is no band and no dialog, tell the person to run this themselves, in their own terminal:
 
    `node "${CLAUDE_PLUGIN_ROOT}/salesforce/service/bin/cli.js" enable`
 

@@ -133,6 +133,31 @@ export function bandParts(identity: SalesforceIdentity): SalesforcePart[] {
   ]
 }
 
+// The band above the prompt is drawn only by the terminal and the Desktop app. The
+// VS Code extension and the phone apps draw the question dialog but not the band.
+const BAND_SURFACES: readonly string[] = ['terminal', 'desktop']
+
+export const SALESFORCE_ENABLE_LABEL = 'Turn on for this project'
+export const SALESFORCE_DISABLE_LABEL = 'Turn off for this project'
+
+/**
+ * True when turning Salesforce on or off should ask in the question dialog, because
+ * nothing in this session draws the band. A session that draws nothing at all, or
+ * runs headless, has nobody to ask, so it never asks.
+ */
+export function askInsteadOfBand(surfaces: readonly string[], headless: boolean): boolean {
+  if (headless || surfaces.length === 0) return false
+  return !surfaces.some(surface => BAND_SURFACES.includes(surface))
+}
+
+export function enableQuestion(projectRoot: string): string {
+  return [`Project: ${plainText(projectRoot, 1000)}`, SALESFORCE_ABOUT.enable, '', 'Turn Salesforce on for this project?'].join('\n')
+}
+
+export function disableQuestion(projectRoot: string): string {
+  return [`Project: ${plainText(projectRoot, 1000)}`, SALESFORCE_ABOUT.disable, '', 'Turn Salesforce off for this project?'].join('\n')
+}
+
 export function confirmShownPath(shownPath: string | null, currentPath: string): { ok: true } | { ok: false; reason: string } {
   if (shownPath === null || !pathsMatch(shownPath, currentPath)) {
     return { ok: false, reason: 'Okay to continue applies only to the project path that was shown.' }
