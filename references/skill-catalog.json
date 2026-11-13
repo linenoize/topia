@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-11-13T18:58:10.532Z",
+  "generated": "2026-11-13T22:06:52.778Z",
   "skills": [
     {
       "name": "adversary",
@@ -8,8 +8,7 @@
       "model": "opus",
       "layer": "L2",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-adversary"
+      "forked": false
     },
     {
       "name": "architecture-mapper",
@@ -17,8 +16,7 @@
       "model": "opus",
       "layer": "L2",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-architecture-mapper"
+      "forked": false
     },
     {
       "name": "asset-creator",
@@ -26,8 +24,7 @@
       "model": "sonnet",
       "layer": "L3",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-asset-creator"
+      "forked": false
     },
     {
       "name": "audit",
@@ -35,8 +32,7 @@
       "model": "sonnet",
       "layer": "L2",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-audit"
+      "forked": false
     },
     {
       "name": "autopsy",
@@ -44,8 +40,7 @@
       "model": "opus",
       "layer": "L2",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-autopsy"
+      "forked": false
     },
     {
       "name": "brainstorm",
@@ -53,8 +48,7 @@
       "model": "opus",
       "layer": "L2",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-brainstorm"
+      "forked": false
     },
     {
       "name": "browser-pilot",
@@ -62,8 +56,7 @@
       "model": "sonnet",
       "layer": "L3",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-browser-pilot"
+      "forked": false
     },
     {
       "name": "build",
@@ -71,8 +64,7 @@
       "model": "sonnet",
       "layer": "L1",
       "userInvocable": true,
-      "forked": true,
-      "slashAlias": "topia-build"
+      "forked": true
     },
     {
       "name": "completion-gate",
@@ -80,8 +72,7 @@
       "model": "haiku",
       "layer": "L3",
       "userInvocable": false,
-      "forked": false,
-      "slashAlias": "topia-completion-gate"
+      "forked": false
     },
     {
       "name": "constraint-check",
@@ -89,8 +80,7 @@
       "model": "haiku",
       "layer": "L3",
       "userInvocable": false,
-      "forked": false,
-      "slashAlias": "topia-constraint-check"
+      "forked": false
     },
     {
       "name": "context-engine",
@@ -98,8 +88,7 @@
       "model": "haiku",
       "layer": "L3",
       "userInvocable": false,
-      "forked": false,
-      "slashAlias": "topia-context-engine"
+      "forked": false
     },
     {
       "name": "context-lifecycle",
@@ -107,8 +96,7 @@
       "model": "haiku",
       "layer": "L3",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-context-lifecycle"
+      "forked": false
     },
     {
       "name": "context-pack",
@@ -116,8 +104,7 @@
       "model": "haiku",
       "layer": "L3",
       "userInvocable": false,
-      "forked": false,
-      "slashAlias": "topia-context-pack"
+      "forked": false
     },
     {
       "name": "db",
@@ -125,8 +112,7 @@
       "model": "sonnet",
       "layer": "L2",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-db"
+      "forked": false
     },
     {
       "name": "debug",
@@ -134,8 +120,7 @@
       "model": "sonnet",
       "layer": "L2",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-debug"
+      "forked": false
     },
     {
       "name": "decision-form",
@@ -143,8 +128,7 @@
       "model": "sonnet",
       "layer": "L3",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-decision-form"
+      "forked": false
     },
     {
       "name": "dependency-doctor",
@@ -152,8 +136,7 @@
       "model": "haiku",
       "layer": "L3",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-dependency-doctor"
+      "forked": false
     },
     {
       "name": "deploy",
@@ -161,8 +144,7 @@
       "model": "sonnet",
       "layer": "L2",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-deploy"
+      "forked": false
     },
     {
       "name": "design",
@@ -170,8 +152,7 @@
       "model": "sonnet",
       "layer": "L2",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-design"
+      "forked": false
     },
     {
       "name": "doc-processor",
@@ -179,8 +160,7 @@
       "model": "sonnet",
       "layer": "L3",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-doc-processor"
+      "forked": false
     },
     {
       "name": "docs",
@@ -188,8 +168,7 @@
       "model": "sonnet",
       "layer": "L2",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-docs"
+      "forked": false
     },
     {
       "name": "docs-seeker",
@@ -197,8 +176,7 @@
       "model": "haiku",
       "layer": "L3",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-docs-seeker"
+      "forked": false
     },
     {
       "name": "documentation",
@@ -206,8 +184,7 @@
       "model": "sonnet",
       "layer": "L2",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-documentation"
+      "forked": false
     },
     {
       "name": "faq",
@@ -215,8 +192,7 @@
       "model": "haiku",
       "layer": "L3",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-faq"
+      "forked": false
     },
     {
       "name": "fix",
@@ -224,8 +200,7 @@
       "model": "sonnet",
       "layer": "L2",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-fix"
+      "forked": false
     },
     {
       "name": "git",
@@ -233,8 +208,7 @@
       "model": "haiku",
       "layer": "L3",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-git"
+      "forked": false
     },
     {
       "name": "guardian",
@@ -242,8 +216,7 @@
       "model": "sonnet",
       "layer": "L2",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-guardian"
+      "forked": false
     },
     {
       "name": "guardian-env",
@@ -251,8 +224,7 @@
       "model": "haiku",
       "layer": "L3",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-guardian-env"
+      "forked": false
     },
     {
       "name": "hallucination-guard",
@@ -260,8 +232,7 @@
       "model": "haiku",
       "layer": "L3",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-hallucination-guard"
+      "forked": false
     },
     {
       "name": "idea",
@@ -269,8 +240,7 @@
       "model": "opus",
       "layer": "L2",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-idea"
+      "forked": false
     },
     {
       "name": "improve-architecture",
@@ -278,8 +248,7 @@
       "model": "opus",
       "layer": "L2",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-improve-architecture"
+      "forked": false
     },
     {
       "name": "incident",
@@ -287,8 +256,7 @@
       "model": "sonnet",
       "layer": "L2",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-incident"
+      "forked": false
     },
     {
       "name": "integrate",
@@ -296,8 +264,7 @@
       "model": "sonnet",
       "layer": "L2",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-integrate"
+      "forked": false
     },
     {
       "name": "integrity-check",
@@ -305,8 +272,7 @@
       "model": "haiku",
       "layer": "L3",
       "userInvocable": false,
-      "forked": false,
-      "slashAlias": "topia-integrity-check"
+      "forked": false
     },
     {
       "name": "journal",
@@ -314,8 +280,7 @@
       "model": "haiku",
       "layer": "L3",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-journal"
+      "forked": false
     },
     {
       "name": "launch",
@@ -323,8 +288,7 @@
       "model": "sonnet",
       "layer": "L1",
       "userInvocable": true,
-      "forked": true,
-      "slashAlias": "topia-launch"
+      "forked": true
     },
     {
       "name": "logic-guardian",
@@ -332,8 +296,7 @@
       "model": "sonnet",
       "layer": "L2",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-logic-guardian"
+      "forked": false
     },
     {
       "name": "marketing",
@@ -341,8 +304,7 @@
       "model": "sonnet",
       "layer": "L2",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-marketing"
+      "forked": false
     },
     {
       "name": "mcp-builder",
@@ -350,8 +312,7 @@
       "model": "sonnet",
       "layer": "L2",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-mcp-builder"
+      "forked": false
     },
     {
       "name": "neural-memory",
@@ -359,8 +320,7 @@
       "model": "haiku",
       "layer": "L3",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-neural-memory"
+      "forked": false
     },
     {
       "name": "onboard",
@@ -368,8 +328,7 @@
       "model": "sonnet",
       "layer": "L2",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-onboard"
+      "forked": false
     },
     {
       "name": "org-config",
@@ -377,8 +336,7 @@
       "model": "sonnet",
       "layer": "L2",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-org-config"
+      "forked": false
     },
     {
       "name": "perf",
@@ -386,8 +344,7 @@
       "model": "sonnet",
       "layer": "L2",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-perf"
+      "forked": false
     },
     {
       "name": "plan",
@@ -395,8 +352,7 @@
       "model": "opus",
       "layer": "L2",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-plan"
+      "forked": false
     },
     {
       "name": "problem-solver",
@@ -404,8 +360,7 @@
       "model": "sonnet",
       "layer": "L3",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-problem-solver"
+      "forked": false
     },
     {
       "name": "quarantine",
@@ -413,8 +368,7 @@
       "model": "opus",
       "layer": "L3",
       "userInvocable": false,
-      "forked": false,
-      "slashAlias": "topia-quarantine"
+      "forked": false
     },
     {
       "name": "readiness",
@@ -422,8 +376,7 @@
       "model": "sonnet",
       "layer": "L2",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-readiness"
+      "forked": false
     },
     {
       "name": "recall",
@@ -431,8 +384,7 @@
       "model": "haiku",
       "layer": "L3",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-recall"
+      "forked": false
     },
     {
       "name": "recon",
@@ -440,8 +392,7 @@
       "model": "haiku",
       "layer": "L2",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-recon"
+      "forked": false
     },
     {
       "name": "rescue",
@@ -449,8 +400,7 @@
       "model": "sonnet",
       "layer": "L1",
       "userInvocable": true,
-      "forked": true,
-      "slashAlias": "topia-rescue"
+      "forked": true
     },
     {
       "name": "research",
@@ -458,8 +408,7 @@
       "model": "haiku",
       "layer": "L3",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-research"
+      "forked": false
     },
     {
       "name": "retro",
@@ -467,8 +416,7 @@
       "model": "sonnet",
       "layer": "L2",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-retro"
+      "forked": false
     },
     {
       "name": "review",
@@ -476,8 +424,7 @@
       "model": "sonnet",
       "layer": "L2",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-review"
+      "forked": false
     },
     {
       "name": "review-intake",
@@ -485,8 +432,7 @@
       "model": "sonnet",
       "layer": "L2",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-review-intake"
+      "forked": false
     },
     {
       "name": "safeguard",
@@ -494,8 +440,7 @@
       "model": "sonnet",
       "layer": "L2",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-safeguard"
+      "forked": false
     },
     {
       "name": "sast",
@@ -503,8 +448,7 @@
       "model": "haiku",
       "layer": "L3",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-sast"
+      "forked": false
     },
     {
       "name": "scaffold",
@@ -512,8 +456,7 @@
       "model": "sonnet",
       "layer": "L1",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-scaffold"
+      "forked": false
     },
     {
       "name": "scope-guard",
@@ -521,8 +464,7 @@
       "model": "haiku",
       "layer": "L3",
       "userInvocable": false,
-      "forked": false,
-      "slashAlias": "topia-scope-guard"
+      "forked": false
     },
     {
       "name": "sequential-thinking",
@@ -530,8 +472,7 @@
       "model": "sonnet",
       "layer": "L3",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-sequential-thinking"
+      "forked": false
     },
     {
       "name": "session-bridge",
@@ -539,8 +480,7 @@
       "model": "haiku",
       "layer": "L3",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-session-bridge"
+      "forked": false
     },
     {
       "name": "skill-forge",
@@ -548,8 +488,7 @@
       "model": "opus",
       "layer": "L2",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-skill-forge"
+      "forked": false
     },
     {
       "name": "skill-router",
@@ -557,8 +496,7 @@
       "model": "haiku",
       "layer": "L0",
       "userInvocable": false,
-      "forked": false,
-      "slashAlias": "topia-skill-router"
+      "forked": false
     },
     {
       "name": "slides",
@@ -566,8 +504,7 @@
       "model": "sonnet",
       "layer": "L3",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-slides"
+      "forked": false
     },
     {
       "name": "stack",
@@ -575,8 +512,7 @@
       "model": "sonnet",
       "layer": "L2",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-stack"
+      "forked": false
     },
     {
       "name": "surgeon",
@@ -584,8 +520,7 @@
       "model": "sonnet",
       "layer": "L2",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-surgeon"
+      "forked": false
     },
     {
       "name": "team",
@@ -593,8 +528,7 @@
       "model": "opus",
       "layer": "L1",
       "userInvocable": true,
-      "forked": true,
-      "slashAlias": "topia-team"
+      "forked": true
     },
     {
       "name": "test",
@@ -602,8 +536,7 @@
       "model": "sonnet",
       "layer": "L2",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-test"
+      "forked": false
     },
     {
       "name": "trend-scout",
@@ -611,8 +544,7 @@
       "model": "haiku",
       "layer": "L3",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-trend-scout"
+      "forked": false
     },
     {
       "name": "tut",
@@ -620,8 +552,7 @@
       "model": "haiku",
       "layer": "L3",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-tut"
+      "forked": false
     },
     {
       "name": "verification",
@@ -629,8 +560,7 @@
       "model": "haiku",
       "layer": "L3",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-verification"
+      "forked": false
     },
     {
       "name": "video-creator",
@@ -638,8 +568,7 @@
       "model": "sonnet",
       "layer": "L3",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-video-creator"
+      "forked": false
     },
     {
       "name": "watchdog",
@@ -647,8 +576,7 @@
       "model": "sonnet",
       "layer": "L3",
       "userInvocable": true,
-      "forked": false,
-      "slashAlias": "topia-watchdog"
+      "forked": false
     },
     {
       "name": "worktree",
@@ -656,8 +584,7 @@
       "model": "haiku",
       "layer": "L3",
       "userInvocable": false,
-      "forked": false,
-      "slashAlias": "topia-worktree"
+      "forked": false
     }
   ]
 }

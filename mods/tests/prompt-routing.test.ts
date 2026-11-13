@@ -209,7 +209,7 @@ test('with promptRouting off in /config a prompt passes untouched', { options: {
 const ROUTER_BLOCK = [
   '',
   '🧭 [Topia intent-router] Suggested: topia:build (L1, sonnet) — wording: "fix", "add"',
-  '   Slash: /topia-build or /topia:build',
+  '   Slash: /topia:build',
   '   Chain: build → plan → fix → readiness → guardian',
   '   Runs in the background: its report arrives later as a task notification. Wait for it before any follow-up step.',
   '   Also consider: test, debug',

@@ -85,15 +85,15 @@ Omit empty sections. Keep descriptions specific and falsifiable. No preamble, re
 
 ### Step 0.05 — Bare Slash Guard (namespace collision prevention)
 
-If the user message is **exactly** a bare slash command matching a Topia skill name (e.g. `/design`, `/plan`, `/build`) — **without** the `topia-` prefix or `topia:` / `topia ` namespace:
+If the user message is **exactly** a bare slash command matching a Topia skill name (e.g. `/design`, `/plan`, `/build`) — **without** the `topia:` / `topia ` namespace:
 
 1. **Do NOT** invoke the Topia skill
-2. Reply with a one-line redirect: use `/topia-<skill>` (preferred), or `/topia:<skill>`, or `/topia <skill>`
+2. Reply with a one-line redirect: use `/topia:<skill>`, or `/topia <skill>`
 3. Explain briefly: bare names collide with Claude Code built-in slash commands
 
 Examples:
-- User: `/design` → "Use `/topia-design` or `/topia:design` — bare `/design` is not a Topia command."
-- User: `/topia-design` or `/topia:design` or `/topia design` → proceed with normal routing
+- User: `/design` → "Use `/topia:design` — bare `/design` is not a Topia command."
+- User: `/topia:design` or `/topia design` → proceed with normal routing
 
 Keyword auto-routing (e.g. user says "design the landing page" without a slash) is unchanged.
 

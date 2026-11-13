@@ -114,7 +114,7 @@ Rules:
 
 **Telemetry:** Session-end metrics and `models_used` resolve tiers from `skills/<name>/SKILL.md` first (then `agents/<name>.md`). Agent subagent wrappers should match their skill tier so reports reflect intended cost profile.
 
-**Slash commands:** User-facing Topia skills are invoked as `/topia-<skill>` (hyphen alias), `/topia:<skill>` (plugin namespace), or `/topia <skill>` (router). Bare `/skill` is intentionally not a Topia entry point.
+**Slash commands:** User-facing Topia skills are invoked as `/topia:<skill>` (the plugin namespace; one slash-menu entry per skill) or `/topia <skill>` (router). There are no `/topia-<skill>` alias commands. Bare `/skill` is intentionally not a Topia entry point.
 
 ### Parallel Execution
 

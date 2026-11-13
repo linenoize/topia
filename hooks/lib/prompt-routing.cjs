@@ -136,7 +136,7 @@ function formatSuggestion(prediction) {
   const words = top.keywords.map((keyword) => `"${keyword}"`).join(', ');
   const lines = [
     `${SUGGESTION_HEAD} Suggested: topia:${top.name} (${route.layer}, ${route.model}) — wording: ${words}`,
-    `   Slash: /topia-${top.name} or /topia:${top.name}`,
+    `   Slash: /topia:${top.name}`,
   ];
   if (prediction.chain.length > 0) lines.push(`   Chain: ${[top.name, ...prediction.chain.slice(0, 4)].join(' → ')}`);
   if (route.forked) lines.push('   Runs in the background: its report arrives later as a task notification. Wait for it before any follow-up step.');

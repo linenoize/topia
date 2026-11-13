@@ -98,7 +98,7 @@ Use `strict` if user passed `--strict`.
 
 **Team org policy:**
 
-Do NOT only run bash — invoke the **org-config** skill per [`commands/org-config.md`](org-config.md) and [`skills/org-config/SKILL.md`](../skills/org-config/SKILL.md). Ensure `.topia/org/` exists:
+Do NOT only run bash — invoke the **org-config** skill per [`skills/org-config/SKILL.md`](../skills/org-config/SKILL.md). Ensure `.topia/org/` exists:
 
 ```bash
 mkdir -p .topia/org

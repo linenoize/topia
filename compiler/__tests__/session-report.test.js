@@ -65,6 +65,7 @@ describe('skill-catalog.cjs bare slash', () => {
 
   test('formatBareSlashRedirect for build', () => {
     const msg = formatBareSlashRedirect('build');
-    assert.match(msg, /topia-build/);
+    assert.match(msg, /\/topia:build/);
+    assert.doesNotMatch(msg, /topia-build/);
   });
 });
