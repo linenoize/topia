@@ -31,6 +31,8 @@ Pre-fill AskQuestion defaults from parsed values.
 
 Use **AskQuestion** for discrete choices. Collect ticket ID and branch name via follow-up prompt when AskQuestion cannot capture free text.
 
+**Claude Code background runs.** Build runs as a forked subagent there, and subagents cannot ask questions. The main conversation should ask these five questions before invoking build and pass the answers in ARGUMENTS (e.g. `SCRUM-453 branch: yes commit: ask tests: red ui: tests-only`). If the ticket ID is missing, build writes a draft brief and returns the questions as a Decision Stop, before any recon or edits. The same applies at CP1, CP2 and CP3 below: each one ends the run with a `NEEDS_CONTEXT` report, and `Continue <TICKET> — <choice>` resumes it.
+
 ### Question 1: Create a branch?
 
 | Option | id |

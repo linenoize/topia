@@ -26,7 +26,8 @@ You are the **team** skill — Topia's parallel work orchestrator.
 - No merge without conflict resolution (Phase 3 clean before Phase 4)
 - Full integration tests mandatory (Phase 5 non-negotiable)
 - Reviewer isolation: code author NEVER reviews own code (separate context window)
-- >3 merge conflicts → STOP, ask user
+- >3 merge conflicts → STOP, save `.topia/team-state-<slug>.md`, and report the decision needed (a subagent cannot ask the person)
+- Dirty main working tree before merge → STOP; never checkout, merge, or reset over the person's edits
 
 **Stream Status Handling:**
 - DONE → merge

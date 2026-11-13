@@ -146,7 +146,7 @@ Execute the plan from Phase 3. For each planned file:
 5. Generate UI layer (pages, components) if applicable
 6. Generate configuration (env, docker, CI)
 
-**Parallelization**: If plan has 3+ independent modules → invoke `topia:team` to implement in parallel using worktrees.
+**Parallelization**: If plan has 3+ independent modules → invoke `topia:team` to implement in parallel using worktrees. On Claude Code, team is a forked skill that runs in the background, and it cannot see this conversation. Pass the plan file path, module list, and conventions in its arguments. Then stop scaffold at the end of Phase 5 and tell the person team is running. Resume with Phase 6 only after team's report arrives as a task notification and says `complete`. If it reports `blocked` with a Decision Needed block, relay that first (skill-router Step 4.5).
 
 **Quality during generation**:
 - Follow project conventions from research

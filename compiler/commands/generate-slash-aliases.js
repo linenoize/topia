@@ -25,6 +25,11 @@ function escapeYamlDoubleQuoted(value) {
   return value.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
 }
 
+// A `context: fork` skill runs as a subagent, in the background by default on
+// Claude Code 2.1.218+, so the main conversation does not follow its workflow.
+const FORKED_STEP =
+  'Pass the request as the skill arguments. The skill runs as a forked subagent, in the background by default, and cannot see this conversation. Do not claim results until its report arrives as a task notification; then relay any Decision Needed block (skill-router Step 4.5)';
+
 function renderAliasCommand(entry) {
   const desc = escapeYamlDoubleQuoted(entry.description || `Topia ${entry.name} skill`);
   return `---
@@ -38,7 +43,7 @@ disable-model-invocation: true
 User-facing alias for the Topia **${entry.name}** skill (\`/topia:${entry.name}\`).
 
 1. Invoke the Skill tool with \`topia:${entry.name}\`
-2. Follow the full workflow defined in that skill — do not shortcut steps
+2. ${entry.forked ? FORKED_STEP : 'Follow the full workflow defined in that skill — do not shortcut steps'}
 3. Announce: "Routing to topia:${entry.name} (${entry.layer}, ${entry.model})"
 
 Also reachable via \`/topia ${entry.name}\` or \`/topia:${entry.name}\`.
@@ -129,6 +134,7 @@ function skillRoutes(catalog) {
     model: s.model,
     description: s.description,
     userInvocable: s.userInvocable,
+    forked: s.forked,
     keywords: INTENT_KEYWORDS[s.name] ?? [],
     prompts: INTENT_PROMPTS[s.name] ?? [],
     chain: (INTENT_CHAINS[s.name] ?? []).filter((next) => known.has(next)),
@@ -161,6 +167,7 @@ export type SkillRoute = {
   model: string
   description: string
   userInvocable: boolean
+  forked: boolean
   keywords: readonly string[]
   prompts: readonly string[]
   chain: readonly string[]

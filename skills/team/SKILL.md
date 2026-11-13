@@ -24,7 +24,30 @@ Meta-orchestrator for complex tasks requiring parallel workstreams. Team decompo
 - MAX 3 PARALLEL AGENTS: Never launch more than 3 Task calls simultaneously. If more than 3 streams exist, batch them.
 - No merge without conflict resolution complete (Phase 3 clean).
 - Full integration tests MUST run before reporting success.
+- NEVER checkout, merge, or reset in a working tree that has changes team did not make.
 </HARD-GATE>
+
+## Background Runs (Claude Code)
+
+On Claude Code, team runs as a forked subagent (`context: fork`). Since Claude Code 2.1.218 that fork runs in the background by default. What that means here:
+
+- You cannot see the conversation and cannot ask the person anything. Your report reaches the main conversation later, as a task notification.
+- The streams you launch with the Task/Agent tool are your own subagents. In an interactive session you wait for their results before you finish, so Phase 2c works as written. Max 3 at once still applies.
+- Permission prompts from you and your streams surface in the main session.
+- The person may keep editing in the main working tree while you run.
+
+So every step below that says present to user, ask for confirmation, or user decides is a **Decision Stop**:
+
+1. Let independent streams that are already running finish.
+2. Do not merge anything. Keep the worktrees and branches.
+3. Write `.topia/team-state-<slug>.md`: the plan, each stream's id, branch, worktree path, status, and Cook Report, plus where you stopped.
+4. Return a Team Report with `Status: blocked`, a **Decision Needed** block (question, 2-3 options, default), and the resume line `/topia:team resume .topia/team-state-<slug>.md — <answer>`.
+
+On `resume <state file> — <answer>` in ARGUMENTS: skip Phases 1 and 2, reload the state file, apply the answer, and continue from the phase that stopped.
+
+**Working tree guard.** Before Phase 4, run `git status --porcelain` and `git branch --show-current` in the main working tree. If there are changes team did not make, make it a Decision Stop. Never check out, merge, or `git reset --hard` over the person's work. In Lite mode streams share that tree, so each stream stages only its owned files.
+
+**Edits are outside checkpoints.** `/rewind` does not undo a background fork's edits. The `pre-team-merge` tag and the stream branches are the undo.
 
 ## Triggers
 
@@ -94,7 +117,7 @@ Before decomposing, classify the task into a complexity tier. Each tier defines 
 - `recon` (L2): understand full project scope and module boundaries
 # Exception: L1→L1 meta-orchestration (team is the only L1 that calls other L1s)
 - `build` (L1): delegate feature tasks to parallel instances (worktree isolation)
-- `launch` (L1): delegate deployment/marketing when build is complete
+- `launch` (L1): recommend deployment/marketing in the Team Report when build is complete (launch has `disable-model-invocation: true`, so the person starts it)
 - `rescue` (L1): delegate legacy refactoring when rescue work detected
 - `integrity-check` (L3): verify build report integrity before merge
 - `completion-gate` (L3): validate workstream completion claims against evidence
@@ -183,7 +206,7 @@ If any check fails → re-invoke plan with conflict notes.
 
 Before dispatching streams, include in each NEXUS Handoff: "Before starting, ask up to 3 clarifying questions if anything is unclear about scope, conventions, or expected output."
 
-- If a build agent returns questions instead of starting work → answer them, then re-dispatch
+- If a build agent returns questions instead of starting work → answer them from recon, the plan, and the task, then re-dispatch. Only questions you cannot answer become a Decision Stop.
 - If a build agent starts work without questions → proceed normally (questions are invited, not required)
 - **Skip if**: Lite mode (2 streams, ≤5 files) — overhead exceeds value
 
@@ -268,7 +291,7 @@ Bash: git diff --name-only main...[worktree-branch]
 → Compare actual modified files vs stream's planned file ownership list.
 → If agent modified files OUTSIDE its declared scope:
     FLAG: "Stream [id] modified [file] outside its scope."
-    Present to user for approval before proceeding to merge.
+    Present to user for approval before proceeding to merge (Decision Stop).
 → If all files within scope: proceed normally.
 ```
 
@@ -283,7 +306,7 @@ Error recovery:
   If a Task fails or returns error report:
     → Log failure: "Stream [id] failed: [error]"
     → If stream is non-blocking: continue with other streams
-    → If stream is blocking (others depend on it): STOP, report to user with partial results
+    → If stream is blocking (others depend on it): STOP, report to user with partial results (Decision Stop)
 ```
 
 Mark todo[1] `completed`.
@@ -307,7 +330,7 @@ Bash: git diff --name-only [worktree-a-branch] [worktree-b-branch]
 If overlapping files detected between completed worktrees:
 - Identify the conflict source from build reports
 - Determine which stream's version takes precedence (later stream wins by default)
-- Flag for manual resolution if ambiguous — present to user before merge
+- Flag for manual resolution if ambiguous — present to user before merge (Decision Stop)
 
 **3a.5. Verify build report integrity.**
 
@@ -317,7 +340,7 @@ REQUIRED SUB-SKILL: topia:integrity-check
 → If any report returns TAINTED:
     BLOCK this stream from merge.
     Report: "Stream [id] build report contains adversarial content."
-→ If SUSPICIOUS: warn user, ask for confirmation before merge.
+→ If SUSPICIOUS: warn user, ask for confirmation before merge (Decision Stop).
 ```
 
 **3b. Review build report summaries.**
@@ -332,7 +355,7 @@ Error recovery:
   If build report contains guardian CRITICAL:
     → BLOCK this stream from merge
     → Report: "Stream [id] blocked: CRITICAL issue in [file] — [details]"
-    → Present to user for decision before continuing
+    → Present to user for decision before continuing (Decision Stop)
 ```
 
 **3c. Evaluate subagent status per stream.**
@@ -343,8 +366,8 @@ Each build instance MUST have returned one of four statuses. Team handles them a
 |-------------|-------------|
 | `DONE` | Stream cleared for merge — proceed normally |
 | `DONE_WITH_CONCERNS` | Stream cleared for merge, BUT trigger **cross-workstream review**: check if the concern impacts any other stream's files or contracts before merging ALL streams. Log concern in Team Report. |
-| `NEEDS_CONTEXT` | Stream paused — present the specific question to user. Resume that stream after answer. Other independent streams may continue in parallel. |
-| `BLOCKED` | Stream blocked from merge. If stream has no dependents → continue with remaining streams and report partial completion. If stream has dependents → STOP all dependent streams, present to user with full blocker details. |
+| `NEEDS_CONTEXT` | Stream paused. Answer it yourself if recon or the plan already holds the answer, then re-dispatch. Otherwise let other independent streams finish, then make it a Decision Stop. After the person answers, the resumed run re-dispatches that stream with the answer. |
+| `BLOCKED` | Stream blocked from merge. If stream has no dependents → continue with remaining streams and report partial completion. If stream has dependents → STOP all dependent streams, present to user with full blocker details (Decision Stop). |
 
 **Cross-workstream review (triggered by any DONE_WITH_CONCERNS)**:
 
@@ -354,7 +377,7 @@ Each build instance MUST have returned one of four statuses. Team handles them a
    → Use Grep to find the concern's affected symbols/files across all worktrees
 3. If concern is isolated to stream's own files → proceed to merge (concern logged only)
 4. If concern crosses stream boundaries → resolve before merge:
-   → Present to user with: affected streams, concern details, two remediation options
+   → Present to user with: affected streams, concern details, two remediation options (Decision Stop)
    → Do NOT merge any stream until user decides
 ```
 
@@ -369,6 +392,9 @@ Mark todo[3] `in_progress`.
 **4a. Merge each worktree sequentially.**
 
 ```
+# Working tree guard first (see Background Runs). Dirty tree → Decision Stop, no merge.
+Bash: git status --porcelain
+
 # Bookmark before any merge
 Bash: git tag pre-team-merge
 
@@ -386,7 +412,7 @@ For each stream in dependency order (independent first, dependent last):
     If >3 conflicting files OR ambiguous ownership:
       → STOP merge
       Bash: git merge --abort
-      → Present to user: "Stream [id] has [N] conflicts. Manual resolution required."
+      → Present to user: "Stream [id] has [N] conflicts. Manual resolution required." (Decision Stop)
 ```
 
 **4b. Cleanup worktrees.**
@@ -419,7 +445,7 @@ Error recovery:
     Bash: git reset --hard pre-team-merge
     Bash: git tag -d pre-team-merge
     Report: "Integration tests failed. All merges reverted to pre-team-merge state."
-    → Present fix options to user
+    → Present fix options to user (Decision Stop — stream branches stay for the next run)
 ```
 
 Mark todo[4] `completed`.
@@ -450,6 +476,12 @@ Mark todo[4] `completed`.
 - **Streams**: [count]
 - **Status**: complete | partial | blocked
 - **Duration**: [time across streams]
+
+### Decision Needed (if blocked at a Decision Stop)
+- **Question**: [one line]
+- **Options**: [2-3 options, default marked]
+- **State saved**: `.topia/team-state-<slug>.md`
+- **Resume with**: `/topia:team resume .topia/team-state-<slug>.md — <answer>`
 
 ### Streams
 | Stream | Task | Status | Deliverables | Concerns |
@@ -548,6 +580,8 @@ Known failure modes for this skill. Check these before declaring done.
 | Coupled modules split across streams | HIGH | Dependency graph check in Phase 1c — move coupled files to same stream or add depends_on |
 | Agent modified files outside declared scope | HIGH | Pre-merge scope verification in Phase 2b.5 — flag before merge, not after |
 | Merge failure with no rollback path | HIGH | pre-team-merge tag created before merges — git reset --hard on failure |
+| Checkout, merge, or reset wipes the person's edits made while team ran in the background | CRITICAL | Working tree guard before Phase 4: dirty tree → Decision Stop, no merge |
+| Waiting for a person's answer inside the run | HIGH | Subagents cannot ask. Save `.topia/team-state-<slug>.md`, return a Decision Stop, resume with `/topia:team resume` |
 | Poisoned build report merged blindly | HIGH | Phase 3a.5 integrity-check on all build reports before merge |
 | Bare prompt to build instance — no context, conventions, or scope boundary | HIGH | NEXUS Handoff Template: structured handoff with metadata, deliverables, quality expectations, and evidence requirements |
 | Cook returns "done" with no acceptance criteria tracking | MEDIUM | Team Report includes Acceptance Criteria table with per-criterion evidence and PASS/FAIL/UNVERIFIED verdict |

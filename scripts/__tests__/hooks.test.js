@@ -126,6 +126,8 @@ describe('intent-router', () => {
     assert.strictEqual(exitCode, 0);
     assert.match(stdout, /\[Topia intent-router\] Suggested: topia:build \(L1, sonnet\) — wording: "fix", "add"/);
     assert.match(stdout, /Also consider: test, debug/);
+    // build is `context: fork`, so the hook says its report comes back later.
+    assert.match(stdout, /Runs in the background: its report arrives later as a task notification/);
   });
 
   test('stays silent when nothing matches or the skill is named outright', () => {
