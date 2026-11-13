@@ -4,6 +4,20 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
+## [3.12.1] — 2026-11-13
+
+A clearer status line, and three hooks that weren't reaching Claude now do.
+
+### Changed
+
+- **Status line** — now `Project: 'C:\CodeBase\topia' · 26% of weekly · topia saved −3.6k chars`. It drops context %, cache %, session cost and the five-hour figure. Weekly is your account's seven-day limit, rounded down to match `/usage`. On a Fable model it adds `(31% of Fable weekly)` once Claude Code reports that window to plugins; today only `/usage` has it, so the part stays hidden rather than showing a dash. Long paths keep the drive and the last two folders.
+
+### Fixed
+
+- **The secrets scan never ran in Claude Code.** It read the command from a `CLAUDE_TOOL_INPUT` variable that Claude Code doesn't set, so every commit passed unscanned. It now reads the hook's stdin, and it also catches a commit inside a chained line (`cd x && git commit`, `git -C dir commit`, PowerShell `; git commit`).
+- **Shell hooks didn't run when Claude Code uses PowerShell** (Windows without Git Bash). The secrets scan, push checkpoint, commit learnings and the guardian preset now match `Bash|PowerShell`. Bash is unchanged on macOS and Linux.
+- **Claude never saw why the privacy guard blocked a read.** The reason went to stdout, which Claude Code drops on a block. It now goes to stderr, and the sensitive-file warning reaches the model as context instead of being dropped.
+
 ## [3.12.0] — 2026-11-13
 
 The Salesforce tools moved out of Topia into their own plugin, `topia-sf`, in the same marketplace. Topia itself no longer loads a Salesforce MCP server, mod, or commands. If you don't use Salesforce, nothing else changes.

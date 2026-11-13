@@ -5,7 +5,9 @@
  */
 
 import assert from 'node:assert';
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { describe, test } from 'node:test';
 import { fileURLToPath } from 'node:url';
@@ -27,26 +29,41 @@ function runHook(hookName, stdinInput, env = {}) {
       env: { ...process.env, ...env },
       timeout: 5000,
     });
-    return { stdout, exitCode: 0 };
+    return { stdout, stderr: '', exitCode: 0 };
   } catch (err) {
-    return { stdout: err.stdout || '', exitCode: err.status || 1 };
+    return { stdout: err.stdout || '', stderr: err.stderr || '', exitCode: err.status || 1 };
   }
 }
 
 // --- Pre-Tool Guard (Privacy Nexus) ---
 
 describe('pre-tool-guard: privacy nexus', () => {
-  test('WARN on .env file', () => {
-    const { stdout, exitCode } = runHook('pre-tool-guard', '{"tool_input": {"file_path": ".env"}}');
+  // Claude Code reads stdout as JSON on exit 0; plain text there never reaches the model.
+  test('WARN on .env file reaches the model as additionalContext', () => {
+    const { stdout, exitCode } = runHook(
+      'pre-tool-guard',
+      '{"hook_event_name":"PreToolUse","tool_input": {"file_path": ".env"}}',
+    );
     assert.strictEqual(exitCode, 0, 'WARN should not block (exit 0)');
-    assert.ok(stdout.includes('privacy-nexus'), 'should show privacy-nexus label');
-    assert.ok(stdout.includes('Sensitive file'), 'should warn about sensitive file');
+    const out = JSON.parse(stdout);
+    assert.strictEqual(out.hookSpecificOutput.hookEventName, 'PreToolUse');
+    assert.ok(out.hookSpecificOutput.additionalContext.includes('privacy-nexus'), 'should name privacy-nexus');
+    assert.ok(out.hookSpecificOutput.additionalContext.includes('Sensitive file'), 'should warn about sensitive file');
+    assert.ok(out.systemMessage.includes('.env'), 'the person sees which file');
+    assert.strictEqual(
+      out.hookSpecificOutput.permissionDecision,
+      undefined,
+      'a warning does not change the permission',
+    );
   });
 
-  test('BLOCK on private key file', () => {
-    const { stdout, exitCode } = runHook('pre-tool-guard', '{"tool_input": {"file_path": "id_rsa"}}');
+  // On exit 2, Claude Code feeds stderr back to the model as the reason.
+  test('BLOCK on private key file tells the model why, on stderr', () => {
+    const { stderr, exitCode } = runHook('pre-tool-guard', '{"tool_input": {"file_path": "id_rsa"}}');
     assert.strictEqual(exitCode, 2, 'BLOCK should exit with code 2');
-    assert.ok(stdout.includes('BLOCKED'), 'should show BLOCKED label');
+    assert.ok(stderr.includes('BLOCKED'), 'should show BLOCKED label');
+    assert.ok(stderr.includes('id_rsa'), 'should name the file');
+    assert.ok(stderr.includes('.topia/privacy.json'), 'should say how to allow it');
   });
 
   test('BLOCK on .pem file', () => {
@@ -140,5 +157,68 @@ describe('intent-router', () => {
   test('graceful on invalid JSON', () => {
     const { exitCode } = runHook('intent-router', 'not json');
     assert.strictEqual(exitCode, 0, 'should exit cleanly on invalid JSON');
+  });
+});
+
+// --- Secrets Scan ---
+// Claude Code passes hook input as JSON on stdin. It never sets CLAUDE_TOOL_INPUT,
+// so a scan that read only that variable never ran.
+
+describe('secrets-scan: reads the command from stdin', () => {
+  // A key shaped like an AWS access key, built here so no real-looking key sits in the repo.
+  const fakeKey = `AKIA${'Q'.repeat(16)}`;
+
+  function stagedRepo() {
+    const dir = mkdtempSync(path.join(tmpdir(), 'topia-secrets-'));
+    const git = (...args) => execFileSync('git', args, { cwd: dir, stdio: 'pipe' });
+    git('init', '-q');
+    writeFileSync(path.join(dir, 'config.js'), `const key = '${fakeKey}'\n`);
+    git('add', 'config.js');
+    return dir;
+  }
+
+  function scan(dir, command) {
+    const hookPath = path.join(HOOKS_DIR, 'secrets-scan', 'index.cjs');
+    const env = { ...process.env };
+    delete env.CLAUDE_TOOL_INPUT;
+    return spawnSync('node', [hookPath], {
+      cwd: dir,
+      input: JSON.stringify({ hook_event_name: 'PreToolUse', tool_name: 'Bash', tool_input: { command } }),
+      encoding: 'utf-8',
+      env,
+      timeout: 10000,
+    });
+  }
+
+  test('blocks a commit of a staged key', () => {
+    const dir = stagedRepo();
+    try {
+      const run = scan(dir, 'git commit -m "add config"');
+      assert.strictEqual(run.status, 2, run.stderr);
+      assert.ok(run.stderr.includes('AWS Access Key'));
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  test('catches the commit inside a chained or PowerShell-style line', () => {
+    const dir = stagedRepo();
+    try {
+      assert.strictEqual(scan(dir, 'cd . && git commit -m x').status, 2);
+      assert.strictEqual(scan(dir, 'git -C . commit -m x').status, 2);
+      assert.strictEqual(scan(dir, 'Set-Location .; git commit -m x').status, 2);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  test('lets other git commands through', () => {
+    const dir = stagedRepo();
+    try {
+      assert.strictEqual(scan(dir, 'git status').status, 0);
+      assert.strictEqual(scan(dir, 'git log --grep commit').status, 0);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 });

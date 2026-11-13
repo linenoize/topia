@@ -111,7 +111,7 @@ export function buildPreset(preset, opts = {}) {
           ],
         },
         {
-          matcher: 'Bash',
+          matcher: 'Bash|PowerShell',
           hooks: [
             {
               type: 'command',

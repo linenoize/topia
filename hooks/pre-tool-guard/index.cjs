@@ -98,8 +98,10 @@ process.stdin.on('end', () => {
         agent_message: blockMsg,
       });
     } else {
-      console.log(`\n🚫 ${blockMsg}`);
-      console.log('  Override: add path to .topia/privacy.json "allow" list if intentional.\n');
+      // On exit 2 Claude Code hands stderr to the model as the reason; stdout is dropped.
+      process.stderr.write(
+        `🚫 ${blockMsg}\nOverride: add the path to the "allow" list in .topia/privacy.json if reading it is intentional.\n`,
+      );
     }
     process.exit(2); // Exit code 2 = BLOCK
   }
@@ -109,12 +111,17 @@ process.stdin.on('end', () => {
     // Content-aware check: scan first 4KB for secret patterns
     const contentWarning = scanContentForSecrets(filePath);
 
-    console.log(`\n⚠ [Topia privacy-nexus] Sensitive file: ${filePath}`);
-    if (contentWarning) {
-      console.log(`  Content scan: ${contentWarning}`);
-    }
-    console.log('  This file may contain secrets. Confirm access is intentional.');
-    console.log('  Elevated skills (sentinel, review, audit) bypass this warning.\n');
+    const lines = [`⚠ [Topia privacy-nexus] Sensitive file: ${filePath}`];
+    if (contentWarning) lines.push(`Content scan: ${contentWarning}`);
+    lines.push('This file may contain secrets. Read it only if the task needs it, and never repeat secret values.');
+    lines.push('Elevated skills (guardian, review, audit) bypass this warning.');
+    // Plain stdout on exit 0 never reaches the model; this JSON does. It warns, and leaves the permission alone.
+    process.stdout.write(
+      JSON.stringify({
+        systemMessage: `Topia: sensitive file read — ${filePath}`,
+        hookSpecificOutput: { hookEventName: 'PreToolUse', additionalContext: lines.join('\n') },
+      }),
+    );
   }
 
   process.exit(0);

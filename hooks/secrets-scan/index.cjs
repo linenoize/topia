@@ -6,13 +6,36 @@
 // Zero false-positive tolerance on BLOCK patterns.
 
 const { spawnSync } = require('child_process');
+const fs = require('fs');
 
-// Only intercept git commit commands
-const input = JSON.parse(process.env.CLAUDE_TOOL_INPUT || '{}');
-const command = (input.command || '').trim();
+// Claude Code (and Cursor) pass the hook input as JSON on stdin. CLAUDE_TOOL_INPUT
+// is kept only as a fallback for older wiring; Claude Code never sets it.
+function readCommand() {
+  try {
+    const raw = fs.readFileSync(0, 'utf8');
+    if (raw.trim()) {
+      const event = JSON.parse(raw);
+      const toolInput = event.tool_input || event.toolInput || {};
+      if (typeof toolInput.command === 'string') return toolInput.command;
+      if (typeof event.command === 'string') return event.command;
+    }
+  } catch {
+    // No stdin or not JSON: fall back below.
+  }
+  try {
+    return JSON.parse(process.env.CLAUDE_TOOL_INPUT || '{}').command || '';
+  } catch {
+    return '';
+  }
+}
 
-// Check if this is a git commit command
-if (!/^git\s+commit\b/.test(command)) {
+const command = readCommand().trim();
+
+// A git commit anywhere in the line: chained (`cd x && git commit`), after a
+// PowerShell `;`, or with `git -C <dir>` / `git -c k=v` options first.
+const GIT_COMMIT_RE = /(?:^|[\s;&|(])git(?:\s+-[Cc]\s+\S+)*\s+commit\b/;
+
+if (!GIT_COMMIT_RE.test(command)) {
   // Not a commit — pass through
   process.exit(0);
 }
