@@ -41,6 +41,10 @@ Topia skills are more than just prompts. They are **interconnected behavioral sp
 4. **Signals**: Use `emit` and `listen` for event-driven coordination.
 5. **Constraints**: Use `MUST` / `MUST NOT` and `<HARD-GATE>` blocks for enforcement.
 
+## Measuring and pruning skills
+
+Before adding, rewriting or retiring a skill, check how it is actually used. [`docs/MAINTENANCE.md`](docs/MAINTENANCE.md) covers the usage report (`node scripts/usage-report.js`), what its numbers mean, and the rules for keeping, rewriting, hiding or merging a skill and for moving an MCP server to project scope.
+
 ## L4 extension packs
 
 Adding a domain pack? Read [`docs/CONTRIBUTING-L4.md`](docs/CONTRIBUTING-L4.md) — it lays out the 2-gate filter (domain coherence + core nexus integration).
