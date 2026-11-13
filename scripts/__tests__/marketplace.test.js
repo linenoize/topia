@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, test } from 'node:test';
 
@@ -32,7 +32,10 @@ describe('marketplace.json', () => {
     assert.equal(entry.version, pkg.version);
   });
 
-  test('lists topia-sf as a local plugin entry', () => {
+  // Mirrors (skill-topia, topia4hermes) ship without the Salesforce add-on.
+  const hasSf = existsSync(join(ROOT, 'topia-sf', '.claude-plugin', 'plugin.json'));
+
+  test('lists topia-sf as a local plugin entry', { skip: !hasSf && 'no topia-sf in this tree' }, () => {
     const marketplace = JSON.parse(readFileSync(join(ROOT, '.claude-plugin', 'marketplace.json'), 'utf8'));
     const entry = marketplace.plugins.find((p) => p.name === 'topia-sf');
     assert.ok(entry, 'topia-sf plugin entry required');
