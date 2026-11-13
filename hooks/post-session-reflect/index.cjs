@@ -98,6 +98,8 @@ function flushMetrics(hookData) {
   const skillTokenTotals = {};
   const skillVia = {};
   const skillChain = [];
+  const chainAt = [];
+  const chainVia = [];
 
   for (const evt of skillEvents) {
     if (!evt.skill) continue;
@@ -105,6 +107,8 @@ function flushMetrics(hookData) {
     const via = evt.via || 'skill';
     skillVia[via] = (skillVia[via] || 0) + 1;
     skillChain.push(evt.skill);
+    chainAt.push(typeof evt.ts === 'string' ? evt.ts : null);
+    chainVia.push(via);
     if (evt.duration_ms != null) {
       skillDurations[evt.skill] = (skillDurations[evt.skill] || 0) + evt.duration_ms;
     }
@@ -204,7 +208,7 @@ function flushMetrics(hookData) {
     const chainsFile = path.join(TopiaMetricsDir, 'chains.jsonl');
     upsertJsonl(
       chainsFile,
-      { session: sessionId, chain: skillChain, depth: skillChain.length },
+      { session: sessionId, chain: skillChain, at: chainAt, via: chainVia, depth: skillChain.length },
       { key: 'session', merge: mergeChain, cap: 500 },
     );
   }

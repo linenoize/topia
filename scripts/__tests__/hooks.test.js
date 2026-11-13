@@ -6,10 +6,10 @@
 
 import assert from 'node:assert';
 import { execFileSync, spawnSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { describe, test } from 'node:test';
+import { after, describe, test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -19,10 +19,11 @@ const HOOKS_DIR = path.resolve(__dirname, '../../hooks');
  * Run a hook with given stdin input and environment
  * @returns {{ stdout: string, exitCode: number }}
  */
-function runHook(hookName, stdinInput, env = {}) {
+function runHook(hookName, stdinInput, env = {}, cwd = undefined) {
   const hookPath = path.join(HOOKS_DIR, hookName, 'index.cjs');
   try {
     const stdout = execFileSync('node', [hookPath], {
+      cwd,
       input: stdinInput,
       encoding: 'utf-8',
       stdio: ['pipe', 'pipe', 'pipe'],
@@ -118,47 +119,103 @@ describe('pre-tool-guard: privacy nexus', () => {
 // --- Intent Router ---
 
 describe('intent-router', () => {
+  // Each run logs to <cwd>/.topia/metrics, so run it in a scratch project.
+  const PROJECT = mkdtempSync(path.join(tmpdir(), 'intent-router-'));
+  after(() => rmSync(PROJECT, { recursive: true, force: true }));
+  const LOG = path.join(PROJECT, '.topia', 'metrics', 'routing.jsonl');
+  const route = (stdin, env = {}) => runHook('intent-router', stdin, { CURSOR_HOOK: '', ...env }, PROJECT);
+  const logLines = () => (existsSync(LOG) ? readFileSync(LOG, 'utf8').trim().split('\n').filter(Boolean) : []);
+
+  /** The hook answers with JSON hookSpecificOutput.additionalContext, or nothing. */
+  function context(stdout) {
+    if (stdout.trim() === '') return '';
+    const out = JSON.parse(stdout);
+    assert.strictEqual(out.hookSpecificOutput.hookEventName, 'UserPromptSubmit');
+    return out.hookSpecificOutput.additionalContext;
+  }
+
   test('suggests the skill the wording points at, from the table shipped in hooks/lib', () => {
-    const { stdout, exitCode } = runHook('intent-router', '{"prompt": "fix the crash and add a unit test"}', {
+    const { stdout, exitCode } = route('{"prompt": "fix the crash and add a unit test"}', {
       CLAUDE_PLUGIN_ROOT: '/nonexistent',
-      CURSOR_HOOK: '',
     });
     assert.strictEqual(exitCode, 0);
-    assert.match(stdout, /\[Topia intent-router\] Suggested: topia:build \(L1, sonnet\) — wording: "fix", "add"/);
-    assert.match(stdout, /Also consider: test, debug/);
+    const text = context(stdout);
+    assert.match(text, /^🧭 \[Topia intent-router\] Suggested: topia:build \(L1, sonnet\) — wording: "fix", "add"/);
+    assert.match(text, /Also consider: test, debug/);
     // build is `context: fork`, so the hook says its report comes back later.
-    assert.match(stdout, /Runs in the background: its report arrives later as a task notification/);
+    assert.match(text, /Runs in the background: its report arrives later as a task notification/);
+  });
+
+  test('logs the hint to routing.jsonl: skill ids and timing, never the prompt', () => {
+    rmSync(LOG, { force: true });
+    route(JSON.stringify({ prompt: 'fix the crash for alice@example.com and add a unit test', session_id: 'sess-1' }));
+    const lines = logLines();
+    assert.strictEqual(lines.length, 1);
+    const row = JSON.parse(lines[0]);
+    assert.deepStrictEqual(Object.keys(row).sort(), ['bare', 'ms', 'session', 'skills', 'ts']);
+    assert.strictEqual(row.session, 'sess-1');
+    assert.deepStrictEqual(row.skills, ['build', 'test', 'debug']);
+    assert.strictEqual(row.bare, false);
+    assert.ok(Number.isInteger(row.ms) && row.ms >= 0);
+    for (const word of ['crash', 'alice', 'example.com', 'unit']) assert.ok(!lines[0].includes(word), word);
+  });
+
+  test('a bare slash command gets the redirect, logged as bare', () => {
+    rmSync(LOG, { force: true });
+    const { stdout, exitCode } = route(JSON.stringify({ prompt: '/debug', session_id: 'sess-2' }));
+    assert.strictEqual(exitCode, 0);
+    assert.match(context(stdout), /Bare `\/debug` is not a Topia command/);
+    const row = JSON.parse(logLines()[0]);
+    assert.deepStrictEqual([row.skills, row.bare], [['debug'], true]);
   });
 
   test('stays silent when nothing matches or the skill is named outright', () => {
+    rmSync(LOG, { force: true });
     for (const prompt of ['hello there, how are you', 'update the address field', '/topia-debug the login crash']) {
-      const { stdout, exitCode } = runHook('intent-router', JSON.stringify({ prompt }), { CURSOR_HOOK: '' });
+      const { stdout, exitCode } = route(JSON.stringify({ prompt }));
       assert.strictEqual(exitCode, 0);
       assert.strictEqual(stdout.trim(), '', prompt);
     }
+    assert.deepStrictEqual(logLines(), [], 'no hint, no log line');
   });
 
-  test('prints nothing under Cursor, which wants JSON on stdout', () => {
-    const { stdout, exitCode } = runHook('intent-router', '{"prompt": "fix the crash"}', { CURSOR_HOOK: '1' });
+  test('prints and logs nothing under Cursor, which builds its own routing', () => {
+    rmSync(LOG, { force: true });
+    const { stdout, exitCode } = route('{"prompt": "fix the crash"}', { CURSOR_HOOK: '1' });
     assert.strictEqual(exitCode, 0);
     assert.strictEqual(stdout.trim(), '');
+    assert.deepStrictEqual(logLines(), []);
   });
 
   test('exits silently on empty prompt', () => {
-    const { stdout, exitCode } = runHook('intent-router', '{"user_prompt": ""}');
+    const { stdout, exitCode } = route('{"user_prompt": ""}');
     assert.strictEqual(exitCode, 0);
     assert.strictEqual(stdout.trim(), '');
   });
 
   test('exits silently on very short prompt', () => {
-    const { stdout, exitCode } = runHook('intent-router', '{"user_prompt": "hi"}');
+    const { stdout, exitCode } = route('{"user_prompt": "hi"}');
     assert.strictEqual(exitCode, 0);
     assert.strictEqual(stdout.trim(), '');
   });
 
   test('graceful on invalid JSON', () => {
-    const { exitCode } = runHook('intent-router', 'not json');
+    const { exitCode } = route('not json');
     assert.strictEqual(exitCode, 0, 'should exit cleanly on invalid JSON');
+  });
+
+  test('runs fast enough to sit in front of every prompt (cold node start)', (t) => {
+    const runs = [];
+    for (let i = 0; i < 3; i++) {
+      const started = process.hrtime.bigint();
+      const { exitCode } = route('{"prompt": "fix the crash and add a unit test"}');
+      runs.push(Number(process.hrtime.bigint() - started) / 1e6);
+      assert.strictEqual(exitCode, 0);
+    }
+    const best = Math.round(Math.min(...runs));
+    t.diagnostic(`intent-router wall time, best of 3: ${best} ms (runs: ${runs.map(Math.round).join(', ')} ms)`);
+    // The hooks.json timeout is 5 s; a run anywhere near it is a regression.
+    assert.ok(best < 2000, `${best} ms`);
   });
 });
 

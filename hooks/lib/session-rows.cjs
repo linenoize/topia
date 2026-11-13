@@ -157,9 +157,24 @@ function upsertJsonl(file, entry, { key = 'id', merge, cap = 100 } = {}) {
   return written;
 }
 
+/** A row's `key` list, one entry per chain step (rows written before it existed get nulls). */
+function stepList(row, key) {
+  const n = (row.chain || []).length;
+  const list = Array.isArray(row[key]) ? row[key].slice(0, n) : [];
+  while (list.length < n) list.push(null);
+  return list;
+}
+
+/**
+ * Chain rows carry, per step, the skill (`chain`), when it ran (`at`, ISO) and
+ * how (`via`: skill | agent | slash), so a routing hint can be joined to the
+ * use that followed it.
+ */
 function mergeChain(prev, next) {
   const chain = [...(prev.chain || []), ...(next.chain || [])];
-  return { ...prev, ...next, chain, depth: chain.length };
+  const at = [...stepList(prev, 'at'), ...stepList(next, 'at')];
+  const via = [...stepList(prev, 'via'), ...stepList(next, 'via')];
+  return { ...prev, ...next, chain, at, via, depth: chain.length };
 }
 
 module.exports = {

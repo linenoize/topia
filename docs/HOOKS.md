@@ -260,7 +260,26 @@ These ship in plugin [`hooks/hooks.json`](../hooks/hooks.json) and automate chec
 | `post-compact` | `PostCompact` | Re-injects checkpoint + progress after `/compact` |
 | `git-push-checkpoint` | `PreToolUse` (`Bash`, `git push`) | Checkpoint before push; recommends compact or new session |
 | `tool-collector` | `PostToolUse` (all) | Per-tool totals → `.topia/metrics/tools.json` at session end |
-| `metrics-collector` | `PostToolUse` (`Skill`, `Agent`, `Task`) | Skill calls and `topia:*` subagents → `.topia/metrics/skills.json`; slash commands are read from the transcript at `Stop` |
+| `metrics-collector` | `PostToolUse` (`Skill`, `Agent`, `Task`) | Skill calls and `topia:*` subagents → `.topia/metrics/skills.json`; slash commands are read from the transcript at `Stop`. Each session's `chains.jsonl` row lists the skills in order with `at` (ISO time) and `via` (`skill` / `agent` / `slash`) per step |
+| `intent-router` | `UserPromptSubmit` (sync, `timeout: 5`) | Names the skill a prompt's wording points at, as JSON `hookSpecificOutput.additionalContext`, and logs the hint to `.topia/metrics/routing.jsonl` (below) |
+
+### intent-router
+
+Runs synchronously with a 5-second timeout, so the hint reaches the model with the prompt it was made for. (An `async: true` hook's output arrives a turn late.) It reads the prompt, scores it against `hooks/lib/skill-routes.json` (generated from `compiler/lib/intent-keywords.js`) and, when a skill clears the bar, answers with:
+
+```json
+{"hookSpecificOutput":{"hookEventName":"UserPromptSubmit","additionalContext":"🧭 [Topia intent-router] Suggested: topia:build …"}}
+```
+
+That is the documented way for a `UserPromptSubmit` hook to add context ([hooks reference](https://code.claude.com/docs/en/hooks)). A bare `/debug`-style prompt gets a redirect to `/topia:debug` instead. Where Topia's mods are loaded, the prompt-routing mod draws the same reading above the prompt and strips this block (`withoutRouterSuggestion` in `mods/lib/prompt-routing.ts`, which matches the `🧭 [Topia intent-router]` head line). Under Cursor the hook prints and logs nothing. No network, no heavy requires: about 60 ms on a cold Node start on Windows.
+
+Each hint adds one line to `.topia/metrics/routing.jsonl` in the project:
+
+```json
+{"ts":"2026-11-13T10:00:00.000Z","session":"<session id>","skills":["build","test","debug"],"ms":58,"bare":false}
+```
+
+`skills` are the hinted skill ids in rank order, `ms` is the hook's run time, `bare` marks a bare-slash redirect. The prompt is never stored. Once the file passes 512 KB it is trimmed to its newest half; write failures are ignored. `node scripts/usage-report.js --project .` joins it with `chains.jsonl` — see [MAINTENANCE.md](MAINTENANCE.md).
 
 Agent follow-up: invoke `topia:context-lifecycle` when hook messages appear. Baseline summary: `npm run metrics:baseline`.
 
