@@ -294,14 +294,16 @@ async function learnFrom($: EngineInterface, targets: SshTarget[]) {
 
 // ── quiet reports ───────────────────────────────────────────────────────────
 
-async function refreshUsage($: EngineInterface, cachePercent?: number) {
+// Weekly comes from the seven_day window. A Fable window isn't one the engine
+// gives plugins today; the match is here so the part appears if it ever does.
+async function refreshUsage($: EngineInterface) {
   const now = await $.session.usage()
-  const previous = await read($, quietUsage)
+  const model = await $.session.model()
   const line: UsageLine = {
-    contextPercent: now.context.percent,
-    cachePercent: cachePercent ?? previous?.cachePercent,
-    usd: now.cost?.usd,
-    fiveHourPercent: now.rateLimits.find(limit => limit.kind === 'five_hour')?.percentUsed,
+    root: await $.session.root(),
+    weeklyPercent: now.rateLimits.find(limit => limit.kind === 'seven_day')?.percentUsed,
+    isFableModel: /fable/i.test(String(model ?? '')),
+    fableWeeklyPercent: now.rateLimits.find(limit => /fable/i.test(String(limit.kind)))?.percentUsed,
   }
   await update($, quietUsage, () => line)
   setStatus($, 'usage', formatUsage(line, await read($, quietSavedChars)))
@@ -501,11 +503,7 @@ export const register: Register = (on, options) => {
     if (await isOn($, config, 'gitBand')) void refreshGit($)
     const result = await next(e)
     if (e.agentId === undefined) {
-      if (await isOn($, config, 'quietReports')) {
-        const turn = e.usage
-        const input = turn ? turn.input_tokens + turn.cache_read_input_tokens + turn.cache_creation_input_tokens : 0
-        void refreshUsage($, turn && input > 0 ? (turn.cache_read_input_tokens / input) * 100 : undefined)
-      }
+      if (await isOn($, config, 'quietReports')) void refreshUsage($)
       // The /model picker settles after its command returns, so the choice is
       // read again once each main-thread turn ends, and when the session ends.
       if (await isOn($, config, 'modelPreset')) await rememberModel($)

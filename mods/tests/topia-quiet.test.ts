@@ -53,9 +53,33 @@ test('a hook attachment from Topia is kept out of the request', async ($, on) =>
   expect(kept.text).toBe('[20:58 EDT -- dev]')
 })
 
-test('the status line reads short', async () => {
-  expect(formatUsage({ contextPercent: 41.6, cachePercent: 90.2, usd: 3.125, fiveHourPercent: 37 }, 12400))
-    .toBe('ctx 42% · cache 90% · $3.13 · 5h 37% · topia −12.4k chars')
+test('the status line names the project, the weekly limit, and what Topia saved', async () => {
+  expect(formatUsage({ root: 'C:\\CodeBase\\topia', weeklyPercent: 26.9 }, 3600))
+    .toBe("Project: 'C:\\CodeBase\\topia' · 26% of weekly · topia saved −3.6k chars")
+})
+
+test('on Fable the Fable weekly limit shows, when the engine gives one', async () => {
+  const line = { root: '/work/app', weeklyPercent: 26, isFableModel: true, fableWeeklyPercent: 31.2 }
+  expect(formatUsage(line, 0)).toBe("Project: '/work/app' · 26% of weekly · (31% of Fable weekly)")
+})
+
+test('the Fable part is left out when the engine gives no figure or the model is not Fable', async () => {
+  expect(formatUsage({ root: '/work/app', weeklyPercent: 26, isFableModel: true }, 0)).toBe("Project: '/work/app' · 26% of weekly")
+  expect(formatUsage({ root: '/work/app', weeklyPercent: 26, isFableModel: false, fableWeeklyPercent: 31 }, 0)).toBe("Project: '/work/app' · 26% of weekly")
+})
+
+test('before any limit is known, only the project shows', async () => {
+  expect(formatUsage({ root: '/work/app' }, 0)).toBe("Project: '/work/app'")
+})
+
+test('a long path keeps its drive and last two folders, and a quote in it switches the quotes', async () => {
+  expect(formatUsage({ root: 'C:\\Users\\someone\\Documents\\clients\\very-long-folder-name\\repos\\service-api' }, 0))
+    .toBe("Project: 'C:\\…\\repos\\service-api'")
+  expect(formatUsage({ root: "/work/bob's app" }, 0)).toBe('Project: "/work/bob\'s app"')
+})
+
+test('a usage line saved in the old shape before a reload does not break the line', async () => {
+  expect(formatUsage({ contextPercent: 41, cachePercent: 90, usd: 3 } as never, 1200)).toBe('topia saved −1.2k chars')
 })
 
 test('with quietReports off in /config the attachment passes through', { options: { quietReports: false } }, async ($, on) => {

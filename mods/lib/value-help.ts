@@ -37,32 +37,48 @@ export const ROUTING_ABOUT = {
 
 // The status line is plain text and takes no pointer or focus, so its items
 // are explained in the /mods and /topia-activity panes.
+const PATH_MAX = 48
+
+// Keeps the drive or root and the last two folders: C:\…\repos\service-api.
+export function elidePath(path: string, max = PATH_MAX): string {
+  if (path.length <= max) return path
+  const sep = path.includes('\\') ? '\\' : '/'
+  const segments = path.split(/[\\/]/)
+  if (segments.length < 4) return `…${path.slice(-(max - 1))}`
+  const short = `${segments[0]}${sep}…${sep}${segments.slice(-2).join(sep)}`
+  return short.length <= max ? short : `…${sep}${segments[segments.length - 1]}`
+}
+
+function quotePath(path: string): string {
+  return path.includes("'") ? `"${path}"` : `'${path}'`
+}
+
+// Floor, not round, so the figure matches /usage.
+const percent = (value: number) => `${Math.floor(value)}%`
+
 export function usageParts(line: UsageLine | null, savedChars: number): Part[] {
   const parts: Part[] = []
-  if (line?.contextPercent !== undefined) {
-    parts.push({ key: 'usage-ctx', text: `ctx ${Math.round(line.contextPercent)}%`, about: "How full the model's context window is." })
+  if (typeof line?.root === 'string' && line.root.length > 0) {
+    parts.push({ key: 'usage-project', text: `Project: ${quotePath(elidePath(line.root))}`, about: `The project folder this session works in: ${line.root}` })
   }
-  if (line?.cachePercent !== undefined) {
+  if (typeof line?.weeklyPercent === 'number') {
     parts.push({
-      key: 'usage-cache',
-      text: `cache ${Math.round(line.cachePercent)}%`,
-      about: "The share of the last turn's input read from the prompt cache: cheaper and faster.",
+      key: 'usage-weekly',
+      text: `${percent(line.weeklyPercent)} of weekly`,
+      about: "How much of your account's weekly usage limit is used. It resets once a week; /usage shows when.",
     })
   }
-  if (line?.usd !== undefined) {
-    parts.push({ key: 'usage-usd', text: `$${line.usd.toFixed(2)}`, about: 'The estimated cost of this session so far.' })
-  }
-  if (line?.fiveHourPercent !== undefined) {
+  if (line?.isFableModel === true && typeof line.fableWeeklyPercent === 'number') {
     parts.push({
-      key: 'usage-5h',
-      text: `5h ${Math.round(line.fiveHourPercent)}%`,
-      about: 'How much of your five-hour usage limit is used.',
+      key: 'usage-fable',
+      text: `(${percent(line.fableWeeklyPercent)} of Fable weekly)`,
+      about: "How much of Fable's own weekly limit is used. It shows only while the session runs on Fable.",
     })
   }
   if (savedChars > 0) {
     parts.push({
       key: 'usage-saved',
-      text: `topia −${(savedChars / 1000).toFixed(1)}k chars`,
+      text: `topia saved −${(savedChars / 1000).toFixed(1)}k chars`,
       about: "Topia hook text kept out of the model's context this session (/topia-activity).",
     })
   }

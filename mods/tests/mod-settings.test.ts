@@ -126,8 +126,8 @@ test('every value the band shows has a line on what it means', async () => {
   const parts = gitParts({ isRepo: true, branch: 'main', changed: 3, unpushed: 1, behind: 2, hasUpstream: false })
   expect(parts.map(part => part.text)).toEqual(['⎇ main', '3 changed', '1 unpushed', '2 behind', 'no upstream'])
   for (const part of parts) expect(part.about.length).toBeGreaterThan(20)
-  const usage = usageParts({ contextPercent: 41.6, cachePercent: 90.2, usd: 3.125, fiveHourPercent: 37 }, 12400)
-  expect(usage.map(part => part.text)).toEqual(['ctx 42%', 'cache 90%', '$3.13', '5h 37%', 'topia −12.4k chars'])
+  const usage = usageParts({ root: '/work/app', weeklyPercent: 26, isFableModel: true, fableWeeklyPercent: 31 }, 12400)
+  expect(usage.map(part => part.text)).toEqual(["Project: '/work/app'", '26% of weekly', '(31% of Fable weekly)', 'topia saved −12.4k chars'])
 })
 
 // ── the engine ──

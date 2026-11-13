@@ -34,11 +34,13 @@ export type HiddenReport = {
   text: string
 }
 
+// Every field is optional: a reload can hand back a line saved in an older shape.
 export type UsageLine = {
-  contextPercent?: number
-  cachePercent?: number
-  usd?: number
-  fiveHourPercent?: number
+  root?: string
+  weeklyPercent?: number
+  isFableModel?: boolean
+  // Only when the engine reports a Fable window. Today it reaches /usage, not plugins.
+  fableWeeklyPercent?: number
 }
 
 // Prompt routing: what a draft's wording points at, as the band shows it.

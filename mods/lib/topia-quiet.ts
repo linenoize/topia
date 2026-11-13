@@ -1,4 +1,5 @@
 import type { HiddenReport, UsageLine } from '../types'
+import { usageParts } from './value-help'
 
 // The blocks Topia's settings hooks print (hooks/session-start/index.cjs,
 // hooks/lib/session-report.cjs, compiler/commands/hook-dispatch.js).
@@ -22,13 +23,9 @@ export function filterHookText(text: string): Filtered {
   return { text: kept.length > 0 ? kept : null, kind: 'install-banner' }
 }
 
+// The panes explain the same parts, so both read from usageParts.
 export function formatUsage(line: UsageLine, saved: number): string {
-  const parts = [
-    line.contextPercent !== undefined ? `ctx ${Math.round(line.contextPercent)}%` : '',
-    line.cachePercent !== undefined ? `cache ${Math.round(line.cachePercent)}%` : '',
-    line.usd !== undefined ? `$${line.usd.toFixed(2)}` : '',
-    line.fiveHourPercent !== undefined ? `5h ${Math.round(line.fiveHourPercent)}%` : '',
-    saved > 0 ? `topia −${(saved / 1000).toFixed(1)}k chars` : '',
-  ]
-  return parts.filter(part => part.length > 0).join(' · ')
+  return usageParts(line, saved)
+    .map(part => part.text)
+    .join(' · ')
 }
