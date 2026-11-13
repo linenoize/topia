@@ -116,6 +116,7 @@ function formatSuggestion(prediction) {
     `   Slash: /topia-${top.name} or /topia:${top.name}`,
   ];
   if (prediction.chain.length > 0) lines.push(`   Chain: ${[top.name, ...prediction.chain.slice(0, 4)].join(' → ')}`);
+  if (route.forked) lines.push('   Runs in the background: its report arrives later as a task notification. Wait for it before any follow-up step.');
   if (rest.length > 0) lines.push(`   Also consider: ${rest.map((skill) => skill.name).join(', ')}`);
   lines.push('   Keyword reading only; skill-router decides the route.');
   return lines.join('\n');

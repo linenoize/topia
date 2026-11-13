@@ -3,6 +3,13 @@
 When user sends a message DURING build execution (mid-phase), classify intent before acting.
 Source: goclaw (832★) — two-stage intent classification prevents expensive LLM calls for simple signals.
 
+**Background runs (Claude Code).** When build runs as a background fork, the person's messages reach the main conversation, not the build run. The main conversation applies this table:
+
+- `Cancel` / `Pause`: stop the build task (TaskStop, or the person uses `/tasks`). Build saves state at each phase boundary, so `/topia:build resume <state file>` picks up later.
+- `StatusQuery`: say the run is still going. Read `.topia/progress.md` or the bugfix ledger for detail. Do not make up progress.
+- `Steer`: wait for the next Decision Stop and pass the change as the answer, or stop the run and re-invoke build with the change in ARGUMENTS.
+- `NewTask`: handle it in the main conversation. Do not edit files the build run owns until its report arrives.
+
 ## Stage 1 — Keyword Fast-Path
 
 No LLM reasoning needed. Applies when message is <60 chars.

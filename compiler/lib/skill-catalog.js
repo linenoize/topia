@@ -9,7 +9,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { parseSkill } from '../parser.js';
 
-/** @typedef {{ name: string, description: string, model: string, layer: string, userInvocable: boolean, slashAlias: string }} SkillCatalogEntry */
+/** @typedef {{ name: string, description: string, model: string, layer: string, userInvocable: boolean, forked: boolean, slashAlias: string }} SkillCatalogEntry */
 
 const RESERVED_COMMANDS = new Set(['topia', 'finalize', 'org-config', 'migrate-from-rune']);
 
@@ -40,6 +40,8 @@ export function loadSkillCatalog(topiaRoot) {
       model: parsed.model,
       layer: parsed.layer,
       userInvocable,
+      // `context: fork` — on Claude Code it runs as a subagent, in the background by default (2.1.218+).
+      forked: parsed.contextFork === true,
       slashAlias: `topia-${name}`,
     });
   }

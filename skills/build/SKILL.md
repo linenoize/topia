@@ -28,6 +28,40 @@ Before starting ANY implementation:
 This applies to EVERY feature regardless of perceived simplicity.
 </HARD-GATE>
 
+## Background Runs (Claude Code)
+
+On Claude Code, build runs as a forked subagent (`context: fork`). Since Claude Code 2.1.218 that fork runs in the background by default. What that means for this skill:
+
+- You cannot see the conversation. Everything you know comes from this file and the ARGUMENTS line.
+- You cannot ask the person anything. `AskUserQuestion` (and Cursor's AskQuestion) is not available to subagents, and nothing you print reaches the person until your run ends.
+- The person keeps working in the main conversation while you run. Your final report reaches it later, as a task notification.
+- Permission prompts still work. They surface in the main session and name this run.
+
+So every step below that says ask, confirm, present for approval, AskQuestion, "user picks", or CP1/CP2/CP3 is a **Decision Stop**:
+
+1. Save state first: plan file, bugfix brief and ledger, or `.topia/.continue-here.md`.
+2. Stop. Do not start the next phase. Do not guess the answer.
+3. Return a Cook Report with `Status: NEEDS_CONTEXT`, the question(s) with 2-3 options and a default, the state file path, and a resume line: `/topia:build resume <state file> — <answer>`.
+
+**Read answers from ARGUMENTS first.** The caller passes what it already knows. A decision present there counts as given, so do not stop for it. Recognised forms:
+
+| In ARGUMENTS | Means |
+|---|---|
+| `approved <plan file>` or `go` after a plan stop | Plan approved. Load it and go to Phase 3 (or Phase 4 when tests are skipped). |
+| `resume <state file> — <answer>` | Load the state file, apply the answer, continue from where you stopped. |
+| `just do it` / `skip kickoff` / `checkpoints: off` | Skip the clarification gate, bugfix kickoff, and CP1-CP3 stops. |
+| `success: …` / `don't change: …` | Answers to the Phase 1 clarification gate. |
+| ticket ID, `branch: yes/no`, `commit: ask/auto`, `tests: red/skip <reason>`, `ui: tests-only/browser-pilot` | Bugfix kickoff answers (Phase 0.7). |
+| `ignore contract rule X` | Contract override (Step 0.6). |
+
+**Typical shape.** A feature is two runs. Run 1 does Phase 0 to 2.5 and stops with the plan. Run 2 gets `approved <plan file>` and does Phase 3 to 8. A bugfix stops at CP1, CP2 and CP3 unless checkpoints are off. Nano and Fast runs have no stops.
+
+**Shared working tree.** The person may edit files in the main conversation while you run. Stage only files you changed (`git add <files>`, never `git add -A` or `git add .`). Before committing, run `git status`. If it shows changes you did not make, leave them unstaged and list them in the report.
+
+**Edits are outside checkpoints.** `/rewind` in the main conversation does not undo a background fork's edits. Git is the undo, so commit at phase boundaries as this file says.
+
+**Same rules when waited on.** In `claude -p`, the Agent SDK, or with `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=1`, the caller waits for your result instead. Decision Stops still apply, because no subagent can ask the person directly. When `team` runs you as a stream, return the stop to `team`, not to the person.
+
 ## Workflow Chains (Predefined)
 
 Build supports predefined workflow chains for common task types. Use these as shortcuts instead of manually determining phases:
@@ -212,7 +246,9 @@ Auto-trigger: no `.topia/` dir (first run) OR build just failed with env-looking
 
 ### Phase 1 Step 3.5 — Clarification Gate
 
-Ask **2 questions** before planning: (1) "What does success look like?" (2) "What should NOT change?"
+Two questions before planning: (1) "What does success look like?" (2) "What should NOT change?"
+
+Take the answers from ARGUMENTS (`success: …`, `don't change: …`). If they are missing, do not stop here. Write your best-guess answers at the top of the plan as **Assumptions** and let the person confirm them at the plan Decision Stop. One stop, not two.
 
 Skip if: bug fix with clear repro steps | user said "just do it" | fast mode + <10 LOC | hotfix chain active | bugfix kickoff brief already defines success and scope. Complexity revealed → escalate to `topia:idea`.
 
@@ -277,7 +313,7 @@ This phase is lightweight — Read + pattern match. It does NOT replace Phase 1 
 **Step 0.5 — Cross-Project Recall**: Invoke `topia:neural-memory` (Recall Mode) with 3-5 topics relevant to the current task. Always prefix queries with the project name (e.g., `"ProjectName auth pattern"` not `"auth pattern"`).
 
 1. Use `Glob` to check for `.topia/plan-*.md` files
-2. If a master plan exists matching the current task: Read it → find first `⬚ Pending` or `🔄 Active` phase → load ONLY that phase file → announce "Resuming from Phase N" → skip to Phase 4
+2. If a master plan exists matching the current task: Read it → find first `⬚ Pending` or `🔄 Active` phase → load ONLY that phase file → announce "Resuming from Phase N" → skip to Phase 4. Approval check first: if the plan has no `Approved:` line and ARGUMENTS carry no approval, it is still waiting at the plan Decision Stop. Return the same stop again; do not write code. When ARGUMENTS approve it, add `Approved: <date> (via ARGUMENTS)` under the plan title, then continue.
 3. If no master plan exists → proceed to Phase 1 as normal
 
 **Step 0.6 — Contract Load**: Use `Glob` to check for `.topia/contract.md`. If it exists:
@@ -287,7 +323,7 @@ This phase is lightweight — Read + pattern match. It does NOT replace Phase 1 
 4. If no contract exists → proceed normally (contract is optional)
 
 <HARD-GATE>
-Contract violations are NON-NEGOTIABLE. If `.topia/contract.md` exists and a planned or implemented change violates any rule, build MUST stop and report the violation. The user must explicitly override ("ignore contract rule X") to proceed.
+Contract violations are NON-NEGOTIABLE. If `.topia/contract.md` exists and a planned or implemented change violates any rule, build MUST stop and report the violation. The user must explicitly override ("ignore contract rule X") to proceed. In a background run that override arrives in the ARGUMENTS of the next run.
 </HARD-GATE>
 
 **Step 0.8 — Bugfix brief resume**: If user says `Continue <TICKET>` (e.g. `Continue SCRUM-453`) and `.topia/bugfix-briefs/<ticket>.md` exists:
@@ -311,7 +347,7 @@ Contract violations are NON-NEGOTIABLE. If `.topia/contract.md` exists and a pla
 **Skip when:** user said `"just do it"` / `"skip kickoff"` | kickoff confirmed this session | complete brief (ticket ID + `- [ ]` acceptance criteria + explicit `"go"` / `"start now"`)
 
 1. Parse ticket ID, summary, repro, suspected cause, acceptance criteria from user message
-2. **AskQuestion** — branch, commit policy, regression test, UI verification, Start now vs Copy for later (see `bugfix-kickoff.md`)
+2. **AskQuestion** — branch, commit policy, regression test, UI verification, Start now vs Copy for later (see `bugfix-kickoff.md`). In a background run, read these from ARGUMENTS. If the ticket ID is missing, make this a Decision Stop: write a draft brief, list the kickoff questions with defaults (branch yes, ask before commit, failing test first, tests only, Start now), and stop before any recon or edits. Other missing answers take those defaults.
 3. Collect ticket ID and branch name via follow-up if not parsed. HARD-GATE: block Start now without ticket ID
 4. Suggest acceptance criteria when missing (3–5 items from repro + cause)
 5. Assemble Bugfix Execution Brief → write `.topia/bugfix-briefs/<ticket>.md`
@@ -338,9 +374,11 @@ Skip checkpoints only if user said `just do it` / `skip kickoff` at kickoff.
 Bugfix chain: Do NOT enter Phase 4 until dev confirms at CP1 or CP2.
 </HARD-GATE>
 
+In a background run each checkpoint is a Decision Stop. Update the Progress Ledger, stop, and put the checkpoint content and the adjustment menu in the report. The next run gets `Continue <TICKET> — <choice>` and resumes from the ledger (Step 0.8). With `checkpoints: off`, run straight through, but still stop at CP3 when the brief says `Commit: ask-before-commit`.
+
 **Adjustment menu** (CP1/CP2): Proceed | Adjust objective | Adjust hypothesis | Adjust fix method | Adjust files in scope | Adjust acceptance criteria | Adjust test approach (CP2 only) | Pause
 
-**Mid-run steering**: When dev message classifies as `Steer` (see `references/mid-run-signals.md`), AskQuestion which ledger section to update → patch brief/ledger → re-present current checkpoint. Log in Steering history.
+**Mid-run steering**: When dev message classifies as `Steer` (see `references/mid-run-signals.md`), AskQuestion which ledger section to update → patch brief/ledger → re-present current checkpoint. Log in Steering history. In a background run, steering arrives as the answer in the next run's ARGUMENTS.
 
 ## Phase 2: PLAN
 
@@ -353,11 +391,11 @@ Bugfix chain: Do NOT enter Phase 4 until dev confirms at CP1 or CP2.
 3. Create implementation plan: exact files to create/modify, change order, dependencies, active decision constraints
 4. If multiple valid approaches exist → invoke `topia:brainstorm` for trade-off analysis
 5. **Frontend detection** — if task touches `.tsx/.jsx/.vue/.svelte/.css`, component files, or mentions "UI/page/screen/design/layout/landing": invoke `topia:design` BEFORE plan approval. Pass hint `mode: "tweaks-default"` — design proposes ONE opinionated default per `.topia/design-system.md` (Step 2.7), not a 5-option menu. User replies with tweaks ("more professional", "darker") rather than picking from a list. If `.topia/design-system.md` is missing, design creates it first.
-6. Present plan to user for approval
+6. Present plan to user for approval. In a background run this is the plan Decision Stop: write the plan file (with its Assumptions and the Phase 2.5 verdict), stop, and return the plan summary plus `/topia:build approved <plan file>` as the resume line.
 7. If feature workspace was created, write approved plan to `.topia/features/<name>/plan.md`
 8. Mark Phase 2 as `completed`
 
-**Gate**: User MUST approve the plan before proceeding. Do NOT skip this.
+**Gate**: User MUST approve the plan before proceeding. Do NOT skip this. In a background run, approval means `approved <plan file>` (or `go`, `just do it`) in ARGUMENTS. Nothing else counts.
 
 ### Phase 2.5: RFC GATE (Breaking Changes Only)
 
@@ -383,6 +421,7 @@ Breaking change without RFC = BLOCKED. No exceptions.
    - **HARDEN** → present remediations, update plan inline, then proceed to Phase 3
    - **PROCEED** → pass findings as implementation notes to Phase 3
 4. **Max 1 REVISE loop** per build session — if revised plan also gets REVISE, ask user to decide
+5. **Background runs**: run this phase before the plan Decision Stop, not after, so the person approves a plan that was already red-teamed. Include the verdict and any HARDEN changes in the stop report.
 
 ### Phase-Aware Execution (Master Plan + Phase Files)
 
@@ -440,7 +479,9 @@ If the coder model needs info from other phases, it's in the Cross-Phase Context
    MUST invoke brainstorm(mode="rescue") before giving up.
    </HARD-GATE>
 
-   Invoke `topia:brainstorm(mode="rescue")` with `failed_approach`, `failure_evidence[]`, `original_goal`. Returns 3-5 alternatives → user picks → **restart from Phase 2**.
+   Invoke `topia:brainstorm(mode="rescue")` with `failed_approach`, `failure_evidence[]`, `original_goal`. Returns 3-5 alternatives → user picks → **restart from Phase 2**. In a background run, "user picks" is a Decision Stop: save `.topia/.continue-here.md`, return the alternatives, and stop.
+
+   In a background run, R4 approval (step 5) and re-plan approval (step 6) are Decision Stops too.
 
 8. All tests MUST pass before proceeding
 9. Mark Phase 4 as `completed`
@@ -490,7 +531,7 @@ During Phase 5 quality checks, if a gate finding traces to an **upstream artifac
 1. Tag finding as `UPSTREAM:<phase>` (e.g., `UPSTREAM:plan`, `UPSTREAM:spec`)
 2. STOP current quality gate — fixing code won't resolve an upstream problem
 3. Re-invoke the upstream skill (`topia:plan` for plan issues, `topia:idea` for spec gaps) with the finding as context
-4. Get user approval on the corrected upstream artifact
+4. Get user approval on the corrected upstream artifact (a Decision Stop in a background run)
 5. Resume Phase 5 from the beginning (re-run all gates — upstream change may invalidate prior PASS results)
 
 ### 5a. Preflight (Spec Compliance + Logic) — STAGE 1
@@ -558,7 +599,7 @@ Before entering ANY Phase N+1, assert: Phase N `completed` in TodoWrite | gate c
 
 ## Phase 7: COMMIT
 
-**RECOMMENDED SUB-SKILL**: Use `topia:git` — stage specific files (`git add <files>`, NOT `git add .`), generate semantic commit message from diff. If working from master plan: update phase status `🔄 → ✅`, announce next phase or "All phases complete."
+**RECOMMENDED SUB-SKILL**: Use `topia:git` — stage specific files (`git add <files>`, NOT `git add .`), generate semantic commit message from diff. Check `git status` first and leave changes you did not make unstaged (see Background Runs). If working from master plan: update phase status `🔄 → ✅`, announce next phase or "All phases complete."
 
 ## Phase 8: BRIDGE
 
@@ -626,6 +667,8 @@ When build must pause mid-phase, create `.topia/.continue-here.md` with structur
 <MUST-READ path="references/mid-run-signals.md" trigger="when user sends a message DURING build execution"/>
 
 Two-stage intent classification: keyword fast-path for short messages (<60 chars), context classification for longer ones. Never queue user messages — process immediately.
+
+In a background run the person's messages go to the main conversation, not to you. The main conversation handles them: Cancel or Pause stops the task, and Steer waits for your next Decision Stop or stops you and re-runs build with the change in ARGUMENTS. Save state at each phase boundary so a stopped run can resume.
 
 <HARD-GATE>
 NEVER treat a Cancel/Pause signal as a Steer or NewTask. User safety signals take absolute priority.
@@ -713,7 +756,7 @@ When invoking sub-skills (fix, debug, test, review, etc.), **craft exactly the c
 
 <MUST-READ path="references/deviation-rules.md" trigger="when implementation diverges from the approved plan"/>
 
-R1-R3 (bug/security/blocking fix): auto-fix, continue. R4 (architectural change): ASK user first.
+R1-R3 (bug/security/blocking fix): auto-fix, continue. R4 (architectural change): ASK user first (a Decision Stop in a background run).
 
 ## Error Recovery
 
@@ -788,6 +831,7 @@ Mentally track tool call fingerprints. 3 identical calls → WARN. 5 identical c
 ## Called By (inbound)
 
 - User: `/topia build` direct invocation — primary entry point
+- `skill-router` / main conversation: routes code changes here, passes known answers in ARGUMENTS, relays Decision Stops to the person, and re-invokes with the answer
 - `team` (L1): parallel workstream execution (meta-orchestration)
 
 ## Calls (outbound)
@@ -962,7 +1006,8 @@ Common multi-agent failures to explicitly avoid. These are NOT edge cases — th
 ```
 SELF-VALIDATION (run before emitting Build Report):
 - [ ] Every phase in Phase Skip Rules was either executed or explicitly skipped with reason
-- [ ] Plan approval gate was not bypassed — user said "go" (check conversation history)
+- [ ] Plan approval gate was not bypassed — ARGUMENTS carry `approved <plan file>`, `go`, or `just do it` (a forked run cannot see conversation history, so ARGUMENTS are the only proof)
+- [ ] Every ask/confirm step either had its answer in ARGUMENTS or ended the run as a Decision Stop with a resume line
 - [ ] No Phase 4 code was written before Phase 3 tests (TDD order preserved)
 - [ ] All Phase 5 quality gates (readiness, guardian, review) ran — not just claimed
 - [ ] No quality gate exceeded 3 remediation cycles without user escalation

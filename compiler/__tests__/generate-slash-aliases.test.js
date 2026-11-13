@@ -28,6 +28,22 @@ describe('skill-catalog', () => {
     assert.equal(router.userInvocable, false);
   });
 
+  test('loadSkillCatalog marks context: fork skills as forked', () => {
+    const catalog = loadSkillCatalog(REPO);
+    const forked = catalog
+      .filter((s) => s.forked)
+      .map((s) => s.name)
+      .sort();
+    assert.deepEqual(forked, ['build', 'launch', 'rescue', 'team']);
+    assert.equal(catalog.find((s) => s.name === 'design').forked, false);
+  });
+
+  test('alias for a forked skill says the report arrives later', () => {
+    const alias = readFileSync(join(REPO, 'commands', 'topia-build.md'), 'utf-8');
+    assert.match(alias, /in the background by default/);
+    assert.doesNotMatch(alias, /Follow the full workflow defined in that skill/);
+  });
+
   test('matchBareTopiaSlash detects bare skill names only', () => {
     const catalog = loadSkillCatalog(REPO);
     assert.equal(matchBareTopiaSlash('/design', catalog), 'design');

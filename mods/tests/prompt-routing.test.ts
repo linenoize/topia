@@ -106,6 +106,7 @@ test('the model hint names skills and words, never the prompt', async () => {
   expect(view).not.toBe(null)
   const text = contextText(view!)
   expect(text).toContain('topia:build ("fix", "add")')
+  expect(text).toContain('topia:build runs in the background')
   expect(text).not.toContain('parser')
 })
 
@@ -175,6 +176,7 @@ const ROUTER_BLOCK = [
   '🧭 [Topia intent-router] Suggested: topia:build (L1, sonnet) — wording: "fix", "add"',
   '   Slash: /topia-build or /topia:build',
   '   Chain: build → plan → fix → readiness → guardian',
+  '   Runs in the background: its report arrives later as a task notification. Wait for it before any follow-up step.',
   '   Also consider: test, debug',
   '   Keyword reading only; skill-router decides the route.',
   '',

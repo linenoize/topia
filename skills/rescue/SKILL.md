@@ -24,6 +24,24 @@ Legacy refactoring orchestrator for safely modernizing messy codebases. Rescue r
 - Full test suite must pass before rescue is declared complete.
 </HARD-GATE>
 
+## Background Runs (Claude Code)
+
+On Claude Code, rescue runs as a forked subagent (`context: fork`). Since Claude Code 2.1.218 that fork runs in the background by default. You cannot see the conversation and cannot ask the person anything. Your report reaches the main conversation later, as a task notification. Permission prompts still surface in the main session.
+
+Rescue already works one module per session. In the background, one session means one run:
+
+| Run | Does | Then stops with |
+|---|---|---|
+| First | Phase 0 RECON + Phase 1 SAFETY NET | The surgery queue, worst first. The person can reorder or skip before any surgery. |
+| Each next | One SURGERY module (the queue head, or `module <name>` from ARGUMENTS) | That module's Rescue Report and the next module's name |
+| Last | CLEANUP + VERIFY, once every SURGERY todo is done | The final Rescue Report |
+
+Read choices from ARGUMENTS: `module <name>`, `skip <name>`, `status`. Record skips in RESCUE-STATE.md. The resume line in every report is `/topia:rescue` (or `/topia:rescue module <name>`).
+
+**Shared working tree.** The person may keep editing in the main conversation while you run. At the start of every run, check `git status --porcelain`. If it shows changes rescue did not make, stop and report them; do not commit someone else's work or revert it. Stage only the files you or your sub-skills changed. Never use `git add -A` or `git add .`.
+
+**Edits are outside checkpoints.** `/rewind` does not undo a background fork's edits. The `Topia-rescue-*` tags and per-module commits are the undo.
+
 ## Triggers
 
 - `/topia rescue` — manual invocation on legacy project
@@ -171,11 +189,12 @@ REQUIRED SUB-SKILL: topia:safeguard
 → Invoke `safeguard` with action: "freeze".
 → safeguard commits current state as checkpoint.
 
-Bash: git add -A && git commit -m "chore: rescue safety net — characterization tests + markers"
+Bash: git add [characterization test files] [files with new markers]
+Bash: git commit -m "chore: rescue safety net — characterization tests + markers"
 Bash: git tag Topia-rescue-safety-net
 ```
 
-Mark todo[1] `completed`.
+Mark todo[1] `completed`. End the first run here: return the surgery queue (see Background Runs).
 
 ---
 
@@ -265,10 +284,10 @@ REQUIRED SUB-SKILL: topia:session-bridge
 **Context check — before continuing to next module:**
 
 ```
-If approaching context limit (50+ tool calls or user signals fatigue):
-  → STOP after current module commit
-  → Report: "Session limit reached. Rescue state saved. Resume with /topia rescue to continue."
-  → Do NOT start next module in same session
+After the current module commit, always:
+  → STOP (one module per run)
+  → Report: "Module [name] done. Rescue state saved. Resume with /topia:rescue to continue with [next module]."
+  → Do NOT start next module in same session or run
 ```
 
 Mark SURGERY todo `completed`.
@@ -304,7 +323,8 @@ Expected: no output. If any remain → fix before continuing.
 ```
 
 ```
-Bash: git add -A && git commit -m "chore: rescue cleanup — remove @legacy and @bridge markers"
+Bash: git add [files you stripped markers from]
+Bash: git commit -m "chore: rescue cleanup — remove @legacy and @bridge markers"
 ```
 
 Mark CLEANUP todo `completed`.
@@ -387,6 +407,8 @@ ALWAYS run characterization tests after each surgery
 Max blast radius: 5 files per session
 If context low → STOP, save state via journal + session-bridge, commit partial
 Rollback point: git tag Topia-rescue-baseline (set in Phase 0)
+One module per background run; stop and report after it
+Never stage with git add -A — the person may be editing the same tree
 ```
 
 ## Constraints
@@ -462,6 +484,7 @@ Known failure modes for this skill. Check these before declaring done.
 | Blast radius > 5 files before surgery halted | HIGH | Count importers before each surgery — stop if > 5 and split scope |
 | Not saving state between sessions (rescue spans many sessions) | MEDIUM | journal + session-bridge mandatory after each session — RESCUE-STATE.md must be current |
 | Continuing surgery after characterization tests fail on current code | MEDIUM | Tests must PASS on unmodified code first — fix the test if current behavior is captured wrongly |
+| Committing or reverting the person's own edits made while rescue ran in the background | HIGH | Check `git status --porcelain` at the start of each run; stage named files only, never `git add -A` |
 
 ## Done When
 

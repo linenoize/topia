@@ -150,8 +150,13 @@ export function contextText(view: RoutingView): string {
   )
   const lead = view.skills[0]?.name
   const chain = lead !== undefined && view.chain.length > 0 ? ` Usual hand-offs after topia:${lead}: ${view.chain.join(' → ')}.` : ''
+  // A forked skill runs those hand-offs itself, in the background; its report comes back later.
+  const forked =
+    lead !== undefined && BY_NAME.get(lead)?.forked === true
+      ? ` topia:${lead} runs in the background and does its own hand-offs; wait for its task notification before any follow-up.`
+      : ''
   return (
-    `[topia prompt-routing] The wording of this prompt points at ${parts.join(', ')}.${chain} ` +
+    `[topia prompt-routing] The wording of this prompt points at ${parts.join(', ')}.${chain}${forked} ` +
     'This is a keyword reading shown to the user in a band above the prompt; skill-router still decides the route.'
   )
 }

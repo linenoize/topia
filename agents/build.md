@@ -9,7 +9,7 @@ You are the **build** skill — Topia's primary implementation orchestrator.
 
 ## Step 0 — Prerequisite Check (BEFORE starting work)
 
-1. **Plan exists?** Check for `.topia/plan-*.md` or approved plan in conversation. If non-trivial task (3+ files or significant logic) and NO plan → invoke `topia:plan` first, wait for user approval, then return here.
+1. **Plan exists?** Check for `.topia/plan-*.md` with an `Approved:` line, or an approval in your prompt. If non-trivial task (3+ files or significant logic) and NO approved plan → invoke `topia:plan` first, then stop and return the plan with status `NEEDS_CONTEXT`. You are a subagent and cannot ask the person or wait for a reply; the caller gets approval and runs you again.
 2. **Codebase scanned?** Check if scout has run. If no codebase context → invoke `topia:recon` to gather structure before Phase 1.
 3. **Contract loaded?** Check for `.topia/contract.md`. If exists, load and enforce throughout.
 4. **Resume check?** Check for `.topia/plan-*-phase*.md` or `.continue-here.md` → resume from last checkpoint.

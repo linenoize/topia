@@ -22,12 +22,37 @@ Orchestrate the full deployment and marketing pipeline. Launch coordinates testi
 
 <HARD-GATE>
 - ALL tests must pass before any deploy attempt. Zero exceptions. Block deploy if any of: tests failing, TypeScript errors present, build fails, or sentinel CRITICAL issues detected.
+- NEVER deploy in the same run as pre-flight. Deploy only when ARGUMENTS carry `deploy-approved <launch plan>` and HEAD still matches the commit recorded in that plan.
 </HARD-GATE>
+
+## Background Runs and the Deploy Gate
+
+On Claude Code, launch runs as a forked subagent (`context: fork`). Since Claude Code 2.1.218 that fork runs in the background by default. You cannot see the conversation and cannot ask the person anything. Your report reaches the main conversation later, as a task notification. Permission prompts, such as the one for the deploy command, still surface in the main session and name this run.
+
+Deploying to production is the one step here that must not happen on a guess. So launch is always two runs:
+
+**Run 1 — pre-flight (ARGUMENTS do not contain `deploy-approved`).**
+1. Step 0, Step 1, and Phase 1 (PRE-FLIGHT) as written below.
+2. Phase 2a only: detect the platform. Do not run any deploy command.
+3. Write `.topia/launch-plan.md` with: commit SHA (`git rev-parse HEAD`), branch, `git status --porcelain` output (must be empty), pre-flight results, platform, the exact deploy command, the rollback steps, and the marketing scope (which assets, video yes or no, taken from ARGUMENTS).
+4. Stop. Return a Launch Report with `Status: ready-to-deploy` and this resume line for the person to type: `/topia:launch deploy-approved .topia/launch-plan.md`.
+
+**Run 2 — deploy (ARGUMENTS contain `deploy-approved <launch plan>`).**
+1. Read the launch plan. Check that `git rev-parse HEAD` equals the recorded SHA and `git status --porcelain` is empty. If either differs, do not deploy. Stop with `Status: failed` and say pre-flight must run again.
+2. Run exactly the recorded deploy command (Phase 2b). Do not swap in another one.
+3. Continue with Phases 3, 4 and 5.
+
+Launch sets `disable-model-invocation: true`, so only the person can start either run. The main conversation shows the Run 1 report and the resume line. It does not type the approval for the person.
+
+Other stops: if the platform cannot be detected, or the working tree is not clean in Run 1, stop and say what is needed. Do not ask and wait.
+
+Why not `background: false`: waiting in the foreground would not let this subagent ask the person anything either. The safety comes from the two-run gate, the pinned commit, and the deploy command's own permission prompt.
 
 ## Triggers
 
-- `/topia launch` — manual invocation
-- Called by `team` when delegating launch tasks
+- `/topia launch` — manual invocation (Run 1)
+- `/topia launch deploy-approved <launch plan>` — manual invocation (Run 2)
+- `team` may recommend launch, but cannot start it (`disable-model-invocation: true`)
 
 ## Calls (outbound)
 
@@ -47,8 +72,8 @@ Orchestrate the full deployment and marketing pipeline. Launch coordinates testi
 
 ## Called By (inbound)
 
-- User: `/topia launch` direct invocation
-- `team` (L1): when team delegates launch phase
+- User: `/topia launch` direct invocation (both runs)
+- `team` (L1): recommends launch in its report; the person starts it
 
 ---
 
@@ -145,10 +170,10 @@ Platform detection (in order):
   3. Check for vercel.json or .vercel/ dir → platform = Vercel
   4. Check for netlify.toml → platform = Netlify
   5. Check for Dockerfile or fly.toml → platform = custom/fly.io
-  6. Fallback: ask user for deploy command before continuing
+  6. Fallback: stop and ask the person for the deploy command in the report. Run 1 records it once they pass it in ARGUMENTS (`deploy-command: <cmd>`).
 ```
 
-**2b. Execute deploy command.**
+**2b. Execute deploy command.** Run 2 only, after the checks in "Background Runs and the Deploy Gate".
 
 ```
 Vercel:
@@ -236,7 +261,7 @@ REQUIRED SUB-SKILL: topia:marketing
 **4b. Optional — launch video.**
 
 ```
-If user requested video content:
+If the launch plan's marketing scope includes video:
   REQUIRED SUB-SKILL: topia:video-creator
   → Invoke `video-creator` with: deployed URL, feature list, target platform.
   → Capture: video script + asset manifest.
@@ -272,6 +297,7 @@ Mark todo[4] `completed`.
 3. MUST have rollback plan documented before deploying to production
 4. MUST NOT deploy and run marketing simultaneously — deploy first, verify, then market
 5. MUST verify deploy is live and healthy before triggering marketing skills
+6. MUST NOT deploy without `deploy-approved <launch plan>` in ARGUMENTS and a matching HEAD and clean tree
 
 ## Nexus Gates
 
@@ -280,14 +306,21 @@ Mark todo[4] `completed`.
 | Test Gate | verification output showing all green | Run topia:verification first |
 | Security Gate | sentinel output with no CRITICAL findings | Run topia:guardian first |
 | Deploy Gate | Successful deploy confirmation before marketing | Deploy first |
+| Approval Gate | `deploy-approved <launch plan>` in ARGUMENTS, HEAD equals recorded SHA, clean tree | Stop after pre-flight (Run 1) |
 
 ## Output Format
 
 ```
 ## Launch Report
-- **Status**: live | failed | partial
+- **Status**: ready-to-deploy | live | failed | partial
 - **URL**: [deployed URL]
 - **Tests**: [passed]/[total]
+
+### Deploy Approval (Run 1 only)
+- Commit: [SHA] on [branch], working tree clean
+- Platform and command: [platform] — `[exact deploy command]`
+- Rollback: [steps]
+- To deploy, type: `/topia:launch deploy-approved .topia/launch-plan.md`
 
 ### Deployment
 - Platform: [Vercel | Netlify | custom]
@@ -325,6 +358,8 @@ Known failure modes for this skill. Check these before declaring done.
 | Failure Mode | Severity | Mitigation |
 |---|---|---|
 | Attempting deploy with failing tests or TypeScript errors | CRITICAL | HARD-GATE blocks this — pre-flight must be 100% green |
+| Deploying code that changed after pre-flight (person kept working while launch ran in the background) | CRITICAL | Run 2 checks HEAD against the recorded SHA and requires a clean tree before deploying |
+| Deploying on a guess because the fork cannot ask | CRITICAL | Two-run gate: Run 1 never deploys; Run 2 needs `deploy-approved` typed by the person |
 | Running marketing before deploy verified live | HIGH | Constraint 4: deploy → verify HTTP 200 → THEN market. Never simultaneous |
 | No rollback plan before production deploy | MEDIUM | Constraint 3: document rollback strategy before running deploy command |
 | Platform auto-detected incorrectly (wrong deploy command) | MEDIUM | Verify platform config files before running — ask if ambiguous |
@@ -332,6 +367,8 @@ Known failure modes for this skill. Check these before declaring done.
 
 ## Done When
 
+- Run 1: pre-flight PASS, launch plan written, `ready-to-deploy` report with the resume line returned
+- Run 2: launch plan approved by the person and HEAD matched the recorded SHA
 - Pre-flight PASS: all tests, types, lint, build, and sentinel green
 - Deploy command succeeded with live URL captured
 - Live site returns HTTP 200 (curl or browser-pilot confirmed)

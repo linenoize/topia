@@ -10,7 +10,7 @@ so build can route accordingly.
 |--------|---------|-------------|
 | `DONE` | Task complete, no issues | Proceed to next phase |
 | `DONE_WITH_CONCERNS` | Task complete but issues noted (e.g., "tests pass but a performance regression observed") | Proceed, but append concern to `.topia/progress.md` and surface in Cook Report; address in Phase 5 (QUALITY) or next review cycle |
-| `NEEDS_CONTEXT` | Cannot proceed without more information (missing requirement, ambiguous spec, unknown environment) | Pause execution. Ask user the specific question(s) blocking progress. Resume from the same phase after answer received. |
+| `NEEDS_CONTEXT` | Cannot proceed without more information or a decision (missing requirement, ambiguous spec, unknown environment, plan approval, checkpoint) | Save state and stop. Return the specific question(s) and a resume line. The caller asks the person and re-invokes build with the answer in ARGUMENTS. Build then resumes from the same phase. |
 | `BLOCKED` | Hard blocker — cannot continue regardless of context (broken dependency, fundamental incompatibility, exhausted escalation chain) | Trigger escalation chain: debug-fix (3x) → re-plan (1x) → brainstorm rescue (1x) → then escalate to user with full details |
 
 ## Message Formats
@@ -28,6 +28,10 @@ State exactly:
 1. What is unknown
 2. Why it blocks progress
 3. The two most likely answers (to help the user respond quickly)
+4. The state file that holds progress so far
+5. The resume line, e.g. `/topia:build approved .topia/plan-auth.md` or `/topia:build resume .topia/.continue-here.md — <answer>`
+
+On Claude Code build usually runs in the background, so this report reaches the main conversation as a task notification. It is the only way a decision reaches the person. Never wait or guess past it.
 
 ### BLOCKED
 

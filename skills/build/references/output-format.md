@@ -21,6 +21,12 @@ Also defines the NEXUS Deliverables table format used when build is invoked by `
 | 2 | [from handoff] | DELIVERED | [file path or test output quote] |
 | 3 | [from handoff] | PARTIAL | [what's missing and why] |
 
+### Decision Needed (if NEEDS_CONTEXT — a Decision Stop)
+- **Question**: [one line]
+- **Options**: [2-3 options, default marked]
+- **State saved**: [plan file | brief + ledger | .topia/.continue-here.md]
+- **Resume with**: `/topia:build approved <plan file>` or `/topia:build resume <state file> — <answer>`
+
 ### Concerns (if DONE_WITH_CONCERNS)
 - [concern]: [impact assessment] — [suggested remediation]
 
