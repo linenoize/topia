@@ -4,7 +4,7 @@
 
 <p align="center">
   <strong>Topia — internal skill toolkit for AI coding assistants.</strong><br>
-  71 skills · 315 synapses · 49 pulses · 10 extension packs · optional persistent memory via agora-code MCP
+  71 skills · 306 synapses · 49 pulses · 10 extension packs · optional persistent memory via agora-code MCP
 </p>
 
 <p align="center">
@@ -20,7 +20,7 @@ AI coding agents are smart but undisciplined. They skip steps, forget context ac
 - **Plan before code** — `idea` elicits requirements, `plan` writes phase files, `adversary` red-teams the plan, all before a line of code.
 - **Tests before commits** — `test` writes failing tests first (red), `fix` implements until green. TDD enforced, not suggested.
 - **Hooks block bad work** — `guardian` (secrets, OWASP), `readiness` (logic, regressions), `completion-gate` (validates agent claims have evidence). Auto-fire on tool use.
-- **Memory survives sessions** — `journal` persists ADRs to `.topia/`, optional [agora-code MCP](mcp-servers/agora-code/README.md) adds SQLite-backed semantic recall across sessions.
+- **Memory survives sessions, with no setup** — `.topia/` files hold decisions and progress, a hook records each commit, session start shows the newest entries, and `recall` finds the rest. Optional [agora-code MCP](mcp-servers/agora-code/README.md) adds semantic search.
 
 One source of truth (`skills/`) compiles to six IDE rule formats — switch IDEs without rewriting your workflow rules.
 
@@ -124,14 +124,14 @@ From a Topia clone or plugin cache path:
 
 ```bash
 node compiler/bin/topia.js doctor
-# ✓ 71 skills, 315 synapses, 49 pulses — nexus is healthy
+# ✓ 71 skills, 306 synapses, 49 pulses — nexus is healthy
 ```
 
 Claude-only users can use `/topia doctor` in chat instead.
 
 ### About agora-code MCP
 
-Topia ships a vendored copy of [agora-code](https://github.com/thebnbrkr/agora-code) at [`mcp-servers/agora-code/`](mcp-servers/agora-code/). Four skills (`journal`, `build`, `idea`, `neural-memory`) detect it automatically. Without it, skills fall back to file-based `.topia/` persistence.
+Topia ships a vendored copy of [agora-code](https://github.com/thebnbrkr/agora-code) at [`mcp-servers/agora-code/`](mcp-servers/agora-code/). `recall` and `journal` use it only when its tools are present. Without it, memory is the `.topia/` files, which work everywhere.
 
 Integration: [`docs/mcp-integrations/agora-code.md`](docs/mcp-integrations/agora-code.md). **Do NOT** run `agora-code install-hooks --claude-code` — Topia's hooks are canonical.
 
@@ -221,7 +221,7 @@ The 8-step build flow (route → recall → plan → test → implement → gate
 | `problem-solver` | 19 analytical frameworks + 12 bias detectors. |
 | `sequential-thinking` | Multi-variable analysis with dependency ordering. |
 | `journal` | ADRs, decisions, progress across sessions. |
-| `neural-memory` | Cross-session recall via semantic graph (uses agora-code MCP when registered). |
+| `neural-memory` | Optional; only if the Neural Memory MCP is installed. |
 | `trend-scout` | Market intelligence (Product Hunt, GitHub Trending, HN, Reddit). |
 | `autopsy` | Health assessment of legacy codebases (rescue RECON). |
 | `doc-processor` | Generate / parse PDF, DOCX, XLSX, PPTX, CSV. |
@@ -374,7 +374,7 @@ The `org/` tree holds stable team and policy configuration. `guardian` and `read
 ```
 Skills:            71 (L0:1 · L1:5 · L2:33 · L3:32)
 Extension Packs:   10
-Synapses:          315 (4.4 avg/skill)
+Synapses:          306 (4.3 avg/skill)
 Pulses:            49 (60 emit/listen edges)
 Platforms:         Claude Code, Cursor, Codex, Antigravity, OpenCode, OpenClaw, Generic
 Tests:             1,035 passing

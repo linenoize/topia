@@ -63,7 +63,7 @@ BUILD     — Nothing suitable exists. Build from scratch.
 
 Report the classification to the calling skill. This informs Phase 2 (PLAN) in build — ADOPT and EXTEND are vastly cheaper than BUILD.
 
-Invoke `topia:neural-memory` (Recall Mode) with 2–3 project-prefixed topics before returning.
+Recall: `topia:recall` with 2–3 topics before returning (or Grep `.topia/` directly).
 
 **Quick checks before deep search**:
 1. `Grep` the codebase for existing implementations of the target functionality

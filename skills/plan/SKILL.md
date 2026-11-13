@@ -89,8 +89,7 @@ High-level multi-feature planning — organize features into milestones.
 - `scope-guard` (L3): verify plan scope matches approved boundaries
 - `test` (L2): define test strategy and coverage expectations in plan
 - L4 extension packs: domain-specific architecture patterns
-- `neural-memory` | Before architecture decisions | Recall past decisions on similar problems
-- `recall` (L3): unified cross-source recall before planning
+- `recall` (L3): recall past decisions on similar problems before planning
 - `documentation` (L2): generate leadership package after plan approval
 
 ## Called By (inbound)
@@ -120,7 +119,7 @@ High-level multi-feature planning — organize features into milestones.
 
 - `idea` (L2): Requirements Document → plan's primary input (locked decisions, user stories)
 - `recon` (L2): codebase analysis → plan's convention/pattern awareness
-- `neural-memory` (external): past architectural decisions → plan's precedent context
+- `recall` (L3): past architectural decisions → plan's precedent context
 - `guardian` (L2): repeated security blocks → plan's constraint awareness for future features
 
 ### Feedback Loops ↻
@@ -136,7 +135,7 @@ Check for `.topia/features/*/requirements.md` via `Glob`. If a Requirements Docu
 
 If `project.onboarded` signal was received, scout output is already available in session context — skip re-invoking scout.
 
-Invoke `topia:recon` if not already done — plans without context produce wrong file paths. Invoke `topia:neural-memory` (Recall Mode) to surface past architecture decisions before making new ones.
+Invoke `topia:recon` if not already done — plans without context produce wrong file paths. Recall: `topia:recall` to surface past architecture decisions before making new ones.
 
 **Feature Map**: Check for `.topia/features.md` via `Glob`. If it exists, read it — understand the existing feature landscape, dependencies, and known gaps BEFORE planning. Cross-reference: does the new feature overlap, conflict with, or depend on existing features? If `.topia/features.md` does not exist, note this — Step 6.5 will create it.
 

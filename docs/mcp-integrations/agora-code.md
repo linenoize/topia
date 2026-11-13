@@ -11,7 +11,7 @@ Topia ships a vendored copy of [agora-code](https://github.com/thebnbrkr/agora-c
 | Past learnings | Scan `.topia/*.md` files | `recall_learnings` with vector search |
 | Large file reads | Read in full, burn context | Explicit `agora-code summarize` from skills when needed |
 
-agora-code is not a replacement — it's a **back-end upgrade** that 4 Topia skills can call when available.
+agora-code is not a replacement — it is an optional extra that `recall` and `journal` call when its tools are present.
 
 ## When memory is populated (Topia lifecycle)
 
@@ -19,9 +19,9 @@ agora-code is not a replacement — it's a **back-end upgrade** that 4 Topia ski
 |-----------------|--------------|--------------|
 | `topia install` / `/topia finalize` | `topia memory seed` if `.topia/` exists | Imports prior markdown state into SQLite |
 | Session start | `.topia/` inject + `agora-code inject` (Topia SessionStart hook) | Prior checkpoints + learnings in context |
-| Session start | `topia:recall` (**required** when agora-memory registered) | Merges file + MCP recall |
+| Session start | `topia:recall` when needed (files first) | Adds MCP results when its tools are present |
 | ADR / `journal` | `store_learning` | New row in DB |
-| `build` / `idea` start | `recall_learnings` | Semantic search before work |
+| `recall` | `recall_learnings` | Semantic search alongside the files |
 | Session end | `complete_session` via `journal` | Archives session |
 | Git commit | `commit-memory` hook always appends the commit to `.topia/learnings.jsonl`; it also runs agora if `.topia/agora-commit-learn.flag` is set | `learn-from-commit` (opt-in) |
 
@@ -75,35 +75,24 @@ Without an API key, keyword search still works — only semantic recall degrades
 | Tool | Purpose | Topia skill that calls it |
 |---|---|---|
 | `store_learning` | Persist a non-obvious finding (decision, gotcha, fix) | `journal` |
-| `recall_learnings` | Search past findings before starting work | `build`, `idea`, `neural-memory` |
-| `get_file_symbols` | Indexed functions/classes for a file with line numbers | `neural-memory` (optional) |
-| `search_symbols` | Search across all indexed symbols | `neural-memory` (optional) |
-| `recall_file_history` | What changed in a file across past sessions | `neural-memory` (optional) |
+| `recall_learnings` | Search past findings before starting work | `recall` |
 | `complete_session` | Archive current session to long-term memory | `journal` (session-end) |
-| `list_sessions` | Find past sessions | _(not yet wired in Topia)_ |
-| `get_memory_stats` | DB usage stats | _(not yet wired in Topia)_ |
+| `get_file_symbols` / `search_symbols` / `recall_file_history` / `list_sessions` / `get_memory_stats` | Symbol index, file history, stats | _(not wired in Topia)_ |
 
-## How each Topia skill uses it
+## How Topia uses it
 
-### `journal` — decision logging
-When agora-code MCP is available, `journal` SHOULD call `store_learning` in addition to writing ADRs under `.topia/adr/` (and other journal-managed files). This makes the decision retrievable later via `recall_learnings`, not just by reading a file.
+Topia's memory is the `.topia/` files. agora-code is an optional extra. Only two skills mention it, each in one "Optional backends" section:
 
-### `build` — pre-flight recall
-`build` Step 0 SHOULD call `recall_learnings` with the task description before starting. If a similar feature or bug surfaces in past sessions, surface it to the user before re-implementing.
+- `recall` calls `recall_learnings` and merges the results with the file results.
+- `journal` calls `store_learning` after an ADR and `complete_session` at session end.
 
-### `idea` — requirements pre-check
-`idea` Step 1.2 (Neural Memory Retrieval) SHOULD call `recall_learnings` keyed on the user's prompt keywords. If a related idea, decision, or rejection already exists, surface it before running the 5-question elicitation.
-
-### `neural-memory` — backend swap
-`neural-memory` SHOULD prefer agora-code's MCP tools (`store_learning`, `recall_learnings`, `search_symbols`) over file-based fallbacks when the MCP server is registered. The skill's existing API stays the same; only the back-end changes.
+Both use it only if tools named `mcp__agora-memory__*` (or the plugin-scoped equivalent) are in the tool list. Otherwise they skip it without mentioning it. No other skill calls agora directly.
 
 ## Graceful degradation
 
-Every skill that references agora-code MUST treat the MCP server as **optional**:
-
-1. **Detect availability**: check if `agora-memory` is listed in the active MCP servers before calling its tools.
-2. **Fall back silently**: if unavailable, use Topia's built-in `.topia/` file-based persistence.
-3. **Never block**: do not BLOCK or WARN if agora-code is missing — it's an upgrade, not a requirement.
+1. **Detect availability**: the tools are in the tool list, or they are not.
+2. **Fall back silently**: if unavailable, use the `.topia/` files.
+3. **Never block**: do not BLOCK, WARN, or ask the user about a missing server.
 
 ## License + attribution
 
@@ -121,7 +110,7 @@ Topia's runtime layer (preflight, sentinel, completion-gate, quarantine) is the 
 |---|---|
 | Topia's preflight / sentinel / completion-gate / quarantine | **Keep** (install via `topia hooks install`) |
 | agora-code's `install-hooks --claude-code` | **Skip** |
-| agora-code's MCP tools (`store_learning`, `recall_learnings`, etc.) | **Use** via skill cross-refs (already wired in `journal`, `build`, `idea`, `neural-memory`) |
+| agora-code's MCP tools (`store_learning`, `recall_learnings`, etc.) | **Use** via the Optional backends sections in `recall` and `journal` |
 | agora-code's `inject` on SessionStart | **Topia session-start hook** runs `agora-code inject --quiet` when MCP registered |
 | agora-code's `summarize` CLI | **Available** — invoke from skills when reading large files |
 | agora-code's `learn-from-commit` | **Opt-in** — `commit-memory` PostToolUse hook also calls it when `.topia/agora-commit-learn.flag` or `TOPIA_AGORA_COMMIT_LEARN=1` |

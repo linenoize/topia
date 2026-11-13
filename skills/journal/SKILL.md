@@ -24,7 +24,7 @@ Persistent state tracking and Architecture Decision Records across sessions. Jou
 
 ## Calls (outbound)
 
-- `neural-memory` (L3): after each ADR passes the gate — Capture Mode; dedupe agora when tagged source: journal-adr
+- None. Writes `.topia/` files directly (optional backends: see below).
 
 ## Called By (inbound)
 
@@ -41,6 +41,10 @@ Persistent state tracking and Architecture Decision Records across sessions. Jou
 - `improve-architecture` (L2): record an ADR when the user rejects a deepening candidate with a load-bearing reason
 - `logic-guardian` (L2): record logic changes as ADRs for cross-session persistence
 - `architecture-mapper` (L2): record unknowns / ADRs for genuinely opaque areas discovered during mapping
+- `debug` (L2): record error pattern after root cause found
+- `fix` (L2): record fix pattern (cause → solution)
+- `review` (L2): record code quality insight
+- `guardian` (L2): record vulnerability pattern after a BLOCK finding
 
 ## Files Managed
 
@@ -221,7 +225,7 @@ Emit the journal update summary to the calling skill.
 - **Risks Logged**: [count] ([severity breakdown])
 - **Files Updated**: [list of .topia/ files modified]
 - **Next Module**: [next in queue, or "rescue complete"]
-- **Memory digest**: backends (nmem / agora / file-only); captures queued
+- **Memory**: .topia/ files written (plus any optional backend used)
 ```
 
 ## Context Recovery (new session)
@@ -235,14 +239,29 @@ Emit the journal update summary to the calling skill.
 → Result: Zero context loss across rescue sessions
 ```
 
-## Optional MCP Integration: agora-code
+## Recording a learning
 
-When the `agora-memory` MCP server is registered (see `docs/mcp-integrations/agora-code.md`), `journal` SHOULD additionally call MCP tools alongside file-based persistence:
+For a decision, error root cause, or pattern worth finding later, also append one line to `.topia/learnings.jsonl` (schema in `topia:session-bridge` Step 5.8):
 
-- After writing an ADR → call `store_learning` with the decision text tagged `decision`. Makes the ADR retrievable via `recall_learnings` from any future session, not just by reading `.topia/adr/`.
-- At session end → call `complete_session` with a one-paragraph summary. Archives the session for `list_sessions` retrieval.
+```json
+{"ts":"2026-04-04T14:30:00Z","skill":"debug","type":"error","key":"token-refresh-race","insight":"Root cause was two refreshes racing; fixed with a single in-flight promise","files":["src/auth.ts"]}
+```
 
-**Graceful degradation**: if `agora-memory` is not in the active MCP servers list, skip the MCP calls silently — file-based persistence (`.topia/adr/`, `RESCUE-STATE.md`) is the source of truth either way. Never BLOCK or WARN when agora-code is missing.
+Commits are recorded automatically by the `commit-memory` hook. Do not add rows for them.
+
+## Optional backends
+
+`.topia/` files are the memory. These servers are extras.
+
+Only if tools named `mcp__<server>__*` are in your tool list; otherwise skip without mentioning it.
+
+| Server | When | Call |
+|--------|------|------|
+| `agora-memory` | After writing an ADR | `store_learning` with the decision text, tagged `decision` |
+| `agora-memory` | At session end | `complete_session` with a one-paragraph summary |
+| `neural-memory` | After an ADR passes the gate | `nmem_remember` with the decision and its reason (see `topia:neural-memory`) |
+
+Never block, warn, or ask about a missing server. Files stay the source of truth.
 
 ## Constraints
 
@@ -250,7 +269,7 @@ When the `agora-memory` MCP server is registered (see `docs/mcp-integrations/ago
 2. MUST timestamp all entries
 3. MUST NOT log sensitive data (secrets, tokens, credentials)
 4. MUST work for any workflow — never require rescue-specific fields to be present
-5. MUST treat the `agora-memory` MCP as optional — never require it; fall back to file-based persistence if absent
+5. MUST write to `.topia/` files first — MCP servers are optional extras, never required
 
 ## Sharp Edges
 

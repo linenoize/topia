@@ -303,15 +303,9 @@ node skills/onboard/scripts/context-budget.js --root <project-root> --apply <ids
 
 **Skip AskQuestion if**: `advisory: false` (MCP ≤80 and CLAUDE.md ≤150 lines).
 
-### Step 6d.1 — Seed agora-memory (when MCP registered)
+### Step 6d.1 — Memory (no setup)
 
-If `agora-memory` is in the project's MCP config and `agora-code` is on PATH:
-
-```bash
-node compiler/bin/topia.js memory seed
-```
-
-Imports decisions, ADRs, and learnings from `.topia/` into agora's SQLite store (idempotent). Skip silently if agora is not installed — file-based `.topia/` remains source of truth.
+Memory works once `.topia/` exists. Session start shows the newest entries, `topia:recall` reads the rest, and the `commit-memory` hook records each commit in `.topia/learnings.jsonl`. Do not ask the user to set up or confirm memory.
 
 ### Step 6d.2 — Topia mods (Claude Code only)
 

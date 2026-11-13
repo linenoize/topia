@@ -43,7 +43,7 @@ focus: string (optional)    — narrow the scope (e.g., "security", "performance
 
 ### Step 0 — Prior learnings (optional)
 
-If agora-memory MCP is registered, call recall_learnings with research keywords before web search. Else optionally invoke topia:neural-memory (Recall Mode). No writes.
+Grep `.topia/` for the research keywords before web search (Recall: `topia:recall` for a fuller pass). No writes.
 
 ### Step 1 — Formulate Queries
 

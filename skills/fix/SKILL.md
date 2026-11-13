@@ -41,7 +41,7 @@ If unsure whether the test is wrong or the implementation is wrong → call `top
 - `hallucination-guard` (L3): verify imports after code changes
 - `logic-guardian` (L2): pre-edit gate before modifying manifest-listed logic files
 - `recon` (L2): find related code before applying changes
-- `neural-memory` (L3): after fix verified — capture fix pattern (cause → solution)
+- `journal` (L3): after fix verified — record fix pattern (cause → solution)
 - `adversary` (L2): on `agent.stuck` after 2+ failed attempts — oracle-mode dispatches stateless second-model pass to break confirmation-bias loop
 
 ## Called By (inbound)
@@ -188,7 +188,7 @@ Verify correctness of the changes just made.
 
 ### Step 6b: Capture Fix Pattern
 
-Call `neural-memory` (Capture Mode) to save the fix pattern: what broke, why, and how it was fixed. Priority 7 for recurring bugs.
+Record: `topia:journal` — one `error` row with what broke, why, and how it was fixed. Skip for trivial fixes.
 
 ### Step 7: Report
 

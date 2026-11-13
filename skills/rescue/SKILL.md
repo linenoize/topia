@@ -45,7 +45,7 @@ Legacy refactoring orchestrator for safely modernizing messy codebases. Rescue r
 - `context-engine` (L3): context budget management between refactoring sessions
 - `context-lifecycle` (L3): Boundary Save between refactoring sessions
 - `scope-guard` (L3): verify rescue changes stay within declared module scope
-- `neural-memory` | Phase start + phase end | Recall past refactoring patterns, capture new ones
+- `recall` | Phase start | Recall past refactoring patterns and decisions
 
 ## Called By (inbound)
 
@@ -78,7 +78,7 @@ Note: SURGERY todos are added dynamically — one per module identified in Phase
 
 Mark todo[0] `in_progress`.
 
-Call `neural-memory` (Recall Mode) for past refactoring patterns in similar codebases.
+Recall: `topia:recall` for past refactoring patterns and decisions.
 
 **0a. Full health assessment.**
 
@@ -352,7 +352,7 @@ REQUIRED SUB-SKILL: topia:journal
 Bash: git tag Topia-rescue-complete
 ```
 
-Call `neural-memory` (Capture Mode) to save refactoring patterns and decisions from this rescue.
+Record: `topia:journal` — refactoring patterns and decisions from this rescue.
 
 Mark VERIFY todo `completed`.
 

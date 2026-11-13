@@ -1,6 +1,6 @@
 ---
 name: neural-memory
-description: "Cross-session cognitive persistence via Neural Memory MCP. Captures decisions, patterns, errors, and insights with rich semantic links. Provides recall, hypothesis tracking, and evidence-based reasoning across projects."
+description: "Optional; only if the Neural Memory MCP is installed. Semantic memory through nmem_* tools: recall, capture, and hypothesis tracking. Use only when mcp__neural-memory__* tools are present; otherwise use recall and journal."
 metadata:
   author: topia
   version: 0.1.0
@@ -32,61 +32,28 @@ metadata:
 
 ## Purpose
 
-Bridges Topia's file-based persistence (session-bridge, journal) with Neural Memory MCP's semantic graph. While session-bridge saves decisions to `.topia/` files and journal tracks ADRs locally, neural-memory captures **cross-project learnable patterns** — decisions, error root causes, architectural insights, and workflow preferences — into a persistent cognitive layer that compounds across every project and session.
+Optional; only if the Neural Memory MCP is installed. Topia's default memory is `.topia/` files: read them with `topia:recall`, write them with `topia:journal` or `topia:session-bridge`. This skill adds a semantic graph on top, through the Neural Memory MCP tools (`nmem_*`), for users who have that server.
 
-Without this skill, each project is an island. With it, a caching pattern discovered in Project A auto-surfaces when Project B faces a similar problem.
+If no tools named `mcp__neural-memory__*` are in your tool list, do not run this skill. Use `topia:recall` and `topia:journal` instead, without mentioning it.
 
 ## Triggers
 
-**Auto-trigger:**
-- Session start → Run **Recall Mode** (load relevant context before any work)
-- After `build` completes a feature → Run **Capture Mode** (save learnings)
-- After `debug` finds root cause → Run **Capture Mode** (save error pattern)
-- After `review` finds issues → Run **Capture Mode** (save code quality insight)
-- After `rescue` completes a phase → Run **Capture Mode** (save refactoring pattern)
-- After `journal` writes an ADR → Run **Capture Mode** (extract to nmem)
-- Session end / before compaction → Run **Flush Mode** (capture remaining context)
+No auto-triggers. Other skills do not call this one.
 
-**Manual trigger:**
-- `/topia remember <text>` — save a specific memory (Capture Mode)
-- `/topia brain-health` — check neural memory health + maintenance
-- `/topia hypothesize <question>` — start hypothesis tracking
+**Manual trigger (only when the MCP is installed):**
+- `/topia neural-memory recall <topic>` — Recall Mode
+- `/topia neural-memory store <text>` — Capture Mode
+- `/topia neural-memory health` — check neural memory health + maintenance
 
-For unified cross-source recall (`.topia/`, `.remember/`, MCP), use **`topia:recall`** instead.
+For recall from `.topia/` and `.remember/`, use **`topia:recall`** instead.
 
 ## Calls (outbound)
 
-- `session-bridge` (L3): after Capture Mode — sync key decisions back to `.topia/` files
-
-## Optional MCP Backend: agora-code
-
-`neural-memory` is backed by the Neural Memory MCP server by default. When the **`agora-memory` MCP server** (vendored from `mcp-servers/agora-code/`) is also registered, `neural-memory` SHOULD route a subset of operations to it for stronger codebase intelligence:
-
-| Operation | Default backend | If `agora-memory` available |
-|---|---|---|
-| Capture (`store learning`) | `nmem_remember` | Additionally call `store_learning` so the decision is keyword-indexed in the SQLite store |
-| Recall (`search learnings`) | `nmem_recall` | Also call `recall_learnings` — merge results, dedupe by similarity |
-| Symbol lookup ("what does function X do?") | _(not supported)_ | Call `get_file_symbols` / `search_symbols` — agora-code's symbol index is authoritative for line-numbered lookups |
-| File history | _(not supported)_ | Call `recall_file_history` — agora-code tracks per-session file changes |
-
-**Graceful degradation**: detect `agora-memory` in the active MCP list before routing. If missing, behavior is identical to today — pure Neural Memory MCP. Never BLOCK on agora-code's absence. See `docs/mcp-integrations/agora-code.md`.
+- None.
 
 ## Called By (inbound)
 
-- `build` (L1): Phase 0 (resume) + Phase 8 (complete) — recall context at start, capture learnings at end
-- `rescue` (L1): phase start + phase end — recall past refactoring patterns, capture new ones
-- `debug` (L2): after root cause found — capture error pattern for future recognition
-- `fix` (L2): after fix verified — capture fix pattern (cause → solution)
-- `review` (L2): after review complete — capture code quality insight
-- `plan` (L2): before architecture decisions — recall past decisions on similar problems
-- `guardian` (L2): after security finding — capture vulnerability pattern
-- `incident` (L2): after resolution — capture incident root cause + fix
-- `retro` (L2): during retrospective — capture retro insights and patterns
-- `context-lifecycle` (L3): Flush Mode before compaction at boundaries
-- `session-bridge` (L3): Step 6 (cross-project extraction) — extract generalizable patterns
-- `journal` (L3): after ADR written — extract decision + rejected alternatives
-- `context-engine` (L3): before compaction — trigger Flush Mode to preserve context
-- `recall` (L3): MCP recall leg of unified cross-source recall report
+- User: `/topia neural-memory` direct invocation, only when the Neural Memory MCP is installed
 
 ## Modes
 
@@ -126,7 +93,7 @@ Call `nmem_gaps(action="detect")` if working in a domain with sparse memories.
 
 ### Mode 2: Capture (After Task Completion)
 
-When triggered after `topia:journal` writes an ADR: read the ADR file, extract decision + rejected alternatives. If journal already called agora `store_learning`, tag `source: journal-adr` and skip duplicate `store_learning`.
+When run after `topia:journal` writes an ADR: read the ADR file, extract decision + rejected alternatives, tag `source: journal-adr`.
 
 
 Extract learnable patterns from completed work and save to neural memory.
@@ -234,9 +201,9 @@ Review the current session for:
 Call `nmem_auto(action="process", text="<session summary>")` with a concise summary
 of the session's key outcomes, decisions, and learnings.
 
-**Step 3 — Update Session Bridge**
-If significant decisions were captured, also call `session-bridge` to sync
-the most important ones to `.topia/decisions.md` for local persistence.
+**Step 3 — Keep files authoritative**
+`.topia/` files stay the source of truth. If a decision is not already in
+`.topia/decisions.md`, record it there too (Record: `topia:journal`).
 
 ---
 

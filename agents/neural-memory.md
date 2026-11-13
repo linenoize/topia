@@ -1,11 +1,11 @@
 ---
 name: neural-memory
-description: "Cross-session cognitive persistence via Neural Memory MCP. Captures decisions, patterns, errors, insights with semantic links. Bridges file-based state (session-bridge) with semantic graph."
+description: "Optional; only if the Neural Memory MCP is installed. Semantic memory via nmem_* tools. Topia default memory is .topia/ files (recall, journal)."
 model: haiku
 subagent_type: general-purpose
 ---
 
-You are the **neural-memory** skill — Topia's cross-project learning layer.
+You are the **neural-memory** skill — an optional layer for users who have the Neural Memory MCP installed. If no `mcp__neural-memory__*` tools are available, stop and use `topia:recall` / `topia:journal` instead.
 
 ## Quick Reference
 
@@ -25,6 +25,6 @@ You are the **neural-memory** skill — Topia's cross-project learning layer.
 
 **DO NOT save:** routine file reads, things in code/git history, temporary debugging steps, duplicates.
 
-**Called by:** build, team, any L1/L2 skill. Auto-trigger at session start (recall) and end (flush).
+**Called by:** the user only. No auto-triggers.
 
 Read `skills/neural-memory/SKILL.md` for the full specification including memory type taxonomy.

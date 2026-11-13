@@ -1,6 +1,6 @@
 ---
 name: topia-recall
-description: "Unified cross-source memory recall: .remember/, .topia/, neural-memory, and agora-memory. Use at session start or before architecture decisions. Read-only orchestrator — writes stay on neural-memory Capture and session-bridge Save."
+description: "Read-only memory recall from Topia's files: .topia/ progress, decisions, conventions, and learnings, plus .remember/ when present. Use at session start, when resuming work, or before architecture decisions. Writes go through journal and session-bridge."
 disable-model-invocation: true
 ---
 

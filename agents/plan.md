@@ -18,7 +18,7 @@ Only proceed to planning after Step 0 is satisfied.
 ## Quick Reference
 
 **Workflow:**
-1. Gather context — check for requirements doc, invoke scout, recall from Neural Memory
+1. Gather context — check for requirements doc, invoke scout, recall from `.topia/` (topia:recall)
 2. Classify complexity — inline plan (simple) vs master + phase files (non-trivial)
 3. Decompose into phases — foundation first, max 8 phases, dependency-aware order
 4. Write master plan — max 80 lines, overview + phase status table only

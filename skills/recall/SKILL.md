@@ -1,6 +1,6 @@
 ---
 name: recall
-description: "Unified cross-source memory recall: .remember/, .topia/, neural-memory, and agora-memory. Use at session start or before architecture decisions. Read-only orchestrator — writes stay on neural-memory Capture and session-bridge Save."
+description: "Read-only memory recall from Topia's files: .topia/ progress, decisions, conventions, and learnings, plus .remember/ when present. Use at session start, when resuming work, or before architecture decisions. Writes go through journal and session-bridge."
 metadata:
   author: topia
   version: "1.0.0"
@@ -14,7 +14,7 @@ metadata:
 
 ## Purpose
 
-Aggregates context from every memory layer Topia supports — file-based project state (`.topia/`), Claude Remember session narrative (`.remember/`), semantic graph memory (Neural Memory MCP), and SQLite/vector memory (agora-memory MCP) — into one **Recall Report**. This skill is read-only; it never writes to any store.
+Reads Topia's memory and returns one **Recall Report**. The memory is plain files: `.topia/` project state, plus `.remember/` session notes when that plugin is used. They need no setup, no server, and no API key. This skill is read-only; it never writes to any store.
 
 Use at session start, before architecture decisions, or when resuming work after a break.
 
@@ -22,13 +22,12 @@ Use at session start, before architecture decisions, or when resuming work after
 
 - `/topia recall [topic]` — primary user trigger
 - `/topia:recall [topic]` — platform alias (Cursor/Windsurf colon syntax)
-- **Required** at session start when `agora-memory` MCP is registered (session-start hook — invoke before large reads or architecture work)
-- Auto-suggested at session start when agora is not registered (see session-start hook checklist)
+- Session start, when the session-start hook lists memory sources
 - Before `plan` architecture decisions when prior context may exist
 
 ## Calls (outbound)
 
-- `neural-memory` (L3): MCP recall via `nmem_recall` and optional `recall_learnings` when backends registered
+- None. Reads files only (optional backends: see below).
 
 ## Called By (inbound)
 
@@ -37,6 +36,8 @@ Use at session start, before architecture decisions, or when resuming work after
 - `recon` (L2): when codebase scan benefits from prior session context
 - User: `/topia recall` direct invocation
 - `context-lifecycle` (L3): minimal recall after post-compact resume
+- `rescue` (L1): phase start — past refactoring patterns and decisions
+- `retro` (L2): past retro insights for trend comparison
 
 ## Workflow
 
@@ -56,21 +57,21 @@ Sources (skip silently when absent):
 | `.remember/` | `now.md`, latest `today-*.md`, `recent.md`, `remember.md` |
 | `.claude/remember/` | `identity.md` |
 
-Respect token budget: truncate long files; prefer `checkpoint.md` and `now.md` first.
+The helper keeps the newest part of long logs. Prefer `checkpoint.md` and `now.md` first.
 
-### Step 2 — Query MCP backends (optional)
+`learnings.jsonl` holds one JSON object per line. The `commit-memory` hook adds a `{"type":"commit"}` row after each commit (subject and files). Skills add `decision`, `error`, and `insight` rows.
 
-If `neural-memory` MCP is registered:
+### Step 2 — Search for the topic
 
-- Call `nmem_recall` for 3–5 diverse topics (prefix with project name)
-- If topic provided on invocation, include it as primary query
+When a topic is given, Grep for it instead of reading whole files:
 
-If `agora-memory` MCP is registered:
+```
+Grep pattern="<topic words>" path=".topia" output_mode="content" -C=3
+Grep pattern="<topic words>" path=".topia/learnings.jsonl"
+Glob pattern=".topia/adr/*.md"
+```
 
-- Call `recall_learnings` with the same topics
-- Merge with nmem results; dedupe by similarity
-
-**Graceful degradation**: missing MCP servers must never block recall. File-based sources alone are valid output.
+Also check `git log --oneline -20` for recent work when the files are thin.
 
 ### Step 3 — Merge and emit Recall Report
 
@@ -78,8 +79,19 @@ Tag every item with its source. Prefer this precedence when facts conflict:
 
 1. `.topia/decisions.md` and `.topia/conventions.md` — project truth
 2. `.remember/now.md` — current session narrative
-3. MCP semantic memories — cross-project patterns
+3. `.topia/learnings.jsonl` — commits and learnings, newest wins per key
 4. `.remember/recent.md` — recent session history
+
+## Optional backends
+
+Only if tools named `mcp__<server>__*` are in your tool list; otherwise skip without mentioning it.
+
+| Server | Call | Notes |
+|--------|------|-------|
+| `neural-memory` | `nmem_recall` for 2–3 topics | Prefix each query with the project name |
+| `agora-memory` | `recall_learnings` with the same topics | Dedupe against file results |
+
+Results from these go in the report under their own source tag. Files stay the source of truth.
 
 ## Output Format
 
@@ -87,7 +99,7 @@ Tag every item with its source. Prefer this precedence when facts conflict:
 RECALL REPORT — <project-name>
 ================================
 Topic: <topic or "session start">
-Sources: .topia (N) | .remember (N) | nmem (N) | agora (N)
+Sources: .topia (N) | .remember (N)
 
 ## Session narrative (.remember)
 - ...
@@ -95,7 +107,7 @@ Sources: .topia (N) | .remember (N) | nmem (N) | agora (N)
 ## Project state (.topia)
 - ...
 
-## Semantic memories (MCP)
+## Recent commits and learnings (.topia/learnings.jsonl)
 - ...
 
 ## Gaps
@@ -103,33 +115,34 @@ Sources: .topia (N) | .remember (N) | nmem (N) | agora (N)
 
 ## Suggested next actions
 - Continue from: <checkpoint or progress item>
-- Capture new learnings via: /topia remember (neural-memory Capture Mode)
+- Record new decisions with: topia:journal
 ```
 
 ## Constraints
 
-1. **Read-only** — MUST NOT write to `.topia/`, `.remember/`, nmem, or agora unless user explicitly requests a different skill
+1. **Read-only** — MUST NOT write to `.topia/` or `.remember/`; writes go through `journal` or `session-bridge`
 2. **MUST NOT block** when any source is missing — emit partial report with source tags
 3. **MUST NOT log secrets** — skip `.env`, credentials, or token values if encountered in memory files
-4. **MUST prefix MCP queries with project name** — generic queries return cross-project noise
+4. **MUST NOT ask the user** to set up or confirm memory — use what exists
 5. **MUST NOT invoke remember plugin shell hooks** — read files only; hook conflicts with Topia hook install
+6. **MUST NOT write to Claude Code's own auto-memory** (`~/.claude/projects/...`) — Claude Code owns it
 
 ## Sharp Edges
 
 | Edge | Impact | Mitigation |
 |------|--------|------------|
 | Stale `.remember/` narrative contradicts `.topia/` decisions | MEDIUM | Precedence rule: `.topia/` wins for decisions/conventions |
-| Duplicate content across nmem and agora | LOW | Dedupe by similarity; tag both sources when uncertain |
-| Large `learnings.jsonl` blows token budget | MEDIUM | Script reads tail only; truncate per-file snippets |
-| No MCP registered | LOW | File-only recall is still valuable — do not fail |
+| Large `learnings.jsonl` blows token budget | MEDIUM | Script reads the tail only; Grep for older rows |
+| Long `progress.md` hides old entries | LOW | Script keeps the newest part; Grep for the rest |
+| No memory files yet | LOW | Say so in one line and continue |
 
 ## Done When
 
 - All available file sources scanned and tagged in Recall Report
-- MCP backends queried when registered (or explicitly noted as skipped)
+- Topic searched with Grep when one was given
 - Actionable summary emitted with suggested continuation point
 - User can proceed without running separate recall commands per source
 
 ## Cost Profile
 
-Low — haiku for merge/summary; MCP recall calls are external. File gather script is local I/O only.
+Low — haiku for merge/summary. The gather script is local file reads only.

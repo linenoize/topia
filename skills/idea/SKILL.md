@@ -58,14 +58,13 @@ Output is a Requirements Document → hand off to topia:plan for implementation 
 
 ## Executable Steps
 
-### Step 1.2 — Neural Memory Retrieval (SEARCH)
+### Step 1.2 — Memory Retrieval (SEARCH)
 
-Before eliciting new information, search `topia:neural-memory` for related concepts, prior versions of this idea, or similar features built in other projects.
+Before eliciting new information, search memory for related concepts, prior versions of this idea, or similar features.
 
 1.  **Extract keywords**: Identify core concepts from the user's initial prompt (e.g., "auth", "payment", "RAG").
-2.  **Search Memory**: Query `topia:neural-memory` with these keywords.
-3.  **Optional — agora-code recall**: if the `agora-memory` MCP server is registered, also call its `recall_learnings` tool with the same keywords. Findings from agora-code reflect prior cross-session learnings (decisions, gotchas, rejected approaches) — merge with neural-memory results. Skip silently if MCP unavailable. See `docs/mcp-integrations/agora-code.md`.
-4.  **Synthesize Findings**:
+2.  **Search Memory**: Recall: `topia:recall` with these keywords (or Grep `.topia/` for them).
+3.  **Synthesize Findings**:
     *   If a similar idea exists: *"I found a related idea in memory: [Concept]. We previously decided [Decision]. Should we leverage those patterns or is this a different direction?"*
     *   If technical patterns exist: *"I recall we used [Library/Pattern] for a similar task previously. I'll keep that in mind as a constraint."*
 
@@ -666,13 +665,13 @@ After the artifact triad is saved, append/update the project glossary `CONTEXT.m
 
 Format reference: [references/context-md-format.md](references/context-md-format.md).
 
-### Step 8 — Neural Memory Persistence (SAVE)
+### Step 8 — Memory Persistence (SAVE)
 
-Once the user approves the Requirements Document, persist the "Idea Artifact" to `topia:neural-memory`.
+Once the user approves the Requirements Document, record the "Idea Artifact".
 
 1.  **Format Memory**: Create a high-signal summary of the idea, core stakeholders, and key strategic decisions.
-2.  **Tag**: Use `[idea, requirements, feature-name]`.
-3.  **Persist**: Call `topia:neural-memory` in Capture Mode.
+2.  **Key**: Use the feature name (e.g., `idea-<feature-name>`).
+3.  **Persist**: Record: `topia:journal` (one `decision` row in `.topia/learnings.jsonl`).
 4.  **Emit**: `idea.captured` signal.
 
 ## Output Format

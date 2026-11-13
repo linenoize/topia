@@ -45,7 +45,7 @@ Every review MUST cite at least one specific concern, suggestion, or explicit ap
 - `improve-architecture` (L2): when shallow-module flag fires during review
 - `logic-guardian` (L2): check if reviewed diff removes or modifies manifested logic
 - L4 extension packs: domain-specific review patterns when context matches (e.g., @Topia/ui for frontend, @Topia/security for auth code)
-- `neural-memory` | After review complete | Capture code quality insight
+- `journal` | After review complete | Record code quality insight
 
 ## Called By (inbound)
 
@@ -356,7 +356,7 @@ After reporting:
 - If any CRITICAL findings: call `topia:fix` immediately with the finding details
 - If any HIGH findings: call `topia:fix` with the finding details
 - If untested code: call `topia:test` with specific coverage gaps identified
-- Call `neural-memory` (Capture Mode) to save any novel code quality patterns or recurring issues found.
+- Record: `topia:journal` — any novel code quality pattern or recurring issue found.
 
 ## Framework-Specific Checks
 

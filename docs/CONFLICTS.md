@@ -23,7 +23,7 @@ This document recorded the gap between `topia` and fork-parent `rune-kit`. The v
 ### 1. Core Terminology & Branding
 
 - **Nexus** — central intelligence graph (was "mesh")
-- **Synapses** — 315 synchronous skill links (was "connections")
+- **Synapses** — 306 synchronous skill links (was "connections")
 - **Pulses** — 49 async events (was "signals")
 - **Topia tone** — discipline rails, cockpit, Maestro orchestration (not arcane/grimoire)
 

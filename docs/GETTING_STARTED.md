@@ -82,7 +82,7 @@ If you enabled agora during `/topia finalize` or `topia install`:
 
 - `topia memory seed` imports existing `.topia/` decisions into agora's SQLite store
 - Session start runs `agora-code inject` via Topia's hook (not agora's hook installer)
-- Invoke `topia:recall` when agora-memory is registered — see [agora-code integration](mcp-integrations/agora-code.md)
+- `topia:recall` adds agora results when its tools are present — see [agora-code integration](mcp-integrations/agora-code.md)
 
 ---
 

@@ -36,7 +36,7 @@ Retro is ENCOURAGING but CANDID. Every critique is anchored in specific commits,
 - `recon` (L2): scan codebase for test file counts, project structure
 - `plan` (L2): when retro identifies systemic bottlenecks — hand findings to plan for next sprint (e.g., "fix ratio >50% → allocate debugging time in next phase")
 - `journal` (L3): retro findings → ADR entries for recurring team patterns
-- `neural-memory` (L3): recall past retro insights for trend comparison; save this retro's key insights for future sessions
+- `recall` (L3): recall past retro insights for trend comparison
 
 ## Called By (inbound)
 
@@ -52,13 +52,12 @@ Retro is ENCOURAGING but CANDID. Every critique is anchored in specific commits,
 
 - `plan` (L2): retro insights inform future sprint planning (e.g., "fix ratio too high → allocate debugging time")
 - `journal` (L3): retro findings → ADR entries for team patterns
-- `neural-memory` (external): retro insights → persistent cross-session memory
 
 ### Fed By ←
 
 - `git` history: commits, authors, timestamps, file changes
 - `.topia/retros/` history: previous retro JSON for trend comparison
-- `neural-memory` (external): past retro insights for pattern recognition
+- `recall` (L3): past retro insights for pattern recognition
 
 ### Feedback Loops ↻
 

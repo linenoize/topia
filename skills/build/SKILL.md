@@ -56,7 +56,7 @@ FULL HOTFIX CHAIN (when incident is active):
 5. SENTINEL  → `topia:guardian` (security check — fix may introduce new surface)
 6. DEPLOY    → `topia:deploy` (deploy hotfix to production)
 7. WATCHDOG  → `topia:watchdog` (confirm health check passes post-deploy)
-8. POSTMORTEM → `topia:journal` + `topia:neural-memory` (capture root cause + fix pattern)
+8. POSTMORTEM → `topia:journal` (record root cause + fix pattern)
 
 HARD-GATES:
 - Do NOT skip CONTAIN if users are actively affected
@@ -205,7 +205,7 @@ Auto-trigger: no `.topia/` dir (first run) OR build just failed with env-looking
 
 1. Create TodoWrite with all applicable phases for this task
 2. Mark Phase 1 as `in_progress`
-2.5. **Optional — agora-code recall gate**: if `agora-memory` MCP server is registered, call `recall_learnings` with the task description's keywords BEFORE asking the user anything. If past sessions surface relevant decisions, bugs, or rejected approaches → present to user as "we've seen this before: …" and proceed with that context. If unavailable, skip silently. See `docs/mcp-integrations/agora-code.md`.
+2.5. **Recall gate**: Recall: `topia:recall` with the task's keywords BEFORE asking the user anything. If past sessions surface relevant decisions, bugs, or rejected approaches → present to user as "we've seen this before: …" and proceed with that context. If nothing is found, continue without comment.
 3. **idea gate**: Feature Request / Integration / Greenfield → invoke `topia:idea`. Task > 50 words or business terms (users, revenue, workflow) → invoke `topia:idea`. Bug Fix / simple Refactor → skip. idea produces `.topia/features/<name>/requirements.md` for Phase 2. **Synthesis-mode auto-trigger**: if user pasted a spec > 200 words, conversation has > 1000 words on this feature, `.topia/features/<name>/requirements.md` already exists (continuation), or user said "synthesize"/"just write the spec" → idea Step 1.4 activates Synthesis Mode (extract + cite sources + confirm), skipping the 5-question elicitation. Build does NOT need to choose mode — idea detects automatically.
 4. **Decision enforcement**: `Glob` for `.topia/decisions.md`; if exists, `Read` + extract constraints for Phase 2. Plan MUST NOT contradict active decisions without explicit user override.
 4b. **Contract enforcement**: If `.topia/contract.md` was loaded in Phase 0.6, list applicable contract sections for this task (e.g., `contract.security` for auth work, `contract.data` for database changes). These rules constrain Phase 2 planning and Phase 4 implementation.
@@ -274,7 +274,7 @@ This phase is lightweight — Read + pattern match. It does NOT replace Phase 1 
 5. Announce "Loading template: <name> (<pack>)" → skip Phase 1, 1.5, 1.7, 2 → proceed to Phase 4 with Phase 1 of the template
 6. If template not found: warn user and fall through to normal workflow
 
-**Step 0.5 — Cross-Project Recall**: Invoke `topia:neural-memory` (Recall Mode) with 3-5 topics relevant to the current task. Always prefix queries with the project name (e.g., `"ProjectName auth pattern"` not `"auth pattern"`).
+**Step 0.5 — Recall**: Recall: `topia:recall` with 2-3 topics relevant to the current task.
 
 1. Use `Glob` to check for `.topia/plan-*.md` files
 2. If a master plan exists matching the current task: Read it → find first `⬚ Pending` or `🔄 Active` phase → load ONLY that phase file → announce "Resuming from Phase N" → skip to Phase 4
@@ -542,7 +542,7 @@ Projects can define phase-specific rules in `.topia/phase-rules.md` that apply O
 
 ## Checkpoint Protocol (Opt-In)
 
-Invoke `topia:context-lifecycle` (Boundary Save mode) after Phase 2, 4, and 5 when task spans 3+ phases, context-watch is YELLOW+, or user requests checkpoints. It coordinates `session-bridge` Save, optional `neural-memory` Flush, and `/compact` guidance. Hooks also write `.topia/checkpoint.md` on pre-compact and `git push`. Before spawning subagents, invoke `topia:context-pack` for handoff briefings.
+Invoke `topia:context-lifecycle` (Boundary Save mode) after Phase 2, 4, and 5 when task spans 3+ phases, context-watch is YELLOW+, or user requests checkpoints. It coordinates `session-bridge` Save and `/compact` guidance. Hooks also write `.topia/checkpoint.md` on pre-compact and `git push`. Before spawning subagents, invoke `topia:context-pack` for handoff briefings.
 
 ## Phase Transition Protocol (MANDATORY)
 
@@ -579,7 +579,7 @@ Before entering ANY Phase N+1, assert: Phase N `completed` in TodoWrite | gate c
    - [ ] `MEMORY.md` — milestones, version info
 
    **Skip if**: No stats changed (pure refactor, docs-only, style change). **MANDATORY** if any numeric stat in README differs from actual.
-6. **Step 8.6 — Capture Learnings**: `topia:neural-memory` (Capture Mode) — 2-5 memories: architecture decisions, patterns, error root-causes, trade-offs. Cognitive language (causal/decisional/comparative). Tags: `[project, tech, topic]`. Priority 5 routine / 7-8 decisions / 9-10 critical errors.
+6. **Step 8.6 — Record Learnings**: Record: `topia:journal` — 1-3 learnings: architecture decisions, error root-causes, trade-offs, in causal language. The commit itself is recorded automatically by the `commit-memory` hook.
 6. Mark Phase 8 as `completed`
 
 ## Autonomous Loop Patterns
@@ -794,7 +794,6 @@ Mentally track tool call fingerprints. 3 identical calls → WARN. 5 identical c
 
 | Phase | Sub-skill | Layer | Purpose |
 |-------|-----------|-------|---------|
-| 0 / 8 | `neural-memory` | ext | Recall context at start; capture learnings at end |
 | 0 / 8 | `recall` | L3 | Unified cross-source memory recall at session start |
 | 0.5 | `guardian-env` | L3 | Environment pre-flight (first run only) |
 | 1 | `recon` | L2 | Scan codebase before planning |
@@ -841,9 +840,9 @@ Mentally track tool call fingerprints. 3 identical calls → WARN. 5 identical c
 
 ## Data Flow
 
-**Feeds Into →** `journal` (decisions → ADRs) | `session-bridge` (context → .topia/ state) | `neural-memory` (learnings → cross-session)
+**Feeds Into →** `journal` (decisions → ADRs) | `session-bridge` (context → .topia/ state)
 
-**Fed By ←** `idea` (requirements → Phase 1) | `plan` (master plan → Phase 2-4) | `session-bridge` (.continue-here.md → Phase 0 resume) | `neural-memory` (past decisions → Phase 0 recall)
+**Fed By ←** `idea` (requirements → Phase 1) | `plan` (master plan → Phase 2-4) | `session-bridge` (.continue-here.md → Phase 0 resume) | `recall` (past decisions → Phase 0 recall)
 
 **Feedback Loops ↻** build↔debug (Phase 4 bug → debug → fix → resume; if plan wrong → Approach Pivot) | build↔test (RED → GREEN → failures loop back)
 

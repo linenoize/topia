@@ -3,7 +3,7 @@
 > **Need a skill?** Invoke via `/topia <skill-name>` in Claude Code, or `@topia:<skill-name>` in Cursor / Codex / Antigravity.
 > Every skill has a `SKILL.md` at `skills/<name>/SKILL.md` — read that for the full spec.
 
-**Total:** 71 skills across 5 layers · 315+ synapses + 49 pulses
+**Total:** 71 skills across 5 layers · 306+ synapses + 49 pulses
 **Quick find:** use Ctrl+F on this page
 
 ---
@@ -42,7 +42,7 @@ Each skill is marked by who invokes it in practice:
 | Generate docs | 👤 [`docs`](#-docs) |
 | Onboard an existing codebase | 👤 [`onboard`](#-onboard) |
 | Map / reverse-engineer legacy architecture | 👤 [`architecture-mapper`](#-architecture-mapper) |
-| Recall past decisions | 🔄 [`neural-memory`](#-neural-memory) or 🔄 [`journal`](#-journal) |
+| Recall past decisions | 🔄 `recall` or 🔄 [`journal`](#-journal) |
 
 ---
 
@@ -234,7 +234,7 @@ Generate and parse office documents — PDF, DOCX, XLSX, PPTX, CSV. Pure format 
 | 🤖 | **context-pack** | Structured handoff briefings between agents |
 | 🔄 | **journal** | Persistent state tracking — ADRs, decisions, progress |
 | 🤖 | **session-bridge** | Cross-session context persistence to `.topia/` files |
-| 🔄 | **neural-memory** | Semantic memory graph via Neural Memory MCP (and agora-code MCP when registered) |
+| 🔄 | **neural-memory** | Optional; only if the Neural Memory MCP is installed |
 | 🔄 | **worktree** | Git worktree lifecycle — parallel development isolation |
 | 🤖 | **watchdog** | Post-deploy monitoring — health checks, response time, error detection |
 | 🤖 | **scope-guard** | Passive scope monitor — flags out-of-scope files against plan |
