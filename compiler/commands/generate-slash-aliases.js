@@ -11,7 +11,7 @@
 import { mkdirSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { INTENT_CHAINS, INTENT_KEYWORDS } from '../lib/intent-keywords.js';
+import { INTENT_CHAINS, INTENT_KEYWORDS, INTENT_PROMPTS } from '../lib/intent-keywords.js';
 import { loadSkillCatalog, RESERVED_COMMANDS } from '../lib/skill-catalog.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -130,6 +130,7 @@ function skillRoutes(catalog) {
     description: s.description,
     userInvocable: s.userInvocable,
     keywords: INTENT_KEYWORDS[s.name] ?? [],
+    prompts: INTENT_PROMPTS[s.name] ?? [],
     chain: (INTENT_CHAINS[s.name] ?? []).filter((next) => known.has(next)),
   }));
 }
@@ -161,6 +162,7 @@ export type SkillRoute = {
   description: string
   userInvocable: boolean
   keywords: readonly string[]
+  prompts: readonly string[]
   chain: readonly string[]
 }
 

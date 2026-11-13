@@ -5,7 +5,7 @@ Six Claude Code function-hook features that ship inside the `topia` plugin. `hoo
 | Mod | `/mods` name · `userConfig` default | What it does | Commands |
 |---|---|---|---|
 | Git band | `git` · `gitBand` | Row above the prompt with changed / unpushed / behind counts and Commit, Commit & push, Push buttons; hidden when the tree is clean | — |
-| Standing orders | `orders` · `standingOrders` | Per-project rules added to the system prompt: fan out to subagents, skipped/deferred ledger, logged hand-off scripts, commit when done. All off until turned on | `/orders [id] [on\|off]` |
+| Standing orders | `orders` · `standingOrders` | Per-project rules added to the system prompt: fan out to subagents, skipped/deferred ledger, logged hand-off scripts, commit when done, land finished branches on local main (`trunk`), ask decisions one at a time (`decisions`). All off until turned on; a one-time tip offers an order you keep asking for by hand | `/orders [id] [on\|off]` |
 | Remote hosts | `hosts` · `remoteHosts` (off by default) | Learns user/host/key path/port/sudo from successful `ssh` calls and lists them to the model. Kept per project, so one repo's hosts never reach another | `/hosts [forget user@host]` |
 | Quiet reports | `quiet` · `quietReports` | Keeps Topia's session report, guardian advisory and install/Rune banners out of the model's context; status line with the project path, % of the weekly limit (plus Fable's weekly limit on Fable, when Claude Code reports it), and the hook text Topia saved | `/topia-activity` |
 | Model preset | `model` · `modelPreset` | Remembers the model last used per project and switches to it at startup | `/model-preset [forget]` |
@@ -36,9 +36,24 @@ A change takes effect at once, with no reload: a band comes back, a status-line 
 
 **What a value means.** Every value the mods draw (git counts, routing chips, mod switches and their sources, the mods row) carries a short description, shown in one fixed two-line slot under the band or pane, the way Claude Code's own menus show the highlighted item's detail. The slot keeps its height whatever it shows, so moving from value to value never shifts or rewraps the rows. It shows the value under the pointer (a declarative hover reveal; a terminal that passes no pointer shows nothing), else the value holding the focus (Tab or the arrows, or a click), else a hint. A longer description wraps inside the slot and is cut off after two lines. The status line is plain text and takes neither, so its parts are explained in the `/mods` and `/topia-activity` panes.
 
+## Standing orders
+
+`/orders` opens a pane that starts by saying what standing orders are, then lists each order with one plain line on what it does. Each is off until turned on, per project. While one is on, its text goes into the system prompt.
+
+| Order | What it does |
+|---|---|
+| `fanout` | Splits independent work across parallel subagents |
+| `ledger` | Ends each task with a skipped / deferred list and where it is recorded |
+| `scripts` | Hands over steps the user runs as one logged script with yes/no confirms |
+| `commit` | Commits and pushes when a task is done |
+| `trunk` | Merges finished agent and worktree branches into local main, deletes the merged worktrees and branches, and reports ahead/behind. Never pushes unless asked, never forces or rewrites history, stops and reports on a conflict |
+| `decisions` | Asks decisions one at a time, each with a recommended default and a one-line reason ("ok" accepts it), and records accepted ones with `topia:journal`. A batch of more than about 5 may go to a decision form, if one is available |
+
+**Tips.** A prompt typed by the person (not a slash command or a plugin's prompt) is read for wording that asks for what an order does: "fan out subagents", "merge it into main", "go with your recommendation", "commit and push" and the like. The third such prompt in a project, while that order is off, shows a row above the prompt with one or two sentences on the order, **Turn on**, **No thanks** and `/orders <id> on`. It shows once per order and project: never again after either button, and never for an order that has been on. Only counts per order id are kept (`orders-tips:<root>`), never the prompt's text.
+
 ## Where data lives
 
-Everything the mods remember goes through `$.store`: a JSON file of the plugin's own under the user's Claude Code config directory (`~/.claude/plugins/store/`), never the project or the repo. Standing orders, SSH hosts, the model preset and a project's mod choices (`mods:<root>`, with whether it has been asked) are each keyed by project root; your all-projects choices are `mods:user` and the ask and recap preferences `mods:prefs`. `/mods forget-project` deletes everything kept for the current project. Prompt routing keeps no setting of its own; drafts and predictions stay in session memory, and the model hint names skills and matched keywords, never the prompt's text. SSH hosts are host, user, port, the key's *path* (never key material) and whether sudo worked; while `remoteHosts` is on they are sent to the model in that project's system prompt.
+Everything the mods remember goes through `$.store`: a JSON file of the plugin's own under the user's Claude Code config directory (`~/.claude/plugins/store/`), never the project or the repo. Standing orders and their tip counts (`orders-tips:<root>`), SSH hosts, the model preset and a project's mod choices (`mods:<root>`, with whether it has been asked) are each keyed by project root; your all-projects choices are `mods:user` and the ask and recap preferences `mods:prefs`. `/mods forget-project` deletes everything kept for the current project. Prompt routing keeps no setting of its own; drafts and predictions stay in session memory, and the model hint names skills and matched keywords, never the prompt's text. SSH hosts are host, user, port, the key's *path* (never key material) and whether sudo worked; while `remoteHosts` is on they are sent to the model in that project's system prompt.
 
 Test fixtures use reserved names only (`example.com`, `.test`, `203.0.113.0/24`), never a real host, user or path.
 
@@ -48,7 +63,7 @@ The keyword table is `lib/skill-routes.generated.ts`, written by `npm run genera
 
 Where this module is loaded, the hook's suggestion block is dropped before the model reads it (whatever the switches), since the band and `promptRoutingHint` stand in for it; the hook's text reaches the model only on hosts without the mods.
 
-Matching is whole words and phrases, case-insensitive, with plain endings (tests, fixed, adding). A keyword scores 3 a word, an L1 orchestrator 1 more, and a skill named outright (`/topia-debug`, `topia:debug`) wins. With no match the row stays hidden; it never guesses.
+Matching is whole words and phrases, case-insensitive, with plain endings (tests, fixed, adding); an apostrophe may be straight, curly or left out. A skill may also list whole-prompt phrases (`INTENT_PROMPTS`) that count only as the entire prompt, give or take spaces and a closing `?`, `.` or `!`: "status" on its own points at `recall`, while "git status" or "HTTP status code" does not. A keyword scores 3 a word, an L1 orchestrator 1 more, and a skill named outright (`/topia-debug`, `topia:debug`) wins. With no match the row stays hidden; it never guesses.
 
 A chip's skill description shows at the end of the row under a resting pointer, and under the band when the chip takes the focus (ctrl+x tab, the arrows) or is clicked.
 

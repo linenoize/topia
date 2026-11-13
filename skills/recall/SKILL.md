@@ -22,6 +22,7 @@ Use at session start, before architecture decisions, or when resuming work after
 
 - `/topia recall [topic]` — primary user trigger
 - `/topia:recall [topic]` — platform alias (Cursor/Windsurf colon syntax)
+- Prompts asking where work stands: "where did we leave off", "where were we", "what's left", "pick up where we left off", "resume", or "status" on its own (not "git status" or "HTTP status")
 - **Required** at session start when `agora-memory` MCP is registered (session-start hook — invoke before large reads or architecture work)
 - Auto-suggested at session start when agora is not registered (see session-start hook checklist)
 - Before `plan` architecture decisions when prior context may exist

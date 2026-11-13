@@ -255,7 +255,7 @@ These are rarely invoked directly — they're called by higher-level skills:
 | `topia:git` | build, scaffold, team, launch | Semantic commits, PRs, branches |
 | `topia:doc-processor` | docs, marketing | PDF/DOCX/XLSX/PPTX generation |
 | "Done" / "ship it" / "xong" | — | `topia:verification` → commit |
-| "recall", "what did we do", "session context", "pick up where we left off" | `topia:recall` | Unified cross-source memory read |
+| "recall", "what did we do", "session context", "pick up where we left off", "where did we leave off", "where were we", "what's left", "resume", or "status" as the whole prompt | `topia:recall` | Unified cross-source memory read: where work stands and what is left. Not "git status", "HTTP status" or a status bar |
 | "remember", "brain", "nmem", "cross-project memory", "store learning" | `topia:neural-memory` | Persist or query semantic graph memory |
 
 #### Domain Extension Packs (L4)

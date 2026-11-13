@@ -24,14 +24,30 @@ function escapeRegExp(text) {
   return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+// An apostrophe may be typed straight, curly or not at all ("what's", "whats").
+function phrasePattern(phrase) {
+  return phrase
+    .trim()
+    .split(/\s+/)
+    .map((word) => escapeRegExp(word).replace(/'/g, "['’]?"))
+    .join('\\s+');
+}
+
 function keywordPattern(keyword) {
-  const words = keyword.trim().split(/\s+/).map(escapeRegExp).join('\\s+');
   const suffix = /[a-z]$/i.test(keyword) ? '(?:s|es|ed|d|ing)?' : '';
-  return new RegExp(`(?<![\\w-])${words}${suffix}(?![\\w-])`, 'gi');
+  return new RegExp(`(?<![\\w-])${phrasePattern(keyword)}${suffix}(?![\\w-])`, 'gi');
+}
+
+// A phrase that counts only as the whole prompt: "status" alone, never "git status".
+function promptPattern(phrase) {
+  return new RegExp(`^\\s*(${phrasePattern(phrase)})[\\s?.!…]*$`, 'i');
 }
 
 const PATTERNS = ROUTES.flatMap((route) =>
   route.keywords.map((keyword) => ({ name: route.name, keyword, pattern: keywordPattern(keyword) })),
+);
+const PROMPTS = ROUTES.flatMap((route) =>
+  (route.prompts || []).map((phrase) => ({ name: route.name, keyword: phrase, pattern: promptPattern(phrase) })),
 );
 
 const EXPLICIT = /(?:\/topia[-:]|\/topia\s+|(?<![\w-])topia:)([a-z][\w-]*)/gi;
@@ -75,6 +91,13 @@ function predict(text) {
     for (const hit of read.matchAll(pattern)) {
       entry(name).matches.push({ start: hit.index, end: hit.index + hit[0].length, keyword });
     }
+  }
+
+  for (const { name, keyword, pattern } of PROMPTS) {
+    const hit = pattern.exec(read);
+    if (hit === null) continue;
+    const start = read.length - read.trimStart().length;
+    entry(name).matches.push({ start, end: start + (hit[1] || '').length, keyword });
   }
 
   const scored = [];
