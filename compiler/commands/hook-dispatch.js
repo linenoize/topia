@@ -28,8 +28,11 @@ const ALLOWLIST = new Set([...WIRED_SKILLS, ...Object.keys(V1_SKILL_ALIASES)]);
 function isCursorRuntime(event = {}) {
   if (process.env.CURSOR_HOOK === '1' || process.env.CURSOR_AGENT === '1') return true;
   if (process.env.CURSOR_VERSION || process.env.CURSOR_PROJECT_DIR) return true;
-  if (event?.cursor_version || event?.hook_event_name) return true;
-  return false;
+  if (event?.cursor_version) return true;
+  // Claude Code sends hook_event_name too, in PascalCase (`PreToolUse`); Cursor's
+  // names are camelCase. Same rule as hooks/lib/cursor-io.cjs.
+  const name = event?.hook_event_name;
+  return typeof name === 'string' && /^[a-z]/.test(name);
 }
 
 function cursorPayloadForEvent(hookEventName, message) {

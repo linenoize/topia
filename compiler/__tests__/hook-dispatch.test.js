@@ -106,6 +106,25 @@ describe('dispatchHook', () => {
     assert.match(out.additional_context, /dependency-doctor/);
   });
 
+  // Claude Code sends hook_event_name too, in PascalCase. That is not Cursor.
+  test('a Claude Code event with hook_event_name gets the plain advisory line', async () => {
+    const saved = { hook: process.env.CURSOR_HOOK, ver: process.env.CURSOR_VERSION, dir: process.env.CURSOR_PROJECT_DIR };
+    delete process.env.CURSOR_HOOK;
+    delete process.env.CURSOR_VERSION;
+    delete process.env.CURSOR_PROJECT_DIR;
+    const io = makeIO({ stdinData: JSON.stringify({ hook_event_name: 'PreToolUse', tool_name: 'Bash' }) });
+    let code;
+    try {
+      code = await dispatchHook(['guardian', '--gentle'], io);
+    } finally {
+      for (const [key, name] of [['hook', 'CURSOR_HOOK'], ['ver', 'CURSOR_VERSION'], ['dir', 'CURSOR_PROJECT_DIR']]) {
+        if (saved[key] !== undefined) process.env[name] = saved[key];
+      }
+    }
+    assert.strictEqual(code, 0);
+    assert.match(io.getOut(), /^Topia-hook: guardian \[advisory\] — tool=Bash/);
+  });
+
   test('malformed stdin does not crash', async () => {
     const io = makeIO({ stdinData: 'not json at all' });
     const code = await dispatchHook(['completion-gate', '--gentle'], io);
