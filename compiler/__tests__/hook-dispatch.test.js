@@ -108,7 +108,11 @@ describe('dispatchHook', () => {
 
   // Claude Code sends hook_event_name too, in PascalCase. That is not Cursor.
   test('a Claude Code event with hook_event_name gets the plain advisory line', async () => {
-    const saved = { hook: process.env.CURSOR_HOOK, ver: process.env.CURSOR_VERSION, dir: process.env.CURSOR_PROJECT_DIR };
+    const saved = {
+      hook: process.env.CURSOR_HOOK,
+      ver: process.env.CURSOR_VERSION,
+      dir: process.env.CURSOR_PROJECT_DIR,
+    };
     delete process.env.CURSOR_HOOK;
     delete process.env.CURSOR_VERSION;
     delete process.env.CURSOR_PROJECT_DIR;
@@ -117,7 +121,11 @@ describe('dispatchHook', () => {
     try {
       code = await dispatchHook(['guardian', '--gentle'], io);
     } finally {
-      for (const [key, name] of [['hook', 'CURSOR_HOOK'], ['ver', 'CURSOR_VERSION'], ['dir', 'CURSOR_PROJECT_DIR']]) {
+      for (const [key, name] of [
+        ['hook', 'CURSOR_HOOK'],
+        ['ver', 'CURSOR_VERSION'],
+        ['dir', 'CURSOR_PROJECT_DIR'],
+      ]) {
         if (saved[key] !== undefined) process.env[name] = saved[key];
       }
     }
