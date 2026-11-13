@@ -313,6 +313,27 @@ node compiler/bin/topia.js memory seed
 
 Imports decisions, ADRs, and learnings from `.topia/` into agora's SQLite store (idempotent). Skip silently if agora is not installed — file-based `.topia/` remains source of truth.
 
+### Step 6d.1b — Parked MCP servers and plugins (Claude Code only)
+
+Servers and plugins that aren't needed everywhere can be parked in the user's catalog (`~/.claude/topia/mcp-catalog.json`, outside any repo) instead of loading in every session. Topia needs none of them. This step offers the ones that fit this project.
+
+1. Find candidates (skip this step silently if the catalog doesn't exist or nothing matches):
+```bash
+node skills/onboard/scripts/mcp-catalog.js match --root <project-root>
+```
+2. If `matches` is not empty, use **AskUserQuestion** once, `multiSelect: true`:
+   - Question: **"These parked tools may fit this project. Turn any on here? (Only this project; nothing changes elsewhere.)"**
+   - One option per match: label = name, description = `about` + "Matched: " + `why`.
+   - The tool adds "Other"; don't add a "None" option, since selecting nothing means none.
+3. Apply only what the person picked. The script runs the `claude` CLI without a shell, so JSON and Windows paths arrive unchanged:
+```bash
+node skills/onboard/scripts/mcp-catalog.js apply --names <picked,comma,separated>
+```
+   Servers are added at local scope (private to this person, this project). Plugins are enabled at local scope. A new server loads in the next session.
+4. Report `### Parked tools` with what was turned on, or "none fit" in one line.
+
+To park a user-scope server yourself (for example one that loads everywhere but is only used in one project): `node skills/onboard/scripts/mcp-catalog.js park <server> --about "<what it does>" --signals "*.ext,folder/,keyword"`. It saves the exact config to the catalog first, then removes it from user scope. To park a plugin, disable it at user scope (`claude plugin disable <plugin> --scope user`) and add an entry under `plugins` in the catalog with `about` and `signals`.
+
 ### Step 6d.2 — Topia mods (Claude Code only)
 
 In Claude Code, Topia's mods (git band, standing orders, remote hosts, quiet reports, model preset, prompt routing) ask for themselves: the first onboard run in a project shows a **"topia onboard · which mods here?"** row above the prompt, with one chip per mod to switch it for this project and a **Keep** button. Do not ask about mods with AskQuestion and do not write any mod setting yourself — choices live in the plugin's own store, never in the repo.

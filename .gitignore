@@ -42,6 +42,8 @@ pnpm-debug.log*
 # AI assistant per-machine settings
 .claude/skills/
 .claude/settings.local.json
+# Agent worktrees: separate checkouts, never part of this one
+.claude/worktrees/
 .openclaw/
 .cursor/
 .codex/cache/
