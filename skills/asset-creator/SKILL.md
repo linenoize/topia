@@ -1,6 +1,6 @@
 ---
 name: asset-creator
-description: "Creates code-based visual assets — SVG icons, OG image HTML templates, social banners, and icon sets. Outputs files with usage instructions."
+description: "Use when you need graphics written as code: 'make an SVG icon set', 'create an OG image', 'a social banner for the launch', 'add a favicon'. Writes SVG files or HTML templates with usage notes. Does not produce PNG or JPG directly."
 metadata:
   author: topia
   version: "0.2.0"

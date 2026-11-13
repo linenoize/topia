@@ -1,6 +1,6 @@
 ---
 name: topia-doc-processor
-description: "Generate and parse office documents — PDF, DOCX, XLSX, PPTX, CSV. Use when creating reports, exporting tabular data, or processing uploaded office files. NOT for project documentation (use docs)."
+description: "Use when creating or reading office files: 'export this to Excel', 'make a PDF report', 'read this uploaded DOCX', 'parse this CSV', 'build a PPTX'. Handles PDF, DOCX, XLSX, PPTX and CSV. Not for README or project docs (docs)."
 disable-model-invocation: true
 ---
 

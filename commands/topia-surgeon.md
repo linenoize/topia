@@ -1,6 +1,6 @@
 ---
 name: topia-surgeon
-description: "Incremental refactorer. Use within a rescue workflow after safeguard has set up safety nets. Refactors ONE module per session using proven patterns — Strangler Fig, Branch by Abstraction, Expand-Migrate-Contract."
+description: "Use when refactoring one module safely after safeguard has run: 'extract this into a service', 'apply strangler fig to the old router', 'break up this god class'. Changes one module per session, runs tests after each edit, and touches at most 5 files. Usually driven by rescue."
 disable-model-invocation: true
 ---
 

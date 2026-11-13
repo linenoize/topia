@@ -1,6 +1,6 @@
 ---
 name: topia-debug
-description: "Root cause analysis for bugs and unexpected behavior. Traces errors through code, uses structured reasoning, and hands off to fix when cause is found. Core of the debug↔fix chain."
+description: "Use when something is broken and the cause is unknown: 'why does this crash', 'this test fails and I don't know why', a stack trace to explain. Traces the error, tests hypotheses and reports the root cause. Investigates only; fix applies the change."
 disable-model-invocation: true
 ---
 

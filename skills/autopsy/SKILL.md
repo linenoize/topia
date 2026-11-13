@@ -1,6 +1,6 @@
 ---
 name: autopsy
-description: "Full codebase health assessment. Use when diagnosing project health or starting a rescue workflow on legacy code. Analyzes complexity, dependencies, dead code, tech debt, and git hotspots. Produces a health score and rescue plan."
+description: "Use when legacy or messy code needs a diagnosis before refactoring: 'how bad is this codebase', 'where is the tech debt', 'what should we fix first'. Scores each module on complexity, dead code, coupling and git hotspots and writes a rescue plan. Narrower than audit, which also covers security and infra."
 metadata:
   author: topia
   version: "0.4.0"
@@ -60,7 +60,7 @@ Skip this step for local-only projects with no remote.
 
 ### Step 1 — Structure scan
 
-Call `topia:recon` with a request for a full project map. Ask scout to return:
+Call `topia:recon` with a request for a full project map. Ask recon to return:
 - All source files with LOC counts
 - Entry points and main modules
 - Import/dependency graph (who imports who)
@@ -69,7 +69,7 @@ Call `topia:recon` with a request for a full project map. Ask scout to return:
 
 ### Step 2 — Module analysis
 
-For each major module identified by scout, use `Read` to open the file and assess:
+For each major module identified by recon, use `Read` to open the file and assess:
 - LOC (flag anything over 500 as a god file)
 - Function count and average function length
 - Maximum nesting depth (flag > 4 levels)
@@ -264,7 +264,7 @@ Known failure modes for this skill. Check these before declaring done.
 
 ## Done When
 
-- scout completed with full project map (all files, entry points, import graph)
+- recon completed with full project map (all files, entry points, import graph)
 - All major modules scored across all 6 dimensions
 - Git archaeology run (hotspots, stale files, dead code candidates identified)
 - RESCUE-REPORT.md written to project root with Mermaid dependency diagram

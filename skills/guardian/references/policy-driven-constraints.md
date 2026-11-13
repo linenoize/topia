@@ -2,17 +2,17 @@
 
 # Policy-Driven Constraints
 
-Sentinel normally requires a developer to manually configure what is blocked. Policy-driven constraints flip that: upload a document — security policy, compliance requirements, team standards — and Sentinel parses it into enforced rules automatically.
+Guardian normally requires a developer to manually configure what is blocked. Policy-driven constraints flip that: upload a document — security policy, compliance requirements, team standards — and Guardian parses it into enforced rules automatically.
 
 ---
 
 ## 1. The Pattern: Document → Constraints
 
 **Traditional flow:**
-Developer writes constraint config → commits it → Sentinel enforces it.
+Developer writes constraint config → commits it → Guardian enforces it.
 
 **Policy-driven flow:**
-Team uploads existing policy doc (often already written for audit purposes) → LLM parses structured rules → Sentinel enforces them immediately, with no manual translation.
+Team uploads existing policy doc (often already written for audit purposes) → LLM parses structured rules → Guardian enforces them immediately, with no manual translation.
 
 **Why this matters:**
 - Compliance docs already exist. They should not need to be re-expressed as code.
@@ -42,7 +42,7 @@ Team uploads existing policy doc (often already written for audit purposes) → 
      ↓
 [5. Persist] — save to .topia/guardian/policies/[policy-name].yaml
      ↓
-[6. Activate] — Sentinel loads on every check cycle
+[6. Activate] — Guardian loads on every check cycle
 ```
 
 **Step 2 prompt pattern (internal):**
@@ -121,7 +121,7 @@ Agent cannot proceed. Action is rejected with explanation.
 
 ### warn — flag but allow
 
-Sentinel surfaces the issue. Human decides whether to proceed.
+Guardian surfaces the issue. Human decides whether to proceed.
 
 ```yaml
 - id: warn-001
@@ -177,7 +177,7 @@ Agent is blocked until the required artifact exists.
 
 ## 4. Scope Resolution
 
-How Sentinel matches a constraint against an agent action:
+How Guardian matches a constraint against an agent action:
 
 | Scope | Matches Against | Example |
 |-------|----------------|---------|
@@ -195,7 +195,7 @@ block > require > warn
 All active policy files in `.topia/guardian/policies/` are loaded and merged. Constraints with the same `id` in a project-level policy override org-level. All `block` constraints from any policy are enforced — there is no way to un-block at a lower tier.
 
 **Conflict resolution:**
-If two policies disagree (one requires a pattern, another blocks it), Sentinel halts and surfaces the conflict. It does not silently pick a winner.
+If two policies disagree (one requires a pattern, another blocks it), Guardian halts and surfaces the conflict. It does not silently pick a winner.
 
 ---
 
@@ -206,7 +206,7 @@ A policy document can disable entire Topia skills, not just code patterns.
 **How it works:**
 1. Policy document states a prohibition (e.g., "no automated deployments during freeze")
 2. Parser extracts a `disable_skill` directive
-3. Sentinel checks active disabled-skills list before skill-router routes any task
+3. Guardian checks active disabled-skills list before skill-router routes any task
 4. Disabled skill returns a structured refusal explaining the policy source
 
 **Disabled skills config:**
@@ -257,7 +257,7 @@ org-level (default) → project-level (overrides org) → session-level (tempora
 Configurable per project in `.topia/config.yaml` via `policy_override_direction`.
 
 **Expiry:**
-Policies and individual constraints support `expires` timestamps. Sentinel checks expiry on load and deactivates expired rules automatically. Useful for temporary incident lockdowns.
+Policies and individual constraints support `expires` timestamps. Guardian checks expiry on load and deactivates expired rules automatically. Useful for temporary incident lockdowns.
 
 **Audit trail:**
 Every enforcement event is appended to `.topia/guardian/audit.log`:
@@ -382,7 +382,7 @@ constraints:
 ## Signal Integration
 
 ```yaml
-skill: sentinel
+skill: guardian
 version: "0.9.0"
 
 signals:
@@ -408,7 +408,7 @@ signals:
     - skill_router.skill.requested
         # intercept before routing — check disabled-skills list
     - readiness.check.requested
-        # piggyback on preflight to surface active policy summary
+        # piggyback on verification to surface active policy summary
     - scaffold.file.creating
         # validate new file paths against file_pattern constraints before write
 
@@ -418,7 +418,7 @@ signals:
     - on: tool_use
       action: check tool constraints before allowing Bash/Write/Edit invocation
     - on: policy_file_changed
-      action: reload active constraint set, emit sentinel.policy.loaded
+      action: reload active constraint set, emit guardian.policy.loaded
     - on: session_start
       action: load all active policies, log count, warn on expired entries
 ```

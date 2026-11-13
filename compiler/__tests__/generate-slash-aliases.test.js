@@ -149,6 +149,54 @@ describe('intent-keywords', () => {
     }
   });
 
+  // A keyword in two skills, or one skill's word inside another's phrase
+  // ("design" in "design system", "audit" in "security audit"), sends one
+  // prompt to two places. The pattern is the matcher's: whole words, plain endings.
+  test('no keyword belongs to two skills, nor sits inside another skill phrase', () => {
+    const pattern = (keyword) => {
+      const words = keyword
+        .trim()
+        .split(/\s+/)
+        .map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+        .join('\\s+');
+      const suffix = /[a-z]$/i.test(keyword) ? '(?:s|es|ed|d|ing)?' : '';
+      return new RegExp(`(?<![\\w-])${words}${suffix}(?![\\w-])`, 'i');
+    };
+    const entries = Object.entries(INTENT_KEYWORDS).flatMap(([name, keywords]) =>
+      keywords.map((keyword) => ({ name, keyword, re: pattern(keyword) })),
+    );
+    const clashes = [];
+    for (const a of entries) {
+      for (const b of entries) {
+        if (a.name === b.name) continue;
+        if (a.re.test(b.keyword)) clashes.push(`"${a.keyword}" (${a.name}) matches "${b.keyword}" (${b.name})`);
+      }
+    }
+    assert.deepEqual(clashes, []);
+  });
+
+  test('words that fit almost any prompt are not keywords', () => {
+    const generic = ['add', 'make', 'write', 'create', 'find', 'where is', 'error', 'fail', 'test', 'spec', 'clean up'];
+    const genericBySkill = { launch: ['deploy', 'release', 'ship', 'publish', 'production'] };
+    for (const [name, keywords] of Object.entries(INTENT_KEYWORDS)) {
+      const banned = [...generic, ...(genericBySkill[name] ?? [])];
+      for (const word of banned) assert.ok(!keywords.includes(word), `${name} lists the generic word "${word}"`);
+    }
+  });
+
+  test('prompts that used to route to the wrong skill', () => {
+    const hook = createRequire(import.meta.url)('../../hooks/lib/prompt-routing.cjs');
+    const names = (prompt) => hook.predict(prompt).skills.map((skill) => skill.name);
+    assert.ok(!names('clean up the skills list').includes('rescue'));
+    assert.ok(!names('add a field to the form and make it required').includes('build'));
+    assert.ok(!names('find the config file').includes('recon'));
+    assert.ok(!names('we deployed to production').includes('launch'));
+    assert.deepEqual(names('fix the typo in the header'), ['fix']);
+    assert.deepEqual(names('create a design system for the app'), ['design']);
+    assert.deepEqual(names('run a security audit'), ['guardian']);
+    assert.deepEqual(names('clean up this mess in the legacy code'), ['rescue']);
+  });
+
   test('the checked-in routing tables match what the generator writes', () => {
     const catalog = loadSkillCatalog(REPO);
     const checkedIn = (rel) => readFileSync(join(REPO, rel), 'utf-8').replace(/\r\n/g, '\n');

@@ -1,6 +1,6 @@
 ---
 name: safeguard
-description: "Build safety nets before refactoring. Use when running surgeon or any risky refactor that needs a rollback point. Creates characterization tests, boundary markers, config freezes, and rollback points."
+description: "Use when a risky refactor needs a way back first: 'add characterization tests before I refactor', 'set a rollback point'. Writes tests that pin current behavior, marks module boundaries, freezes config and tags a rollback point. Surgeon needs it first."
 metadata:
   author: topia
   version: "0.2.0"
@@ -39,7 +39,7 @@ Characterization tests MUST pass on the current (unmodified) code before any ref
 
 ### Step 1 — Identify module boundaries
 
-Call `topia:recon` targeting the specific module. Ask scout to return:
+Call `topia:recon` targeting the specific module. Ask recon to return:
 - All public functions, classes, and exported symbols
 - All files that import from this module (consumers)
 - All files this module imports from (dependencies)
@@ -175,7 +175,7 @@ Known failure modes for this skill. Check these before declaring done.
 
 ## Done When
 
-- Module boundaries identified via scout (public functions, consumers, dependencies)
+- Module boundaries identified via recon (public functions, consumers, dependencies)
 - Characterization tests written for all public functions
 - Tests PASS on current (unmodified) code — HARD-GATE verified
 - Boundary markers added (@legacy, @bridge, @do-not-touch)

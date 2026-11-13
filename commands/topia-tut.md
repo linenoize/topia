@@ -1,6 +1,6 @@
 ---
 name: topia-tut
-description: "Re-shows the structured first-run menu (finalize / onboard / doctor / faq / help) on demand, with current completion status. Use when the user wants to revisit the tutorial, asks 'what should I do next?', or types `/topia:tut`. This is the explicit re-entry point for the menu that auto-shows on session-start until completed."
+description: "Use when the user wants the Topia first-run menu again: 'what should I do next?', 'show the tutorial', or types /topia:tut. Shows finalize, onboard, doctor, faq and help with what is already done."
 disable-model-invocation: true
 ---
 

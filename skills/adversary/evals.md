@@ -13,7 +13,7 @@ Synthetic scenarios for verifying adversary skill behavior. Each eval has setup,
 - Verdict: HARDEN (specific remediations applied to plan)
 - Strength Notes acknowledges any well-specified parts
 
-**Pass criteria**: Report has ≥1 finding per dimension, ≥3 CRITICAL/HIGH findings on auth/payment specifics, sentinel called for crypto verification.
+**Pass criteria**: Report has ≥1 finding per dimension, ≥3 CRITICAL/HIGH findings on auth/payment specifics, guardian called for crypto verification.
 
 ## E02: Quick Challenge mode
 

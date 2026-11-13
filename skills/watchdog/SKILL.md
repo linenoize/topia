@@ -1,6 +1,6 @@
 ---
 name: watchdog
-description: "Post-deploy monitoring. Use when verifying a deployed app is healthy after deploy or launch — auto-fires from launch/deploy. Checks HTTP status, response times, error detection, and smoke test report."
+description: "Use when a deploy just finished and the live app needs a health check: 'is the site up', 'check prod after the deploy', 'smoke test the live URL'. Checks HTTP status, response times and error pages, and writes a smoke-test report. Deploy and launch call it."
 metadata:
   author: topia
   version: "0.2.0"

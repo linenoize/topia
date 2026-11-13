@@ -1,6 +1,6 @@
 ---
 name: topia-guardian-env
-description: "Environment-aware pre-flight check. Use when starting work in a new environment, switching machines, or when 'works on my machine' bugs surface. Validates OS, runtime versions, installed tools, port availability, env vars, and disk space BEFORE coding starts. Like sentinel but for the environment, not the code."
+description: "Use when starting on a new machine or environment, or on 'works on my machine' bugs: 'why won't this run here', 'check my setup'. Checks OS, runtime versions, installed tools, free ports, env vars and disk space before coding. Checks the environment, not the code (guardian does the code)."
 disable-model-invocation: true
 ---
 

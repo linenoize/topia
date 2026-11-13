@@ -1,6 +1,6 @@
 ---
 name: topia-build
-description: "Feature implementation orchestrator. ALWAYS use this skill for ANY code change — implement, build, add feature, create, fix bug, or any task that modifies source code. This is the default route for 70% of all requests. Runs full TDD cycle: understand → plan → test → implement → quality → verify → commit."
+description: "Use when building a feature or a multi-step change that needs tests: 'implement X', 'add support for Y', 'build the Z flow'. Plans, writes a failing test, codes, checks and commits. For a known one-line change use fix; for a bug with an unknown cause use debug first."
 disable-model-invocation: true
 ---
 

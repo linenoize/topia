@@ -1,6 +1,6 @@
 ---
 name: topia-idea
-description: "Idea Elicitation agent. Use when starting a new feature requiring requirements elicitation BEFORE plan or build. Asks probing questions, identifies hidden requirements, maps stakeholders, defines scope boundaries, and produces a structured Requirements Document that plan and build consume."
+description: "Use when a feature request is vague and needs requirements before planning: 'I want to add payments', 'help me work out what this feature should do'. Asks probing questions, finds hidden requirements and scope limits, and writes a requirements document that plan and build read."
 disable-model-invocation: true
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: integrate
-description: "Clone, port, or convert features from any GitHub repo into your project. Use when stealing patterns from external repos or porting proven code. Understand before copy, challenge before implement. 4 modes: port (rewrite), compare (analysis), copy (transplant), improve (copy + optimize)."
+description: "Use when bringing code or ideas over from another GitHub repo: 'port this feature from repo X', 'copy their retry logic', 'compare our auth with theirs'. Reads and challenges the source first, then ports, copies, compares, or copies and improves it."
 metadata:
   author: topia
   version: "0.2.0"

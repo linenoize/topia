@@ -119,12 +119,16 @@ describe('pre-tool-guard: privacy nexus', () => {
 
 describe('intent-router', () => {
   test('suggests the skill the wording points at, from the table shipped in hooks/lib', () => {
-    const { stdout, exitCode } = runHook('intent-router', '{"prompt": "fix the crash and add a unit test"}', {
-      CLAUDE_PLUGIN_ROOT: '/nonexistent',
-      CURSOR_HOOK: '',
-    });
+    const { stdout, exitCode } = runHook(
+      'intent-router',
+      '{"prompt": "add support for gzip, fix the crash and add a unit test"}',
+      {
+        CLAUDE_PLUGIN_ROOT: '/nonexistent',
+        CURSOR_HOOK: '',
+      },
+    );
     assert.strictEqual(exitCode, 0);
-    assert.match(stdout, /\[Topia intent-router\] Suggested: topia:build \(L1, sonnet\) — wording: "fix", "add"/);
+    assert.match(stdout, /\[Topia intent-router\] Suggested: topia:build \(L1, sonnet\) — wording: "add support for"/);
     assert.match(stdout, /Also consider: test, debug/);
     // build is `context: fork`, so the hook says its report comes back later.
     assert.match(stdout, /Runs in the background: its report arrives later as a task notification/);

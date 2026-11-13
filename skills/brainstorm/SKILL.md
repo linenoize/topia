@@ -1,6 +1,6 @@
 ---
 name: brainstorm
-description: "Creative ideation and solution exploration. Generates multiple approaches with trade-offs, uses structured frameworks (SCAMPER, First Principles), and hands off to plan for structuring."
+description: "Use when there are several technical ways to solve a problem and you want options before choosing: 'what are our options for caching', 'other ways to do this', 'this approach failed'. Gives 2-3 designs with trade-offs and hands the pick to plan. Technical design only, not product or business ideas."
 metadata:
   author: topia
   version: "0.6.0"

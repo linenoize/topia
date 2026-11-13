@@ -1,6 +1,6 @@
 ---
 name: topia-marketing
-description: "Create marketing assets and execute launch strategy. Generates landing copy, social banners, SEO meta, blog posts, and video scripts."
+description: "Use when writing launch or promotional material: 'write landing page copy', 'draft social posts for the release', 'SEO meta for the site', 'a blog post announcing this'. Bases every claim on what the code actually does."
 disable-model-invocation: true
 ---
 

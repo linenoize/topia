@@ -1,6 +1,6 @@
 ---
 name: topia-plan
-description: "Create structured implementation plans from requirements. Produces master plan + phase files for enterprise-scale project management. Master plan = overview (<80 lines). Phase files = execution detail (<150 lines each). Each session handles 1 phase. Uses opus for deep reasoning."
+description: "Use when work spans several sessions or phases and needs a written plan: 'plan the migration', 'break this feature into phases'. Writes a short master plan plus one file per phase under .topia/. Unlike plan mode, the plan stays on disk and each later session builds one phase."
 disable-model-invocation: true
 ---
 

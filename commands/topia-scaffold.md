@@ -1,6 +1,6 @@
 ---
 name: topia-scaffold
-description: "Autonomous project bootstrapper. Generates complete project from a description — structure, code, tests, docs, config. Orchestrates idea → plan → design → fix → test → docs → git in one pipeline. The \\\"0 to production-ready\\\" skill."
+description: "Use when starting a new project from nothing: 'create a new app that does X', 'bootstrap a project', 'greenfield service from scratch'. Runs requirements, plan, design, code, tests, docs and git in one pipeline and ends with a project that builds and passes its tests. For existing repos, use build."
 disable-model-invocation: true
 ---
 

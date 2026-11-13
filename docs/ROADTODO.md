@@ -9,7 +9,7 @@ Topia's goal: a disciplined, resilient, cost-effective skill toolkit for AI codi
 ## Mission Pillars
 
 - **Workflow rails, not a pipeline** — skills call each other through a graph; if one breaks, the workflow routes around it. Not a brittle A→B→C chain.
-- **Auto-discipline at the runtime** — hooks (preflight / sentinel / completion-gate / quarantine) fire before tool use, so the model can't skip steps.
+- **Auto-discipline at the runtime** — hooks (verification / guardian / completion-gate / quarantine) fire before tool use, so the model can't skip steps.
 - **Multi-platform from one source** — `skills/` compiles to Claude Code, Cursor, Codex, Antigravity, OpenCode, OpenClaw. No per-IDE rewrites.
 - **Persistent memory across sessions** — agora-code MCP (vendored, optional) survives context resets, new conversations, agent restarts.
 - **Internal-only** — no marketplace, no community PR queue, no public distribution. Stays a private team tool.
@@ -48,8 +48,8 @@ Topia's goal: a disciplined, resilient, cost-effective skill toolkit for AI codi
 - [x] **65 skills** across 5 layers (L0 router · L1 orchestrators · L2 hubs · L3 utilities · L4 extension packs).
 - [x] **203 synapses + 44 pulses** between skills, validated by `topia doctor`.
 - [x] **Multi-platform compiler** — `skills/` → Claude Code / Cursor / Antigravity / Codex / OpenCode / OpenClaw / generic.
-- [x] **Runtime hooks** — preflight / sentinel / completion-gate / quarantine wire as native hooks via `topia hooks install`.
-- [x] **Step 0 prerequisite gates** on every skill (build needs an approved plan; fix needs a diagnosis from debug; deploy needs passing verification + sentinel).
+- [x] **Runtime hooks** — verification / guardian / completion-gate / quarantine wire as native hooks via `topia hooks install`.
+- [x] **Step 0 prerequisite gates** on every skill (build needs an approved plan; fix needs a diagnosis from debug; deploy needs passing verification + guardian).
 
 ### v1.x cleanup — accomplished this cycle ✅
 
@@ -62,7 +62,7 @@ Topia's goal: a disciplined, resilient, cost-effective skill toolkit for AI codi
 - [x] 4 extension packs removed (`@Topia/saas`, `/trading`, `/gamedev`, `/zalo`); 14 → 10 packs, swept across ~30 files; `topia doctor` + tests updated to expect ≥10 packs.
 
 **Nexus integrity (now graph-integrity in user docs)**
-- [x] Reciprocal `## Called By` entries added for `idea`'s outbound calls (scout, research, plan, brainstorm, design).
+- [x] Reciprocal `## Called By` entries added for `idea`'s outbound calls (recon, research, plan, brainstorm, design).
 - [x] `documentation/SKILL.md` got its missing `## Sharp Edges` section.
 - [x] Orphan skills audit closed — `constraint-check`, `sast`, `worktree` were already wired in both directions.
 
@@ -91,16 +91,16 @@ Topia's goal: a disciplined, resilient, cost-effective skill toolkit for AI codi
 
 ## Open — Critical
 
-### Sentinel / preflight org-policy integration (Medium)
-`compiler/parser.js` already parses `.topia/org/org.md` (teams, roles, policies, approval flows, governance level) and `compiler/emitter.js` injects a `<ORG-POLICY>` block into sentinel / preflight at compile time. But the `SKILL.md` files lack the static "Step X — Organization Policy Enforcement" sections that describe how to consume the injected block.
+### Guardian / verification org-policy integration (Medium)
+`compiler/parser.js` already parses `.topia/org/org.md` (teams, roles, policies, approval flows, governance level) and `compiler/emitter.js` injects a `<ORG-POLICY>` block into guardian / verification at compile time. But the `SKILL.md` files lack the static "Step X — Organization Policy Enforcement" sections that describe how to consume the injected block.
 
 Tests already expect these sections:
-- `sentinel has Organization Policy Enforcement step` (sentinel SKILL.md)
-- `Step 4.86 (between contract 4.85 and six-gate 4.9)` (sentinel SKILL.md)
-- `preflight references .topia/org/org.md` (preflight SKILL.md — currently zero refs)
-- `preflight has Organization Approval Requirements step` (preflight SKILL.md)
-- `preflight handles missing org config gracefully` (preflight SKILL.md)
-- `Step 4.6 (between domain hooks 4.5 and composite score 4.8)` (preflight SKILL.md)
+- `guardian has Organization Policy Enforcement step` (guardian SKILL.md)
+- `Step 4.86 (between contract 4.85 and six-gate 4.9)` (guardian SKILL.md)
+- `verification references .topia/org/org.md` (verification SKILL.md — currently zero refs)
+- `verification has Organization Approval Requirements step` (verification SKILL.md)
+- `verification handles missing org config gracefully` (verification SKILL.md)
+- `Step 4.6 (between domain hooks 4.5 and composite score 4.8)` (verification SKILL.md)
 
 **Action:** add Step 4.86 to `guardian/SKILL.md` and Step 4.6 to `readiness/SKILL.md` describing the `<ORG-POLICY>` block contract.
 
@@ -121,14 +121,14 @@ Then add a one-shot `topia audit --skills` mode that prints per-skill scores.
 - [ ] **Cross-project learning** — `session-bridge` promotes project-local instincts to cross-project memory via agora-code.
 - [ ] **Custom pack templates** — standardized scaffolding for new `@Topia/<name>` extension packs.
 - [ ] **`topia audit --skills`** — automated per-skill conformance scoring.
-- [ ] **Sentinel / preflight org-policy steps** — add static sections that consume the injected `<ORG-POLICY>` block.
+- [ ] **Guardian / verification org-policy steps** — add static sections that consume the injected `<ORG-POLICY>` block.
 
 ---
 
 ## Later (v1.3+)
 
 - [ ] **Signal-driven orchestration** — skills auto-trigger from graph signals without explicit parent control.
-- [ ] **Deep codebase mapping** — `scout` upgrade for semantic graph analysis of large repos.
+- [ ] **Deep codebase mapping** — `recon` upgrade for semantic graph analysis of large repos.
 - [ ] **Visual skill editor** — drag-and-drop graph builder for designing skill connections.
 - [ ] **Collaborative session bridge** — multi-user `.topia/` sync for teams working on the same project.
 - [ ] **Model-agnostic adapters** — improved mappings for non-Anthropic models.

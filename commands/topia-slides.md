@@ -1,6 +1,6 @@
 ---
 name: topia-slides
-description: "Generate Marp-compatible slide decks from structured JSON schema. Converts context into presentations for tech talks, sprint demos, and tutorials."
+description: "Use when asked for a slide deck or presentation: 'make slides for the sprint demo', 'turn this into a tech talk'. Builds a Marp markdown deck from a structured outline. For a .pptx file, use doc-processor."
 disable-model-invocation: true
 ---
 

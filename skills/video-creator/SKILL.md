@@ -1,6 +1,6 @@
 ---
 name: video-creator
-description: "Video content planning. Writes narration scripts, storyboards, shot lists, and asset checklists. Saves plan to marketing/video-plan.md."
+description: "Use when planning a video: 'write a script for a demo video', 'storyboard a product walkthrough', 'a YouTube explainer for this feature'. Writes timed narration, storyboards, shot lists and an asset checklist to marketing/video-plan.md. Plans only; does not render video."
 metadata:
   author: topia
   version: "0.2.0"

@@ -1,6 +1,6 @@
 ---
 name: journal
-description: "Persistent state tracking and Architecture Decision Records across sessions. Use when recording a decision, ADR, or progress that must survive session boundaries. Manages progress state, module health, dependency graphs, and ADRs for any workflow."
+description: "Use when a decision, lesson or progress note must outlast the session: 'remember this', 'record this decision', 'write an ADR', 'log where we are on the migration'. Writes ADRs, progress, module health and risks to .topia/ files."
 metadata:
   author: topia
   version: "0.4.0"

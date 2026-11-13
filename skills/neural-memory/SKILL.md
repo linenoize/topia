@@ -1,6 +1,6 @@
 ---
 name: neural-memory
-description: "Optional; only if the Neural Memory MCP is installed. Semantic memory through nmem_* tools: recall, capture, and hypothesis tracking. Use only when mcp__neural-memory__* tools are present; otherwise use recall and journal."
+description: "Use when the Neural Memory MCP is installed (mcp__neural-memory__* tools present) and a lesson or decision should be findable by meaning later: 'search memory for X', 'track this hypothesis'. Recalls, captures and tracks hypotheses through nmem_* tools. Without it, use recall and journal."
 metadata:
   author: topia
   version: 0.1.0

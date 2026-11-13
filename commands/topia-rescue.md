@@ -1,6 +1,6 @@
 ---
 name: topia-rescue
-description: "Legacy refactoring orchestrator. Use when user says 'refactor', 'modernize', 'clean up this mess', 'rescue', or when dealing with old/messy/legacy code. Multi-session workflow — autopsy, safety net, incremental surgery, progress tracking."
+description: "Use when a legacy codebase needs modernizing over several sessions: 'rescue this legacy app', 'modernize this old code', 'this module is unmaintainable'. Runs autopsy, sets up safety nets, then refactors one module per session. For one focused refactor use surgeon; not for new features."
 disable-model-invocation: true
 ---
 

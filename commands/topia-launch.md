@@ -1,6 +1,6 @@
 ---
 name: topia-launch
-description: "Deploy + marketing orchestrator. Use when user says 'launch', 'ship to production', 'deploy and announce', or 'go live'. Runs the full pipeline — pre-flight tests, deployment, live verification, marketing asset creation, and announcement."
+description: "Use when shipping a product to the public and announcing it: 'launch this', 'go live and announce it'. Runs tests and security checks, deploys, verifies the live site, then writes the marketing assets. For a deploy with no announcement, use deploy."
 disable-model-invocation: true
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: review-intake
-description: "Use when receiving external input that needs structured intake before action — PR review feedback, code review comments, OR issue tracker items (bug reports, feature requests). PR Review Mode (default) verifies suggestions before implementing. Issue Triage Mode classifies issues into a state machine (ready-for-agent / ready-for-human / needs-info / wontfix) and emits AGENT-BRIEFs for AFK execution. Prevents blind implementation, enforces verification-first discipline."
+description: "Use when acting on feedback someone else wrote: PR review comments, code review notes, or issue tracker items such as bug reports and feature requests. Checks each claim against the code before changing anything, then works in priority order. Issues are sorted into ready-for-agent, ready-for-human, needs-info or wontfix."
 metadata:
   author: topia
   version: "1.3.0"
@@ -93,7 +93,7 @@ For each item:
   5. If suggesting a package/API — does it actually exist? (hallucination-guard)
 ```
 
-Use `scout` to check claims. Use `grep` to find actual usage patterns.
+Use `recon` to check claims. Use `grep` to find actual usage patterns.
 
 ### Phase 4 — EVALUATE
 
@@ -246,7 +246,7 @@ How to push back:
 | Gate | Requires | If Missing |
 |------|----------|------------|
 | Comprehension | All items understood | Ask clarifying questions, block implementation |
-| Verification | Claims checked against codebase | Run scout + grep before implementing |
+| Verification | Claims checked against codebase | Run recon + grep before implementing |
 | Test pass | Each fix passes tests individually | Revert fix, re-diagnose |
 
 ## Sharp Edges

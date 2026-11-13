@@ -1,6 +1,6 @@
 ---
 name: topia-browser-pilot
-description: "Playwright browser automation. Navigates URLs, takes screenshots, checks accessibility tree, interacts with UI elements, and reports findings."
+description: "Use when a UI change should be checked in a real browser: 'does the login page work now', 'click through the signup flow', 'screenshot the dashboard', 'any console errors?'. Uses whichever browser tools are connected (Playwright, Claude in Chrome) and reports with screenshots."
 disable-model-invocation: true
 ---
 

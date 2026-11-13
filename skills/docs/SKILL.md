@@ -1,6 +1,6 @@
 ---
 name: docs
-description: "Auto-generate and maintain project documentation. Creates README, API docs, architecture docs, changelogs, and keeps them in sync with code changes. Also use when the person asks for a show-and-tell or walkthrough of a change they can try step by step."
+description: "Use when writing or updating the repo's own docs: README, API reference, architecture notes, changelog, or a show-and-tell walkthrough of a change. Reads the code so the docs match it. Not for PDF, Word or Excel files (doc-processor) or shared online documents."
 metadata:
   author: topia
   version: "0.4.0"
@@ -389,7 +389,7 @@ Docs Update Report:
 ## Done When
 
 ### Init Mode
-- Codebase scanned with scout
+- Codebase scanned with recon
 - README.md generated with Quick Start, Features, Tech Stack, Structure
 - ARCHITECTURE.md generated (if 10+ files)
 - API.md generated (if routes detected)

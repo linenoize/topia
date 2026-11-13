@@ -1,6 +1,6 @@
 ---
 name: topia-onboard
-description: "Auto-generate project context for AI sessions. Use when starting on a new repo for the first time, or when CLAUDE.md / .topia/ context is missing or stale. Scans codebase and creates the setup so every future session starts with full context."
+description: "Use when starting on a repo for the first time, or when CLAUDE.md or .topia/ context is missing or stale: 'set up this project for Claude', 'generate a CLAUDE.md'. Scans the codebase and writes the context files that later sessions read."
 disable-model-invocation: true
 ---
 

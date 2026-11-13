@@ -126,7 +126,7 @@ Presets:
 
 - `auto-fire` = the IDE invokes Topia automatically on the matching event (true hook parity).
 - `rule-inject` = the IDE injects guidance text into the agent prompt when editing matching files. Best-effort — the agent may skip it.
-- `workflow` = user-triggered only (`/Topia-preflight`). Topia also installs a cascade-rule to remind the agent to invoke it.
+- `workflow` = user-triggered only (`/Topia-verification`). Topia also installs a cascade-rule to remind the agent to invoke it.
 - `—` = not supported by the platform. `Topia hooks status` flags this so you know which guarantees are missing.
 
 ## What gets installed
@@ -213,8 +213,8 @@ See [`TOKEN-METRICS.md`](TOKEN-METRICS.md) for token confidence tiers and baseli
 
 Two artifacts per skill:
 
-- **Workflows** (`Topia-preflight.md`, etc.) — user-invoked via `/Topia-preflight` slash command.
-- **Cascade rules** (`Topia-preflight-rule.md`, etc.) — inject "run /Topia-preflight first" into the agent prompt when editing matching globs.
+- **Workflows** (`Topia-verification.md`, etc.) — user-invoked via `/Topia-verification` slash command.
+- **Cascade rules** (`Topia-verification-rule.md`, etc.) — inject "run /Topia-verification first" into the agent prompt when editing matching globs.
 
 Cascade rules approximate auto-fire but the user still has to run the workflow command. This is a Windsurf platform limitation.
 

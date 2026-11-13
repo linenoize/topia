@@ -1,6 +1,6 @@
 ---
 name: db
-description: "Database workflow specialist. Generates migration files with rollback scripts, detects breaking schema changes, and validates query parameterization."
+description: "Use when changing a database schema or queries: 'add a column', 'write a migration', 'is this migration safe', 'this query needs an index'. Writes migrations with rollback scripts, flags breaking schema changes, and checks that queries are parameterized."
 metadata:
   author: topia
   version: "0.2.0"
@@ -44,7 +44,7 @@ Database workflow specialist. Handles the parts of database work that cause prod
 
 ### Step 1 — Discovery
 
-Invoke `scout` to locate:
+Invoke `recon` to locate:
 - Schema definition files: `*.sql`, `schema.prisma`, `models.py`, `*.migration.ts`, `db/migrate/*.rb`
 - Migration directory and existing migration files (to determine next migration number)
 - ORM in use: **Prisma** | **TypeORM** | **SQLAlchemy/Alembic** | **Django ORM** | **ActiveRecord** | **raw SQL** | **unknown**

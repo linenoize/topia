@@ -1,6 +1,6 @@
 ---
 name: session-bridge
-description: "Universal context persistence across sessions. Auto-saves decisions, conventions, and progress to .topia/ files. Loads state at session start. Use when any skill makes architectural decisions or establishes patterns that must survive session boundaries."
+description: "Use when context must carry into the next session: 'save where we are', 'pick this up tomorrow', or before compaction. Saves decisions, conventions and progress to .topia/ and loads them at the next session start."
 metadata:
   author: topia
   version: "0.8.0"

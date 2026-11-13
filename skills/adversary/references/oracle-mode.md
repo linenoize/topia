@@ -4,7 +4,7 @@
 
 Break the confirmation-bias loop that traps a single agent reading the same files repeatedly. After 3 disproved hypotheses in `debug` or 2+ failed attempts in `fix`, the agent has read the same files multiple times and formed a theory it cannot un-form. Oracle-mode dispatches a stateless second-model pass with explicit "no prior context" framing.
 
-This is a **semantic** pivot. `scout`'s zoom-out mode is the **structural** pivot (look at adjacent modules). Both fire on the same `agent.stuck` signal; both run; the agent receives both perspectives.
+This is a **semantic** pivot. `recon`'s zoom-out mode is the **structural** pivot (look at adjacent modules). Both fire on the same `agent.stuck` signal; both run; the agent receives both perspectives.
 
 ## When to Dispatch
 

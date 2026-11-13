@@ -1,6 +1,6 @@
 ---
 name: git
-description: "Specialized git operations — semantic commits, PR descriptions, branch management, conflict resolution guidance. Replaces ad-hoc git commands with a dedicated, convention-aware utility."
+description: "Use when committing, writing a PR description, naming or tidying branches, tagging a release, or resolving a merge conflict. Writes conventional commit messages and PR text from the actual diff."
 metadata:
   author: topia
   version: "0.3.0"

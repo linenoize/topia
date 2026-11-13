@@ -1,6 +1,6 @@
 ---
 name: topia-test
-description: "TDD test writer. Writes failing tests FIRST (red), then verifies they pass after implementation (green). Covers unit, integration, and e2e tests."
+description: "Use when writing or repairing tests: 'add tests for X', 'write a failing test first', 'raise coverage on Y', 'add an e2e test'. Writes the failing test first, then confirms it passes after the change. Running the existing suite is verification."
 disable-model-invocation: true
 ---
 

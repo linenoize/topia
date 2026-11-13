@@ -1,6 +1,6 @@
 ---
 name: topia-architecture-mapper
-description: "Reverse-engineer an unfamiliar or legacy codebase into a drillable, cross-linked architecture knowledge base — per repo or across a polyrepo. Use to map how a system starts, wires together, and flows; or to refresh those docs after code changes. Read-mostly: writes only under docs/, never application code."
+description: "Use when you need to understand how an unfamiliar or legacy system fits together: 'map this codebase', 'how does this service start', 'document the architecture across these repos'. Writes cross-linked docs under docs/ and never touches application code."
 disable-model-invocation: true
 ---
 

@@ -57,7 +57,7 @@ Before adding ANY new dependency, check:
 ### Scan Pattern
 
 ```javascript
-// sentinel should flag new dependencies added to package.json
+// guardian should flag new dependencies added to package.json
 // Check against known package names for close matches
 const KNOWN_PACKAGES = ['lodash', 'express', 'react', 'axios', ...];
 

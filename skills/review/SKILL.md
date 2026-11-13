@@ -1,6 +1,6 @@
 ---
 name: review
-description: "Code quality review — patterns, security, performance, correctness. Finds bugs, suggests improvements, triggers fix for issues found. Escalates to opus for security-critical code."
+description: "Use when you want a second look at code before merging: 'review my changes', 'review this PR', 'is this code OK'. Checks correctness, security, performance, conventions and test coverage with file:line, and hands fixes to fix. Broader than the built-in /code-review, which hunts bugs in the diff."
 metadata:
   author: topia
   version: "1.1.0"
@@ -61,10 +61,10 @@ Every review MUST cite at least one specific concern, suggestion, or explicit ap
 
 - `review` → `test` — untested edge case found → test writes it
 - `review` → `fix` — bug found during review → fix applies correction
-- `review` → `scout` — needs more context → scout finds related code
+- `review` → `recon` — needs more context → recon finds related code
 - `review` → `improve-architecture` — when reviewer flag mentions "shallow", "wrapper", "indirection", or pass-through pattern
 - `review` ← `fix` — complex fix requests self-review
-- `review` → `guardian` — security-critical code → sentinel deep scan
+- `review` → `guardian` — security-critical code → guardian deep scan
 
 ## Execution
 
@@ -181,7 +181,7 @@ Check for security-relevant issues.
 - Scan for: missing authentication checks on new routes or functions
 - Scan for: XSS vectors (unsanitized HTML output), CSRF exposure, open redirects
 - If any security-sensitive code found (auth logic, input handling, crypto, payment): call `topia:guardian` for deep scan
-- Sentinel escalation is mandatory — do not skip it for auth or crypto code
+- Guardian escalation is mandatory — do not skip it for auth or crypto code
 
 ### Step 4.5: API Pit-of-Success Check
 
@@ -601,7 +601,7 @@ When `build` or `ship` checks review status: compare review commit hash with cur
 3. MUST NOT rubber-stamp with generic praise ("well-structured", "clean code") without evidence
 4. MUST check: correctness, security, performance, conventions, test coverage
 5. MUST categorize findings: CRITICAL (blocks commit) / HIGH / MEDIUM / LOW
-6. MUST escalate to sentinel if auth/crypto/secrets code is touched
+6. MUST escalate to guardian if auth/crypto/secrets code is touched
 7. MUST flag untested code paths and recommend tests via topia:test
 
 ## Returns
@@ -644,7 +644,7 @@ chain_metadata:
 | Finding flood — 20+ findings overwhelm developer | MEDIUM | Confidence filter: only >80% confidence, consolidate similar issues per file |
 | "LGTM" without file:line evidence | HIGH | HARD-GATE blocks this — cite at least one specific item per changed file |
 | Expanding review scope beyond the diff | MEDIUM | Limit to `git diff` scope — do not creep into adjacent unchanged files |
-| Security finding without sentinel escalation | HIGH | Any auth/crypto/payment code touched → MUST call topia:guardian |
+| Security finding without guardian escalation | HIGH | Any auth/crypto/payment code touched → MUST call topia:guardian |
 | Skipping UI anti-pattern checks for frontend changes | MEDIUM | Any .tsx/.jsx/.svelte/.vue in diff → MUST run UI/UX Anti-Pattern Checks section |
 | Skipping spec compliance check (Step 5.5 Stage 1) | HIGH | Code quality without spec check ships clean code that does the wrong thing — always load the plan/ticket before reviewing quality |
 | Treating purple/indigo accent as "just a color choice" | MEDIUM | It is a documented AI-generated UI signature — always flag for domain justification |
@@ -659,7 +659,7 @@ chain_metadata:
 
 - All changed files in the diff read and analyzed
 - Every finding references specific file:line with severity label
-- Security-critical code escalated to sentinel (or confirmed not present)
+- Security-critical code escalated to guardian (or confirmed not present)
 - Test coverage gaps identified and documented
 - UI anti-pattern checks ran for any frontend files in diff (or confirmed not applicable)
 - Structured report emitted with APPROVE / REQUEST CHANGES / NEEDS DISCUSSION verdict

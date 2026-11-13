@@ -1,6 +1,6 @@
 ---
 name: team
-description: "Multi-agent meta-orchestrator. Use when task spans 5+ files or 3+ modules, or when user says 'parallel', 'split this up', 'do all of these'. Decomposes large tasks into parallel workstreams, assigns to isolated build instances, coordinates merging."
+description: "Use when a task is too big for one session: it touches 5+ files or 3+ modules, or the user says 'do these in parallel', 'split this up', 'do all of these'. Splits the work into parallel streams in separate worktrees, runs build in each, and merges the results."
 context: fork
 agent: general-purpose
 metadata:
@@ -144,16 +144,18 @@ Before decomposing, classify the task into a complexity tier. Each tier defines 
 
 ## Execution
 
-### Step 0 — Initialize TodoWrite
+### Step 0 — Create the task list
+
+Create one task per entry with the task list tool (TaskCreate/TaskUpdate in Claude Code, the host todo tool elsewhere). Mark each `in_progress` when its phase starts and `completed` when it ends.
 
 ```
-TodoWrite([
-  { content: "DECOMPOSE: Scout modules and plan workstreams", status: "pending", activeForm: "Decomposing task into workstreams" },
+[
+  { content: "DECOMPOSE: Map modules (recon) and plan workstreams", status: "pending", activeForm: "Decomposing task into workstreams" },
   { content: "ASSIGN: Launch parallel build agents in worktrees", status: "pending", activeForm: "Assigning streams to build agents" },
   { content: "COORDINATE: Monitor streams, resolve conflicts", status: "pending", activeForm: "Coordinating parallel streams" },
   { content: "MERGE: Merge worktrees back to main", status: "pending", activeForm: "Merging worktrees to main" },
   { content: "VERIFY: Run integration tests on merged result", status: "pending", activeForm: "Verifying integration" }
-])
+]
 ```
 
 ---
@@ -167,7 +169,7 @@ Mark todo[0] `in_progress`.
 ```
 REQUIRED SUB-SKILL: topia:recon
 → Invoke `recon` with the full task description.
-→ Scout returns: module list, file ownership map, dependency graph.
+→ Recon returns: module list, file ownership map, dependency graph.
 → Capture: which modules are independent vs. coupled.
 ```
 
@@ -494,7 +496,7 @@ Mark todo[4] `completed`.
 | # | Criterion | Stream | Evidence | Verdict |
 |---|-----------|--------|----------|---------|
 | 1 | Auth endpoints return JWT | A | Test stdout: "3 passed" | PASS |
-| 2 | No SQL injection | A | Sentinel: PASS | PASS |
+| 2 | No SQL injection | A | Guardian: PASS | PASS |
 | 3 | Dashboard loads < 2s | B | No perf test run | UNVERIFIED |
 
 ### Integration

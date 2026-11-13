@@ -1,6 +1,6 @@
 ---
 name: topia-autopsy
-description: "Full codebase health assessment. Use when diagnosing project health or starting a rescue workflow on legacy code. Analyzes complexity, dependencies, dead code, tech debt, and git hotspots. Produces a health score and rescue plan."
+description: "Use when legacy or messy code needs a diagnosis before refactoring: 'how bad is this codebase', 'where is the tech debt', 'what should we fix first'. Scores each module on complexity, dead code, coupling and git hotspots and writes a rescue plan. Narrower than audit, which also covers security and infra."
 disable-model-invocation: true
 ---
 

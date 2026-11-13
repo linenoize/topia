@@ -1,6 +1,6 @@
 ---
 name: topia-adversary
-description: "Pre-implementation red-team analysis. Use when a plan is high-risk, critical path, or expensive to reverse. Challenges plans before code is written — finds edge cases, security holes, scalability bottlenecks, error propagation risks, and integration conflicts. Catches flaws at plan time (10x cheaper than post-implementation)."
+description: "Use when a plan is risky, on a critical path, or expensive to undo, before code is written: 'poke holes in this plan', 'red-team this design', 'what could go wrong'. Looks for edge cases, security holes, scaling limits and integration conflicts. Plans only; for existing code use review."
 disable-model-invocation: true
 ---
 

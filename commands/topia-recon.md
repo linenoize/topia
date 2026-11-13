@@ -1,6 +1,6 @@
 ---
 name: topia-recon
-description: "Fast codebase scanner. Use when any skill needs codebase context. Finds files, patterns, dependencies, project structure. Pure read-only — never modifies files."
+description: "Use when a task needs a quick map of the codebase before planning, fixing or reviewing: stack, entry points, conventions, where a feature lives. Read-only. Unlike the built-in Explore agent, it returns a fixed-format project map that plan, build and review read."
 disable-model-invocation: true
 ---
 

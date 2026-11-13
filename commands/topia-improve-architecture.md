@@ -1,6 +1,6 @@
 ---
 name: topia-improve-architecture
-description: "Find architectural friction in a codebase and propose deepening opportunities. Use when user wants to improve architecture, find refactor candidates, consolidate shallow modules, or make a codebase more testable. Outputs scored proposals (depth/leverage/locality) that surgeon and review can consume."
+description: "Use when you want refactor candidates or a more testable structure: 'where is our architecture weak', 'what should we refactor', 'too many shallow modules'. Finds friction and returns scored proposals that surgeon or review can act on. Proposes only; does not change code."
 disable-model-invocation: true
 ---
 

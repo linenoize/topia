@@ -4,14 +4,14 @@ Check these before declaring done. These are the most common ways build goes wro
 
 | Failure Mode | Severity | Mitigation |
 |---|---|---|
-| Skipping scout to "save time" on a simple task | CRITICAL | Scout Gate blocks this — Phase 1 is mandatory regardless of perceived simplicity |
+| Skipping recon to "save time" on a simple task | CRITICAL | Recon Gate blocks this — Phase 1 is mandatory regardless of perceived simplicity |
 | Writing code without user-approved plan | HIGH | Plan Gate: do NOT proceed to Phase 3 without explicit approval ("go", "proceed", "yes") |
 | Claiming "all tests pass" without showing output | HIGH | Constraint 7 blocks this — show actual test runner output via completion-gate |
 | Entering debug↔fix loop more than 3 times without escalating | MEDIUM | After 3 loops → re-plan → if still blocked → Approach Pivot Gate → brainstorm(rescue) |
 | Surrendering "no solution" without triggering Approach Pivot Gate | CRITICAL | MUST invoke brainstorm(rescue) before telling user "can't be done" — pivot to different category first |
 | Re-planning with the same approach category after it fundamentally failed | HIGH | Re-plan = revise steps within same approach. If CATEGORY is wrong → Approach Pivot Gate, not re-plan |
-| Not escalating to sentinel:opus on security-sensitive tasks | MEDIUM | Auth, crypto, payment code → sentinel must run at opus, not sonnet |
-| Running Phase 5 checks sequentially instead of parallel | MEDIUM | Launch preflight+sentinel+review as parallel Task agents for speed |
+| Not escalating to guardian:opus on security-sensitive tasks | MEDIUM | Auth, crypto, payment code → guardian must run at opus, not sonnet |
+| Running Phase 5 checks sequentially instead of parallel | MEDIUM | Launch verification+guardian+review as parallel Task agents for speed |
 | Saying "done" without evidence trail | CRITICAL | completion-gate validates claims — UNCONFIRMED = BLOCK |
 | Analysis paralysis — 5+ reads without writing | HIGH | Analysis Paralysis Guard: act on incomplete info or report BLOCKED with specific missing piece |
 | Fast mode on security-relevant code | HIGH | Fast mode auto-excludes auth/crypto/payments — never fast-track security code |

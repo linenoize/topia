@@ -1,6 +1,6 @@
 ---
 name: topia-sast
-description: "Static analysis tool runner. Wraps ESLint, Semgrep, Bandit, Clippy, and language-specific analyzers with unified severity output. Use when deeper code analysis needed beyond pattern matching."
+description: "Use when you want real static analysis tools run, beyond pattern checks: 'run semgrep', 'run bandit on the Python code', 'deep security scan'. Wraps ESLint, Semgrep, Bandit, Clippy and similar tools and reports on one scale: BLOCK, WARN, INFO."
 disable-model-invocation: true
 ---
 

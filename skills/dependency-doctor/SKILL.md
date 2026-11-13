@@ -1,6 +1,6 @@
 ---
 name: dependency-doctor
-description: "Dependency health management. Detects package manager, checks outdated packages and vulnerabilities, and produces a prioritized update plan."
+description: "Use when dealing with packages: 'are my dependencies outdated', 'npm audit shows vulnerabilities', 'plan the upgrade to React 19'. Detects the package manager, lists outdated and vulnerable packages, and writes a prioritized update plan with breaking-change risk."
 metadata:
   author: topia
   version: "0.2.0"

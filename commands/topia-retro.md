@@ -1,6 +1,6 @@
 ---
 name: topia-retro
-description: "Engineering retrospective. Analyzes commit history, work patterns, and code quality metrics with trend tracking. Per-person breakdowns, shipping streaks, and actionable improvements. Use when asked for \\\"retro\\\", \\\"weekly review\\\", \\\"what did we ship\\\", or \\\"engineering retrospective\\\"."
+description: "Use when looking back over recent work: 'retro', 'weekly review', 'what did we ship', 'engineering retrospective'. Reads commit history and quality metrics, shows trends and per-person breakdowns, and suggests improvements. Read-only."
 disable-model-invocation: true
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: hallucination-guard
-description: "Verify AI-generated imports, API calls, and packages actually exist. Use when finishing AI-generated code that introduces new imports or external API calls — auto-fires after fix/build to catch phantom functions, non-existent packages, and slopsquatting attacks."
+description: "Use when AI-written code adds new imports, packages or external API calls and you need to know they are real. Checks that packages exist and are not typosquats, and that imported functions and endpoints exist. Runs after fix or build."
 metadata:
   author: topia
   version: "0.3.0"

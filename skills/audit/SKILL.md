@@ -1,6 +1,6 @@
 ---
 name: audit
-description: "Comprehensive project audit — security, dependencies, code quality, architecture, performance, infra, docs, and nexus analytics. Delegates to specialist skills and generates an 8-dimension health score."
+description: "Use when you want a whole-project health report: 'audit this repo', 'full project review before release'. Scores security, dependencies, code quality, architecture, performance, infra and docs through specialist skills. For a code-health dive that leads into a refactor, use autopsy."
 metadata:
   author: topia
   version: "0.4.0"

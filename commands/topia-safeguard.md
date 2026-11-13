@@ -1,6 +1,6 @@
 ---
 name: topia-safeguard
-description: "Build safety nets before refactoring. Use when running surgeon or any risky refactor that needs a rollback point. Creates characterization tests, boundary markers, config freezes, and rollback points."
+description: "Use when a risky refactor needs a way back first: 'add characterization tests before I refactor', 'set a rollback point'. Writes tests that pin current behavior, marks module boundaries, freezes config and tags a rollback point. Surgeon needs it first."
 disable-model-invocation: true
 ---
 

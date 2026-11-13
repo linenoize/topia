@@ -1,6 +1,6 @@
 ---
 name: topia-review
-description: "Code quality review — patterns, security, performance, correctness. Finds bugs, suggests improvements, triggers fix for issues found. Escalates to opus for security-critical code."
+description: "Use when you want a second look at code before merging: 'review my changes', 'review this PR', 'is this code OK'. Checks correctness, security, performance, conventions and test coverage with file:line, and hands fixes to fix. Broader than the built-in /code-review, which hunts bugs in the diff."
 disable-model-invocation: true
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: topia-fix
-description: "Apply code changes and fixes. Writes implementation code, applies bug fixes, and verifies changes with tests. Core action hub in the Topia nexus."
+description: "Use when the change is already known and only needs applying: a diagnosis from debug, review findings, or a small edit like 'change the timeout to 30s'. Edits the code and runs the tests. Does not investigate causes (debug) or plan multi-step features (build)."
 disable-model-invocation: true
 ---
 

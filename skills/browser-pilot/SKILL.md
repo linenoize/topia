@@ -1,6 +1,6 @@
 ---
 name: browser-pilot
-description: "Playwright browser automation. Navigates URLs, takes screenshots, checks accessibility tree, interacts with UI elements, and reports findings."
+description: "Use when a UI change should be checked in a real browser: 'does the login page work now', 'click through the signup flow', 'screenshot the dashboard', 'any console errors?'. Uses whichever browser tools are connected (Playwright, Claude in Chrome) and reports with screenshots."
 metadata:
   author: topia
   version: "0.2.0"
@@ -14,7 +14,9 @@ metadata:
 
 ## Purpose
 
-Browser automation for testing and verification using MCP Playwright tools. Navigates to URLs, captures accessibility snapshots and screenshots, interacts with UI elements (click, type, fill form), and reports findings with visual evidence.
+Verify a UI change in a real browser. Open the page, read its structure, click through the flow, capture screenshots and console errors, and report what works and what does not.
+
+browser-pilot does not depend on one browser server. It uses whichever browser tools the session has: the Playwright plugin, a Playwright server under another name, or Claude in Chrome.
 
 ## Called By (inbound)
 
@@ -29,23 +31,50 @@ Browser automation for testing and verification using MCP Playwright tools. Navi
 
 ## Calls (outbound)
 
-None — pure L3 utility using Playwright MCP tools.
+None — pure L3 utility using whatever browser MCP tools are connected.
 
 ## Executable Instructions
 
+### Step 0: Find the Browser Tools
+
+Tool names carry a server prefix that differs between installs (`mcp__plugin_playwright_playwright__`, `mcp__playwright__`, `mcp__claude-in-chrome__`, and others). Never assume one. Find the tools by what they end with:
+
+1. Look at the tools available in this session. If any are deferred, search for them first (ToolSearch in Claude Code, for example `browser_navigate` or `browser_snapshot`), and load the whole set in one call.
+2. Pick one family and stay with it for the whole session:
+
+| Action | Playwright family (any prefix) | Claude in Chrome family |
+|---|---|---|
+| Open URL | `*browser_navigate` | `*navigate` (open a tab first with `*tabs_create_mcp`; `*tabs_context_mcp` lists tabs) |
+| Page structure | `*browser_snapshot` | `*read_page` or `*find` |
+| Click / type | `*browser_click`, `*browser_type` | `*computer` |
+| Fill form | `*browser_fill_form` | `*form_input` |
+| Select option | `*browser_select_option` | `*form_input` |
+| Go back | `*browser_navigate_back` | `*navigate` with the previous URL |
+| Screenshot | `*browser_take_screenshot` | `*computer` (screenshot action) |
+| Console errors | `*browser_console_messages` | `*read_console_messages` |
+| Close | `*browser_close` | `*tabs_close_mcp` (close only the tabs you opened) |
+
+3. If Claude in Chrome is the family and a `claude-in-chrome` skill is listed, load it before the first call.
+4. If no browser tools exist, stop and report `NO_BROWSER_TOOLS`. Suggest installing the Playwright plugin or connecting Claude in Chrome. Do not fall back to guessing from source code and calling it a browser check.
+
+The steps below use the Playwright names. With Claude in Chrome, use the matching tool from the table.
+
 ### Step 1: Receive Task
 
-Accept input from calling skill:
-- `url` — target URL to open
-- `task` — what to do: `screenshot` | `check_elements` | `fill_form` | `test_flow` | `console_errors`
+Accept input from the calling skill or the user:
+- `url` — target URL to open (for a local change, the dev server URL)
+- `task` — what to check: `screenshot` | `check_elements` | `fill_form` | `test_flow` | `console_errors`
 - `interactions` — optional list of actions (click X, type Y into Z, etc.)
+- `expected` — what the change should look like or do, so the report can say pass or fail
+
+If the URL is a local dev server, confirm it is running first (for example with `curl -sI <url>`). If it is not, say so and ask how it is started instead of reporting the page as broken.
 
 ### Step 2: Navigate
 
-Open the target URL using the Playwright MCP navigate tool:
+Open the target URL with the navigate tool:
 
 ```
-mcp__plugin_playwright_playwright__browser_navigate({ url: "<url>" })
+browser_navigate({ url: "<url>" })
 ```
 
 Wait for the page to load. If navigation fails (timeout or error), report UNREACHABLE and stop.
@@ -55,43 +84,41 @@ Wait for the page to load. If navigation fails (timeout or error), report UNREAC
 Capture the accessibility tree to understand page structure:
 
 ```
-mcp__plugin_playwright_playwright__browser_snapshot()
+browser_snapshot()
 ```
 
 Use the snapshot to:
 - Identify interactive elements (buttons, inputs, links)
-- Find specific elements referenced in the task
+- Find the elements the change touched
 - Detect accessibility issues (missing labels, roles)
 
 ### Step 4: Interact
 
-Based on the task, perform interactions using Playwright MCP tools:
+Perform the interactions the task needs:
 
-- **Click**: `mcp__plugin_playwright_playwright__browser_click({ ref: "<ref>", element: "<description>" })`
-- **Type**: `mcp__plugin_playwright_playwright__browser_type({ ref: "<ref>", text: "<value>" })`
-- **Fill form**: `mcp__plugin_playwright_playwright__browser_fill_form({ fields: [...] })`
-- **Navigate back**: `mcp__plugin_playwright_playwright__browser_navigate_back()`
-- **Select option**: `mcp__plugin_playwright_playwright__browser_select_option({ ref: "<ref>", values: [...] })`
+- **Click**: `browser_click({ ref: "<ref>", element: "<description>" })`
+- **Type**: `browser_type({ ref: "<ref>", text: "<value>" })`
+- **Fill form**: `browser_fill_form({ fields: [...] })`
+- **Navigate back**: `browser_navigate_back()`
+- **Select option**: `browser_select_option({ ref: "<ref>", values: [...] })`
 
-Limit: max 20 interactions per session. If the task requires more, stop and report partial results.
+Argument names differ between families. Read the loaded tool's schema rather than copying these calls.
 
-After each interaction, take a new snapshot to verify the result before proceeding.
+Limit: max 20 interactions per session. If the task needs more, stop and report partial results.
 
-### Step 5: Screenshot
+After each interaction, take a new snapshot to confirm the result before going on.
+
+### Step 5: Screenshot and Console
 
 Capture visual evidence:
 
 ```
-mcp__plugin_playwright_playwright__browser_take_screenshot({ type: "png" })
+browser_take_screenshot({ type: "png" })
 ```
 
-For full-page capture (landing pages, long content):
+For full-page capture (landing pages, long content), pass the full-page option if the tool has one. Save with a descriptive filename if the tool takes a `filename`.
 
-```
-mcp__plugin_playwright_playwright__browser_take_screenshot({ type: "png", fullPage: true })
-```
-
-Save with a descriptive filename if the `filename` param is supported.
+Read console messages and note errors and warnings that appeared during the flow.
 
 ### Step 6: Report
 
@@ -101,11 +128,16 @@ Compile findings into a structured report:
 ## Browser Report: [url]
 
 - **Task**: [task description]
-- **Status**: SUCCESS | PARTIAL | FAILED
+- **Browser tools**: [family used, e.g. Playwright plugin | Claude in Chrome]
+- **Status**: SUCCESS | PARTIAL | FAILED | NO_BROWSER_TOOLS
 
 ### Page Info
 - HTTP Status: [status]
 - Load outcome: [loaded | timeout | error]
+
+### Change Check
+- Expected: [what the change should do]
+- Observed: [what the browser showed] → PASS | FAIL
 
 ### Accessibility Findings
 - [finding from snapshot — missing labels, broken roles, etc.]
@@ -125,24 +157,21 @@ Compile findings into a structured report:
 
 ### Step 7: Close
 
-Always close the browser when done:
+Close what you opened when done: the browser for Playwright, or only your own tabs for Claude in Chrome (never the user's other tabs).
 
-```
-mcp__plugin_playwright_playwright__browser_close()
-```
-
-This step is mandatory even if earlier steps fail. Use a try-finally pattern in your reasoning.
+This step is mandatory even if earlier steps fail. Treat it as a try-finally.
 
 ## Output Format
 
-Structured Browser Report with task status, page info, accessibility findings, interaction log, console errors, screenshots, and summary. See Step 6 Report above for full template.
+Structured Browser Report with tool family, task status, page info, change check, accessibility findings, interaction log, console errors, screenshots, and summary. See Step 6 for the full template.
 
 ## Constraints
 
-1. MUST close browser when done — Step 7 is non-optional even if earlier steps fail
-2. MUST NOT exceed 20 interactions per session
-3. MUST NOT store credentials or sensitive data in interaction logs
-4. MUST take screenshot evidence before reporting visual findings
+1. MUST find the browser tools by suffix or tool search — never hardcode a server prefix
+2. MUST close what it opened when done — Step 7 is non-optional even if earlier steps fail
+3. MUST NOT exceed 20 interactions per session
+4. MUST NOT store credentials or sensitive data in interaction logs
+5. MUST take screenshot evidence before reporting visual findings
 
 ## Sharp Edges
 
@@ -150,20 +179,24 @@ Known failure modes for this skill. Check these before declaring done.
 
 | Failure Mode | Severity | Mitigation |
 |---|---|---|
-| Not closing browser when done (including on error) | CRITICAL | Constraint 1: Step 7 browser_close() is mandatory — treat as try-finally |
-| Storing credentials or tokens in interaction logs | HIGH | Constraint 3: redact all sensitive values before logging |
-| Exceeding 20 interactions without stopping and reporting partial | MEDIUM | Constraint 2: stop at 20, report what was tested and what remains |
-| Reporting visual findings without screenshot evidence | MEDIUM | Constraint 4: screenshot before reporting — "looks broken" without screenshot is invalid |
+| Calling a hardcoded tool name that this install does not have | HIGH | Step 0: find tools by suffix (`browser_navigate`, `browser_snapshot`, …) or tool search |
+| Reporting a UI check as done when no browser tools exist | HIGH | Step 0: report NO_BROWSER_TOOLS instead of guessing from source |
+| Not closing the browser or tabs when done (including on error) | CRITICAL | Constraint 2: Step 7 is mandatory — treat as try-finally |
+| Closing the user's own Chrome tabs | HIGH | Close only tabs this session opened |
+| Storing credentials or tokens in interaction logs | HIGH | Constraint 4: redact all sensitive values before logging |
+| Exceeding 20 interactions without stopping and reporting partial | MEDIUM | Constraint 3: stop at 20, report what was tested and what remains |
+| Reporting visual findings without screenshot evidence | MEDIUM | Constraint 5: screenshot before reporting — "looks broken" without a screenshot is invalid |
 
 ## Done When
 
+- Browser tool family identified (or NO_BROWSER_TOOLS reported)
 - URL navigated successfully (or UNREACHABLE reported)
 - Page snapshot captured for accessibility context
 - All requested interactions completed (or partial with reason if >20)
 - Screenshot taken as visual evidence
-- Console errors captured if task requested them
-- Browser closed (Step 7 executed)
-- Browser Report emitted with status, findings, and screenshot reference
+- Console errors captured
+- Browser or opened tabs closed (Step 7 executed)
+- Browser Report emitted with status, change check, findings, and screenshot reference
 
 ## Cost Profile
 

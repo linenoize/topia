@@ -1,6 +1,6 @@
 ---
 name: topia-logic-guardian
-description: "Protects complex business logic from accidental deletion or overwrite. Use when editing payment, trading, state-machine, or other load-bearing business logic where a single deleted line can cause silent data corruption. Maintains a logic manifest, enforces pre-edit gates, validates post-edit diffs."
+description: "Use when editing payment, billing, trading, state-machine or other business logic where one deleted line can silently corrupt data. Keeps a manifest of the logic that must survive, asks what an edit will preserve, and checks the diff after."
 disable-model-invocation: true
 ---
 

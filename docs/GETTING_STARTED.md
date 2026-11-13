@@ -96,14 +96,14 @@ Watch what happens:
 
 ```
 [build] Starting feature implementation...
-  ↳ [scout] Scanning codebase... Found Express app at src/server.js
+  ↳ [recon] Scanning codebase... Found Express app at src/server.js
   ↳ [plan] Drafting phase plan... Single-phase (small task)
   ↳ [test] Writing failing tests first (TDD RED)...
        src/__tests__/health.test.js — 3 tests FAIL ✓
   ↳ [fix] Implementing src/routes/health.js...
        Re-run tests → 3/3 PASS ✓ (TDD GREEN)
-  ↳ [preflight] Checking logic, regressions, completeness... PASSED ✓
-  ↳ [sentinel] Secret scan, OWASP top 10... PASSED ✓
+  ↳ [verification] Checking logic, regressions, completeness... PASSED ✓
+  ↳ [guardian] Secret scan, OWASP top 10... PASSED ✓
   ↳ [verification] npm run test + lint + build... ALL PASS ✓
   ↳ [git] Committing: feat: add /api/health endpoint with uptime
 ```
@@ -118,7 +118,7 @@ Compare vanilla AI coding vs topia:
 
 | Vanilla | With Topia |
 |---------|-----------|
-| Claude writes code first | `scout` reads codebase first |
+| Claude writes code first | `recon` reads codebase first |
 | Tests written last (or skipped) | `test` writes FAILING tests first (enforced) |
 | Commit whenever | `readiness` + `guardian` must pass |
 | "Looks done" = done | `completion-gate` validates evidence |

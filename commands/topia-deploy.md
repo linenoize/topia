@@ -1,6 +1,6 @@
 ---
 name: topia-deploy
-description: "Deploy application to target platform. Use when user explicitly says 'deploy', 'push to production', 'ship it'. Handles Vercel, Netlify, AWS, GCP, DigitalOcean, and VPS with pre-deploy verification and health checks."
+description: "Use when pushing an app to a host: 'deploy to Vercel', 'push this to production', 'set up deploys to Fly.io'. Checks tests and security first, deploys to Vercel, Netlify, AWS, GCP, DigitalOcean or a VPS, then runs health checks. For deploy plus announcement, use launch."
 disable-model-invocation: true
 ---
 

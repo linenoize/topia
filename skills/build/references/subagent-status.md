@@ -1,7 +1,7 @@
 # Subagent Status Protocol
 
 When build completes (whether standalone or invoked by `team`), it MUST return one of four statuses.
-Sub-skills invoked by build (fix, test, review, sentinel, etc.) MUST also return one of these statuses
+Sub-skills invoked by build (fix, test, review, guardian, etc.) MUST also return one of these statuses
 so build can route accordingly.
 
 ## Status Table

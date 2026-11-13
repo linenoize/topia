@@ -1,6 +1,6 @@
 ---
 name: topia-documentation
-description: "Leadership-ready package generator. Produces feature folders, requirements, user stories, and Jira-compliant CSV tickets. Use after /topia plan and before /topia build to get stakeholder approval."
+description: "Use when stakeholders must approve work before it is built: 'write user stories', 'make Jira tickets for this plan', 'package this for leadership'. Turns a plan into a feature folder with requirements, user stories and Jira-ready CSV tickets. Not for code docs (docs)."
 disable-model-invocation: true
 ---
 

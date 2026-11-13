@@ -12,7 +12,7 @@ import {
 } from '../lib/prompt-routing.ts'
 import { SKILL_ROUTES } from '../lib/skill-routes.generated.ts'
 
-const DRAFT = 'fix the crash in the parser and add a unit test'
+const DRAFT = 'add support for gzip in the parser, fix the crash and add a unit test'
 const BAND = {
   component: 'AbovePrompt',
   props: { hasSurvey: false, isWorking: false, maxRows: 12, bodyColumns: 100, scroll: { offset: 0, bodyRows: 12 }, view: {} },
@@ -40,16 +40,26 @@ test('whole words only: "address" is not "add", "build" holds no "ui"', async ()
 test('a draft points at build first, then the most specific words', async () => {
   const prediction = predict(DRAFT)
   expect(prediction.skills.map(skill => skill.name)).toEqual(['build', 'test', 'debug'])
-  expect(prediction.skills[0]?.keywords).toEqual(['fix', 'add'])
+  expect(prediction.skills[0]?.keywords).toEqual(['add support for'])
   expect(prediction.skills[1]?.keywords).toEqual(['unit test'])
   // build's usual hand-offs, less the skills already shown
   expect(prediction.chain).toEqual(['plan', 'fix', 'readiness', 'guardian', 'review', 'completion-gate', 'verification'])
 })
 
 test('plain endings count: tests, crashes, deployed', async () => {
-  expect(names('the tests are red')).toEqual(['test'])
+  expect(names('add unit tests')).toEqual(['test'])
   expect(names('it crashes')).toEqual(['debug'])
-  expect(names('we deployed')[0]).toBe('launch')
+  expect(names('we deployed')[0]).toBe('deploy')
+})
+
+// Words that fit almost any prompt used to pull it to the wrong skill.
+test('generic words do not route: clean up, add, find, deploy', async () => {
+  expect(names('clean up the skills list').includes('rescue')).toBe(false)
+  expect(names('add a field to the form and make it required').includes('build')).toBe(false)
+  expect(names('find the config file').includes('recon')).toBe(false)
+  expect(names('we deployed to production').includes('launch')).toBe(false)
+  expect(names('create a design system for the app')).toEqual(['design'])
+  expect(names('run a security audit')).toEqual(['guardian'])
 })
 
 test('asking where work stands routes to recall', async () => {
@@ -101,12 +111,11 @@ test('nothing matched, nothing shown', async () => {
 test('each matched span is underlined once, in its skill color', async () => {
   const runs = decorations(predict(DRAFT))
   expect(runs).toEqual([
-    { start: 0, end: 3, color: 'cyan', underline: true },
-    { start: 8, end: 13, color: 'yellow', underline: true },
-    { start: 32, end: 35, color: 'cyan', underline: true },
-    { start: 38, end: 47, color: 'magenta', underline: true },
+    { start: 0, end: 15, color: 'cyan', underline: true },
+    { start: 44, end: 49, color: 'yellow', underline: true },
+    { start: 60, end: 69, color: 'magenta', underline: true },
   ])
-  expect(DRAFT.slice(38, 47)).toBe('unit test')
+  expect(DRAFT.slice(60, 69)).toBe('unit test')
 })
 
 test('predicted vs ran', async () => {
@@ -140,7 +149,7 @@ test('the model hint names skills and words, never the prompt', async () => {
   const view = toView(predict(DRAFT))
   expect(view).not.toBe(null)
   const text = contextText(view!)
-  expect(text).toContain('topia:build ("fix", "add")')
+  expect(text).toContain('topia:build ("add support for")')
   expect(text).toContain('topia:build runs in the background')
   expect(text).not.toContain('parser')
 })
@@ -162,7 +171,7 @@ test('a submitted prompt carries the hint, and the band follows the turn', { opt
     const ui = await $.ui.mount({ plugin: 'topia', surface, ...BAND })
     expect(await ui.find({ key: 'route-build' })).toBeDefined()
     await ui.press({ key: 'route-test' })
-    expect(await ui.find({ type: 'Text', text: /^ⓘ test: TDD test writer/ })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: /^ⓘ test: Use when writing or repairing tests/ })).toBeDefined()
     await ui.unmount()
   }
 
@@ -208,7 +217,7 @@ test('with promptRouting off in /config a prompt passes untouched', { options: {
 // What hooks/intent-router prints for DRAFT where this module is not loaded.
 const ROUTER_BLOCK = [
   '',
-  '🧭 [Topia intent-router] Suggested: topia:build (L1, sonnet) — wording: "fix", "add"',
+  '🧭 [Topia intent-router] Suggested: topia:build (L1, sonnet) — wording: "add support for"',
   '   Slash: /topia-build or /topia:build',
   '   Chain: build → plan → fix → readiness → guardian',
   '   Runs in the background: its report arrives later as a task notification. Wait for it before any follow-up step.',

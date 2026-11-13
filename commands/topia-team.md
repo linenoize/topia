@@ -1,6 +1,6 @@
 ---
 name: topia-team
-description: "Multi-agent meta-orchestrator. Use when task spans 5+ files or 3+ modules, or when user says 'parallel', 'split this up', 'do all of these'. Decomposes large tasks into parallel workstreams, assigns to isolated build instances, coordinates merging."
+description: "Use when a task is too big for one session: it touches 5+ files or 3+ modules, or the user says 'do these in parallel', 'split this up', 'do all of these'. Splits the work into parallel streams in separate worktrees, runs build in each, and merges the results."
 disable-model-invocation: true
 ---
 

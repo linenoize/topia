@@ -49,8 +49,8 @@
 ## How It Works
 
 1. **build** loads `.topia/contract.md` at Phase 0 before any code changes
-2. **sentinel** validates staged changes against contract rules before commit
-3. Violations produce a **BLOCK** finding — build/sentinel refuse to proceed
+2. **guardian** validates staged changes against contract rules before commit
+3. Violations produce a **BLOCK** finding — build/guardian refuse to proceed
 4. Contract sections can be referenced by name: `contract.security`, `contract.data`, etc.
 
 ## Customization

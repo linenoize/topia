@@ -1,6 +1,6 @@
 ---
 name: plan
-description: "Create structured implementation plans from requirements. Produces master plan + phase files for enterprise-scale project management. Master plan = overview (<80 lines). Phase files = execution detail (<150 lines each). Each session handles 1 phase. Uses opus for deep reasoning."
+description: "Use when work spans several sessions or phases and needs a written plan: 'plan the migration', 'break this feature into phases'. Writes a short master plan plus one file per phase under .topia/. Unlike plan mode, the plan stays on disk and each later session builds one phase."
 metadata:
   author: topia
   version: "1.6.0"
@@ -134,7 +134,7 @@ High-level multi-feature planning — organize features into milestones.
 
 Check for `.topia/features/*/requirements.md` via `Glob`. If a Requirements Document exists (from `topia:idea`), read it — it contains user stories, acceptance criteria, scope, constraints. Do NOT re-gather what idea already elicited.
 
-If `project.onboarded` signal was received, scout output is already available in session context — skip re-invoking scout.
+If `project.onboarded` signal was received, recon output is already available in session context — skip re-invoking recon.
 
 Invoke `topia:recon` if not already done — plans without context produce wrong file paths. Recall: `topia:recall` to surface past architecture decisions before making new ones.
 
@@ -225,7 +225,7 @@ Present the **master plan** to user (NOT all phase files). User reviews: phase b
 After plan approval, update `.topia/features.md`:
 
 **If `.topia/features.md` does NOT exist** (first run):
-1. Reverse-engineer features from scout output — each top-level module = 1 feature
+1. Reverse-engineer features from recon output — each top-level module = 1 feature
 2. Map inter-feature dependencies from imports and shared types
 3. Assess status per feature (complete, partial, planned)
 4. Generate `.topia/features.md` with Features table, Dependency Graph, Detected Gaps
@@ -387,7 +387,7 @@ chain_metadata:
 | Coder over-engineers or under-engineers perf | HIGH | Performance Constraints: specific metrics with thresholds |
 | Master plan contains implementation detail | HIGH | Max 80 lines, overview only — detail goes in phase files |
 | Phase file references other phase files | HIGH | Phase files are self-contained — cross-phase section handles this |
-| Plan without scout context — invented file paths | CRITICAL | Step 1: scout first, always |
+| Plan without recon context — invented file paths | CRITICAL | Step 1: recon first, always |
 | Phase with zero test tasks | CRITICAL | HARD-GATE rejects it |
 | 10+ phases overwhelming the master plan | MEDIUM | Max 8 phases — split into sub-projects if more |
 | Task without File path or Verify command | HIGH | Every task MUST have File + Test + Verify + Commit fields — no vague "implement the feature" tasks |
@@ -422,7 +422,7 @@ SELF-VALIDATION (run before presenting plan to user):
 ## Done When
 
 - Complexity classified (inline vs master + phase files)
-- Scout output read and conventions/patterns identified
+- Recon output read and conventions/patterns identified
 - idea requirements consumed (if available)
 - Master plan written (< 80 lines) with phase table and key decisions
 - Phase files written (< 200 lines each) with ALL Amateur-Proof sections:

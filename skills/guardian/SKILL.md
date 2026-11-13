@@ -1,6 +1,6 @@
 ---
 name: guardian
-description: "Automated security gatekeeper. Blocks unsafe code before commit — secret scanning, OWASP top 10, dependency audit, permission checks. A GATE, not a suggestion."
+description: "Use when code about to be committed or deployed touches auth, secrets, user input, shell commands or new dependencies. Scans for leaked secrets, OWASP top 10 issues and risky packages; a BLOCK verdict stops the commit. Unlike the built-in /security-review, it is the gate that build, deploy and launch run."
 metadata:
   author: topia
   version: "1.0.0"
@@ -311,7 +311,7 @@ Aggregate all findings across all steps. Verdict rules:
 - Only **INFO** → overall status = **PASS**.
 
 <HARD-GATE>
-If status is BLOCK, output the report and STOP. The calling skill (build, preflight, deploy) must halt until all BLOCK findings are fixed and guardian re-runs.
+If status is BLOCK, output the report and STOP. The calling skill (build, verification, deploy) must halt until all BLOCK findings are fixed and guardian re-runs.
 </HARD-GATE>
 
 ### WARN Acknowledgment Protocol
@@ -336,7 +336,7 @@ Generate domain-specific pre-commit hook scripts when requested. Load reference 
 ## Output Format
 
 ```
-## Sentinel Report
+## Guardian Report
 - **Status**: PASS | WARN | BLOCK
 - **Files Scanned**: [count]
 - **Findings**: [count by severity]
@@ -371,7 +371,7 @@ BLOCKED — 2 critical findings must be resolved before commit.
 
 | Artifact | Format | Location |
 |----------|--------|----------|
-| Sentinel report | Markdown | inline (chat output) |
+| Guardian report | Markdown | inline (chat output) |
 | Security findings (BLOCK/WARN/INFO) | Markdown list | inline |
 | Block/allow verdict | Text (`PASS \| WARN \| BLOCK`) | inline |
 | Supply chain risk assessment | Markdown table | inline |

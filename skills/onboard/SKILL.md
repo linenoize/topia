@@ -1,6 +1,6 @@
 ---
 name: onboard
-description: "Auto-generate project context for AI sessions. Use when starting on a new repo for the first time, or when CLAUDE.md / .topia/ context is missing or stale. Scans codebase and creates the setup so every future session starts with full context."
+description: "Use when starting on a repo for the first time, or when CLAUDE.md or .topia/ context is missing or stale: 'set up this project for Claude', 'generate a CLAUDE.md'. Scans the codebase and writes the context files that later sessions read."
 metadata:
   author: topia
   version: "0.4.0"
@@ -48,7 +48,7 @@ project/
     ├── progress.md        # Empty, ready for session-bridge
     ├── session-log.md     # Empty, ready for session-bridge
     ├── instincts.md       # Empty, ready for session-bridge instinct learning
-    ├── contract.md        # Project invariants enforced by build/sentinel
+    ├── contract.md        # Project invariants enforced by build/guardian
     ├── INVARIANTS.md      # Danger zones + cross-file rules, consumed by logic-guardian
     └── DEVELOPER-GUIDE.md # Human-readable onboarding for new developers
 ```
@@ -81,7 +81,7 @@ Invoke `topia:recon` on the project root. Collect:
 - CI/CD config files: `.github/workflows/`, `Makefile`, `Dockerfile`
 - README.md if present
 
-Do not read every source file — scout gives the skeleton. Use `Read` only on config files and entry points.
+Do not read every source file — recon gives the skeleton. Use `Read` only on config files and entry points.
 
 ### Step 2 — Detect Tech Stack
 From the scan output, determine with confidence:
@@ -492,7 +492,7 @@ Known failure modes for this skill. Check these before declaring done.
 
 | Failure Mode | Severity | Mitigation |
 |---|---|---|
-| CLAUDE.md generated from README alone (no file scan) | CRITICAL | Step 1 MUST invoke scout — never skip actual file scanning |
+| CLAUDE.md generated from README alone (no file scan) | CRITICAL | Step 1 MUST invoke recon — never skip actual file scanning |
 | DEVELOPER-GUIDE.md contains generic placeholder text not derived from project | HIGH | Every section must reference actual detected commands, files, and patterns — no generic advice |
 | Overwriting existing .topia/ files with manual content | CRITICAL | Check file existence before every Write — skip and log INFO if exists |
 | Common Issues section fabricated (no actual issues detected) | MEDIUM | Only list issues inferable from codebase (missing .env, Node version, etc.) — omit section if none found |

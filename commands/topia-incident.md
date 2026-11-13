@@ -1,6 +1,6 @@
 ---
 name: topia-incident
-description: "Structured incident response. Use when user reports an outage, production error, or says 'incident', 'something is down', 'users are affected'. Triage severity, contain blast radius, root-cause, document timeline, generate postmortem."
+description: "Use when production is down or degraded right now: 'the site is down', 'users are getting 500s', 'we have an outage'. Triages severity, contains the damage first, finds the root cause, and writes a timeline and postmortem. For a bug that is not urgent, use debug."
 disable-model-invocation: true
 ---
 

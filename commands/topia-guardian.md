@@ -1,6 +1,6 @@
 ---
 name: topia-guardian
-description: "Automated security gatekeeper. Blocks unsafe code before commit — secret scanning, OWASP top 10, dependency audit, permission checks. A GATE, not a suggestion."
+description: "Use when code about to be committed or deployed touches auth, secrets, user input, shell commands or new dependencies. Scans for leaked secrets, OWASP top 10 issues and risky packages; a BLOCK verdict stops the commit. Unlike the built-in /security-review, it is the gate that build, deploy and launch run."
 disable-model-invocation: true
 ---
 

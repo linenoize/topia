@@ -42,7 +42,7 @@ First-match-wins — report the category that triggered and halt.
 These patterns appear legitimately in skill examples and MUST NOT trigger:
 
 1. **Inside fenced code blocks labeled as anti-patterns** — preceded by `# BAD`, `// BAD`, or block labeled `bad-example`
-2. **Inside backtick fences explicitly documenting the attack** — educational examples in security skills (sentinel itself, sast, adversary)
+2. **Inside backtick fences explicitly documenting the attack** — educational examples in security skills (guardian itself, sast, adversary)
 3. **Actual shell scripts in `scripts/` directory** — functional code, not agent instructions
 4. **Files in `test/`, `fixtures/`, `__mocks__/`** — test data, not live instructions
 

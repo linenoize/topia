@@ -18,15 +18,16 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "adversary",
     "layer": "L2",
     "model": "opus",
-    "description": "Pre-implementation red-team analysis. Use when a plan is high-risk, critical path, or expensive to reverse. Challenges plans before code is written — finds edge cases, security holes, scalability bottlenecks, error propagation risks, and integration conflicts. Catches flaws at plan time (10x cheaper than post-implementation).",
+    "description": "Use when a plan is risky, on a critical path, or expensive to undo, before code is written: 'poke holes in this plan', 'red-team this design', 'what could go wrong'. Looks for edge cases, security holes, scaling limits and integration conflicts. Plans only; for existing code use review.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
       "red team",
-      "challenge",
-      "stress test",
-      "edge case",
-      "poke holes"
+      "red-team",
+      "poke holes",
+      "what could go wrong",
+      "challenge this design",
+      "devil's advocate"
     ],
     "prompts": [],
     "chain": [
@@ -38,7 +39,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "architecture-mapper",
     "layer": "L2",
     "model": "opus",
-    "description": "Reverse-engineer an unfamiliar or legacy codebase into a drillable, cross-linked architecture knowledge base — per repo or across a polyrepo. Use to map how a system starts, wires together, and flows; or to refresh those docs after code changes. Read-mostly: writes only under docs/, never application code.",
+    "description": "Use when you need to understand how an unfamiliar or legacy system fits together: 'map this codebase', 'how does this service start', 'document the architecture across these repos'. Writes cross-linked docs under docs/ and never touches application code.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
@@ -54,14 +55,15 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "asset-creator",
     "layer": "L3",
     "model": "sonnet",
-    "description": "Creates code-based visual assets — SVG icons, OG image HTML templates, social banners, and icon sets. Outputs files with usage instructions.",
+    "description": "Use when you need graphics written as code: 'make an SVG icon set', 'create an OG image', 'a social banner for the launch', 'add a favicon'. Writes SVG files or HTML templates with usage notes. Does not produce PNG or JPG directly.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
       "svg",
-      "icon",
+      "svg icon",
+      "icon set",
       "og image",
-      "banner",
+      "social banner",
       "favicon"
     ],
     "prompts": [],
@@ -71,11 +73,14 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "audit",
     "layer": "L2",
     "model": "sonnet",
-    "description": "Comprehensive project audit — security, dependencies, code quality, architecture, performance, infra, docs, and nexus analytics. Delegates to specialist skills and generates an 8-dimension health score.",
+    "description": "Use when you want a whole-project health report: 'audit this repo', 'full project review before release'. Scores security, dependencies, code quality, architecture, performance, infra and docs through specialist skills. For a code-health dive that leads into a refactor, use autopsy.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
-      "audit",
+      "audit this repo",
+      "audit the project",
+      "project audit",
+      "full audit",
       "health check",
       "project assessment",
       "codebase review"
@@ -87,7 +92,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "autopsy",
     "layer": "L2",
     "model": "opus",
-    "description": "Full codebase health assessment. Use when diagnosing project health or starting a rescue workflow on legacy code. Analyzes complexity, dependencies, dead code, tech debt, and git hotspots. Produces a health score and rescue plan.",
+    "description": "Use when legacy or messy code needs a diagnosis before refactoring: 'how bad is this codebase', 'where is the tech debt', 'what should we fix first'. Scores each module on complexity, dead code, coupling and git hotspots and writes a rescue plan. Narrower than audit, which also covers security and infra.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
@@ -106,15 +111,16 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "brainstorm",
     "layer": "L2",
     "model": "opus",
-    "description": "Creative ideation and solution exploration. Generates multiple approaches with trade-offs, uses structured frameworks (SCAMPER, First Principles), and hands off to plan for structuring.",
+    "description": "Use when there are several technical ways to solve a problem and you want options before choosing: 'what are our options for caching', 'other ways to do this', 'this approach failed'. Gives 2-3 designs with trade-offs and hands the pick to plan. Technical design only, not product or business ideas.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
       "brainstorm",
-      "ideas",
-      "alternatives",
-      "approaches",
-      "options"
+      "what are our options",
+      "other approaches",
+      "different approaches",
+      "alternative approaches",
+      "ways to solve"
     ],
     "prompts": [],
     "chain": [
@@ -125,15 +131,17 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "browser-pilot",
     "layer": "L3",
     "model": "sonnet",
-    "description": "Playwright browser automation. Navigates URLs, takes screenshots, checks accessibility tree, interacts with UI elements, and reports findings.",
+    "description": "Use when a UI change should be checked in a real browser: 'does the login page work now', 'click through the signup flow', 'screenshot the dashboard', 'any console errors?'. Uses whichever browser tools are connected (Playwright, Claude in Chrome) and reports with screenshots.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
-      "browser",
+      "in the browser",
+      "in a real browser",
       "screenshot",
       "playwright",
       "click through",
-      "accessibility tree"
+      "accessibility tree",
+      "console errors"
     ],
     "prompts": [],
     "chain": []
@@ -142,19 +150,16 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "build",
     "layer": "L1",
     "model": "sonnet",
-    "description": "Feature implementation orchestrator. ALWAYS use this skill for ANY code change — implement, build, add feature, create, fix bug, or any task that modifies source code. This is the default route for 70% of all requests. Runs full TDD cycle: understand → plan → test → implement → quality → verify → commit.",
+    "description": "Use when building a feature or a multi-step change that needs tests: 'implement X', 'add support for Y', 'build the Z flow'. Plans, writes a failing test, codes, checks and commits. For a known one-line change use fix; for a bug with an unknown cause use debug first.",
     "userInvocable": true,
     "forked": true,
     "keywords": [
       "implement",
-      "build",
-      "create",
-      "add",
-      "feature",
-      "fix",
-      "write",
-      "make",
-      "develop"
+      "new feature",
+      "add a feature",
+      "add support for",
+      "build a feature",
+      "build out"
     ],
     "prompts": [],
     "chain": [
@@ -230,15 +235,17 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "db",
     "layer": "L2",
     "model": "sonnet",
-    "description": "Database workflow specialist. Generates migration files with rollback scripts, detects breaking schema changes, and validates query parameterization.",
+    "description": "Use when changing a database schema or queries: 'add a column', 'write a migration', 'is this migration safe', 'this query needs an index'. Writes migrations with rollback scripts, flags breaking schema changes, and checks that queries are parameterized.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
       "database",
-      "migration",
-      "schema",
       "sql",
-      "sql query",
+      "database migration",
+      "schema migration",
+      "migration file",
+      "database schema",
+      "add a column",
       "database index"
     ],
     "prompts": [],
@@ -248,20 +255,20 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "debug",
     "layer": "L2",
     "model": "sonnet",
-    "description": "Root cause analysis for bugs and unexpected behavior. Traces errors through code, uses structured reasoning, and hands off to fix when cause is found. Core of the debug↔fix chain.",
+    "description": "Use when something is broken and the cause is unknown: 'why does this crash', 'this test fails and I don't know why', a stack trace to explain. Traces the error, tests hypotheses and reports the root cause. Investigates only; fix applies the change.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
       "debug",
-      "error",
       "bug",
       "broken",
-      "trace",
       "diagnose",
       "crash",
-      "fail",
       "not working",
-      "stack trace"
+      "stack trace",
+      "exception",
+      "fails with",
+      "error message"
     ],
     "prompts": [],
     "chain": [
@@ -290,12 +297,14 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "dependency-doctor",
     "layer": "L3",
     "model": "haiku",
-    "description": "Dependency health management. Detects package manager, checks outdated packages and vulnerabilities, and produces a prioritized update plan.",
+    "description": "Use when dealing with packages: 'are my dependencies outdated', 'npm audit shows vulnerabilities', 'plan the upgrade to React 19'. Detects the package manager, lists outdated and vulnerable packages, and writes a prioritized update plan with breaking-change risk.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
-      "dependencies",
+      "outdated dependencies",
+      "dependency update",
       "outdated packages",
+      "vulnerable packages",
       "npm audit",
       "cve",
       "upgrade packages"
@@ -307,17 +316,17 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "deploy",
     "layer": "L2",
     "model": "sonnet",
-    "description": "Deploy application to target platform. Use when user explicitly says 'deploy', 'push to production', 'ship it'. Handles Vercel, Netlify, AWS, GCP, DigitalOcean, and VPS with pre-deploy verification and health checks.",
+    "description": "Use when pushing an app to a host: 'deploy to Vercel', 'push this to production', 'set up deploys to Fly.io'. Checks tests and security first, deploys to Vercel, Netlify, AWS, GCP, DigitalOcean or a VPS, then runs health checks. For deploy plus announcement, use launch.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
       "deploy",
       "ci/cd",
-      "pipeline",
+      "ci pipeline",
       "kubernetes",
-      "docker",
       "vercel",
-      "netlify"
+      "netlify",
+      "push to production"
     ],
     "prompts": [],
     "chain": [
@@ -328,18 +337,19 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "design",
     "layer": "L2",
     "model": "sonnet",
-    "description": "Design system reasoning. Maps product domain to style, palette, typography, and platform-specific patterns. Generates .topia/design-system.md as the shared design contract for all UI-generating skills.",
+    "description": "Use when a product needs a visual direction before UI is built: 'pick a style for this app', 'set up a palette and typography', 'create a design system'. Maps the product domain to style, palette, type and platform patterns in .topia/design-system.md. To critique or polish existing UI, prefer impeccable if installed.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
-      "ui",
+      "ui design",
       "ux",
-      "design",
-      "layout",
+      "design system",
       "component design",
       "wireframe",
       "palette",
-      "typography"
+      "typography",
+      "visual style",
+      "look and feel"
     ],
     "prompts": [],
     "chain": []
@@ -348,7 +358,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "doc-processor",
     "layer": "L3",
     "model": "sonnet",
-    "description": "Generate and parse office documents — PDF, DOCX, XLSX, PPTX, CSV. Use when creating reports, exporting tabular data, or processing uploaded office files. NOT for project documentation (use docs).",
+    "description": "Use when creating or reading office files: 'export this to Excel', 'make a PDF report', 'read this uploaded DOCX', 'parse this CSV', 'build a PPTX'. Handles PDF, DOCX, XLSX, PPTX and CSV. Not for README or project docs (docs).",
     "userInvocable": true,
     "forked": false,
     "keywords": [
@@ -366,14 +376,17 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "docs",
     "layer": "L2",
     "model": "sonnet",
-    "description": "Auto-generate and maintain project documentation. Creates README, API docs, architecture docs, changelogs, and keeps them in sync with code changes. Also use when the person asks for a show-and-tell or walkthrough of a change they can try step by step.",
+    "description": "Use when writing or updating the repo's own docs: README, API reference, architecture notes, changelog, or a show-and-tell walkthrough of a change. Reads the code so the docs match it. Not for PDF, Word or Excel files (doc-processor) or shared online documents.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
-      "document",
       "readme",
       "api docs",
       "changelog",
+      "update the docs",
+      "write docs",
+      "document this",
+      "architecture docs",
       "show and tell",
       "show-and-tell",
       "walk me through",
@@ -402,14 +415,15 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "documentation",
     "layer": "L2",
     "model": "sonnet",
-    "description": "Leadership-ready package generator. Produces feature folders, requirements, user stories, and Jira-compliant CSV tickets. Use after /topia plan and before /topia build to get stakeholder approval.",
+    "description": "Use when stakeholders must approve work before it is built: 'write user stories', 'make Jira tickets for this plan', 'package this for leadership'. Turns a plan into a feature folder with requirements, user stories and Jira-ready CSV tickets. Not for code docs (docs).",
     "userInvocable": true,
     "forked": false,
     "keywords": [
       "jira",
+      "jira tickets",
       "leadership package",
       "stakeholder approval",
-      "tickets"
+      "user stories"
     ],
     "prompts": [],
     "chain": [
@@ -420,7 +434,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "faq",
     "layer": "L3",
     "model": "haiku",
-    "description": "Lists Topia's HTML entry points (docs, guides, skill index, nexus diagram, live visualizer) with one-shot open-in-browser commands. Use when the user asks 'where are the docs?', 'how do I see the skill graph?', or `/topia:faq`.",
+    "description": "Use when the user asks where Topia's docs are: 'where are the docs?', 'how do I see the skill graph?', or types /topia:faq. Lists the HTML guides, skill index, nexus diagram and live visualizer with a command to open each.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
@@ -435,15 +449,15 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "fix",
     "layer": "L2",
     "model": "sonnet",
-    "description": "Apply code changes and fixes. Writes implementation code, applies bug fixes, and verifies changes with tests. Core action hub in the Topia nexus.",
+    "description": "Use when the change is already known and only needs applying: a diagnosis from debug, review findings, or a small edit like 'change the timeout to 30s'. Edits the code and runs the tests. Does not investigate causes (debug) or plan multi-step features (build).",
     "userInvocable": true,
     "forked": false,
     "keywords": [
       "fix",
-      "patch",
       "hotfix",
-      "resolve",
-      "repair"
+      "repair",
+      "apply the fix",
+      "apply the change"
     ],
     "prompts": [],
     "chain": [
@@ -455,16 +469,20 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "git",
     "layer": "L3",
     "model": "haiku",
-    "description": "Specialized git operations — semantic commits, PR descriptions, branch management, conflict resolution guidance. Replaces ad-hoc git commands with a dedicated, convention-aware utility.",
+    "description": "Use when committing, writing a PR description, naming or tidying branches, tagging a release, or resolving a merge conflict. Writes conventional commit messages and PR text from the actual diff.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
-      "commit",
+      "commit message",
+      "commit the changes",
+      "commit this",
       "pull request",
-      "pr",
-      "branch",
+      "pr description",
+      "open a pr",
       "rebase",
-      "merge conflict"
+      "merge conflict",
+      "branch name",
+      "new branch"
     ],
     "prompts": [],
     "chain": []
@@ -473,15 +491,17 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "guardian",
     "layer": "L2",
     "model": "sonnet",
-    "description": "Automated security gatekeeper. Blocks unsafe code before commit — secret scanning, OWASP top 10, dependency audit, permission checks. A GATE, not a suggestion.",
+    "description": "Use when code about to be committed or deployed touches auth, secrets, user input, shell commands or new dependencies. Scans for leaked secrets, OWASP top 10 issues and risky packages; a BLOCK verdict stops the commit. Unlike the built-in /security-review, it is the gate that build, deploy and launch run.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
       "security",
+      "security audit",
+      "security scan",
       "vulnerability",
       "owasp",
       "secret",
-      "audit security"
+      "leaked secret"
     ],
     "prompts": [],
     "chain": [
@@ -492,7 +512,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "guardian-env",
     "layer": "L3",
     "model": "haiku",
-    "description": "Environment-aware pre-flight check. Use when starting work in a new environment, switching machines, or when 'works on my machine' bugs surface. Validates OS, runtime versions, installed tools, port availability, env vars, and disk space BEFORE coding starts. Like sentinel but for the environment, not the code.",
+    "description": "Use when starting on a new machine or environment, or on 'works on my machine' bugs: 'why won't this run here', 'check my setup'. Checks OS, runtime versions, installed tools, free ports, env vars and disk space before coding. Checks the environment, not the code (guardian does the code).",
     "userInvocable": true,
     "forked": false,
     "keywords": [
@@ -508,7 +528,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "hallucination-guard",
     "layer": "L3",
     "model": "haiku",
-    "description": "Verify AI-generated imports, API calls, and packages actually exist. Use when finishing AI-generated code that introduces new imports or external API calls — auto-fires after fix/build to catch phantom functions, non-existent packages, and slopsquatting attacks.",
+    "description": "Use when AI-written code adds new imports, packages or external API calls and you need to know they are real. Checks that packages exist and are not typosquats, and that imported functions and endpoints exist. Runs after fix or build.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
@@ -524,14 +544,15 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "idea",
     "layer": "L2",
     "model": "opus",
-    "description": "Idea Elicitation agent. Use when starting a new feature requiring requirements elicitation BEFORE plan or build. Asks probing questions, identifies hidden requirements, maps stakeholders, defines scope boundaries, and produces a structured Requirements Document that plan and build consume.",
+    "description": "Use when a feature request is vague and needs requirements before planning: 'I want to add payments', 'help me work out what this feature should do'. Asks probing questions, finds hidden requirements and scope limits, and writes a requirements document that plan and build read.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
       "requirements",
+      "gather requirements",
       "business analysis",
-      "user stories",
-      "stakeholder"
+      "vague idea",
+      "what should this feature do"
     ],
     "prompts": [],
     "chain": [
@@ -542,7 +563,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "improve-architecture",
     "layer": "L2",
     "model": "opus",
-    "description": "Find architectural friction in a codebase and propose deepening opportunities. Use when user wants to improve architecture, find refactor candidates, consolidate shallow modules, or make a codebase more testable. Outputs scored proposals (depth/leverage/locality) that surgeon and review can consume.",
+    "description": "Use when you want refactor candidates or a more testable structure: 'where is our architecture weak', 'what should we refactor', 'too many shallow modules'. Finds friction and returns scored proposals that surgeon or review can act on. Proposes only; does not change code.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
@@ -550,7 +571,8 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "deepen",
       "coupling",
       "testability",
-      "architecture improvement"
+      "architecture improvement",
+      "improve the architecture"
     ],
     "prompts": [],
     "chain": []
@@ -559,7 +581,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "incident",
     "layer": "L2",
     "model": "sonnet",
-    "description": "Structured incident response. Use when user reports an outage, production error, or says 'incident', 'something is down', 'users are affected'. Triage severity, contain blast radius, root-cause, document timeline, generate postmortem.",
+    "description": "Use when production is down or degraded right now: 'the site is down', 'users are getting 500s', 'we have an outage'. Triages severity, contains the damage first, finds the root cause, and writes a timeline and postmortem. For a bug that is not urgent, use debug.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
@@ -579,15 +601,15 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "integrate",
     "layer": "L2",
     "model": "sonnet",
-    "description": "Clone, port, or convert features from any GitHub repo into your project. Use when stealing patterns from external repos or porting proven code. Understand before copy, challenge before implement. 4 modes: port (rewrite), compare (analysis), copy (transplant), improve (copy + optimize).",
+    "description": "Use when bringing code or ideas over from another GitHub repo: 'port this feature from repo X', 'copy their retry logic', 'compare our auth with theirs'. Reads and challenges the source first, then ports, copies, compares, or copies and improves it.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
-      "integrate",
       "port from",
       "port this",
       "steal the",
-      "from that repo"
+      "from that repo",
+      "from another repo"
     ],
     "prompts": [],
     "chain": []
@@ -607,7 +629,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "journal",
     "layer": "L3",
     "model": "haiku",
-    "description": "Persistent state tracking and Architecture Decision Records across sessions. Use when recording a decision, ADR, or progress that must survive session boundaries. Manages progress state, module health, dependency graphs, and ADRs for any workflow.",
+    "description": "Use when a decision, lesson or progress note must outlast the session: 'remember this', 'record this decision', 'write an ADR', 'log where we are on the migration'. Writes ADRs, progress, module health and risks to .topia/ files.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
@@ -625,16 +647,16 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "launch",
     "layer": "L1",
     "model": "sonnet",
-    "description": "Deploy + marketing orchestrator. Use when user says 'launch', 'ship to production', 'deploy and announce', or 'go live'. Runs the full pipeline — pre-flight tests, deployment, live verification, marketing asset creation, and announcement.",
+    "description": "Use when shipping a product to the public and announcing it: 'launch this', 'go live and announce it'. Runs tests and security checks, deploys, verifies the live site, then writes the marketing assets. For a deploy with no announcement, use deploy.",
     "userInvocable": true,
     "forked": true,
     "keywords": [
-      "deploy",
-      "launch",
-      "release",
-      "ship",
-      "publish",
-      "production"
+      "launch the product",
+      "product launch",
+      "go live",
+      "ship it",
+      "ship to production",
+      "launch and announce"
     ],
     "prompts": [],
     "chain": [
@@ -648,13 +670,15 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "logic-guardian",
     "layer": "L2",
     "model": "sonnet",
-    "description": "Protects complex business logic from accidental deletion or overwrite. Use when editing payment, trading, state-machine, or other load-bearing business logic where a single deleted line can cause silent data corruption. Maintains a logic manifest, enforces pre-edit gates, validates post-edit diffs.",
+    "description": "Use when editing payment, billing, trading, state-machine or other business logic where one deleted line can silently corrupt data. Keeps a manifest of the logic that must survive, asks what an edit will preserve, and checks the diff after.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
       "business logic",
       "protect logic",
-      "critical path"
+      "payment logic",
+      "billing logic",
+      "state machine"
     ],
     "prompts": [],
     "chain": []
@@ -663,7 +687,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "marketing",
     "layer": "L2",
     "model": "sonnet",
-    "description": "Create marketing assets and execute launch strategy. Generates landing copy, social banners, SEO meta, blog posts, and video scripts.",
+    "description": "Use when writing launch or promotional material: 'write landing page copy', 'draft social posts for the release', 'SEO meta for the site', 'a blog post announcing this'. Bases every claim on what the code actually does.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
@@ -681,14 +705,14 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "mcp-builder",
     "layer": "L2",
     "model": "sonnet",
-    "description": "Build Model Context Protocol servers from specifications. Use when creating an MCP server for a tool, resource, or service that AI agents should access. Generates tool definitions, resource handlers, and test suites in TypeScript or Python (FastMCP).",
+    "description": "Use when building an MCP server so AI agents can use a tool, API or data source: 'make an MCP server for our API', 'expose this as MCP tools'. Generates tool definitions, resource handlers and tests in TypeScript or Python (FastMCP).",
     "userInvocable": true,
     "forked": false,
     "keywords": [
-      "mcp",
       "mcp server",
-      "tool server",
-      "model context"
+      "build an mcp",
+      "model context protocol",
+      "tool server"
     ],
     "prompts": [],
     "chain": []
@@ -697,7 +721,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "neural-memory",
     "layer": "L3",
     "model": "haiku",
-    "description": "Optional; only if the Neural Memory MCP is installed. Semantic memory through nmem_* tools: recall, capture, and hypothesis tracking. Use only when mcp__neural-memory__* tools are present; otherwise use recall and journal.",
+    "description": "Use when the Neural Memory MCP is installed (mcp__neural-memory__* tools present) and a lesson or decision should be findable by meaning later: 'search memory for X', 'track this hypothesis'. Recalls, captures and tracks hypotheses through nmem_* tools. Without it, use recall and journal.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
@@ -711,14 +735,14 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "onboard",
     "layer": "L2",
     "model": "sonnet",
-    "description": "Auto-generate project context for AI sessions. Use when starting on a new repo for the first time, or when CLAUDE.md / .topia/ context is missing or stale. Scans codebase and creates the setup so every future session starts with full context.",
+    "description": "Use when starting on a repo for the first time, or when CLAUDE.md or .topia/ context is missing or stale: 'set up this project for Claude', 'generate a CLAUDE.md'. Scans the codebase and writes the context files that later sessions read.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
       "onboard",
-      "get started",
-      "configure project",
-      "claude.md"
+      "claude.md",
+      "new to this repo",
+      "set up this project for claude"
     ],
     "prompts": [],
     "chain": []
@@ -743,16 +767,16 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "perf",
     "layer": "L2",
     "model": "sonnet",
-    "description": "Performance regression gate. Detects N+1 queries, sync-in-async, missing indexes, memory leaks, and bundle bloat before they reach production.",
+    "description": "Use when code is slow or before shipping something performance-sensitive: 'this page is slow', 'check for N+1 queries', 'why is the bundle so big'. Finds N+1 queries, blocking calls in async code, missing indexes, memory leaks and bundle bloat. Reports only; fix applies changes.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
       "performance",
       "slow",
-      "optimize",
       "n+1",
       "memory leak",
-      "bundle size"
+      "bundle size",
+      "speed up"
     ],
     "prompts": [],
     "chain": []
@@ -761,15 +785,15 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "plan",
     "layer": "L2",
     "model": "opus",
-    "description": "Create structured implementation plans from requirements. Produces master plan + phase files for enterprise-scale project management. Master plan = overview (<80 lines). Phase files = execution detail (<150 lines each). Each session handles 1 phase. Uses opus for deep reasoning.",
+    "description": "Use when work spans several sessions or phases and needs a written plan: 'plan the migration', 'break this feature into phases'. Writes a short master plan plus one file per phase under .topia/. Unlike plan mode, the plan stays on disk and each later session builds one phase.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
       "plan",
-      "architect",
-      "design system",
+      "implementation plan",
       "roadmap",
-      "strategy"
+      "into phases",
+      "master plan"
     ],
     "prompts": [],
     "chain": [
@@ -825,7 +849,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "recall",
     "layer": "L3",
     "model": "haiku",
-    "description": "Read-only memory recall from Topia's files: .topia/ progress, decisions, conventions, and learnings, plus .remember/ when present. Use at session start, when resuming work, or before architecture decisions. Writes go through journal and session-bridge.",
+    "description": "Use when starting a session, resuming work, or before an architecture decision: 'where did we leave off', 'what did we decide about auth'. Reads .topia/ progress, decisions, conventions and learnings, plus .remember/ when present. Read-only; journal and session-bridge do the writing.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
@@ -857,15 +881,16 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "recon",
     "layer": "L2",
     "model": "haiku",
-    "description": "Fast codebase scanner. Use when any skill needs codebase context. Finds files, patterns, dependencies, project structure. Pure read-only — never modifies files.",
+    "description": "Use when a task needs a quick map of the codebase before planning, fixing or reviewing: stack, entry points, conventions, where a feature lives. Read-only. Unlike the built-in Explore agent, it returns a fixed-format project map that plan, build and review read.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
-      "where is",
-      "find",
       "search the codebase",
       "scan the codebase",
-      "project structure"
+      "project structure",
+      "which file",
+      "where in the codebase",
+      "codebase map"
     ],
     "prompts": [],
     "chain": []
@@ -874,17 +899,18 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "rescue",
     "layer": "L1",
     "model": "sonnet",
-    "description": "Legacy refactoring orchestrator. Use when user says 'refactor', 'modernize', 'clean up this mess', 'rescue', or when dealing with old/messy/legacy code. Multi-session workflow — autopsy, safety net, incremental surgery, progress tracking.",
+    "description": "Use when a legacy codebase needs modernizing over several sessions: 'rescue this legacy app', 'modernize this old code', 'this module is unmaintainable'. Runs autopsy, sets up safety nets, then refactors one module per session. For one focused refactor use surgeon; not for new features.",
     "userInvocable": true,
     "forked": true,
     "keywords": [
-      "legacy",
-      "refactor",
+      "legacy code",
+      "legacy app",
       "modernize",
       "rescue",
-      "clean up",
       "old code",
-      "messy"
+      "clean up this mess",
+      "messy codebase",
+      "unmaintainable"
     ],
     "prompts": [],
     "chain": [
@@ -913,7 +939,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "retro",
     "layer": "L2",
     "model": "sonnet",
-    "description": "Engineering retrospective. Analyzes commit history, work patterns, and code quality metrics with trend tracking. Per-person breakdowns, shipping streaks, and actionable improvements. Use when asked for \\\"retro\\\", \\\"weekly review\\\", \\\"what did we ship\\\", or \\\"engineering retrospective\\\".",
+    "description": "Use when looking back over recent work: 'retro', 'weekly review', 'what did we ship', 'engineering retrospective'. Reads commit history and quality metrics, shows trends and per-person breakdowns, and suggests improvements. Read-only.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
@@ -930,14 +956,15 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "review",
     "layer": "L2",
     "model": "sonnet",
-    "description": "Code quality review — patterns, security, performance, correctness. Finds bugs, suggests improvements, triggers fix for issues found. Escalates to opus for security-critical code.",
+    "description": "Use when you want a second look at code before merging: 'review my changes', 'review this PR', 'is this code OK'. Checks correctness, security, performance, conventions and test coverage with file:line, and hands fixes to fix. Broader than the built-in /code-review, which hunts bugs in the diff.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
-      "review",
       "code review",
-      "check quality",
-      "audit code",
+      "review my changes",
+      "review this pr",
+      "review the diff",
+      "review this code",
       "look at this code"
     ],
     "prompts": [],
@@ -949,7 +976,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "review-intake",
     "layer": "L2",
     "model": "sonnet",
-    "description": "Use when receiving external input that needs structured intake before action — PR review feedback, code review comments, OR issue tracker items (bug reports, feature requests). PR Review Mode (default) verifies suggestions before implementing. Issue Triage Mode classifies issues into a state machine (ready-for-agent / ready-for-human / needs-info / wontfix) and emits AGENT-BRIEFs for AFK execution. Prevents blind implementation, enforces verification-first discipline.",
+    "description": "Use when acting on feedback someone else wrote: PR review comments, code review notes, or issue tracker items such as bug reports and feature requests. Checks each claim against the code before changing anything, then works in priority order. Issues are sorted into ready-for-agent, ready-for-human, needs-info or wontfix.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
@@ -965,7 +992,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "safeguard",
     "layer": "L2",
     "model": "sonnet",
-    "description": "Build safety nets before refactoring. Use when running surgeon or any risky refactor that needs a rollback point. Creates characterization tests, boundary markers, config freezes, and rollback points.",
+    "description": "Use when a risky refactor needs a way back first: 'add characterization tests before I refactor', 'set a rollback point'. Writes tests that pin current behavior, marks module boundaries, freezes config and tags a rollback point. Surgeon needs it first.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
@@ -980,7 +1007,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "sast",
     "layer": "L3",
     "model": "haiku",
-    "description": "Static analysis tool runner. Wraps ESLint, Semgrep, Bandit, Clippy, and language-specific analyzers with unified severity output. Use when deeper code analysis needed beyond pattern matching.",
+    "description": "Use when you want real static analysis tools run, beyond pattern checks: 'run semgrep', 'run bandit on the Python code', 'deep security scan'. Wraps ESLint, Semgrep, Bandit, Clippy and similar tools and reports on one scale: BLOCK, WARN, INFO.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
@@ -997,15 +1024,15 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "scaffold",
     "layer": "L1",
     "model": "sonnet",
-    "description": "Autonomous project bootstrapper. Generates complete project from a description — structure, code, tests, docs, config. Orchestrates idea → plan → design → fix → test → docs → git in one pipeline. The \\\"0 to production-ready\\\" skill.",
+    "description": "Use when starting a new project from nothing: 'create a new app that does X', 'bootstrap a project', 'greenfield service from scratch'. Runs requirements, plan, design, code, tests, docs and git in one pipeline and ends with a project that builds and passes its tests. For existing repos, use build.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
       "new project",
-      "bootstrap",
+      "bootstrap a project",
       "scaffold",
       "greenfield",
-      "starter",
+      "starter project",
       "from scratch"
     ],
     "prompts": [],
@@ -1051,7 +1078,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "session-bridge",
     "layer": "L3",
     "model": "haiku",
-    "description": "Universal context persistence across sessions. Auto-saves decisions, conventions, and progress to .topia/ files. Loads state at session start. Use when any skill makes architectural decisions or establishes patterns that must survive session boundaries.",
+    "description": "Use when context must carry into the next session: 'save where we are', 'pick this up tomorrow', or before compaction. Saves decisions, conventions and progress to .topia/ and loads them at the next session start.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
@@ -1072,7 +1099,9 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "keywords": [
       "new skill",
       "create skill",
-      "edit skill"
+      "create a skill",
+      "edit skill",
+      "skill authoring"
     ],
     "prompts": [],
     "chain": []
@@ -1092,7 +1121,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "slides",
     "layer": "L3",
     "model": "sonnet",
-    "description": "Generate Marp-compatible slide decks from structured JSON schema. Converts context into presentations for tech talks, sprint demos, and tutorials.",
+    "description": "Use when asked for a slide deck or presentation: 'make slides for the sprint demo', 'turn this into a tech talk'. Builds a Marp markdown deck from a structured outline. For a .pptx file, use doc-processor.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
@@ -1128,14 +1157,16 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "surgeon",
     "layer": "L2",
     "model": "sonnet",
-    "description": "Incremental refactorer. Use within a rescue workflow after safeguard has set up safety nets. Refactors ONE module per session using proven patterns — Strangler Fig, Branch by Abstraction, Expand-Migrate-Contract.",
+    "description": "Use when refactoring one module safely after safeguard has run: 'extract this into a service', 'apply strangler fig to the old router', 'break up this god class'. Changes one module per session, runs tests after each edit, and touches at most 5 files. Usually driven by rescue.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
       "refactor",
-      "extract",
-      "strangler",
-      "decompose"
+      "strangler fig",
+      "branch by abstraction",
+      "god class",
+      "extract a module",
+      "extract into"
     ],
     "prompts": [],
     "chain": []
@@ -1144,11 +1175,11 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "team",
     "layer": "L1",
     "model": "opus",
-    "description": "Multi-agent meta-orchestrator. Use when task spans 5+ files or 3+ modules, or when user says 'parallel', 'split this up', 'do all of these'. Decomposes large tasks into parallel workstreams, assigns to isolated build instances, coordinates merging.",
+    "description": "Use when a task is too big for one session: it touches 5+ files or 3+ modules, or the user says 'do these in parallel', 'split this up', 'do all of these'. Splits the work into parallel streams in separate worktrees, runs build in each, and merges the results.",
     "userInvocable": true,
     "forked": true,
     "keywords": [
-      "parallel",
+      "in parallel",
       "split this up",
       "do all of these",
       "fan out",
@@ -1167,16 +1198,18 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "test",
     "layer": "L2",
     "model": "sonnet",
-    "description": "TDD test writer. Writes failing tests FIRST (red), then verifies they pass after implementation (green). Covers unit, integration, and e2e tests.",
+    "description": "Use when writing or repairing tests: 'add tests for X', 'write a failing test first', 'raise coverage on Y', 'add an e2e test'. Writes the failing test first, then confirms it passes after the change. Running the existing suite is verification.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
-      "test",
       "tdd",
       "coverage",
       "unit test",
+      "integration test",
       "e2e",
-      "spec"
+      "add test",
+      "write test",
+      "failing test first"
     ],
     "prompts": [],
     "chain": [
@@ -1187,7 +1220,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "trend-scout",
     "layer": "L3",
     "model": "haiku",
-    "description": "Scan market trends, competitor activity, and emerging patterns. Monitors Product Hunt, GitHub Trending, HackerNews, and social platforms.",
+    "description": "Use when researching the market around a product: 'what are competitors doing', 'what is trending in this space', 'how do people feel about X'. Scans Product Hunt, GitHub Trending, Hacker News and social sites. For library or API docs, use docs-seeker.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
@@ -1204,7 +1237,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "tut",
     "layer": "L3",
     "model": "haiku",
-    "description": "Re-shows the structured first-run menu (finalize / onboard / doctor / faq / help) on demand, with current completion status. Use when the user wants to revisit the tutorial, asks 'what should I do next?', or types `/topia:tut`. This is the explicit re-entry point for the menu that auto-shows on session-start until completed.",
+    "description": "Use when the user wants the Topia first-run menu again: 'what should I do next?', 'show the tutorial', or types /topia:tut. Shows finalize, onboard, doctor, faq and help with what is already done.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
@@ -1235,7 +1268,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "video-creator",
     "layer": "L3",
     "model": "sonnet",
-    "description": "Video content planning. Writes narration scripts, storyboards, shot lists, and asset checklists. Saves plan to marketing/video-plan.md.",
+    "description": "Use when planning a video: 'write a script for a demo video', 'storyboard a product walkthrough', 'a YouTube explainer for this feature'. Writes timed narration, storyboards, shot lists and an asset checklist to marketing/video-plan.md. Plans only; does not render video.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
@@ -1252,7 +1285,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "watchdog",
     "layer": "L3",
     "model": "sonnet",
-    "description": "Post-deploy monitoring. Use when verifying a deployed app is healthy after deploy or launch — auto-fires from launch/deploy. Checks HTTP status, response times, error detection, and smoke test report.",
+    "description": "Use when a deploy just finished and the live app needs a health check: 'is the site up', 'check prod after the deploy', 'smoke test the live URL'. Checks HTTP status, response times and error pages, and writes a smoke-test report. Deploy and launch call it.",
     "userInvocable": true,
     "forked": false,
     "keywords": [
