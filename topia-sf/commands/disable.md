@@ -9,8 +9,8 @@ disable-model-invocation: true
 Turn Salesforce off for the workspace root this command was run in. The project's committed files stay: `orgs.json`, `plans/`, and `docs/salesforce/`.
 
 1. Only a person turns this off. Do not change any file, store, or lock, and do not run the service's scripts yourself.
-2. On Claude Code, the person presses **Okay to continue** in the band. It applies only to the path it shows. `/topia-sf:disable cancel` keeps it on.
-3. Where there is no band, tell the person to run this themselves, in their own terminal:
+2. On Claude Code, the person presses **Okay to continue** in the band. The VS Code extension and the phone apps draw no band, so a dialog asks there instead. Only the person answers it, never a chat reply. It applies only to the path it shows. `/topia-sf:disable cancel` keeps it on.
+3. Where there is no band and no dialog, tell the person to run this themselves, in their own terminal:
 
    `node "${CLAUDE_PLUGIN_ROOT}/salesforce/service/bin/cli.js" disable`
 

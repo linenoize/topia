@@ -18,7 +18,7 @@ You need Node 22 or later, the Salesforce CLI (`sf`), Claude Code in a terminal,
    sf org login web --alias acme-sbx --instance-url <your sandbox login URL>
    ```
 
-2. **Turn it on for this project.** Run `/topia-sf:enable`, then press **Okay to continue** in the band above the prompt. It applies to the path it shows, and nowhere else.
+2. **Turn it on for this project.** Run `/topia-sf:enable`, then press **Okay to continue** in the band above the prompt. It applies to the path it shows, and nowhere else. The VS Code extension and the phone apps don't draw that band, so there a dialog asks instead: choose **Turn on for this project**. `/topia-sf:disable` works the same way, with **Turn off for this project**. A chat reply never counts, and `claude -p` asks nothing and changes nothing.
 3. **Register the org.** Run `/topia-sf:connect acme-sbx`. A dialog shows what a live check found. Approve it, and the band shows the org's class, name, id, user, and mode.
 4. **Ask something.** `/topia-sf:ask How many Widget__c records have no owner?` The assistant clarifies the request, you confirm it in a dialog, and it reads. Personal values stay out of the answer unless you approve showing them.
 5. **Plan a change.** `/topia-sf:plan`, then `/topia-sf:execute` for records, or `/topia-sf:validate` and `/topia-sf:deploy` for metadata. You run each of these commands yourself, because each one sets its mode for one turn.

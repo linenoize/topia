@@ -6,14 +6,19 @@ import {
   BRIEF_OPTIONS,
   SALESFORCE_ABOUT,
   SALESFORCE_ACK_LABEL,
+  SALESFORCE_DISABLE_LABEL,
+  SALESFORCE_ENABLE_LABEL,
   SALESFORCE_RUNNER,
   SALESFORCE_STDIO_PREFIX,
   SALESFORCE_STORE_FILE,
   SALESFORCE_TOOL_SPECS,
   ackQuestion,
+  askInsteadOfBand,
   asWriteReply,
   briefQuestion,
   confirmShownPath,
+  disableQuestion,
+  enableQuestion,
   hashesOf,
   isBriefRead,
   isPrepared,
@@ -548,24 +553,48 @@ async function salesforceMayBeOn($: EngineInterface): Promise<boolean> {
   }
 }
 
-async function pressSalesforceEnable($: EngineInterface) {
+const SALESFORCE_STILL_OFF = 'Could not turn Salesforce on. It is still off for this project.'
+const SALESFORCE_STILL_ON = 'Could not turn Salesforce off. It is still on for this project.'
+
+// Turns it on for the path a person was shown, through the runner. The band's
+// button and the dialog both end here, so both hold the same checks.
+async function applySalesforceEnable($: EngineInterface, shownRoot: string | null, user: string): Promise<{ ok: boolean; message: string }> {
   try {
     const root = await $.session.root()
-    const pending = await read($, salesforcePendingEnable)
-    const shown = confirmShownPath(pending?.projectRoot ?? null, root)
-    if (!shown.ok) {
-      $.ui.toast(shown.reason)
-      return
-    }
-    const reply = (await salesforceRunner($, 'enable', { projectRoot: root, user: pending?.user ?? 'unknown' })) as { ok?: boolean; reason?: string } | null
-    if (reply?.ok !== true) {
-      $.ui.toast(reply?.reason ?? 'Could not turn Salesforce on. It is still off for this project.')
-      return
-    }
+    const shown = confirmShownPath(shownRoot, root)
+    if (!shown.ok) return { ok: false, message: shown.reason }
+    const reply = (await salesforceRunner($, 'enable', { projectRoot: root, user })) as { ok?: boolean; reason?: string } | null
+    if (reply?.ok !== true) return { ok: false, message: reply?.reason ?? SALESFORCE_STILL_OFF }
     await update($, salesforcePendingEnable, () => null)
     await refreshSalesforce($)
+    return { ok: true, message: `Salesforce is on for ${root}.` }
   } catch {
-    $.ui.toast('Could not turn Salesforce on. It is still off for this project.')
+    return { ok: false, message: SALESFORCE_STILL_OFF }
+  }
+}
+
+async function applySalesforceDisable($: EngineInterface, shownRoot: string | null): Promise<{ ok: boolean; message: string }> {
+  try {
+    const root = await $.session.root()
+    const shown = confirmShownPath(shownRoot, root)
+    if (!shown.ok) return { ok: false, message: shown.reason }
+    const reply = (await salesforceRunner($, 'disable', { projectRoot: root })) as { ok?: boolean } | null
+    if (reply?.ok !== true) return { ok: false, message: SALESFORCE_STILL_ON }
+    await update($, salesforcePendingDisable, () => null)
+    await refreshSalesforce($)
+    return { ok: true, message: `Salesforce is off for ${root}.` }
+  } catch {
+    return { ok: false, message: SALESFORCE_STILL_ON }
+  }
+}
+
+async function pressSalesforceEnable($: EngineInterface) {
+  try {
+    const pending = await read($, salesforcePendingEnable)
+    const done = await applySalesforceEnable($, pending?.projectRoot ?? null, pending?.user ?? 'unknown')
+    if (!done.ok) $.ui.toast(done.message)
+  } catch {
+    $.ui.toast(SALESFORCE_STILL_OFF)
   }
 }
 
@@ -596,24 +625,31 @@ async function pressSalesforceContinue($: EngineInterface) {
 }
 
 async function pressSalesforceDisable($: EngineInterface) {
-  const stillOn = 'Could not turn Salesforce off. It is still on for this project.'
   try {
-    const root = await $.session.root()
-    const shown = confirmShownPath(await read($, salesforcePendingDisable), root)
-    if (!shown.ok) {
-      $.ui.toast(shown.reason)
-      return
-    }
-    const reply = (await salesforceRunner($, 'disable', { projectRoot: root })) as { ok?: boolean } | null
-    if (reply?.ok !== true) {
-      $.ui.toast(stillOn)
-      return
-    }
-    await update($, salesforcePendingDisable, () => null)
-    await refreshSalesforce($)
-    $.ui.toast(`Salesforce is off for ${root}.`)
+    const done = await applySalesforceDisable($, await read($, salesforcePendingDisable))
+    $.ui.toast(done.message)
   } catch {
-    $.ui.toast(stillOn)
+    $.ui.toast(SALESFORCE_STILL_ON)
+  }
+}
+
+// Where nothing draws the band (the VS Code extension, a phone), the same step is
+// the question dialog. Only a person answers it, and only its exact label counts:
+// the Other box returns free text. The answer stays in this call, never on disk.
+// Headless, or with nothing drawn at all, nobody can answer, so nothing is asked.
+async function salesforceAsksInstead($: EngineInterface): Promise<boolean> {
+  try {
+    return askInsteadOfBand(await $.session.surfaces(), await read($, salesforceHeadless))
+  } catch {
+    return false
+  }
+}
+
+async function askSalesforceSwitch($: EngineInterface, question: string, label: string): Promise<'yes' | 'no' | 'unanswered'> {
+  try {
+    return (await $.ui.ask(question, { options: ['Stop', label], header: 'Salesforce' })) === label ? 'yes' : 'no'
+  } catch {
+    return 'unanswered'
   }
 }
 
@@ -626,6 +662,13 @@ async function disableSalesforce($: EngineInterface, args: string) {
   const { lock } = await salesforceStatus($, root)
   if (lock.state === 'unreadable') return { text: `Salesforce could not read this project's lock, so nothing changed. ${lock.message}` }
   if (lock.state === 'off') return { text: `Salesforce is not on for ${root}.` }
+  if (await salesforceAsksInstead($)) {
+    await update($, salesforcePendingDisable, () => null)
+    const answer = await askSalesforceSwitch($, disableQuestion(root), SALESFORCE_DISABLE_LABEL)
+    if (answer === 'unanswered') return { text: 'Nobody answered the dialog, so Salesforce stays on. A chat reply is not confirmation.' }
+    if (answer === 'no') return { text: 'The person did not confirm, so Salesforce stays on for this project.' }
+    return { text: (await applySalesforceDisable($, root)).message }
+  }
   await update($, salesforcePendingDisable, () => root)
   return { text: `Turn Salesforce off for this project only:\n${root}\nOkay to continue applies only to that path. /topia-sf:disable cancel keeps it on.` }
 }
@@ -635,7 +678,15 @@ async function enableSalesforce($: EngineInterface, userArg: string) {
   const { lock } = await salesforceStatus($, root)
   if (lock.state === 'unreadable') return { text: `Salesforce could not read this project's lock, so nothing changed. ${lock.message}` }
   if (lock.state === 'on') return { text: `Salesforce is already on for ${root}. /topia-sf:disable turns it off.` }
-  await update($, salesforcePendingEnable, () => ({ projectRoot: root, user: userArg.trim().length > 0 ? userArg.trim() : 'unknown' }))
+  const user = userArg.trim().length > 0 ? userArg.trim() : 'unknown'
+  if (await salesforceAsksInstead($)) {
+    await update($, salesforcePendingEnable, () => null)
+    const answer = await askSalesforceSwitch($, enableQuestion(root), SALESFORCE_ENABLE_LABEL)
+    if (answer === 'unanswered') return { text: 'Nobody answered the dialog, so Salesforce stays off. A chat reply is not confirmation.' }
+    if (answer === 'no') return { text: 'The person did not confirm, so Salesforce stays off for this project.' }
+    return { text: (await applySalesforceEnable($, root, user)).message }
+  }
+  await update($, salesforcePendingEnable, () => ({ projectRoot: root, user }))
   return { text: `Enable Salesforce for this project only:\n${root}\nOkay to continue applies only to that path.` }
 }
 
