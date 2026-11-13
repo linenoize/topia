@@ -16,7 +16,7 @@
 | Platform | Output Dir | File Format | Cross-Ref Mechanism | Subagent Support | Hook Support |
 |----------|-----------|-------------|---------------------|-----------------|--------------|
 | Claude Code | passthrough (no compile) | SKILL.md | `Skill("topia:<name>")` | `context: fork`, `agent:` | hooks.json (JS) |
-| Cursor | `.cursor/rules/` | `Topia-<name>.mdc` | `@file:Topia-<name>.mdc` | None | None (inline MUST) |
+| Cursor | `.cursor/rules/` | `Topia-<name>.mdc` | `@file:Topia-<name>.mdc` | None | `hooks.json`: lifecycle, `beforeReadFile`, `beforeShellExecution` ([HOOKS.md](HOOKS.md#cursor-cursorrulestopia-mdc--cursorhooksjson)); inline MUST for the rest |
 | Windsurf | `.windsurf/rules/` | `Topia-<name>.md` | Prose: "Follow Topia-<name> rule" | None | None (inline MUST) |
 | Antigravity | `.agent/rules/` | `Topia-<name>.md` | File reference | None | None (inline MUST) |
 | Generic | `.ai/rules/` | `Topia-<name>.md` | Prose reference | None | None (inline MUST) |
@@ -388,14 +388,17 @@ Claude Code hooks (hooks.json) enforce behaviors programmatically. Other platfor
 
 ### 7.1 Hook-to-Instruction Mapping
 
+Cursor now runs some of these natively through `hooks.json` (see [HOOKS.md](HOOKS.md#cursor-cursorrulestopia-mdc--cursorhooksjson)). The table says where.
+
 | Hook | Type | Inlined Instruction |
 |------|------|---------------------|
-| `secrets-scan` | PreToolUse(Bash) | `MUST NOT: Never run commands containing hardcoded secrets, API keys, or tokens. Scan all shell commands for secret patterns before execution.` |
+| `secrets-scan` | PreToolUse(Bash) | Cursor: native `beforeShellExecution` (matcher `commit`). Others: `MUST NOT: Never run commands containing hardcoded secrets, API keys, or tokens. Scan all shell commands for secret patterns before execution.` |
+| `git-push-checkpoint` | PreToolUse(Bash) | Cursor: native `beforeShellExecution` (matcher `push`). Others: none |
 | `auto-format` | PostToolUse(Edit) | `MUST: After editing JS/TS files, ensure code follows project formatting conventions (Prettier/ESLint).` |
 | `typecheck` | PostToolUse(Edit) | `MUST: After editing .ts/.tsx files, verify TypeScript compilation succeeds (no type errors).` |
 | `context-watch` | PreToolUse(Edit) | `SHOULD: Monitor your context usage. If working on a long task, summarize progress before context fills up.` |
-| `pre-tool-guard` | PreToolUse(Read) | (no equivalent needed — platform handles file access) |
-| `metrics-collector` | PostToolUse(Skill) | Cursor: native `postToolUse` via `.cursor/hooks.json`; Claude: plugin hook |
+| `pre-tool-guard` | PreToolUse(Read) | Cursor: native `beforeReadFile`. Others: none |
+| `metrics-collector` | PostToolUse(Skill\|Agent\|Task) | Cursor: native `postToolUse` (matcher `Skill\|Task`; Cursor names its subagent tool `Task`); Claude: plugin hook |
 | `token-meter` | PostToolUse(*) | Cursor + Claude: estimates tool I/O tokens (chars × 0.25) |
 | `session-start` | SessionStart | (no equivalent — platform handles session init) |
 | `pre-compact` | PreCompact | `MUST: Before summarizing/compacting context, save important decisions and progress to project files.` |

@@ -55,13 +55,17 @@ export const CAPABILITIES = Object.freeze({
     stop: true,
     notes: 'Full hook parity — PreToolUse/PostToolUse/Stop all supported.',
   },
+  // Cursor hooks: https://cursor.com/docs/hooks
   cursor: {
     maturity: 'beta',
     preToolEdit: 'rule-injection',
-    preToolBash: false,
+    preToolRead: true,
+    preToolBash: true,
     postToolEdit: false,
     stop: false,
-    notes: 'No tool-level hooks. Uses auto-attach `.mdc` rules as best-effort pre-edit guidance.',
+    notes:
+      'beforeReadFile runs pre-tool-guard; beforeShellExecution runs secrets-scan and git-push-checkpoint. ' +
+      'Edits still rely on auto-attach `.mdc` rules (afterFileEdit is not wired). No completion-gate on stop.',
   },
   windsurf: {
     maturity: 'beta',

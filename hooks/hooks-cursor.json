@@ -3,32 +3,47 @@
   "hooks": {
     "sessionStart": [
       {
-        "command": "node \"${CURSOR_PLUGIN_ROOT}/hooks/run-hook.cjs\" session-start"
+        "command": "node -e \"require(require('path').resolve(process.env.CURSOR_PLUGIN_ROOT||'.','hooks','run-hook.cjs'))\" session-start"
+      }
+    ],
+    "beforeReadFile": [
+      {
+        "command": "node -e \"require(require('path').resolve(process.env.CURSOR_PLUGIN_ROOT||'.','hooks','run-hook.cjs'))\" pre-tool-guard"
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": "node -e \"require(require('path').resolve(process.env.CURSOR_PLUGIN_ROOT||'.','hooks','run-hook.cjs'))\" secrets-scan",
+        "matcher": "commit"
+      },
+      {
+        "command": "node -e \"require(require('path').resolve(process.env.CURSOR_PLUGIN_ROOT||'.','hooks','run-hook.cjs'))\" git-push-checkpoint",
+        "matcher": "push"
       }
     ],
     "postToolUse": [
       {
-        "command": "node \"${CURSOR_PLUGIN_ROOT}/hooks/run-hook.cjs\" token-meter",
+        "command": "node -e \"require(require('path').resolve(process.env.CURSOR_PLUGIN_ROOT||'.','hooks','run-hook.cjs'))\" token-meter",
         "matcher": ".*"
       },
       {
-        "command": "node \"${CURSOR_PLUGIN_ROOT}/hooks/run-hook.cjs\" metrics-collector",
-        "matcher": "Skill"
+        "command": "node -e \"require(require('path').resolve(process.env.CURSOR_PLUGIN_ROOT||'.','hooks','run-hook.cjs'))\" metrics-collector",
+        "matcher": "Skill|Task"
       }
     ],
     "preCompact": [
       {
-        "command": "node \"${CURSOR_PLUGIN_ROOT}/hooks/run-hook.cjs\" pre-compact"
+        "command": "node -e \"require(require('path').resolve(process.env.CURSOR_PLUGIN_ROOT||'.','hooks','run-hook.cjs'))\" pre-compact"
       }
     ],
     "sessionEnd": [
       {
-        "command": "node \"${CURSOR_PLUGIN_ROOT}/hooks/run-hook.cjs\" post-session-reflect"
+        "command": "node -e \"require(require('path').resolve(process.env.CURSOR_PLUGIN_ROOT||'.','hooks','run-hook.cjs'))\" post-session-reflect"
       }
     ],
     "stop": [
       {
-        "command": "node \"${CURSOR_PLUGIN_ROOT}/hooks/run-hook.cjs\" post-session-reflect"
+        "command": "node -e \"require(require('path').resolve(process.env.CURSOR_PLUGIN_ROOT||'.','hooks','run-hook.cjs'))\" post-session-reflect"
       }
     ]
   }

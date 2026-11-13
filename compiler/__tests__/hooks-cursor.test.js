@@ -1,4 +1,5 @@
 import assert from 'node:assert';
+import { spawnSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { mkdir, mkdtemp, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -6,6 +7,7 @@ import path from 'node:path';
 import { afterEach, beforeEach, describe, test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import * as cursor from '../adapters/hooks/cursor.js';
+import { CAPABILITIES } from '../adapters/hooks/index.js';
 import { installHooks } from '../commands/hooks/install.js';
 import { hookStatus } from '../commands/hooks/status.js';
 import { uninstallHooks } from '../commands/hooks/uninstall.js';
@@ -150,5 +152,124 @@ describe('cursor adapter', () => {
     const r = result.results.find((x) => x.platform === 'cursor');
     assert.strictEqual(r.installed, false);
     assert.ok(r.missing.includes('readiness'));
+  });
+
+  test('status lists the tool-level guards once hooks.json is installed', async () => {
+    await seedCursor(tmpRoot);
+    await installHooks(tmpRoot, { preset: 'gentle', platform: 'cursor', topiaRoot: Topia_ROOT });
+    const result = await hookStatus(tmpRoot, Topia_ROOT, { platform: 'cursor' });
+    const r = result.results.find((x) => x.platform === 'cursor');
+    for (const hook of ['pre-tool-guard', 'secrets-scan', 'git-push-checkpoint']) {
+      assert.ok(r.wired.includes(hook), `${hook} should be reported as wired`);
+    }
+    assert.ok(!r.notes.some((n) => /no tool-level/i.test(n)));
+  });
+});
+
+// Cursor tool-level hooks: https://cursor.com/docs/hooks (beforeReadFile, beforeShellExecution).
+describe('cursor tool-level hooks', () => {
+  async function emittedHooks() {
+    const plan = await cursor.emit({ preset: 'gentle', projectRoot: tmpRoot, topiaRoot: Topia_ROOT });
+    return JSON.parse(plan.files.find((f) => f.path.endsWith('hooks.json')).content).hooks;
+  }
+
+  const hookNames = (entries = []) => entries.map((e) => e.command.trim().split(/\s+/).pop());
+
+  test('beforeReadFile runs pre-tool-guard', async () => {
+    const hooks = await emittedHooks();
+    assert.deepStrictEqual(hookNames(hooks.beforeReadFile), ['pre-tool-guard']);
+  });
+
+  test('beforeShellExecution runs secrets-scan on commits and git-push-checkpoint on pushes', async () => {
+    const hooks = await emittedHooks();
+    assert.deepStrictEqual(hookNames(hooks.beforeShellExecution), ['secrets-scan', 'git-push-checkpoint']);
+    const [scan, push] = hooks.beforeShellExecution;
+    // The matcher is tested against the full command string.
+    assert.ok(new RegExp(scan.matcher).test('cd app && git commit -m x'));
+    assert.ok(new RegExp(scan.matcher).test('git -C app commit -m x'));
+    assert.ok(new RegExp(push.matcher).test('git push origin main'));
+    assert.ok(!new RegExp(push.matcher).test('npm test'));
+  });
+
+  test('metrics-collector matches the Cursor subagent tool name', async () => {
+    const hooks = await emittedHooks();
+    const entry = hooks.postToolUse.find((e) => e.command.endsWith('metrics-collector'));
+    const re = new RegExp(`^(?:${entry.matcher})$`);
+    assert.ok(re.test('Task'), 'Cursor names the subagent tool Task');
+    assert.ok(re.test('Skill'));
+  });
+
+  test('auto-format and typecheck stay unwired', async () => {
+    const hooks = await emittedHooks();
+    const all = Object.values(hooks).flatMap(hookNames);
+    assert.ok(!all.includes('auto-format'));
+    assert.ok(!all.includes('typecheck'));
+  });
+
+  test('no completion follow-up on stop', async () => {
+    const hooks = await emittedHooks();
+    assert.deepStrictEqual(hookNames(hooks.stop), ['post-session-reflect']);
+  });
+
+  test('project commands use forward slashes and quote the path for PowerShell and sh', async () => {
+    const hooks = await emittedHooks();
+    for (const entry of Object.values(hooks).flat()) {
+      assert.ok(!entry.command.includes('\\'), `no backslashes: ${entry.command}`);
+      assert.ok(!entry.command.includes('${'), `no shell variables: ${entry.command}`);
+      assert.match(entry.command, /^node '[^']+\/hooks\/run-hook\.cjs' [a-z-]+$/);
+    }
+  });
+
+  test('capability matrix no longer says Cursor has no tool-level hooks', () => {
+    const cap = CAPABILITIES.cursor;
+    assert.ok(!/no tool-level hooks/i.test(cap.notes));
+    assert.strictEqual(cap.preToolBash, true);
+    assert.strictEqual(cap.preToolRead, true);
+    assert.strictEqual(cap.postToolEdit, false, 'afterFileEdit is not wired');
+  });
+});
+
+describe('cursor plugin hooks file', () => {
+  const PLUGIN_HOOKS = path.join(Topia_ROOT, 'hooks', 'hooks-cursor.json');
+
+  test('hooks/hooks-cursor.json matches the adapter plan', async () => {
+    const onDisk = JSON.parse(await readFile(PLUGIN_HOOKS, 'utf-8'));
+    assert.deepStrictEqual(onDisk, cursor.buildPluginHooksJson());
+  });
+
+  test('plugin commands find the plugin through the environment, not a shell variable', () => {
+    const json = cursor.buildPluginHooksJson();
+    for (const entry of Object.values(json.hooks).flat()) {
+      // PowerShell reads ${CURSOR_PLUGIN_ROOT} as an empty PowerShell variable.
+      assert.ok(!entry.command.includes('$'), entry.command);
+      assert.ok(entry.command.includes('process.env.CURSOR_PLUGIN_ROOT'), entry.command);
+    }
+  });
+
+  // Runs the real command string through the shell Cursor uses: PowerShell on
+  // Windows, sh elsewhere. The cwd is a different folder, as for stop hooks.
+  test('plugin command runs from any folder through the platform shell', () => {
+    const json = cursor.buildPluginHooksJson();
+    const command = json.hooks.beforeReadFile[0].command;
+    const win = process.platform === 'win32';
+    const shell = win ? 'powershell.exe' : 'sh';
+    const shellArgs = (cmd) => (win ? ['-NoProfile', '-NonInteractive', '-Command', cmd] : ['-c', cmd]);
+    const args = shellArgs(command);
+    if (spawnSync(shell, shellArgs('exit 0')).error) return; // shell not installed on this runner
+    const env = { ...process.env, CURSOR_PLUGIN_ROOT: Topia_ROOT, CURSOR_PROJECT_DIR: tmpRoot };
+    const res = spawnSync(shell, args, {
+      cwd: tmpdir(),
+      env,
+      input: JSON.stringify({
+        hook_event_name: 'beforeReadFile',
+        cursor_version: '3.0.0',
+        file_path: path.join(tmpRoot, 'src', 'index.js'),
+        content: 'export {};\n',
+      }),
+      encoding: 'utf-8',
+      timeout: 30000,
+    });
+    assert.strictEqual(res.status, 0, res.stderr);
+    assert.deepStrictEqual(JSON.parse(res.stdout.trim()), { permission: 'allow' });
   });
 });

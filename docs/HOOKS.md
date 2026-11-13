@@ -111,7 +111,7 @@ Presets:
 | Platform    | Maturity     | Pre-edit  | Pre-Bash   | Post-edit | Stop (completion-gate) | Native artifact                     |
 |-------------|--------------|-----------|------------|-----------|------------------------|-------------------------------------|
 | Claude Code | **stable**   | auto-fire | auto-fire  | auto-fire | **auto-fire**          | `.claude/settings.json` (JSON)      |
-| Cursor      | beta         | rule-inject + **hooks.json** | —        | —         | sessionEnd / stop | `.cursor/rules/Topia-*.mdc` + `.cursor/hooks.json` |
+| Cursor      | beta         | rule-inject (reads: auto-fire) | auto-fire (commit, push) | — | — (stop: metrics only) | `.cursor/rules/Topia-*.mdc` + `.cursor/hooks.json` |
 | Windsurf    | beta         | workflow + cascade-rule | workflow | — | —                      | `.windsurf/workflows/` + `.windsurf/rules/` |
 | Antigravity | experimental | rule-inject | —        | —         | —                      | `.antigravity/rules/Topia-*.md`      |
 
@@ -166,14 +166,45 @@ Hooks point at a **stable launcher shim** that Topia installs at `<scope>/.claud
 - `Topia-guardian.mdc` — glob-scoped to shell / infra / env files.
 - `Topia-dependency-doctor.mdc` — scoped to manifest / lockfile edits.
 
-**Metrics hooks** (native `.cursor/hooks.json`, installed by `topia hooks install --platform cursor`):
+**Native hooks** (`.cursor/hooks.json`, installed by `topia hooks install --platform cursor`). The Cursor plugin ships the same list in [`hooks/hooks-cursor.json`](../hooks/hooks-cursor.json). Both come from one plan in [`compiler/adapters/hooks/cursor.js`](../compiler/adapters/hooks/cursor.js), and a test fails if they differ.
 
-- `sessionStart` → session-start
-- `postToolUse` → token-meter (all tools) + metrics-collector (Skill)
-- `preCompact` → pre-compact (records **measured** context tokens)
-- `sessionEnd` / `stop` → post-session-reflect (flush to `.topia/metrics/`)
+| Cursor event | Matcher | Topia hook | What it does |
+|---|---|---|---|
+| `sessionStart` | — | session-start | Session setup |
+| `beforeReadFile` | — | pre-tool-guard | Denies private keys and certificates. Flags `.env`-style files. |
+| `beforeShellExecution` | `commit` | secrets-scan | Denies a `git commit` when staged files hold secrets |
+| `beforeShellExecution` | `push` | git-push-checkpoint | Writes `.topia/checkpoint.md` before a push, tells the agent |
+| `postToolUse` | `.*` | token-meter | Token estimate per tool call |
+| `postToolUse` | `Skill\|Task` | metrics-collector | Skill and subagent calls. Cursor's subagent tool is `Task`. |
+| `preCompact` | — | pre-compact | Records measured context tokens |
+| `sessionEnd`, `stop` | — | post-session-reflect | Flushes metrics to `.topia/metrics/` |
+
+Not wired on purpose: `auto-format` and `typecheck` (inert pending a decision), `afterFileEdit`, and a `stop` follow-up message. A follow-up would start a new agent turn every time.
 
 Invoke `/topia completion-gate` manually before wrapping up — no native completion-gate on Cursor.
+
+**How the hooks answer Cursor** ([hooks reference](https://cursor.com/docs/hooks)):
+
+- `beforeReadFile` and `beforeShellExecution` are permission hooks. Cursor blocks the action when such a hook prints no JSON or bad JSON. So these hooks always print a decision, even `{"permission":"allow"}`.
+- A block is `{"permission":"deny", ...}` with exit 0. Cursor reads the JSON on exit 0, so the messages arrive. Claude Code still gets exit 2 and the reason on stderr.
+- `beforeReadFile` output has only `permission` and `user_message`. It cannot send text to the agent, so a sensitive-file warning goes to `user_message`.
+- `beforeShellExecution` sends `command` and `cwd` at the top level. secrets-scan runs git in that `cwd`.
+
+**Command form.** Cursor runs hook commands through PowerShell on Windows and sh elsewhere. In PowerShell, `${CURSOR_PLUGIN_ROOT}` is an empty PowerShell variable, not the environment variable. So:
+
+- Plugin hooks run `node -e "require(require('path').resolve(process.env.CURSOR_PLUGIN_ROOT||'.','hooks','run-hook.cjs'))" <hook>`. Node reads the variable itself. The same string works in PowerShell and sh, from any folder.
+- Project hooks use an absolute path with forward slashes in single quotes: `node '<topia>/hooks/run-hook.cjs' <hook>`.
+- [`hooks/run-hook.cjs`](../hooks/run-hook.cjs) moves to `CURSOR_PROJECT_DIR` when `CURSOR_PLUGIN_ROOT` is set. Cursor runs plugin hooks from the plugin folder, and Topia keeps state in `<project>/.topia`.
+
+**Notes. Not verified against a real Cursor install:**
+
+- UNVERIFIED: the hooks above firing inside Cursor itself. Tests run each hook with Cursor-shaped input and run the plugin command through PowerShell 5.1, PowerShell 7 and sh. No Cursor build was run.
+- UNVERIFIED: that Cursor sets `CURSOR_PLUGIN_ROOT` for plugin hooks, including `stop`. The docs say it does. Without it, a hook finds Topia only when the cwd is the plugin folder, and otherwise fails open.
+- UNVERIFIED: whether Cursor shows `user_message` when `beforeReadFile` allows the read. The docs describe it only for a deny.
+- UNVERIFIED: the input fields of Cursor's `Task` tool. metrics-collector reads `subagent_type`; it may record nothing on Cursor.
+- UNVERIFIED: older Cursor builds. A forum report from early 2026 says plugin hooks then ran from the workspace root. The command form above does not depend on the cwd.
+- UNVERIFIED: double runs. Cursor also loads Claude Code hooks from `.claude/settings.json` and `~/.claude/settings.json` when third-party imports are on (the default). If Topia is wired there too, a check may run twice.
+- No hook sets `failClosed`. If Node is missing or a hook crashes, Cursor lets the action through.
 
 See [`TOKEN-METRICS.md`](TOKEN-METRICS.md) for token confidence tiers and baseline A/B setup.
 
@@ -209,8 +240,8 @@ When **Third-party skills** is enabled in Cursor, Claude Code hook entries (plug
 
 Topia handles this via [`hooks/lib/cursor-io.cjs`](../hooks/lib/cursor-io.cjs):
 
-- Detects Cursor using `CURSOR_VERSION`, `CURSOR_PROJECT_DIR`, or stdin `cursor_version` / `hook_event_name`.
-- Plugin hooks (`session-start`, `quarantine`, `post-session-reflect`, `pre-tool-guard`) emit `{ additional_context }`, `{ permission }`, or `{}` as appropriate.
+- Detects Cursor using `CURSOR_VERSION`, `CURSOR_PROJECT_DIR`, stdin `cursor_version`, or a camelCase `hook_event_name` (`preToolUse`). Claude Code sends PascalCase names (`PreToolUse`), so a Claude event is not taken for Cursor.
+- Plugin hooks (`session-start`, `quarantine`, `post-session-reflect`, `pre-tool-guard`, `secrets-scan`, `git-push-checkpoint`) emit `{ additional_context }`, `{ permission }`, or `{}` as appropriate.
 - `hook-dispatch` emits event-shaped JSON (`permission` for `preToolUse`, `additional_context` for `postToolUse`).
 
 **Not topia:** a `stop` hook that runs `bun run …` comes from a user or team `~/.cursor/hooks.json` template, not from this repository. Remove it or install Bun.
@@ -235,7 +266,7 @@ Agent follow-up: invoke `topia:context-lifecycle` when hook messages appear. Bas
 ## Limitations
 
 - Only Claude Code gets native `Stop` (completion-gate) via settings presets without third-party mapping quirks.
-- `PostCompact` and `git-push-checkpoint` require the Topia plugin hooks bundle (not Cursor `.cursor/hooks.json` alone unless extended). Cursor maps `Stop` → `stop` and also provides `sessionEnd` for metrics flush when `.cursor/hooks.json` is installed.
+- `PostCompact` requires the Claude Code plugin hooks bundle. Cursor has no post-compact event. `git-push-checkpoint` runs on Cursor through `beforeShellExecution`. Cursor maps `Stop` → `stop` and also provides `sessionEnd` for metrics flush when `.cursor/hooks.json` is installed.
 - Cursor/Windsurf/Antigravity **rule** install (`Topia hooks install --platform cursor`) is best-effort — the LLM still decides whether to read rules. Native Cursor `hooks.json` is separate from `.mdc` rules.
 - `Topia hooks status --platform all` is the single source of truth for "what am I actually getting on this machine." Check it after install.
 

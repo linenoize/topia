@@ -12,26 +12,35 @@ const fs = require('fs');
 const path = require('path');
 const { isCursorRuntime, writeHookResponse } = require('../lib/cursor-io.cjs');
 
-// Read tool_input from Claude Code hook stdin
+// Cursor permission hooks (beforeReadFile, preToolUse) block the read when the
+// hook prints no JSON or bad JSON, so under Cursor every path prints a decision.
+// https://cursor.com/docs/hooks
+function allowAndExit(event) {
+  if (isCursorRuntime(event)) writeHookResponse({ permission: 'allow' });
+  process.exit(0);
+}
+
+// Claude Code: { tool_input: { file_path } }. Cursor beforeReadFile: { file_path, content }.
 let input = '';
 process.stdin.setEncoding('utf-8');
 process.stdin.on('data', (chunk) => { input += chunk; });
 process.stdin.on('end', () => {
   let toolInput = {};
-  let toolName = '';
   let event = {};
   try {
     const parsed = JSON.parse(input);
     event = parsed;
     toolInput = parsed.tool_input || parsed;
-    toolName = parsed.tool_name || '';
   } catch {
     // If no stdin or parse fails, exit cleanly (non-blocking)
-    process.exit(0);
+    allowAndExit({});
   }
 
   const filePath = toolInput.file_path || toolInput.path || '';
-  if (!filePath) process.exit(0);
+  if (!filePath) allowAndExit(event);
+  const cursor = isCursorRuntime(event);
+  // beforeReadFile output has only `permission` and `user_message`.
+  const readFileEvent = event.hook_event_name === 'beforeReadFile';
 
   const basename = path.basename(filePath);
   const normalized = filePath.replace(/\\/g, '/');
@@ -86,17 +95,20 @@ process.stdin.on('end', () => {
   const isElevated = elevatedSkills.has(activeSkill);
 
   const isSafe = safeExceptions.some((p) => p.test(basename) || p.test(normalized));
-  if (isSafe) process.exit(0);
+  if (isSafe) allowAndExit(event);
 
   const isBlocked = blockPatterns.some((p) => p.test(basename) || p.test(normalized));
   if (isBlocked) {
     const blockMsg = `[Topia privacy-nexus] BLOCKED: ${filePath} — BLOCK-tier pattern (private keys, certificates).`;
-    if (isCursorRuntime(event)) {
-      writeHookResponse({
+    if (cursor) {
+      // A JSON deny with exit 0: Cursor uses the JSON, so the person sees why.
+      const response = {
         permission: 'deny',
-        user_message: `Blocked read of sensitive file: ${filePath}`,
-        agent_message: blockMsg,
-      });
+        user_message: `Topia blocked reading ${filePath}. To allow it, add the path to the "allow" list in .topia/privacy.json.`,
+      };
+      if (!readFileEvent) response.agent_message = blockMsg;
+      writeHookResponse(response);
+      process.exit(0);
     } else {
       // On exit 2 Claude Code hands stderr to the model as the reason; stdout is dropped.
       process.stderr.write(
@@ -109,12 +121,22 @@ process.stdin.on('end', () => {
   const isWarned = warnPatterns.some((p) => p.test(basename) || p.test(normalized));
   if (isWarned && !isElevated) {
     // Content-aware check: scan first 4KB for secret patterns
-    const contentWarning = scanContentForSecrets(filePath);
+    // Cursor's beforeReadFile sends the file content, so scan that when present.
+    const contentWarning = scanContentForSecrets(filePath, event.content);
 
     const lines = [`⚠ [Topia privacy-nexus] Sensitive file: ${filePath}`];
     if (contentWarning) lines.push(`Content scan: ${contentWarning}`);
     lines.push('This file may contain secrets. Read it only if the task needs it, and never repeat secret values.');
     lines.push('Elevated skills (guardian, review, audit) bypass this warning.');
+    if (cursor) {
+      // beforeReadFile cannot send text to the agent; preToolUse can.
+      writeHookResponse(
+        readFileEvent
+          ? { permission: 'allow', user_message: lines.join(' ') }
+          : { permission: 'allow', agent_message: lines.join('\n') },
+      );
+      process.exit(0);
+    }
     // Plain stdout on exit 0 never reaches the model; this JSON does. It warns, and leaves the permission alone.
     process.stdout.write(
       JSON.stringify({
@@ -122,9 +144,10 @@ process.stdin.on('end', () => {
         hookSpecificOutput: { hookEventName: 'PreToolUse', additionalContext: lines.join('\n') },
       }),
     );
+    process.exit(0);
   }
 
-  process.exit(0);
+  allowAndExit(event);
 });
 
 /**
@@ -159,19 +182,23 @@ function loadPrivacyConfig() {
 }
 
 /**
- * Scan first 4KB of a file for common secret patterns
+ * Scan first 4KB of a file (or of the content the host sent) for common secret patterns
  * Returns a warning string if secrets detected, null otherwise
  */
-function scanContentForSecrets(filePath) {
+function scanContentForSecrets(filePath, sentContent) {
   try {
-    const fd = fs.openSync(filePath, 'r');
-    const buffer = Buffer.alloc(4096);
-    const bytesRead = fs.readSync(fd, buffer, 0, 4096, 0);
-    fs.closeSync(fd);
+    let content;
+    if (typeof sentContent === 'string') {
+      content = sentContent.slice(0, 4096);
+    } else {
+      const fd = fs.openSync(filePath, 'r');
+      const buffer = Buffer.alloc(4096);
+      const bytesRead = fs.readSync(fd, buffer, 0, 4096, 0);
+      fs.closeSync(fd);
+      content = buffer.toString('utf-8', 0, bytesRead);
+    }
 
-    if (bytesRead === 0) return null;
-
-    const content = buffer.toString('utf-8', 0, bytesRead);
+    if (!content) return null;
 
     const secretPatterns = [
       { pattern: /AKIA[0-9A-Z]{16}/, label: 'AWS access key' },
