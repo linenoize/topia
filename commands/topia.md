@@ -42,7 +42,7 @@ These are entry-points the user runs in their shell. They do not invoke a skill 
 
 ## L0 Router (1)
 
-- 🤖 `/topia skill-router` — meta-enforcement layer. Routes every action to the right skill. Rarely invoked directly; runs implicitly on every request.
+- 🤖 `/topia skill-router` — the routing reference table other skills read. Hidden from Claude's skill list.
 
 ## L1 Orchestrators (5)
 
@@ -57,7 +57,7 @@ These are entry-points the user runs in their shell. They do not invoke a skill 
 ### Creation
 - 👤 `/topia idea <requirement>` — requirements elicitation (5 probing questions → Requirements Document).
 - 👤 `/topia plan <task>` — structured implementation plan (master plan + phase files).
-- 👤 `/topia scout` — fast read-only codebase scanner (files, patterns, dependencies).
+- 👤 `/topia recon` — fast read-only codebase scanner (files, patterns, dependencies).
 - 👤 `/topia brainstorm <topic>` — creative ideation with trade-offs.
 - 👤 `/topia design` — design-system generator (palette, typography, anti-patterns → `.topia/design-system.md`).
 - 👤 `/topia skill-forge` — create new Topia skills, edit existing ones, verify quality.
@@ -74,7 +74,7 @@ These are entry-points the user runs in their shell. They do not invoke a skill 
 ### Quality
 - 👤 `/topia review` — code-quality review with `file:line` findings.
 - ↻ `/topia review-intake <PR-url-or-issue>` — process external review feedback or triage inbound issues. Also auto-runs in `build` Phase 5 when external feedback is detected.
-- 🤖 `/topia readiness` — pre-commit quality gate (logic, regressions, completeness). Auto-fires via hook.
+- 🤖 `/topia readiness` — old name; now part of `/topia verification` (one pre-commit gate: checks, then logic and regression review).
 - 🤖 `/topia guardian` — security gate (secrets, OWASP, deps). Auto-fires via hook.
 - 🤖 `/topia logic-guardian` — protects business logic from accidental deletion. Auto-fires when `.topia/logic-manifest.json` exists.
 - 🤖 `/topia quarantine` — prompt-injection advisory on untrusted MCP / WebFetch / upload reads. Auto-fires.
@@ -110,22 +110,22 @@ These are entry-points the user runs in their shell. They do not invoke a skill 
 
 ### Knowledge / Research
 - ↻ `/topia research <topic>` — web research with min-3-source triangulation.
-- ↻ `/topia docs-seeker <api-or-error>` — Context7 / llms.txt / WebSearch fallback chain.
+- ↻ `/topia docs-seeker <api-or-error>` — old name; now research's API docs mode (`/topia research`).
 - 👤 `/topia trend-scout <topic>` — Product Hunt / GitHub Trending / HN / Reddit scan.
 
 ### Reasoning
 - ↻ `/topia problem-solver <problem>` — structured frameworks (5 Whys, Fishbone, First Principles, SCAMPER) + bias detection.
-- ↻ `/topia sequential-thinking <problem>` — multi-variable analysis with dependency tracking.
+- ↻ `/topia sequential-thinking <problem>` — old name; now problem-solver's sequential mode (`/topia problem-solver`).
 
 ### Validation
 - ↻ `/topia verification` — lint + type-check + tests + build.
 - 🤖 `/topia hallucination-guard` — verify imports / APIs / packages actually exist. Auto-fires after AI-generated code.
 - 🤖 `/topia completion-gate` — validate agent claims against the tool-call evidence trail. Auto-fires at workflow end.
-- 🤖 `/topia constraint-check` — meta-validator: did the agent follow declared HARD-GATEs? Auto-runs in `build`, `team`, `audit`.
+- 🤖 `/topia constraint-check` — old name; now completion-gate's process audit.
 - ↻ `/topia sast` — static analysis runner (ESLint, Semgrep, Bandit, Clippy, govulncheck).
 
 ### State / Memory
-- 🤖 `/topia context-engine` — context-window management + auto-compaction.
+- 🤖 `/topia context-engine` — old name; now part of `/topia context-lifecycle`.
 - 🤖 `/topia context-pack <task>` — package context for subagent delegation.
 - ↻ `/topia journal` — ADRs + decision history. User runs to log; also called by `build`/`rescue`.
 - 🤖 `/topia session-bridge` — auto-saves decisions / conventions / progress to `.topia/`. Fires at session boundaries.
@@ -228,9 +228,9 @@ L4 packs provide domain-specific patterns. When invoked, read the pack's PACK.md
 When the user runs `/topia <action>`:
 
 1. **CLI command?** (install, setup, init, doctor, build, status, visualize, analytics, hooks, migrate-from-rune) → route to the CLI binary (`node compiler/bin/topia.js <action>`).
-2. **Core skill?** (any name in L0/L1/L2/L3 above) → invoke `topia:<action>` via the Skill tool, passing arguments as the prompt.
+2. **Core skill?** (any name in L0/L1/L2/L3 above) → invoke `topia:<action>` via the Skill tool, passing arguments as the prompt. Some skills are hidden from Claude (`disable-model-invocation: true`): the internal helpers, the old names that now point elsewhere, and launch, deploy and incident, which only a person may start. The Skill tool cannot start those, so tell the person to type `/topia:<action>` themselves.
 3. **L4 pack command?** → read the corresponding `extensions/<pack>/PACK.md`, locate the matching skill section, follow its workflow.
 4. **`mods`?** → tell the user to type `/mods` themselves (the mods module answers it; nothing to run here).
 5. **No action provided?** → show this help menu.
 
-For ambiguous routing (the user described intent without naming a skill), defer to `topia:skill-router` for canonical resolution.
+For ambiguous routing (the user described intent without naming a skill), pick the skill whose description fits best; the routing table in `skills/skill-router/SKILL.md` breaks ties.

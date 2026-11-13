@@ -4,7 +4,7 @@
 
 <p align="center">
   <strong>Topia — internal skill toolkit for AI coding assistants.</strong><br>
-  73 skills · 317 synapses · 49 pulses · 10 extension packs · optional persistent memory via agora-code MCP
+  73 skills · 303 synapses · 48 pulses · 10 extension packs · optional persistent memory via agora-code MCP
 </p>
 
 <p align="center">
@@ -124,7 +124,7 @@ From a Topia clone or plugin cache path:
 
 ```bash
 node compiler/bin/topia.js doctor
-# ✓ 73 skills, 317 synapses, 49 pulses — nexus is healthy
+# ✓ 73 skills, 303 synapses, 48 pulses — nexus is healthy
 ```
 
 Claude-only users can use `/topia doctor` in chat instead.
@@ -180,7 +180,7 @@ The 8-step build flow (route → recall → plan → test → implement → gate
 | `fix` | Apply code changes from diagnosis or review findings. |
 | `debug` | Root-cause analysis; hands off to `fix`. |
 | `test` | TDD test writer — red first, green after. |
-| `scout` | Fast read-only codebase scanner. |
+| `recon` | Fast read-only codebase scanner. |
 | `verification` | Run lint + type-check + tests + build. |
 | `db` | Migrations, rollbacks, query validation. |
 | `git` | Semantic commits, PR bodies, branch naming. |

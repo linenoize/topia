@@ -8,7 +8,7 @@ Canonical terminology for Topia v2. Use these terms in docs, CLI output, and ski
 |------|------------|
 | **Nexus** | The interconnected skill graph — not a flat collection. Validated by `topia doctor --nexus`. |
 | **Synapse** | A synchronous skill-to-skill link (`Calls` / `Called By`). Topia ships with **323 active synapses**. |
-| **Pulse** | An asynchronous event between skills (`emit` / `listen` in frontmatter). Topia ships with **49 pulses**. |
+| **Pulse** | An asynchronous event between skills (`emit` / `listen` in frontmatter). Topia ships with **48 pulses**. |
 
 ## Orchestration
 

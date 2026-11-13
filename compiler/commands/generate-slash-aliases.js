@@ -103,17 +103,20 @@ module.exports = {
  * @param {import('../lib/skill-catalog.js').SkillCatalogEntry[]} catalog
  */
 function skillRoutes(catalog) {
-  const known = new Set(catalog.map((s) => s.name));
+  // A chain lists hand-offs Claude can start; skills hidden from it run inside
+  // the skill that reads them, so they are left out.
+  const callable = new Set(catalog.filter((s) => !s.userOnly).map((s) => s.name));
   return catalog.map((s) => ({
     name: s.name,
     layer: s.layer,
     model: s.model,
     description: s.description,
     userInvocable: s.userInvocable,
+    userOnly: s.userOnly,
     forked: s.forked,
     keywords: INTENT_KEYWORDS[s.name] ?? [],
     prompts: INTENT_PROMPTS[s.name] ?? [],
-    chain: (INTENT_CHAINS[s.name] ?? []).filter((next) => known.has(next)),
+    chain: (INTENT_CHAINS[s.name] ?? []).filter((next) => callable.has(next)),
   }));
 }
 
@@ -143,6 +146,7 @@ export type SkillRoute = {
   model: string
   description: string
   userInvocable: boolean
+  userOnly: boolean
   forked: boolean
   keywords: readonly string[]
   prompts: readonly string[]

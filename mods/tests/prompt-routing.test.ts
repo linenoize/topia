@@ -43,7 +43,8 @@ test('a draft points at build first, then the most specific words', async () => 
   expect(prediction.skills[0]?.keywords).toEqual(['add support for'])
   expect(prediction.skills[1]?.keywords).toEqual(['unit test'])
   // build's usual hand-offs, less the skills already shown
-  expect(prediction.chain).toEqual(['plan', 'fix', 'verification', 'guardian', 'review', 'completion-gate'])
+  // completion-gate is hidden from Claude (build reads it), so the chain leaves it out.
+  expect(prediction.chain).toEqual(['plan', 'fix', 'verification', 'guardian', 'review'])
 })
 
 test('plain endings count: tests, crashes, deployed', async () => {

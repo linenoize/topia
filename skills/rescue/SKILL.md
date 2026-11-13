@@ -81,11 +81,11 @@ Create one task per entry with the task list tool (TaskCreate/TaskUpdate in Clau
 
 ```
 [
-  { content: "RECON: Run autopsy, onboard, and save initial state", status: "pending", activeForm: "Assessing codebase health" },
-  { content: "SAFETY NET: Add characterization tests and rollback points", status: "pending", activeForm: "Building safety net" },
-  { content: "SURGERY [Module N]: Refactor one module with surgeon", status: "pending", activeForm: "Performing surgery on module N" },
-  { content: "CLEANUP: Remove @legacy and @bridge markers", status: "pending", activeForm: "Cleaning up markers" },
-  { content: "VERIFY: Run full test suite and compare health scores", status: "pending", activeForm: "Verifying rescue outcome" }
+  { subject: "RECON: Run autopsy, onboard, and save initial state", activeForm: "Assessing codebase health" },
+  { subject: "SAFETY NET: Add characterization tests and rollback points", activeForm: "Building safety net" },
+  { subject: "SURGERY [Module N]: Refactor one module with surgeon", activeForm: "Performing surgery on module N" },
+  { subject: "CLEANUP: Remove @legacy and @bridge markers", activeForm: "Cleaning up markers" },
+  { subject: "VERIFY: Run full test suite and compare health scores", activeForm: "Verifying rescue outcome" }
 ]
 ```
 
@@ -151,7 +151,7 @@ Bash: git tag Topia-rescue-baseline
 From autopsy.modules, filter: health < 60
 Sort: ascending health score (worst first)
 Add one task per module:
-  { content: "SURGERY [module.name]: [recommended_pattern]", status: "pending", ... }
+  { subject: "SURGERY [module.name]: [recommended_pattern]", ... }
 ```
 
 Mark todo[0] `completed`.

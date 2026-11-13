@@ -11,6 +11,7 @@ const CATALOG = [
     "model": "opus",
     "layer": "L2",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -19,6 +20,7 @@ const CATALOG = [
     "model": "opus",
     "layer": "L2",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -27,6 +29,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L3",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -35,6 +38,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -43,6 +47,7 @@ const CATALOG = [
     "model": "opus",
     "layer": "L2",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -51,6 +56,7 @@ const CATALOG = [
     "model": "opus",
     "layer": "L2",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -59,6 +65,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L3",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -67,6 +74,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L1",
     "userInvocable": true,
+    "userOnly": false,
     "forked": true
   },
   {
@@ -75,6 +83,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
+    "userOnly": true,
     "forked": false
   },
   {
@@ -83,6 +92,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
+    "userOnly": true,
     "forked": false
   },
   {
@@ -91,6 +101,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
+    "userOnly": true,
     "forked": false
   },
   {
@@ -99,6 +110,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -107,6 +119,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
+    "userOnly": true,
     "forked": false
   },
   {
@@ -115,6 +128,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -123,6 +137,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -131,6 +146,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L3",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -139,6 +155,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -147,6 +164,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
+    "userOnly": true,
     "forked": false
   },
   {
@@ -155,6 +173,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -163,6 +182,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L3",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -171,6 +191,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -179,6 +200,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
+    "userOnly": true,
     "forked": false
   },
   {
@@ -187,6 +209,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -195,6 +218,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -203,6 +227,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -211,6 +236,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -219,6 +245,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -227,6 +254,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -235,6 +263,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -243,6 +272,7 @@ const CATALOG = [
     "model": "opus",
     "layer": "L2",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -251,6 +281,7 @@ const CATALOG = [
     "model": "opus",
     "layer": "L2",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -259,6 +290,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
+    "userOnly": true,
     "forked": false
   },
   {
@@ -267,14 +299,16 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
     "name": "integrity-check",
-    "description": "Verify integrity of persisted state, skill outputs, and context bus data. Use when validating .topia/ files or sub-agent outputs against prompt injection, memory poisoning, identity spoofing, or adversarial payloads. Called by sentinel, team, session-bridge.",
+    "description": "Verify integrity of persisted state, skill outputs, and context bus data. Use when validating .topia/ files or sub-agent outputs against prompt injection, memory poisoning, identity spoofing, or adversarial payloads. Called by guardian, team, session-bridge.",
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
+    "userOnly": true,
     "forked": false
   },
   {
@@ -283,6 +317,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -291,6 +326,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L1",
     "userInvocable": true,
+    "userOnly": true,
     "forked": true
   },
   {
@@ -299,6 +335,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -307,6 +344,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -315,6 +353,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -323,6 +362,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -331,14 +371,16 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
     "name": "org-config",
-    "description": "Team org policy setup for Topia. Use during /topia finalize or when configuring .topia/org/org.md — asks structured questions and writes team roles, policies, approval flows, and governance level so guardian and readiness enforce your rules.",
+    "description": "Use when setting up or changing team policy for Topia in .topia/org/org.md: roles, approval flows, governance level. Runs as part of /topia finalize; guardian and verification enforce what it writes.",
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -347,6 +389,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -355,6 +398,7 @@ const CATALOG = [
     "model": "opus",
     "layer": "L2",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -363,6 +407,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L3",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -371,6 +416,7 @@ const CATALOG = [
     "model": "opus",
     "layer": "L3",
     "userInvocable": true,
+    "userOnly": true,
     "forked": false
   },
   {
@@ -379,6 +425,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
+    "userOnly": true,
     "forked": false
   },
   {
@@ -387,6 +434,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -395,6 +443,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L2",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -403,6 +452,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L1",
     "userInvocable": true,
+    "userOnly": false,
     "forked": true
   },
   {
@@ -411,6 +461,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -419,6 +470,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -427,6 +479,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -435,6 +488,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -443,6 +497,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -451,6 +506,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -459,6 +515,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L1",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -467,6 +524,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
+    "userOnly": true,
     "forked": false
   },
   {
@@ -475,6 +533,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L3",
     "userInvocable": true,
+    "userOnly": true,
     "forked": false
   },
   {
@@ -483,6 +542,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -491,6 +551,7 @@ const CATALOG = [
     "model": "opus",
     "layer": "L2",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -499,6 +560,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L0",
     "userInvocable": true,
+    "userOnly": true,
     "forked": false
   },
   {
@@ -507,6 +569,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L3",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -515,6 +578,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -523,6 +587,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -531,6 +596,7 @@ const CATALOG = [
     "model": "opus",
     "layer": "L1",
     "userInvocable": true,
+    "userOnly": false,
     "forked": true
   },
   {
@@ -539,6 +605,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -547,6 +614,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -555,6 +623,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -563,6 +632,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -571,6 +641,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L3",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -579,6 +650,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L3",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false
   },
   {
@@ -587,6 +659,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
+    "userOnly": true,
     "forked": false
   }
 ];

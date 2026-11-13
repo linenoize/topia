@@ -1,6 +1,6 @@
 ---
 name: integrity-check
-description: "Verify integrity of persisted state, skill outputs, and context bus data. Use when validating .topia/ files or sub-agent outputs against prompt injection, memory poisoning, identity spoofing, or adversarial payloads. Called by sentinel, team, session-bridge."
+description: "Verify integrity of persisted state, skill outputs, and context bus data. Use when validating .topia/ files or sub-agent outputs against prompt injection, memory poisoning, identity spoofing, or adversarial payloads. Called by guardian, team, session-bridge."
 disable-model-invocation: true
 metadata:
   author: topia

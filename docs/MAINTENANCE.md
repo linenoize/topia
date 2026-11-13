@@ -76,10 +76,18 @@ The metrics live in each project's `.topia/metrics/` (gitignored). There is no s
 
 ## 5. Guardrails
 
-The hygiene tests in `npm run ci` keep a pruned catalog from drifting back:
+The hygiene tests in `npm run ci` (`scripts/__tests__/skill-hygiene.test.js`, plus the collision and keyword tests in `compiler/__tests__/generate-slash-aliases.test.js`) keep a pruned catalog from drifting back:
 
-- every skill description starts with "Use when";
-- no retired skill names linger in skills, agents, commands or docs;
-- no two skills, commands or agents share a slash or agent name.
+- every skill Claude can see has a "Use when" description, with no ALWAYS/MUST boilerplate;
+- no retired skill names (sentinel, scout, preflight) or the old TodoWrite tool linger in skills, agents or commands;
+- skills find MCP tools by name, never by a hardcoded `mcp__plugin_…` prefix;
+- no two skills, commands or agents share a name (agents are `<skill>-agent`);
+- no skill tells Claude to invoke a skill hidden from it; hidden helpers are read as files (`${CLAUDE_SKILL_DIR}/../<name>/SKILL.md`);
+- a merged skill's stub points at a skill that exists;
+- no trigger word belongs to two skills.
+
+## 6. This round (2026-11-13), for comparison next time
+
+Window: 2026-10-06 to 2026-11-13 (about 205 sessions, 50 projects). Claude picked a Topia skill by itself 22 times (Skill tool); people typed 33 Topia slash commands; Topia agents ran 82 times. 51 of 73 skills were never used. 59 MCP servers were listed in sessions and never called. Decisions: about 55 descriptions rewritten; 9 internal skills hidden; 5 skills merged (sequential-thinking, docs-seeker, constraint-check, readiness, context-engine); `/topia-<skill>` alias commands removed; agents renamed `<skill>-agent`; the routing hook made synchronous and logged. Re-run `node scripts/usage-report.js --transcripts --since 2026-11-14` next round and compare.
 
 If one fails after your change, fix the change rather than the test.

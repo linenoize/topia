@@ -177,11 +177,15 @@ export function contextText(view: RoutingView): string {
   // A forked skill runs those hand-offs itself, in the background; its report comes back later.
   const forked =
     lead !== undefined && BY_NAME.get(lead)?.forked === true
-      ? ` topia:${lead} runs in the background and does its own hand-offs; wait for its task notification before any follow-up.`
+      ? ` topia:${lead} runs in the background and does its own hand-offs; wait for its task notification before any follow-up. ` +
+        'If its report ends with a Decision Needed block, ask the person, then run it again with their answer.'
       : ''
+  // Skills hidden from Claude (disable-model-invocation) can only be started by the person.
+  const userOnly =
+    lead !== undefined && BY_NAME.get(lead)?.userOnly === true ? ` Only the person can start topia:${lead}: suggest they type /topia:${lead}.` : ''
   return (
-    `[topia prompt-routing] The wording of this prompt points at ${parts.join(', ')}.${chain}${forked} ` +
-    'This is a keyword reading shown to the user in a band above the prompt; skill-router still decides the route.'
+    `[topia prompt-routing] The wording of this prompt points at ${parts.join(', ')}.${chain}${forked}${userOnly} ` +
+    'This is a keyword reading shown to the user in a band above the prompt; choose the route yourself.'
   )
 }
 

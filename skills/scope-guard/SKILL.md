@@ -36,7 +36,7 @@ None — pure L3 monitoring utility.
 
 Read the original task/plan from one of these sources (check in order):
 
-1. The session task list — call `TaskList` (Claude Code task tools; `TodoWrite` on older versions or other platforms) and read open and completed tasks as the planned scope
+1. The session task list — call `TaskList` (Claude Code task tools; the host todo tool on older versions or other platforms) and read open and completed tasks as the planned scope
 2. `.topia/progress.md` — use `Read` on `.topia/progress.md` (or equivalent path)
 3. If neither exists, ask the calling skill to provide the plan as a text description
 

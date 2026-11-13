@@ -148,11 +148,11 @@ Create one task per entry with the task list tool (TaskCreate/TaskUpdate in Clau
 
 ```
 [
-  { content: "DECOMPOSE: Map modules (recon) and plan workstreams", status: "pending", activeForm: "Decomposing task into workstreams" },
-  { content: "ASSIGN: Launch parallel build agents in worktrees", status: "pending", activeForm: "Assigning streams to build agents" },
-  { content: "COORDINATE: Monitor streams, resolve conflicts", status: "pending", activeForm: "Coordinating parallel streams" },
-  { content: "MERGE: Merge worktrees back to main", status: "pending", activeForm: "Merging worktrees to main" },
-  { content: "VERIFY: Run integration tests on merged result", status: "pending", activeForm: "Verifying integration" }
+  { subject: "DECOMPOSE: Map modules (recon) and plan workstreams", activeForm: "Decomposing task into workstreams" },
+  { subject: "ASSIGN: Launch parallel build agents in worktrees", activeForm: "Assigning streams to build agents" },
+  { subject: "COORDINATE: Monitor streams, resolve conflicts", activeForm: "Coordinating parallel streams" },
+  { subject: "MERGE: Merge worktrees back to main", activeForm: "Merging worktrees to main" },
+  { subject: "VERIFY: Run integration tests on merged result", activeForm: "Verifying integration" }
 ]
 ```
 

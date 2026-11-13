@@ -39,12 +39,12 @@ Track progress with the task list tool (TaskCreate/TaskUpdate in Claude Code, th
 
 ```
 [
-  { content: "Scan project structure", status: "in_progress" },
-  { content: "Run targeted file search", status: "pending" },
-  { content: "Map dependencies", status: "pending" },
-  { content: "Detect conventions", status: "pending" },
-  { content: "Generate codebase map (if full scan)", status: "pending" },
-  { content: "Generate recon report", status: "pending" }
+  { subject: "Scan project structure" },
+  { subject: "Run targeted file search" },
+  { subject: "Map dependencies" },
+  { subject: "Detect conventions" },
+  { subject: "Generate codebase map (if full scan)" },
+  { subject: "Generate recon report" }
 ]
 ```
 

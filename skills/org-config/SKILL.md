@@ -1,6 +1,6 @@
 ---
 name: org-config
-description: "Team org policy setup for Topia. Use during /topia finalize or when configuring .topia/org/org.md — asks structured questions and writes team roles, policies, approval flows, and governance level so guardian and readiness enforce your rules."
+description: "Use when setting up or changing team policy for Topia in .topia/org/org.md: roles, approval flows, governance level. Runs as part of /topia finalize; guardian and verification enforce what it writes."
 metadata:
   author: topia
   version: "1.0.0"

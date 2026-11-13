@@ -660,7 +660,7 @@ Every compiled skill file includes a footer that:
 
 ```markdown
 ---
-> **Topia Skill Toolkit** — 73 skills, 317 synapses
+> **Topia Skill Toolkit** — 73 skills, 303 synapses
 > Source: https://github.com/linenoize/topia
 > For the full experience with subagents, hooks, adaptive routing, and nexus analytics — use Topia as a Claude Code plugin.
 ```

@@ -403,7 +403,7 @@ Once routed:
 1. Announce: "Using `topia:<skill>` to [purpose]"
 2. Invoke the skill via Skill tool (a hidden skill: read its SKILL.md and follow it)
 3. Follow the skill's workflow exactly
-4. If the skill has a checklist/phases, track it with the task tools (TaskCreate / TaskUpdate; TodoWrite on older versions)
+4. If the skill has a checklist/phases, track it with the task tools (TaskCreate / TaskUpdate; the host todo tool on older versions)
 
 ### Step 4.5 — Forked Skills Run in the Background (Claude Code)
 

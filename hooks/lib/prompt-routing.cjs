@@ -129,6 +129,13 @@ const SUGGESTION_HEAD = '🧭 [Topia intent-router]';
  * @param {ReturnType<typeof predict>} prediction
  * @returns {string | null}
  */
+// A `context: fork` skill runs as a background subagent. It cannot ask the
+// person anything, so it stops with a Decision Needed block for the main
+// conversation to relay. The old /topia-<skill> alias files carried this.
+const FORKED_NOTE =
+  'Runs in the background: its report arrives later as a task notification. Wait for it before any follow-up step. ' +
+  'If the report ends with a Decision Needed block, ask the person, then run the skill again with their answer.';
+
 function formatSuggestion(prediction) {
   const [top, ...rest] = prediction.skills;
   if (top === undefined || top.isExplicit) return null;
@@ -136,12 +143,14 @@ function formatSuggestion(prediction) {
   const words = top.keywords.map((keyword) => `"${keyword}"`).join(', ');
   const lines = [
     `${SUGGESTION_HEAD} Suggested: topia:${top.name} (${route.layer}, ${route.model}) — wording: ${words}`,
-    `   Slash: /topia:${top.name}`,
+    route.userOnly
+      ? `   Only the person can start this one: suggest they type /topia:${top.name}`
+      : `   Slash: /topia:${top.name}`,
   ];
   if (prediction.chain.length > 0) lines.push(`   Chain: ${[top.name, ...prediction.chain.slice(0, 4)].join(' → ')}`);
-  if (route.forked) lines.push('   Runs in the background: its report arrives later as a task notification. Wait for it before any follow-up step.');
+  if (route.forked) lines.push(`   ${FORKED_NOTE}`);
   if (rest.length > 0) lines.push(`   Also consider: ${rest.map((skill) => skill.name).join(', ')}`);
-  lines.push('   Keyword reading only; skill-router decides the route.');
+  lines.push('   Keyword reading only; choose the route yourself.');
   return lines.join('\n');
 }
 

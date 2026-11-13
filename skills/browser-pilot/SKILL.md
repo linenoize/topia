@@ -37,7 +37,7 @@ None — pure L3 utility using whatever browser MCP tools are connected.
 
 ### Step 0: Find the Browser Tools
 
-Tool names carry a server prefix that differs between installs (`mcp__plugin_playwright_playwright__`, `mcp__playwright__`, `mcp__claude-in-chrome__`, and others). Never assume one. Find the tools by what they end with:
+Tool names carry a server prefix that differs between installs (a plugin install, a Docker or user-scope install, `mcp__claude-in-chrome__`, and others). Never assume one. Find the tools by what they end with:
 
 1. Look at the tools available in this session. If any are deferred, search for them first (ToolSearch in Claude Code, for example `browser_navigate` or `browser_snapshot`), and load the whole set in one call.
 2. Pick one family and stay with it for the whole session:

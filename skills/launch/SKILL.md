@@ -117,11 +117,11 @@ Create one task per entry with the task list tool (TaskCreate/TaskUpdate in Clau
 
 ```
 [
-  { content: "PRE-FLIGHT: Run full test suite and verification", status: "pending", activeForm: "Running pre-flight checks" },
-  { content: "DEPLOY: Detect platform and push to production", status: "pending", activeForm: "Deploying to production" },
-  { content: "VERIFY LIVE: Check live URL and setup monitoring", status: "pending", activeForm: "Verifying live deployment" },
-  { content: "MARKET: Generate landing copy and social assets", status: "pending", activeForm: "Generating marketing assets" },
-  { content: "ANNOUNCE: Present all marketing assets to user", status: "pending", activeForm: "Preparing announcement" }
+  { subject: "PRE-FLIGHT: Run full test suite and verification", activeForm: "Running pre-flight checks" },
+  { subject: "DEPLOY: Detect platform and push to production", activeForm: "Deploying to production" },
+  { subject: "VERIFY LIVE: Check live URL and setup monitoring", activeForm: "Verifying live deployment" },
+  { subject: "MARKET: Generate landing copy and social assets", activeForm: "Generating marketing assets" },
+  { subject: "ANNOUNCE: Present all marketing assets to user", activeForm: "Preparing announcement" }
 ]
 ```
 

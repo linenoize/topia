@@ -61,7 +61,7 @@ CLAIM PATTERNS:
   "no lint errors" / "lint clean"
   "fixed" / "resolved" / "bug is gone"
   "implemented" / "feature complete" / "done"
-  "no security issues" / "sentinel passed"
+  "no security issues" / "guardian passed"
 ```
 
 Extract each claim as: `{ claim: string, source_skill: string }`
@@ -134,7 +134,7 @@ For each claim, look for corresponding evidence in the conversation context:
 | "lint clean" | Linter stdout (even if empty = 0 errors) | Bash output from lint command |
 | "fixed" | Git diff showing the change + test proving fix | Edit/Write tool calls + test output |
 | "implemented" | Files created/modified matching the plan | Write/Edit tool calls vs plan |
-| "no security issues" | Sentinel report with PASS verdict | Sentinel skill output |
+| "no security issues" | Guardian report with PASS verdict | Guardian skill output |
 | "coverage ≥ X%" | Coverage tool output with actual percentage | Test runner with coverage flag |
 
 ### Step 3 — Validate Each Claim (Default-FAIL Mindset)

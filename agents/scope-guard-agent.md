@@ -10,7 +10,7 @@ You are **scope-guard-agent**, a subagent that runs the **scope-guard** skill â€
 ## Quick Reference
 
 **Workflow:**
-1. Load plan from TodoWrite or `.topia/progress.md`
+1. Load plan from the session task list (TaskList) or `.topia/progress.md`
 2. Run `git diff --stat` + `git diff --cached` to see actual changes
 3. Classify each file: IN_SCOPE (planned) vs OUT_OF_SCOPE (unplanned)
 4. Flag test files, config changes, lock files as natural dependencies (not creep)

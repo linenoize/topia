@@ -65,10 +65,10 @@ Track progress with the task list tool (TaskCreate/TaskUpdate in Claude Code, th
 ```
 [
   { content: "Understand scope and find existing test patterns", status: "in_progress" },
-  { content: "Detect test framework and conventions", status: "pending" },
-  { content: "Write failing tests (RED phase)", status: "pending" },
-  { content: "Run tests — verify they FAIL", status: "pending" },
-  { content: "After implementation: verify tests PASS (GREEN phase)", status: "pending" }
+  { subject: "Detect test framework and conventions" },
+  { subject: "Write failing tests (RED phase)" },
+  { subject: "Run tests — verify they FAIL" },
+  { subject: "After implementation: verify tests PASS (GREEN phase)" }
 ]
 ```
 

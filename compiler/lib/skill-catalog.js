@@ -13,7 +13,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { basename, join } from 'node:path';
 import { parseSkill } from '../parser.js';
 
-/** @typedef {{ name: string, description: string, model: string, layer: string, userInvocable: boolean, forked: boolean }} SkillCatalogEntry */
+/** @typedef {{ name: string, description: string, model: string, layer: string, userInvocable: boolean, userOnly: boolean, forked: boolean }} SkillCatalogEntry */
 
 /** Hand-written commands in commands/. A bare `/<name>` for these is not redirected. */
 const RESERVED_COMMANDS = new Set(['topia', 'finalize', 'migrate-from-rune']);
@@ -45,6 +45,8 @@ export function loadSkillCatalog(topiaRoot) {
       model: parsed.model,
       layer: parsed.layer,
       userInvocable,
+      // `disable-model-invocation: true`: Claude cannot start it; only a person typing /topia:<name> can.
+      userOnly: parsed.frontmatter['disable-model-invocation'] === 'true',
       // `context: fork` — on Claude Code it runs as a subagent, in the background by default (2.1.218+).
       forked: parsed.contextFork === true,
     });

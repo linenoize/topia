@@ -4,12 +4,37 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
-## [3.13.1] — 2026-11-13
+## [3.14.0] — 2026-11-13
+
+A cleanup driven by five weeks of real usage: Claude picked a Topia skill on its own only 22 times, and 51 of 73 skills were never used. No skill was deleted. The skill list Claude reads is shorter and clearer, and the numbers are now logged, so the next round can measure the effect. How to re-run the assessment: [`docs/MAINTENANCE.md`](MAINTENANCE.md).
 
 ### Changed
 
+- **Descriptions say when to use each skill.** About 55 descriptions now start with "Use when…" and name real situations. They say how a skill differs from its neighbours and from Claude Code's own `/code-review`, `/security-review`, plan mode and Explore. The ALWAYS/MUST boilerplate is gone.
+- **Nine internal skills are hidden from Claude's skill list:** completion-gate, context-pack, integrity-check, quarantine, scope-guard, worktree, skill-router, plus the two merged names below. The skills that use them read their instructions directly. You can still type `/topia:<name>`.
+- **Five skills merged into others.** The old names still work when you type them, and point to the new home:
+  - `readiness` → `verification`, now the single pre-commit gate: lint, types, tests and build, then a logic, regression and completeness review. It reads `.topia/org/org.md`. Hook installs for Cursor, Windsurf and Antigravity swap the readiness rule for a verification rule.
+  - `docs-seeker` → research's API docs mode. It finds Context7 tools under whatever name they are installed (Docker MCP included).
+  - `sequential-thinking` → problem-solver's sequential mode.
+  - `constraint-check` → completion-gate's process audit.
+  - `context-engine` → `context-lifecycle`, which reads the status line instead of guessing context from tool-call counts.
+- **Each skill appears once in the slash menu, as `/topia:<skill>`.** The 64 generated `/topia-<skill>` alias commands are gone, and so is `commands/org-config.md`, which duplicated the org-config skill under the same name; its `--force` and `--dry-run` flags are now in the skill. A bare `/build` now points to `/topia:build`. CI fails if a skill and a command claim the same name.
+- **Agents no longer share names with skills.** Each skill's subagent is `topia:<skill>-agent` (for example `topia:build-agent`). The five role agents keep their names: architect, coder, researcher, reviewer, scanner. Agents for merged skills are folded into the survivor's agent. Metrics and the routing band count `topia:<skill>-agent` as that skill.
+- **Trigger words are specific.** The routing hint no longer fires on words that fit almost any prompt ("add", "find", "clean up", "test", "deploy" for launch). Each phrase belongs to one skill.
+- **The routing hint says what Claude can do with it.** A skill only you can start (launch, deploy, incident) is shown as "suggest they type /topia:launch". Hand-off chains leave out hidden skills. For a background skill, the hint says to relay a Decision Needed block and run it again with your answer.
+- **browser-pilot works with whichever browser tools are connected** (Playwright plugin or Claude in Chrome) and is framed as checking a UI change in a real browser.
+- **Current names throughout:** guardian, recon and verification instead of sentinel, scout and preflight. Orchestrators track phases with the task tools (TaskCreate/TaskUpdate) instead of TodoWrite. The worktree skill uses Claude Code's built-in worktree tools first.
+- 73 skills, 303 synapses, 48 pulses, 63 subagents.
 - **`trunk` touches only the task's own branch.** It merges the branch the task was done on (and agent or worktree branches made for it) into local main, then deletes only those: a branch only after `git branch --merged` lists it, with `git branch -d` (never `-D`), and a worktree with `git worktree remove`, which git refuses while it has uncommitted or untracked files. Anything that fails a check is left in place. Long-lived branches (main, dev, develop, staging, release/*, hotfix/*, and names with proto, spike, experiment, wip, keep, archive or sandbox) are never touched. Each deleted branch is reported with its last commit hash so it can be restored. `trunk` never pushes main, even with the commit-and-push order on: that order pushes the task branch before the merge.
 - **A guard backs the `trunk` order.** While it is on, `git branch -D`, a forced or protected-branch delete, `git worktree remove --force` and remote branch deletes ask you first instead of running.
+
+### Added
+
+- **The routing hint arrives in time.** The intent-router hook was set to run in the background, so its hint reached Claude a turn late. It now runs before Claude answers (5 s timeout) and hands the hint over as `additionalContext`.
+- **Routing is logged** in each project's `.topia/metrics/routing.jsonl`: time, session, hinted skill ids and the hook's run time. No prompt text is stored, and the file is capped at 512 KB. `chains.jsonl` now records when and how (skill, agent or slash) each skill ran.
+- **`node scripts/usage-report.js`** re-runs the usage assessment. `--project <dir>` shows hints against uses per skill, how often a hint was followed and how long it took. `--transcripts` counts Topia skill uses and MCP calls across your Claude Code sessions, and lists servers that load but are never called.
+- **`docs/MAINTENANCE.md`**, the playbook for the next cleanup: the commands, the decision rules (keep, rewrite, hide, merge, move an MCP server to project scope), where each setting lives, and this round's numbers as a baseline.
+- **Guardrail tests** (`scripts/__tests__/skill-hygiene.test.js`) keep it clean: "Use when" descriptions, no retired names, no hardcoded MCP prefixes, unique names, no skill invoking a hidden one.
 
 ### Fixed
 

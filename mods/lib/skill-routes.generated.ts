@@ -7,6 +7,7 @@ export type SkillRoute = {
   model: string
   description: string
   userInvocable: boolean
+  userOnly: boolean
   forked: boolean
   keywords: readonly string[]
   prompts: readonly string[]
@@ -20,6 +21,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "opus",
     "description": "Use when a plan is risky, on a critical path, or expensive to undo, before code is written: 'poke holes in this plan', 'red-team this design', 'what could go wrong'. Looks for edge cases, security holes, scaling limits and integration conflicts. Plans only; for existing code use review.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "red team",
@@ -41,6 +43,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "opus",
     "description": "Use when you need to understand how an unfamiliar or legacy system fits together: 'map this codebase', 'how does this service start', 'document the architecture across these repos'. Writes cross-linked docs under docs/ and never touches application code.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "architecture map",
@@ -57,6 +60,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Use when you need graphics written as code: 'make an SVG icon set', 'create an OG image', 'a social banner for the launch', 'add a favicon'. Writes SVG files or HTML templates with usage notes. Does not produce PNG or JPG directly.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "svg",
@@ -75,6 +79,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Use when you want a whole-project health report: 'audit this repo', 'full project review before release'. Scores security, dependencies, code quality, architecture, performance, infra and docs through specialist skills. For a code-health dive that leads into a refactor, use autopsy.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "audit this repo",
@@ -94,6 +99,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "opus",
     "description": "Use when legacy or messy code needs a diagnosis before refactoring: 'how bad is this codebase', 'where is the tech debt', 'what should we fix first'. Scores each module on complexity, dead code, coupling and git hotspots and writes a rescue plan. Narrower than audit, which also covers security and infra.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "autopsy",
@@ -113,6 +119,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "opus",
     "description": "Use when there are several technical ways to solve a problem and you want options before choosing: 'what are our options for caching', 'other ways to do this', 'this approach failed'. Gives 2-3 designs with trade-offs and hands the pick to plan. Technical design only, not product or business ideas.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "brainstorm",
@@ -133,6 +140,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Use when a UI change should be checked in a real browser: 'does the login page work now', 'click through the signup flow', 'screenshot the dashboard', 'any console errors?'. Uses whichever browser tools are connected (Playwright, Claude in Chrome) and reports with screenshots.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "in the browser",
@@ -152,6 +160,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Use when building a feature or a multi-step change that needs tests: 'implement X', 'add support for Y', 'build the Z flow'. Plans, writes a failing test, codes, checks and commits. For a known one-line change use fix; for a bug with an unknown cause use debug first.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": true,
     "keywords": [
       "implement",
@@ -168,8 +177,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "fix",
       "verification",
       "guardian",
-      "review",
-      "completion-gate"
+      "review"
     ]
   },
   {
@@ -178,6 +186,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "haiku",
     "description": "Use when work is reported done and the claims need checking against real output, or to audit whether a workflow's hard gates were followed. Catches 'done' without proof, 'tests pass' without output, and skipped steps such as code written before its test. Runs at the end of build and team.",
     "userInvocable": true,
+    "userOnly": true,
     "forked": false,
     "keywords": [],
     "prompts": [],
@@ -189,6 +198,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "haiku",
     "description": "Old name for completion-gate's process audit. Use when you type /topia:constraint-check out of habit; it checks whether a workflow's hard gates were really followed.",
     "userInvocable": true,
+    "userOnly": true,
     "forked": false,
     "keywords": [],
     "prompts": [],
@@ -200,6 +210,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "haiku",
     "description": "Old name for context-lifecycle. Use when you type /topia:context-engine out of habit; it saves state and plans the next compact, cost preview or caveman mode through context-lifecycle.",
     "userInvocable": true,
+    "userOnly": true,
     "forked": false,
     "keywords": [],
     "prompts": [],
@@ -211,6 +222,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "haiku",
     "description": "Use when a long session needs a save point: at a phase end, before or after /compact, after git push, before handing work to a subagent, or before sending a large bundle to another model. Saves state, says when to compact, resumes from the checkpoint, and can switch to terse output.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "compaction",
@@ -225,6 +237,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "haiku",
     "description": "Creates structured handoff briefings between agents. Use when delegating complex work to subagents that would otherwise lose context. Packages task context, constraints, and progress into a compact packet that subagents can consume without re-reading the full conversation. Prevents the 'lost context' problem in multi-agent delegation.",
     "userInvocable": true,
+    "userOnly": true,
     "forked": false,
     "keywords": [],
     "prompts": [],
@@ -236,6 +249,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Use when changing a database schema or queries: 'add a column', 'write a migration', 'is this migration safe', 'this query needs an index'. Writes migrations with rollback scripts, flags breaking schema changes, and checks that queries are parameterized.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "database",
@@ -256,6 +270,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Use when something is broken and the cause is unknown: 'why does this crash', 'this test fails and I don't know why', a stack trace to explain. Traces the error, tests hypotheses and reports the root cause. Investigates only; fix applies the change.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "debug",
@@ -281,6 +296,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Use when five or more related decisions are waiting on the person at once, or when they ask for a form, checklist or one page to answer questions on. Not for one or two questions, which belong in chat.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "decision form",
@@ -298,6 +314,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "haiku",
     "description": "Use when dealing with packages: 'are my dependencies outdated', 'npm audit shows vulnerabilities', 'plan the upgrade to React 19'. Detects the package manager, lists outdated and vulnerable packages, and writes a prioritized update plan with breaking-change risk.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "outdated dependencies",
@@ -317,6 +334,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Use when pushing an app to a host: 'deploy to Vercel', 'push this to production', 'set up deploys to Fly.io'. Checks tests and security first, deploys to Vercel, Netlify, AWS, GCP, DigitalOcean or a VPS, then runs health checks. For deploy plus announcement, use launch.",
     "userInvocable": true,
+    "userOnly": true,
     "forked": false,
     "keywords": [
       "deploy",
@@ -338,6 +356,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Use when a product needs a visual direction before UI is built: 'pick a style for this app', 'set up a palette and typography', 'create a design system'. Maps the product domain to style, palette, type and platform patterns in .topia/design-system.md. To critique or polish existing UI, prefer impeccable if installed.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "ui design",
@@ -359,6 +378,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Use when creating or reading office files: 'export this to Excel', 'make a PDF report', 'read this uploaded DOCX', 'parse this CSV', 'build a PPTX'. Handles PDF, DOCX, XLSX, PPTX and CSV. Not for README or project docs (docs).",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "pdf",
@@ -377,6 +397,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Use when writing or updating the repo's own docs: README, API reference, architecture notes, changelog, or a show-and-tell walkthrough of a change. Reads the code so the docs match it. Not for PDF, Word or Excel files (doc-processor) or shared online documents.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "readme",
@@ -400,6 +421,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "haiku",
     "description": "Old name for research's API docs mode. Use when you type /topia:docs-seeker out of habit; it looks up library or API documentation through research.",
     "userInvocable": true,
+    "userOnly": true,
     "forked": false,
     "keywords": [],
     "prompts": [],
@@ -411,6 +433,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Use when stakeholders must approve work before it is built: 'write user stories', 'make Jira tickets for this plan', 'package this for leadership'. Turns a plan into a feature folder with requirements, user stories and Jira-ready CSV tickets. Not for code docs (docs).",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "jira",
@@ -430,6 +453,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "haiku",
     "description": "Use when the user asks where Topia's docs are: 'where are the docs?', 'how do I see the skill graph?', or types /topia:faq. Lists the HTML guides, skill index, nexus diagram and live visualizer with a command to open each.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "faq",
@@ -445,6 +469,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Use when the change is already known and only needs applying: a diagnosis from debug, review findings, or a small edit like 'change the timeout to 30s'. Edits the code and runs the tests. Does not investigate causes (debug) or plan multi-step features (build).",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "fix",
@@ -465,6 +490,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "haiku",
     "description": "Use when committing, writing a PR description, naming or tidying branches, tagging a release, or resolving a merge conflict. Writes conventional commit messages and PR text from the actual diff.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "commit message",
@@ -487,6 +513,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Use when code about to be committed or deployed touches auth, secrets, user input, shell commands or new dependencies. Scans for leaked secrets, OWASP top 10 issues and risky packages; a BLOCK verdict stops the commit. Unlike the built-in /security-review, it is the gate that build, deploy and launch run.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "security",
@@ -508,6 +535,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "haiku",
     "description": "Use when starting on a new machine or environment, or on 'works on my machine' bugs: 'why won't this run here', 'check my setup'. Checks OS, runtime versions, installed tools, free ports, env vars and disk space before coding. Checks the environment, not the code (guardian does the code).",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "environment check",
@@ -524,6 +552,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "haiku",
     "description": "Use when AI-written code adds new imports, packages or external API calls and you need to know they are real. Checks that packages exist and are not typosquats, and that imported functions and endpoints exist. Runs after fix or build.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "hallucinated",
@@ -540,6 +569,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "opus",
     "description": "Use when a feature request is vague and needs requirements before planning: 'I want to add payments', 'help me work out what this feature should do'. Asks probing questions, finds hidden requirements and scope limits, and writes a requirements document that plan and build read.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "requirements",
@@ -559,6 +589,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "opus",
     "description": "Use when you want refactor candidates or a more testable structure: 'where is our architecture weak', 'what should we refactor', 'too many shallow modules'. Finds friction and returns scored proposals that surgeon or review can act on. Proposes only; does not change code.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "shallow module",
@@ -577,6 +608,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Use when production is down or degraded right now: 'the site is down', 'users are getting 500s', 'we have an outage'. Triages severity, contains the damage first, finds the root cause, and writes a timeline and postmortem. For a bug that is not urgent, use debug.",
     "userInvocable": true,
+    "userOnly": true,
     "forked": false,
     "keywords": [
       "incident",
@@ -597,6 +629,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Use when bringing code or ideas over from another GitHub repo: 'port this feature from repo X', 'copy their retry logic', 'compare our auth with theirs'. Reads and challenges the source first, then ports, copies, compares, or copies and improves it.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "port from",
@@ -612,8 +645,9 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "integrity-check",
     "layer": "L3",
     "model": "haiku",
-    "description": "Verify integrity of persisted state, skill outputs, and context bus data. Use when validating .topia/ files or sub-agent outputs against prompt injection, memory poisoning, identity spoofing, or adversarial payloads. Called by sentinel, team, session-bridge.",
+    "description": "Verify integrity of persisted state, skill outputs, and context bus data. Use when validating .topia/ files or sub-agent outputs against prompt injection, memory poisoning, identity spoofing, or adversarial payloads. Called by guardian, team, session-bridge.",
     "userInvocable": true,
+    "userOnly": true,
     "forked": false,
     "keywords": [],
     "prompts": [],
@@ -625,6 +659,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "haiku",
     "description": "Use when a decision, lesson or progress note must outlast the session: 'remember this', 'record this decision', 'write an ADR', 'log where we are on the migration'. Writes ADRs, progress, module health and risks to .topia/ files.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "adr",
@@ -643,6 +678,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Use when shipping a product to the public and announcing it: 'launch this', 'go live and announce it'. Runs tests and security checks, deploys, verifies the live site, then writes the marketing assets. For a deploy with no announcement, use deploy.",
     "userInvocable": true,
+    "userOnly": true,
     "forked": true,
     "keywords": [
       "launch the product",
@@ -655,7 +691,6 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "prompts": [],
     "chain": [
       "verification",
-      "deploy",
       "watchdog",
       "marketing"
     ]
@@ -666,6 +701,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Use when editing payment, billing, trading, state-machine or other business logic where one deleted line can silently corrupt data. Keeps a manifest of the logic that must survive, asks what an edit will preserve, and checks the diff after.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "business logic",
@@ -683,6 +719,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Use when writing launch or promotional material: 'write landing page copy', 'draft social posts for the release', 'SEO meta for the site', 'a blog post announcing this'. Bases every claim on what the code actually does.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "marketing",
@@ -701,6 +738,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Use when building an MCP server so AI agents can use a tool, API or data source: 'make an MCP server for our API', 'expose this as MCP tools'. Generates tool definitions, resource handlers and tests in TypeScript or Python (FastMCP).",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "mcp server",
@@ -717,6 +755,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "haiku",
     "description": "Use when the Neural Memory MCP is installed (mcp__neural-memory__* tools present) and a lesson or decision should be findable by meaning later: 'search memory for X', 'track this hypothesis'. Recalls, captures and tracks hypotheses through nmem_* tools. Without it, use recall and journal.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "neural memory",
@@ -731,6 +770,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Use when starting on a repo for the first time, or when CLAUDE.md or .topia/ context is missing or stale: 'set up this project for Claude', 'generate a CLAUDE.md'. Scans the codebase and writes the context files that later sessions read.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "onboard",
@@ -745,8 +785,9 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "name": "org-config",
     "layer": "L2",
     "model": "sonnet",
-    "description": "Team org policy setup for Topia. Use during /topia finalize or when configuring .topia/org/org.md — asks structured questions and writes team roles, policies, approval flows, and governance level so guardian and readiness enforce your rules.",
+    "description": "Use when setting up or changing team policy for Topia in .topia/org/org.md: roles, approval flows, governance level. Runs as part of /topia finalize; guardian and verification enforce what it writes.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "org config",
@@ -763,6 +804,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Use when code is slow or before shipping something performance-sensitive: 'this page is slow', 'check for N+1 queries', 'why is the bundle so big'. Finds N+1 queries, blocking calls in async code, missing indexes, memory leaks and bundle bloat. Reports only; fix applies changes.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "performance",
@@ -781,6 +823,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "opus",
     "description": "Use when work spans several sessions or phases and needs a written plan: 'plan the migration', 'break this feature into phases'. Writes a short master plan plus one file per phase under .topia/. Unlike plan mode, the plan stays on disk and each later session builds one phase.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "plan",
@@ -802,6 +845,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Use when a problem resists a straight answer: a bug with no clear root cause after a few tries, a choice between options with real trade-offs, a decision whose factors depend on each other, or a messy problem that needs breaking down. Picks a framework (5 Whys, decision matrix, pre-mortem, issue tree, dependency-ordered analysis), checks for bias, and ranks solutions.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "5 whys",
@@ -822,6 +866,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "opus",
     "description": "Advisory wrap for tool results from untrusted external surfaces. Appends `[QUARANTINE-NOTICE]` to next-turn context after `mcp__*`, `WebFetch`, and `Read` of `**/uploads/**` so prior tool output is treated as data — not directives. Use when the session ingests MCP user-content (Zendesk, Intercom, support tickets), fetched HTML, or operator-uploaded files. Hook fires AFTER ingestion — advisory, not structural.",
     "userInvocable": true,
+    "userOnly": true,
     "forked": false,
     "keywords": [],
     "prompts": [],
@@ -833,6 +878,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Old name for verification's review stage. Use when you type /topia:readiness out of habit; it runs the pre-commit gate: checks, then the logic, regression and completeness review.",
     "userInvocable": true,
+    "userOnly": true,
     "forked": false,
     "keywords": [],
     "prompts": [],
@@ -844,6 +890,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "haiku",
     "description": "Use when starting a session, resuming work, or before an architecture decision: 'where did we leave off', 'what did we decide about auth'. Reads .topia/ progress, decisions, conventions and learnings, plus .remember/ when present. Read-only; journal and session-bridge do the writing.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "recall",
@@ -876,6 +923,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "haiku",
     "description": "Use when a task needs a quick map of the codebase before planning, fixing or reviewing: stack, entry points, conventions, where a feature lives. Read-only. Unlike the built-in Explore agent, it returns a fixed-format project map that plan, build and review read.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "search the codebase",
@@ -894,6 +942,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Use when a legacy codebase needs modernizing over several sessions: 'rescue this legacy app', 'modernize this old code', 'this module is unmaintainable'. Runs autopsy, sets up safety nets, then refactors one module per session. For one focused refactor use surgeon; not for new features.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": true,
     "keywords": [
       "legacy code",
@@ -918,6 +967,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "haiku",
     "description": "Use when an answer depends on facts outside the repo: how a library or API works in a given version, what an error message means, whether a method is deprecated, or how tools and approaches compare. Checks Context7 docs first for API questions, then official sources, and cites every finding.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "research",
@@ -938,6 +988,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Use when looking back over recent work: 'retro', 'weekly review', 'what did we ship', 'engineering retrospective'. Reads commit history and quality metrics, shows trends and per-person breakdowns, and suggests improvements. Read-only.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "retrospective",
@@ -955,6 +1006,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Use when you want a second look at code before merging: 'review my changes', 'review this PR', 'is this code OK'. Checks correctness, security, performance, conventions and test coverage with file:line, and hands fixes to fix. Broader than the built-in /code-review, which hunts bugs in the diff.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "code review",
@@ -975,6 +1027,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Use when acting on feedback someone else wrote: PR review comments, code review notes, or issue tracker items such as bug reports and feature requests. Checks each claim against the code before changing anything, then works in priority order. Issues are sorted into ready-for-agent, ready-for-human, needs-info or wontfix.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "pr feedback",
@@ -991,6 +1044,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Use when a risky refactor needs a way back first: 'add characterization tests before I refactor', 'set a rollback point'. Writes tests that pin current behavior, marks module boundaries, freezes config and tags a rollback point. Surgeon needs it first.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "characterization test",
@@ -1006,6 +1060,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "haiku",
     "description": "Use when you want real static analysis tools run, beyond pattern checks: 'run semgrep', 'run bandit on the Python code', 'deep security scan'. Wraps ESLint, Semgrep, Bandit, Clippy and similar tools and reports on one scale: BLOCK, WARN, INFO.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "static analysis",
@@ -1023,6 +1078,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Use when starting a new project from nothing: 'create a new app that does X', 'bootstrap a project', 'greenfield service from scratch'. Runs requirements, plan, design, code, tests, docs and git in one pipeline and ends with a project that builds and passes its tests. For existing repos, use build.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "new project",
@@ -1050,6 +1106,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "haiku",
     "description": "Detects scope creep by quantifying drift percentage. Auto-triggered by L1 orchestrators when files exceed the original plan. Compares git changes against plan, classifies drift into 4 tiers: ON_TRACK, MINOR_DRIFT, SIGNIFICANT_DRIFT, OUT_OF_CONTROL.",
     "userInvocable": true,
+    "userOnly": true,
     "forked": false,
     "keywords": [],
     "prompts": [],
@@ -1061,6 +1118,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Old name for problem-solver's sequential mode. Use when you type /topia:sequential-thinking out of habit; it runs problem-solver on a decision whose factors depend on each other.",
     "userInvocable": true,
+    "userOnly": true,
     "forked": false,
     "keywords": [],
     "prompts": [],
@@ -1072,6 +1130,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "haiku",
     "description": "Use when context must carry into the next session: 'save where we are', 'pick this up tomorrow', or before compaction. Saves decisions, conventions and progress to .topia/ and loads them at the next session start.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "save context",
@@ -1087,6 +1146,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "opus",
     "description": "Use when creating new Topia skills, editing existing skills, or verifying skill quality before deployment. Applies TDD discipline to skill authoring — test before write, verify before ship.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "new skill",
@@ -1104,6 +1164,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "haiku",
     "description": "Use when you need Topia's routing table: which skill handles a request, how compound requests are ordered, how forked skills run in the background (Step 4.5), and the default response format. Reference for alias commands and other skills; a person can type /topia:skill-router to see it.",
     "userInvocable": true,
+    "userOnly": true,
     "forked": false,
     "keywords": [],
     "prompts": [],
@@ -1115,6 +1176,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Use when asked for a slide deck or presentation: 'make slides for the sprint demo', 'turn this into a tech talk'. Builds a Marp markdown deck from a structured outline. For a .pptx file, use doc-processor.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "slides",
@@ -1131,6 +1193,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Use when a project runs on Docker Compose and someone wants to start, stop, rebuild or restart services, read container logs, check health, free disk space, write server.sh / server.ps1 start scripts, check .env against .env.example, or review which ports are published.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "docker compose",
@@ -1151,6 +1214,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Use when refactoring one module safely after safeguard has run: 'extract this into a service', 'apply strangler fig to the old router', 'break up this god class'. Changes one module per session, runs tests after each edit, and touches at most 5 files. Usually driven by rescue.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "refactor",
@@ -1169,6 +1233,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "opus",
     "description": "Use when a task is too big for one session: it touches 5+ files or 3+ modules, or the user says 'do these in parallel', 'split this up', 'do all of these'. Splits the work into parallel streams in separate worktrees, runs build in each, and merges the results.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": true,
     "keywords": [
       "in parallel",
@@ -1181,9 +1246,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "prompts": [],
     "chain": [
       "plan",
-      "worktree",
-      "build",
-      "completion-gate"
+      "build"
     ]
   },
   {
@@ -1192,6 +1255,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Use when writing or repairing tests: 'add tests for X', 'write a failing test first', 'raise coverage on Y', 'add an e2e test'. Writes the failing test first, then confirms it passes after the change. Running the existing suite is verification.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "tdd",
@@ -1214,6 +1278,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "haiku",
     "description": "Use when researching the market around a product: 'what are competitors doing', 'what is trending in this space', 'how do people feel about X'. Scans Product Hunt, GitHub Trending, Hacker News and social sites. For library or API docs, use docs-seeker.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "competitor",
@@ -1231,6 +1296,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "haiku",
     "description": "Use when the user wants the Topia first-run menu again: 'what should I do next?', 'show the tutorial', or types /topia:tut. Shows finalize, onboard, doctor, faq and help with what is already done.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "tutorial",
@@ -1245,6 +1311,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Use when code has changed and you need to know it works before calling it done or committing: runs lint, type-check, tests and build, then (in full mode, before a commit) reviews the diff for logic errors, missing error handling, regressions, incomplete work and org policy. One pre-commit gate with a PASS, WARN or BLOCK verdict.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "verify",
@@ -1266,6 +1333,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Use when planning a video: 'write a script for a demo video', 'storyboard a product walkthrough', 'a YouTube explainer for this feature'. Writes timed narration, storyboards, shot lists and an asset checklist to marketing/video-plan.md. Plans only; does not render video.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "video",
@@ -1283,6 +1351,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "sonnet",
     "description": "Use when a deploy just finished and the live app needs a health check: 'is the site up', 'check prod after the deploy', 'smoke test the live URL'. Checks HTTP status, response times and error pages, and writes a smoke-test report. Deploy and launch call it.",
     "userInvocable": true,
+    "userOnly": false,
     "forked": false,
     "keywords": [
       "uptime",
@@ -1299,6 +1368,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "model": "haiku",
     "description": "Use when work must happen in an isolated copy of the repo: parallel streams that would otherwise edit the same checkout, or an experiment that must not touch the main working tree. Prefers Claude Code's native worktree tools and Agent isolation, with plain git commands as the fallback. Covers create, list and cleanup.",
     "userInvocable": true,
+    "userOnly": true,
     "forked": false,
     "keywords": [],
     "prompts": [],
