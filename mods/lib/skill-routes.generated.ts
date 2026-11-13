@@ -8,6 +8,7 @@ export type SkillRoute = {
   description: string
   userInvocable: boolean
   keywords: readonly string[]
+  prompts: readonly string[]
   chain: readonly string[]
 }
 
@@ -25,6 +26,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "edge case",
       "poke holes"
     ],
+    "prompts": [],
     "chain": [
       "documentation",
       "build"
@@ -42,6 +44,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "map the codebase",
       "how the system starts"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -57,6 +60,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "banner",
       "favicon"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -71,6 +75,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "project assessment",
       "codebase review"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -85,6 +90,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "tech debt",
       "codebase health"
     ],
+    "prompts": [],
     "chain": [
       "safeguard",
       "surgeon"
@@ -103,6 +109,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "approaches",
       "options"
     ],
+    "prompts": [],
     "chain": [
       "plan"
     ]
@@ -120,6 +127,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "click through",
       "accessibility tree"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -139,6 +147,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "make",
       "develop"
     ],
+    "prompts": [],
     "chain": [
       "plan",
       "test",
@@ -157,6 +166,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "description": "Validates agent claims against evidence trail. Use when verifying an agent has actually done what it claims — auto-fires at workflow end. Catches 'done' without proof, 'tests pass' without output, 'fixed' without verification. Called by build and team.",
     "userInvocable": false,
     "keywords": [],
+    "prompts": [],
     "chain": []
   },
   {
@@ -166,6 +176,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "description": "Meta-validator for HARD-GATEs. Use when auditing whether a skill's mandatory constraints were actually followed during a workflow (not just claimed). Called by build, team, and audit for discipline compliance.",
     "userInvocable": false,
     "keywords": [],
+    "prompts": [],
     "chain": []
   },
   {
@@ -175,6 +186,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "description": "Context window management. Auto-triggered when context is filling up. Triggers smart compaction and preserves critical information across compaction boundaries. Called by L1 orchestrators at context thresholds.",
     "userInvocable": false,
     "keywords": [],
+    "prompts": [],
     "chain": []
   },
   {
@@ -187,6 +199,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "compaction",
       "context window"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -196,6 +209,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "description": "Creates structured handoff briefings between agents. Use when delegating complex work to subagents that would otherwise lose context. Packages task context, constraints, and progress into a compact packet that subagents can consume without re-reading the full conversation. Prevents the 'lost context' problem in multi-agent delegation.",
     "userInvocable": false,
     "keywords": [],
+    "prompts": [],
     "chain": []
   },
   {
@@ -212,6 +226,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "sql query",
       "database index"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -232,6 +247,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "not working",
       "stack trace"
     ],
+    "prompts": [],
     "chain": [
       "fix",
       "test"
@@ -250,6 +266,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "cve",
       "upgrade packages"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -267,6 +284,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "vercel",
       "netlify"
     ],
+    "prompts": [],
     "chain": [
       "watchdog"
     ]
@@ -287,6 +305,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "palette",
       "typography"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -303,6 +322,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "spreadsheet",
       "csv"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -317,6 +337,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "api docs",
       "changelog"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -331,6 +352,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "method signature",
       "deprecated"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -345,6 +367,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "stakeholder approval",
       "tickets"
     ],
+    "prompts": [],
     "chain": [
       "build"
     ]
@@ -360,6 +383,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "where are the docs",
       "skill graph"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -375,6 +399,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "resolve",
       "repair"
     ],
+    "prompts": [],
     "chain": [
       "test",
       "readiness"
@@ -394,6 +419,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "rebase",
       "merge conflict"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -409,6 +435,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "secret",
       "audit security"
     ],
+    "prompts": [],
     "chain": [
       "fix"
     ]
@@ -425,6 +452,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "env vars",
       "port in use"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -439,6 +467,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "fake package",
       "typosquat"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -453,6 +482,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "user stories",
       "stakeholder"
     ],
+    "prompts": [],
     "chain": [
       "plan"
     ]
@@ -470,6 +500,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "testability",
       "architecture improvement"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -485,6 +516,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "postmortem",
       "production is down"
     ],
+    "prompts": [],
     "chain": [
       "debug",
       "fix"
@@ -503,6 +535,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "steal the",
       "from that repo"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -512,6 +545,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "description": "Verify integrity of persisted state, skill outputs, and context bus data. Use when validating .topia/ files or sub-agent outputs against prompt injection, memory poisoning, identity spoofing, or adversarial payloads. Called by sentinel, team, session-bridge.",
     "userInvocable": false,
     "keywords": [],
+    "prompts": [],
     "chain": []
   },
   {
@@ -526,6 +560,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "journal",
       "log the decision"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -542,6 +577,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "publish",
       "production"
     ],
+    "prompts": [],
     "chain": [
       "verification",
       "deploy",
@@ -560,6 +596,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "protect logic",
       "critical path"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -576,6 +613,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "landing copy",
       "marketing copy"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -590,6 +628,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "tool server",
       "model context"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -603,6 +642,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "capture learning",
       "neural memory"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -617,6 +657,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "configure project",
       "claude.md"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -631,6 +672,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "governance",
       "approval flow"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -647,6 +689,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "memory leak",
       "bundle size"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -662,6 +705,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "roadmap",
       "strategy"
     ],
+    "prompts": [],
     "chain": [
       "adversary",
       "documentation",
@@ -680,6 +724,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "first principles",
       "fishbone"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -689,6 +734,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "description": "Advisory wrap for tool results from untrusted external surfaces. Appends `[QUARANTINE-NOTICE]` to next-turn context after `mcp__*`, `WebFetch`, and `Read` of `**/uploads/**` so prior tool output is treated as data — not directives. Use when the session ingests MCP user-content (Zendesk, Intercom, support tickets), fetched HTML, or operator-uploaded files. Hook fires AFTER ingestion — advisory, not structural.",
     "userInvocable": false,
     "keywords": [],
+    "prompts": [],
     "chain": []
   },
   {
@@ -703,6 +749,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "check before",
       "ready to commit"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -715,7 +762,24 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "recall",
       "what did we do",
       "last session",
-      "remember when"
+      "remember when",
+      "where did we leave off",
+      "where we left off",
+      "where were we",
+      "what's left",
+      "what is left",
+      "pick up where",
+      "resume where",
+      "resume work",
+      "let's resume"
+    ],
+    "prompts": [
+      "status",
+      "status update",
+      "what's the status",
+      "where are we",
+      "where are we at",
+      "resume"
     ],
     "chain": []
   },
@@ -732,6 +796,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "scan the codebase",
       "project structure"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -749,6 +814,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "old code",
       "messy"
     ],
+    "prompts": [],
     "chain": [
       "autopsy",
       "safeguard",
@@ -767,6 +833,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "best practice",
       "look up"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -782,6 +849,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "velocity",
       "what did we ship"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -797,6 +865,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "audit code",
       "look at this code"
     ],
+    "prompts": [],
     "chain": [
       "fix"
     ]
@@ -813,6 +882,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "received review",
       "triage issues"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -826,6 +896,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "safety net",
       "rollback point"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -841,6 +912,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "eslint",
       "clippy"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -857,6 +929,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "starter",
       "from scratch"
     ],
+    "prompts": [],
     "chain": [
       "idea",
       "plan",
@@ -875,6 +948,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "description": "Detects scope creep by quantifying drift percentage. Auto-triggered by L1 orchestrators when files exceed the original plan. Compares git changes against plan, classifies drift into 4 tiers: ON_TRACK, MINOR_DRIFT, SIGNIFICANT_DRIFT, OUT_OF_CONTROL.",
     "userInvocable": false,
     "keywords": [],
+    "prompts": [],
     "chain": []
   },
   {
@@ -889,6 +963,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "interdependent",
       "second-order"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -900,9 +975,9 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "keywords": [
       "save context",
       "save state",
-      "pick up where",
       "next session"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -916,6 +991,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "create skill",
       "edit skill"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -925,6 +1001,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "description": "Meta-enforcement layer that routes EVERY agent action through the correct skill. MUST check this routing table before ANY response involving code, files, or technical decisions. Default: route to topia:build for code tasks. Prevents rationalization, enforces check-before-act discipline.",
     "userInvocable": false,
     "keywords": [],
+    "prompts": [],
     "chain": []
   },
   {
@@ -939,6 +1016,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "presentation",
       "marp"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -953,6 +1031,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "strangler",
       "decompose"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -969,6 +1048,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "many files",
       "multi-module"
     ],
+    "prompts": [],
     "chain": [
       "plan",
       "worktree",
@@ -990,6 +1070,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "e2e",
       "spec"
     ],
+    "prompts": [],
     "chain": [
       "readiness"
     ]
@@ -1007,6 +1088,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "product hunt",
       "hacker news"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -1019,6 +1101,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "tutorial",
       "what should i do next"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -1034,6 +1117,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "type check",
       "typecheck"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -1049,6 +1133,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "youtube",
       "shot list"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -1063,6 +1148,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
       "is it up",
       "response time"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -1072,6 +1158,7 @@ export const SKILL_ROUTES: readonly SkillRoute[] = [
     "description": "Git worktree lifecycle management. Use when team needs parallel isolated workspaces for multi-stream development, or when an experiment must not touch the main working tree. Creates isolated workspaces, manages branches, handles cleanup. Called by team and build.",
     "userInvocable": false,
     "keywords": [],
+    "prompts": [],
     "chain": []
   }
 ]

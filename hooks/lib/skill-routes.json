@@ -12,6 +12,7 @@
       "edge case",
       "poke holes"
     ],
+    "prompts": [],
     "chain": [
       "documentation",
       "build"
@@ -29,6 +30,7 @@
       "map the codebase",
       "how the system starts"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -44,6 +46,7 @@
       "banner",
       "favicon"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -58,6 +61,7 @@
       "project assessment",
       "codebase review"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -72,6 +76,7 @@
       "tech debt",
       "codebase health"
     ],
+    "prompts": [],
     "chain": [
       "safeguard",
       "surgeon"
@@ -90,6 +95,7 @@
       "approaches",
       "options"
     ],
+    "prompts": [],
     "chain": [
       "plan"
     ]
@@ -107,6 +113,7 @@
       "click through",
       "accessibility tree"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -126,6 +133,7 @@
       "make",
       "develop"
     ],
+    "prompts": [],
     "chain": [
       "plan",
       "test",
@@ -144,6 +152,7 @@
     "description": "Validates agent claims against evidence trail. Use when verifying an agent has actually done what it claims — auto-fires at workflow end. Catches 'done' without proof, 'tests pass' without output, 'fixed' without verification. Called by build and team.",
     "userInvocable": false,
     "keywords": [],
+    "prompts": [],
     "chain": []
   },
   {
@@ -153,6 +162,7 @@
     "description": "Meta-validator for HARD-GATEs. Use when auditing whether a skill's mandatory constraints were actually followed during a workflow (not just claimed). Called by build, team, and audit for discipline compliance.",
     "userInvocable": false,
     "keywords": [],
+    "prompts": [],
     "chain": []
   },
   {
@@ -162,6 +172,7 @@
     "description": "Context window management. Auto-triggered when context is filling up. Triggers smart compaction and preserves critical information across compaction boundaries. Called by L1 orchestrators at context thresholds.",
     "userInvocable": false,
     "keywords": [],
+    "prompts": [],
     "chain": []
   },
   {
@@ -174,6 +185,7 @@
       "compaction",
       "context window"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -183,6 +195,7 @@
     "description": "Creates structured handoff briefings between agents. Use when delegating complex work to subagents that would otherwise lose context. Packages task context, constraints, and progress into a compact packet that subagents can consume without re-reading the full conversation. Prevents the 'lost context' problem in multi-agent delegation.",
     "userInvocable": false,
     "keywords": [],
+    "prompts": [],
     "chain": []
   },
   {
@@ -199,6 +212,7 @@
       "sql query",
       "database index"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -219,6 +233,7 @@
       "not working",
       "stack trace"
     ],
+    "prompts": [],
     "chain": [
       "fix",
       "test"
@@ -237,6 +252,7 @@
       "cve",
       "upgrade packages"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -254,6 +270,7 @@
       "vercel",
       "netlify"
     ],
+    "prompts": [],
     "chain": [
       "watchdog"
     ]
@@ -274,6 +291,7 @@
       "palette",
       "typography"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -290,6 +308,7 @@
       "spreadsheet",
       "csv"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -304,6 +323,7 @@
       "api docs",
       "changelog"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -318,6 +338,7 @@
       "method signature",
       "deprecated"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -332,6 +353,7 @@
       "stakeholder approval",
       "tickets"
     ],
+    "prompts": [],
     "chain": [
       "build"
     ]
@@ -347,6 +369,7 @@
       "where are the docs",
       "skill graph"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -362,6 +385,7 @@
       "resolve",
       "repair"
     ],
+    "prompts": [],
     "chain": [
       "test",
       "readiness"
@@ -381,6 +405,7 @@
       "rebase",
       "merge conflict"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -396,6 +421,7 @@
       "secret",
       "audit security"
     ],
+    "prompts": [],
     "chain": [
       "fix"
     ]
@@ -412,6 +438,7 @@
       "env vars",
       "port in use"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -426,6 +453,7 @@
       "fake package",
       "typosquat"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -440,6 +468,7 @@
       "user stories",
       "stakeholder"
     ],
+    "prompts": [],
     "chain": [
       "plan"
     ]
@@ -457,6 +486,7 @@
       "testability",
       "architecture improvement"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -472,6 +502,7 @@
       "postmortem",
       "production is down"
     ],
+    "prompts": [],
     "chain": [
       "debug",
       "fix"
@@ -490,6 +521,7 @@
       "steal the",
       "from that repo"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -499,6 +531,7 @@
     "description": "Verify integrity of persisted state, skill outputs, and context bus data. Use when validating .topia/ files or sub-agent outputs against prompt injection, memory poisoning, identity spoofing, or adversarial payloads. Called by sentinel, team, session-bridge.",
     "userInvocable": false,
     "keywords": [],
+    "prompts": [],
     "chain": []
   },
   {
@@ -513,6 +546,7 @@
       "journal",
       "log the decision"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -529,6 +563,7 @@
       "publish",
       "production"
     ],
+    "prompts": [],
     "chain": [
       "verification",
       "deploy",
@@ -547,6 +582,7 @@
       "protect logic",
       "critical path"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -563,6 +599,7 @@
       "landing copy",
       "marketing copy"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -577,6 +614,7 @@
       "tool server",
       "model context"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -590,6 +628,7 @@
       "capture learning",
       "neural memory"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -604,6 +643,7 @@
       "configure project",
       "claude.md"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -618,6 +658,7 @@
       "governance",
       "approval flow"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -634,6 +675,7 @@
       "memory leak",
       "bundle size"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -649,6 +691,7 @@
       "roadmap",
       "strategy"
     ],
+    "prompts": [],
     "chain": [
       "adversary",
       "documentation",
@@ -667,6 +710,7 @@
       "first principles",
       "fishbone"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -676,6 +720,7 @@
     "description": "Advisory wrap for tool results from untrusted external surfaces. Appends `[QUARANTINE-NOTICE]` to next-turn context after `mcp__*`, `WebFetch`, and `Read` of `**/uploads/**` so prior tool output is treated as data — not directives. Use when the session ingests MCP user-content (Zendesk, Intercom, support tickets), fetched HTML, or operator-uploaded files. Hook fires AFTER ingestion — advisory, not structural.",
     "userInvocable": false,
     "keywords": [],
+    "prompts": [],
     "chain": []
   },
   {
@@ -690,6 +735,7 @@
       "check before",
       "ready to commit"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -702,7 +748,24 @@
       "recall",
       "what did we do",
       "last session",
-      "remember when"
+      "remember when",
+      "where did we leave off",
+      "where we left off",
+      "where were we",
+      "what's left",
+      "what is left",
+      "pick up where",
+      "resume where",
+      "resume work",
+      "let's resume"
+    ],
+    "prompts": [
+      "status",
+      "status update",
+      "what's the status",
+      "where are we",
+      "where are we at",
+      "resume"
     ],
     "chain": []
   },
@@ -719,6 +782,7 @@
       "scan the codebase",
       "project structure"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -736,6 +800,7 @@
       "old code",
       "messy"
     ],
+    "prompts": [],
     "chain": [
       "autopsy",
       "safeguard",
@@ -754,6 +819,7 @@
       "best practice",
       "look up"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -769,6 +835,7 @@
       "velocity",
       "what did we ship"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -784,6 +851,7 @@
       "audit code",
       "look at this code"
     ],
+    "prompts": [],
     "chain": [
       "fix"
     ]
@@ -800,6 +868,7 @@
       "received review",
       "triage issues"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -813,6 +882,7 @@
       "safety net",
       "rollback point"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -828,6 +898,7 @@
       "eslint",
       "clippy"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -844,6 +915,7 @@
       "starter",
       "from scratch"
     ],
+    "prompts": [],
     "chain": [
       "idea",
       "plan",
@@ -862,6 +934,7 @@
     "description": "Detects scope creep by quantifying drift percentage. Auto-triggered by L1 orchestrators when files exceed the original plan. Compares git changes against plan, classifies drift into 4 tiers: ON_TRACK, MINOR_DRIFT, SIGNIFICANT_DRIFT, OUT_OF_CONTROL.",
     "userInvocable": false,
     "keywords": [],
+    "prompts": [],
     "chain": []
   },
   {
@@ -876,6 +949,7 @@
       "interdependent",
       "second-order"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -887,9 +961,9 @@
     "keywords": [
       "save context",
       "save state",
-      "pick up where",
       "next session"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -903,6 +977,7 @@
       "create skill",
       "edit skill"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -912,6 +987,7 @@
     "description": "Meta-enforcement layer that routes EVERY agent action through the correct skill. MUST check this routing table before ANY response involving code, files, or technical decisions. Default: route to topia:build for code tasks. Prevents rationalization, enforces check-before-act discipline.",
     "userInvocable": false,
     "keywords": [],
+    "prompts": [],
     "chain": []
   },
   {
@@ -926,6 +1002,7 @@
       "presentation",
       "marp"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -940,6 +1017,7 @@
       "strangler",
       "decompose"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -956,6 +1034,7 @@
       "many files",
       "multi-module"
     ],
+    "prompts": [],
     "chain": [
       "plan",
       "worktree",
@@ -977,6 +1056,7 @@
       "e2e",
       "spec"
     ],
+    "prompts": [],
     "chain": [
       "readiness"
     ]
@@ -994,6 +1074,7 @@
       "product hunt",
       "hacker news"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -1006,6 +1087,7 @@
       "tutorial",
       "what should i do next"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -1021,6 +1103,7 @@
       "type check",
       "typecheck"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -1036,6 +1119,7 @@
       "youtube",
       "shot list"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -1050,6 +1134,7 @@
       "is it up",
       "response time"
     ],
+    "prompts": [],
     "chain": []
   },
   {
@@ -1059,6 +1144,7 @@
     "description": "Git worktree lifecycle management. Use when team needs parallel isolated workspaces for multi-stream development, or when an experiment must not touch the main working tree. Creates isolated workspaces, manages branches, handles cleanup. Called by team and build.",
     "userInvocable": false,
     "keywords": [],
+    "prompts": [],
     "chain": []
   }
 ]

@@ -26,17 +26,34 @@ function escapeRegExp(text: string): string {
   return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
+// The words of a phrase may be split by any spaces, and an apostrophe may be
+// typed straight, curly or not at all ("what's", "what’s", "whats").
+function phrasePattern(phrase: string): string {
+  return phrase
+    .trim()
+    .split(/\s+/)
+    .map(word => escapeRegExp(word).replace(/'/g, "['’]?"))
+    .join('\\s+')
+}
+
 // Whole words only, so "ui" never matches inside "build" nor "add" inside
-// "address"; the words of a phrase may be split by any spaces, and a word
-// may take a plain ending (tests, fixed, adding).
+// "address"; a word may take a plain ending (tests, fixed, adding).
 function keywordPattern(keyword: string): RegExp {
-  const words = keyword.trim().split(/\s+/).map(escapeRegExp).join('\\s+')
   const suffix = /[a-z]$/i.test(keyword) ? '(?:s|es|ed|d|ing)?' : ''
-  return new RegExp(`(?<![\\w-])${words}${suffix}(?![\\w-])`, 'gi')
+  return new RegExp(`(?<![\\w-])${phrasePattern(keyword)}${suffix}(?![\\w-])`, 'gi')
+}
+
+// A phrase that counts only as the whole prompt, give or take spaces and a
+// closing ? . or !: "status" alone, never "git status" or "/status".
+function promptPattern(phrase: string): RegExp {
+  return new RegExp(`^\\s*(${phrasePattern(phrase)})[\\s?.!…]*$`, 'i')
 }
 
 const PATTERNS = SKILL_ROUTES.flatMap(route =>
   route.keywords.map(keyword => ({ name: route.name, keyword, pattern: keywordPattern(keyword) })),
+)
+const PROMPTS = SKILL_ROUTES.flatMap(route =>
+  route.prompts.map(phrase => ({ name: route.name, keyword: phrase, pattern: promptPattern(phrase) })),
 )
 
 const EXPLICIT = /(?:\/topia[-:]|\/topia\s+|(?<![\w-])topia:)([a-z][\w-]*)/gi
@@ -83,6 +100,13 @@ export function predict(text: string): Prediction {
       if (hit.index === undefined) continue
       entry(name).matches.push({ start: hit.index, end: hit.index + hit[0].length, keyword })
     }
+  }
+
+  for (const { name, keyword, pattern } of PROMPTS) {
+    const hit = pattern.exec(read)
+    if (hit === null) continue
+    const start = read.length - read.trimStart().length
+    entry(name).matches.push({ start, end: start + (hit[1] ?? '').length, keyword })
   }
 
   const scored: ScoredSkill[] = []

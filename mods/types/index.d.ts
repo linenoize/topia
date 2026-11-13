@@ -10,8 +10,11 @@ export type GitInfo = {
   hasUpstream: boolean
 }
 
-export type OrderId = 'fanout' | 'ledger' | 'scripts' | 'commit'
+export type OrderId = 'fanout' | 'ledger' | 'scripts' | 'commit' | 'trunk' | 'decisions'
 export type Orders = Record<OrderId, boolean>
+// Per project: how many prompts asked by hand for what an order does, and the
+// orders already tipped or turned on (never tipped again). No prompt text.
+export type OrderTips = { counts: Partial<Record<OrderId, number>>; done: OrderId[] }
 
 export type Host = {
   host: string
@@ -73,6 +76,7 @@ declare module 'claude-code' {
       gitInfo: GitInfo | null
       gitBandHidden: boolean
       standingOrders: Orders | null
+      ordersTip: OrderId | null
       sshHosts: Record<string, Host>
       quietHidden: HiddenReport[]
       quietSavedChars: number

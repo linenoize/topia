@@ -40,7 +40,21 @@ import {
   withoutRouterSuggestion,
 } from './lib/prompt-routing'
 import { FAILED, composeText as hostsText, hostsKey, learnHosts, parseSsh } from './lib/remote-hosts'
-import { DEFAULTS, IDS, RULES, composeText as ordersText, ordersKey, ordersStatus } from './lib/standing-orders'
+import {
+  DEFAULTS,
+  EMPTY_TIPS,
+  IDS,
+  ORDERS_INTRO,
+  RULES,
+  composeText as ordersText,
+  countCues,
+  cuedOrders,
+  markDone,
+  ordersKey,
+  ordersStatus,
+  tipText,
+  tipsKey,
+} from './lib/standing-orders'
 import { joinStatus } from './lib/status'
 import type { StatusSlot } from './lib/status'
 import { filterHookText, formatUsage } from './lib/topia-quiet'
@@ -55,6 +69,7 @@ import type {
   ModSettings,
   ModsPrefs,
   OrderId,
+  OrderTips,
   Orders,
   ProjectMods,
   RoutingView,
@@ -81,6 +96,7 @@ import type {
 const gitInfo = atom({ plugin: 'topia', key: 'gitInfo' } as const, null)
 const gitBandHidden = atom({ plugin: 'topia', key: 'gitBandHidden' } as const, false)
 const standingOrders = atom({ plugin: 'topia', key: 'standingOrders' } as const, null)
+const ordersTip = atom({ plugin: 'topia', key: 'ordersTip' } as const, null)
 const sshHosts = atom({ plugin: 'topia', key: 'sshHosts' } as const, {})
 const quietHidden = atom({ plugin: 'topia', key: 'quietHidden' } as const, [])
 const quietSavedChars = atom({ plugin: 'topia', key: 'quietSavedChars' } as const, 0)
@@ -109,7 +125,7 @@ const ROUTING_OFF_KEY = 'promptRouting:off'
 const COMMANDS = [
   { name: 'mods', description: 'Turn Topia mods on or off, for you or for this project', argumentHint: '[mod] [on|off|reset] [--project|--user]' },
   { name: 'routing', description: 'Turn the Topia prompt-routing band and highlights on or off', argumentHint: '[on|off]' },
-  { name: 'orders', description: 'Show or toggle your standing orders for this project', argumentHint: '[fanout|ledger|scripts|commit] [on|off]' },
+  { name: 'orders', description: 'Rules Claude follows in every session of this project; show or toggle them', argumentHint: '[fanout|ledger|scripts|commit|trunk|decisions] [on|off]' },
   { name: 'hosts', description: 'Show the SSH hosts the model knows about; forget one', argumentHint: '[forget <user@host>]' },
   { name: 'topia-activity', description: "Show the Topia hook reports kept out of the model's context" },
   { name: 'model-preset', description: 'Show or forget the model remembered for this project', argumentHint: '[forget]' },
@@ -234,9 +250,38 @@ async function loadOrders($: EngineInterface) {
 }
 
 async function saveOrders($: EngineInterface, next: Orders) {
-  await $.store.set(ordersKey(await $.session.root()), next)
+  const root = await $.session.root()
+  await $.store.set(ordersKey(root), next)
   await update($, standingOrders, () => next)
   setStatus($, 'orders', ordersStatus(next))
+  // An order turned on is never tipped again, even if later turned off.
+  const turnedOn = IDS.filter(id => next[id])
+  if (turnedOn.length > 0) {
+    const tips = await loadTips($, root)
+    const marked = markDone(tips, turnedOn)
+    if (marked !== tips) await $.store.set(tipsKey(root), marked)
+  }
+  const tip = await read($, ordersTip)
+  if (tip !== null && next[tip]) await update($, ordersTip, () => null)
+}
+
+async function loadTips($: EngineInterface, root: string): Promise<OrderTips> {
+  const saved = (await $.store.get(tipsKey(root))) as Partial<OrderTips> | undefined
+  return { ...EMPTY_TIPS, ...(saved ?? {}) }
+}
+
+// Counts a typed prompt that asks by hand for what an order already does. On
+// the third such prompt in this project, while that order is off, a tip shows
+// above the prompt, once. Only ids and counts are kept, never the text.
+async function noteOrderCues($: EngineInterface, text: string) {
+  const cued = cuedOrders(text)
+  if (cued.length === 0) return
+  const orders = (await read($, standingOrders)) ?? (await loadOrders($))
+  const root = await $.session.root()
+  const before = await loadTips($, root)
+  const { tips, due } = countCues(before, cued, orders, (await read($, ordersTip)) === null)
+  if (tips !== before) await $.store.set(tipsKey(root), tips)
+  if (due !== null) await update($, ordersTip, () => due)
 }
 
 // ── compose bypass ──────────────────────────────────────────────────────────
@@ -372,7 +417,10 @@ async function applyFlips($: EngineInterface, flips: { id: ModId; isOn: boolean 
     }
     if (id === 'standingOrders') {
       if (turnedOn) await loadOrders($)
-      else setStatus($, 'orders', undefined)
+      else {
+        setStatus($, 'orders', undefined)
+        await update($, ordersTip, () => null)
+      }
     }
     if (id === 'remoteHosts' && turnedOn) await loadHosts($)
     if (id === 'quietReports') {
@@ -415,7 +463,7 @@ async function setMods(
 async function forgetProject($: EngineInterface, config: Options): Promise<string> {
   const root = await $.session.root()
   const before = await settingsNow($)
-  for (const key of [projectModsKey(root), ordersKey(root), hostsKey(root), projectKey(root)]) await $.store.delete(key)
+  for (const key of [projectModsKey(root), ordersKey(root), tipsKey(root), hostsKey(root), projectKey(root)]) await $.store.delete(key)
   const after = await loadModSettings($)
   await applyFlips($, flipped(config, before, after))
   if (await isOn($, config, 'standingOrders')) await loadOrders($)
@@ -678,6 +726,9 @@ export const register: Register = (on, options) => {
   })
 
   on('prompt.submit', async ($, e, next) => {
+    // Typed by the person, not a slash command: a cue for an order's tip.
+    const isTyped = (e.origin.kind === 'composer' || e.origin.kind === 'bridge') && e.command === undefined && e.isMeta !== true
+    if (isTyped && (await isOn($, config, 'standingOrders'))) await noteOrderCues($, e.text)
     if (!isWritten(e.origin) || !(await isOn($, config, 'promptRouting'))) return next(e)
 
     const view = toView(predict(e.text))
@@ -782,8 +833,9 @@ export const register: Register = (on, options) => {
     const live = isRouting ? await read($, routingLive) : null
     const turn = isRouting && live === null ? await read($, routingTurn) : null
     const focus = await read($, bandFocus)
+    const tip = (await isOn($, config, 'standingOrders')) ? await read($, ordersTip) : null
 
-    if (ask === null && !showGit && live === null && turn === null) return next(e)
+    if (ask === null && tip === null && !showGit && live === null && turn === null) return next(e)
 
     const { Box, Button, Text } = $.ui.resolve(e)
     const submit = (text: string) => () => $.prompt.submit({ text, asUser: true })
@@ -868,6 +920,37 @@ export const register: Register = (on, options) => {
         )
     }
 
+    let tipRow = null
+    if (tip !== null) {
+      tipRow = (
+        <Box key="orders-tip" flexDirection="column">
+          <Box key="orders-tip-text" flexDirection="row" gap={1}>
+            <Text color="cyan">topia tip</Text>
+            <Text wrap="wrap">{tipText(tip)}</Text>
+          </Box>
+          <Box key="orders-tip-actions" flexDirection="row" gap={1}>
+            <Button
+              {...described('orders-tip-on', `Turns on the "${tip}" standing order for this project. /orders turns it off any time.`)}
+              label="Turn on"
+              variant="primary"
+              onPress={async () => {
+                const latest = (await read($, standingOrders)) ?? (await loadOrders($))
+                await saveOrders($, { ...latest, [tip]: true })
+                await update($, ordersTip, () => null)
+              }}
+            />
+            <Button
+              {...described('orders-tip-no', `Hides this tip for good. /orders ${tip} on turns it on later.`)}
+              label="No thanks"
+              plain
+              onPress={() => update($, ordersTip, () => null)}
+            />
+            <Text dimColor>· or type /orders {tip} on</Text>
+          </Box>
+        </Box>
+      )
+    }
+
     const chip = (name: string, label: string, about: string, color?: 'cyan' | 'magenta' | 'yellow' | 'green', bold?: boolean) =>
       value(`route-${name}`, label, about, { color, bold })
     const skillAbout = (name: string, note?: string) => `${name}: ${describeSkill(name)}${note ? ` (${note})` : ''}`
@@ -927,6 +1010,7 @@ export const register: Register = (on, options) => {
     return (
       <Box flexDirection="column">
         {modsRow}
+        {tipRow}
         {routingRow}
         {gitRow}
         {aboutSlot({ Box, Text }, abouts, focus !== null ? abouts[focus] : undefined)}
@@ -943,10 +1027,10 @@ export const register: Register = (on, options) => {
 
     if (!id) {
       await $.ui.open({ id: ORDERS_PANE, title: 'Standing orders', focus: true, closeOnEscape: true })
-      return { text: `Standing orders pane opened.${await bypassNote($)}` }
+      return { text: `${ORDERS_INTRO} The pane is open: press a number to turn one on or off.${await bypassNote($)}` }
     }
     if (!IDS.includes(id as OrderId)) {
-      return { text: `Unknown order "${id}". Orders: ${IDS.join(', ')}.` }
+      return { text: `Unknown order "${id}". Orders: ${IDS.join(', ')}. /orders on its own explains each one.` }
     }
 
     const key = id as OrderId
@@ -962,18 +1046,25 @@ export const register: Register = (on, options) => {
 
     return (
       <Box flexDirection="column">
-        <Text dimColor>Added to the system prompt for this project. Press to toggle.</Text>
+        <Text wrap="wrap">{ORDERS_INTRO}</Text>
+        <Text dimColor wrap="wrap">An order that is on is added to the system prompt. Press a number to turn one on or off.</Text>
         {(await read($, composeWatch)).isBypassed && <Text color="warning">{BYPASS_NOTE}</Text>}
         {IDS.map((id, index) => (
-          <Box key={`row-${id}`} flexDirection="row" gap={1}>
-            <Button
-              key={id}
-              hotkey={String(index + 1)}
-              label={current[id] ? 'on ' : 'off'}
-              variant={current[id] ? 'primary' : 'secondary'}
-              onPress={() => toggleOrder($, id)}
-            />
-            <Text dimColor={!current[id]}>{RULES[id].label}</Text>
+          <Box key={`row-${id}`} flexDirection="column">
+            <Box key={`head-${id}`} flexDirection="row" gap={1}>
+              <Button
+                key={id}
+                hotkey={String(index + 1)}
+                label={current[id] ? 'on ' : 'off'}
+                variant={current[id] ? 'primary' : 'secondary'}
+                onPress={() => toggleOrder($, id)}
+              />
+              <Text dimColor={!current[id]}>{RULES[id].label}</Text>
+              <Text dimColor>({id})</Text>
+            </Box>
+            <Box key={`about-${id}`} paddingLeft={6}>
+              <Text dimColor wrap="wrap">{RULES[id].about}</Text>
+            </Box>
           </Box>
         ))}
       </Box>

@@ -52,6 +52,41 @@ test('plain endings count: tests, crashes, deployed', async () => {
   expect(names('we deployed')[0]).toBe('launch')
 })
 
+test('asking where work stands routes to recall', async () => {
+  for (const prompt of [
+    'where did we leave off?',
+    'Where were we',
+    'status',
+    'Status?',
+    "what's the status",
+    "what's left",
+    'whats left to do on the importer',
+    'what’s left',
+    'pick up where we left off',
+    'resume',
+    "let's resume where we stopped",
+  ]) {
+    expect(names(prompt)[0]).toBe('recall')
+  }
+})
+
+test('"status" inside other wording is not a recall', async () => {
+  for (const prompt of [
+    'git status',
+    'run git status and commit',
+    'check the HTTP status code of the health endpoint',
+    'update the status bar',
+    'the status line is cut off',
+    '/status',
+  ]) {
+    expect(names(prompt).includes('recall')).toBe(false)
+  }
+})
+
+test('a whole-prompt phrase is underlined where it stands', async () => {
+  expect(decorations(predict('  status?'))).toEqual([{ start: 2, end: 8, color: 'cyan', underline: true }])
+})
+
 test('a skill named outright wins', async () => {
   const prediction = predict('/topia-review the login change')
   expect(prediction.skills[0]?.name).toBe('review')

@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import { afterEach, describe, test } from 'node:test';
 import { pathToFileURL } from 'node:url';
 import { generateSlashAliases, renderSkillRoutes, renderSkillRoutesJson } from '../commands/generate-slash-aliases.js';
-import { INTENT_CHAINS, INTENT_KEYWORDS } from '../lib/intent-keywords.js';
+import { INTENT_CHAINS, INTENT_KEYWORDS, INTENT_PROMPTS } from '../lib/intent-keywords.js';
 import { formatBareSlashRedirect, loadSkillCatalog, matchBareTopiaSlash } from '../lib/skill-catalog.js';
 
 const REPO = join(import.meta.dirname, '..', '..');
@@ -124,6 +124,9 @@ describe('intent-keywords', () => {
     for (const name of Object.keys(INTENT_KEYWORDS)) {
       assert.ok(known.has(name), `INTENT_KEYWORDS names unknown skill ${name}`);
     }
+    for (const name of Object.keys(INTENT_PROMPTS)) {
+      assert.ok(known.has(name), `INTENT_PROMPTS names unknown skill ${name}`);
+    }
     for (const [name, chain] of Object.entries(INTENT_CHAINS)) {
       assert.ok(known.has(name), `INTENT_CHAINS names unknown skill ${name}`);
       for (const next of chain) assert.ok(known.has(next), `INTENT_CHAINS.${name} names unknown skill ${next}`);
@@ -165,6 +168,15 @@ describe('intent-keywords', () => {
       'update the address field',
       'hello there',
       'the tests are red; it crashes when we deployed',
+      'status',
+      '  Status? ',
+      'git status',
+      'check the HTTP status code',
+      'where did we leave off',
+      'what’s left on the importer',
+      'whats left',
+      "what's the status?",
+      '/status',
     ];
     for (const prompt of prompts) assert.deepEqual(reading(hook.predict(prompt)), reading(mod.predict(prompt)), prompt);
   });

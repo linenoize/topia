@@ -6,6 +6,7 @@
  * Phrases come from each skill's description and skill-router's Request
  * Classifier and Power User tables. The mod matches them on word boundaries
  * (a trailing s/es/ed/d/ing allowed), so keep them whole words or phrases.
+ * An apostrophe matches straight, curly or left out ("what's", "what’s", "whats").
  */
 
 /** @type {Record<string, string[]>} */
@@ -65,18 +66,43 @@ export const INTENT_KEYWORDS = {
   journal: ['adr', 'decision record', 'journal', 'log the decision'],
   'neural-memory': ['remember this', 'capture learning', 'neural memory'],
   'problem-solver': ['5 whys', 'root cause analysis', 'first principles', 'fishbone'],
-  recall: ['recall', 'what did we do', 'last session', 'remember when'],
+  recall: [
+    'recall',
+    'what did we do',
+    'last session',
+    'remember when',
+    'where did we leave off',
+    'where we left off',
+    'where were we',
+    "what's left",
+    'what is left',
+    'pick up where',
+    'resume where',
+    'resume work',
+    "let's resume",
+  ],
   recon: ['where is', 'find', 'search the codebase', 'scan the codebase', 'project structure'],
   research: ['research', 'compare libraries', 'best practice', 'look up'],
   sast: ['static analysis', 'semgrep', 'bandit', 'eslint', 'clippy'],
   'sequential-thinking': ['trade-off', 'tradeoff', 'interdependent', 'second-order'],
-  'session-bridge': ['save context', 'save state', 'pick up where', 'next session'],
+  'session-bridge': ['save context', 'save state', 'next session'],
   slides: ['slides', 'slide deck', 'presentation', 'marp'],
   'trend-scout': ['competitor', 'trending', 'market trends', 'product hunt', 'hacker news'],
   tut: ['tutorial', 'what should i do next'],
   verification: ['verify', 'run the tests', 'lint', 'type check', 'typecheck'],
   'video-creator': ['video', 'storyboard', 'narration', 'youtube', 'shot list'],
   watchdog: ['uptime', 'monitor the site', 'is it up', 'response time'],
+};
+
+/**
+ * Phrases that point at a skill only when they are the whole prompt, give or
+ * take spaces and a closing ? . or !: "status" alone asks where work stands,
+ * while "git status" or "HTTP status code" does not. Same matching otherwise,
+ * with no plain endings.
+ * @type {Record<string, string[]>}
+ */
+export const INTENT_PROMPTS = {
+  recall: ['status', 'status update', "what's the status", 'where are we', 'where are we at', 'resume'],
 };
 
 /**
