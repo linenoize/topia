@@ -50,7 +50,9 @@ function extractToolSkillInvocation(hookData = {}) {
   return null;
 }
 
-const ALIASES = new Set(CATALOG.map((s) => s.slashAlias).filter(Boolean));
+// The `/topia-<skill>` alias commands are gone, but older transcripts still
+// hold them, so they stay recognised here.
+const ALIASES = new Set(CATALOG.map((s) => `topia-${s.name}`));
 
 /**
  * Decide whether a slash command counts as a skill invocation.
@@ -63,7 +65,7 @@ function slashCommandSkill(commandName, { loadedSkill = false } = {}) {
   const name = typeof commandName === 'string' ? commandName.trim().replace(/^\//, '') : '';
   if (!name) return null;
   const bare = name.replace(TOPIA_NS, '');
-  // `/topia-audit` aliases tell the model to call the Skill tool, which the
+  // The old `/topia-audit` aliases told the model to call the Skill tool, which the
   // PostToolUse path already counts. Counting the alias too would double it.
   if (ALIASES.has(bare)) return null;
   if (TOPIA_NS.test(name)) return bare || null;

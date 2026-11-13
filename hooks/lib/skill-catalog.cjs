@@ -11,8 +11,7 @@ const CATALOG = [
     "model": "opus",
     "layer": "L2",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-adversary"
+    "forked": false
   },
   {
     "name": "architecture-mapper",
@@ -20,8 +19,7 @@ const CATALOG = [
     "model": "opus",
     "layer": "L2",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-architecture-mapper"
+    "forked": false
   },
   {
     "name": "asset-creator",
@@ -29,8 +27,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L3",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-asset-creator"
+    "forked": false
   },
   {
     "name": "audit",
@@ -38,8 +35,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-audit"
+    "forked": false
   },
   {
     "name": "autopsy",
@@ -47,8 +43,7 @@ const CATALOG = [
     "model": "opus",
     "layer": "L2",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-autopsy"
+    "forked": false
   },
   {
     "name": "brainstorm",
@@ -56,8 +51,7 @@ const CATALOG = [
     "model": "opus",
     "layer": "L2",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-brainstorm"
+    "forked": false
   },
   {
     "name": "browser-pilot",
@@ -65,8 +59,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L3",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-browser-pilot"
+    "forked": false
   },
   {
     "name": "build",
@@ -74,8 +67,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L1",
     "userInvocable": true,
-    "forked": true,
-    "slashAlias": "topia-build"
+    "forked": true
   },
   {
     "name": "completion-gate",
@@ -83,8 +75,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": false,
-    "forked": false,
-    "slashAlias": "topia-completion-gate"
+    "forked": false
   },
   {
     "name": "constraint-check",
@@ -92,8 +83,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": false,
-    "forked": false,
-    "slashAlias": "topia-constraint-check"
+    "forked": false
   },
   {
     "name": "context-engine",
@@ -101,8 +91,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": false,
-    "forked": false,
-    "slashAlias": "topia-context-engine"
+    "forked": false
   },
   {
     "name": "context-lifecycle",
@@ -110,8 +99,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-context-lifecycle"
+    "forked": false
   },
   {
     "name": "context-pack",
@@ -119,8 +107,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": false,
-    "forked": false,
-    "slashAlias": "topia-context-pack"
+    "forked": false
   },
   {
     "name": "db",
@@ -128,8 +115,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-db"
+    "forked": false
   },
   {
     "name": "debug",
@@ -137,8 +123,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-debug"
+    "forked": false
   },
   {
     "name": "decision-form",
@@ -146,8 +131,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L3",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-decision-form"
+    "forked": false
   },
   {
     "name": "dependency-doctor",
@@ -155,8 +139,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-dependency-doctor"
+    "forked": false
   },
   {
     "name": "deploy",
@@ -164,8 +147,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-deploy"
+    "forked": false
   },
   {
     "name": "design",
@@ -173,8 +155,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-design"
+    "forked": false
   },
   {
     "name": "doc-processor",
@@ -182,8 +163,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L3",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-doc-processor"
+    "forked": false
   },
   {
     "name": "docs",
@@ -191,8 +171,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-docs"
+    "forked": false
   },
   {
     "name": "docs-seeker",
@@ -200,8 +179,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-docs-seeker"
+    "forked": false
   },
   {
     "name": "documentation",
@@ -209,8 +187,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-documentation"
+    "forked": false
   },
   {
     "name": "faq",
@@ -218,8 +195,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-faq"
+    "forked": false
   },
   {
     "name": "fix",
@@ -227,8 +203,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-fix"
+    "forked": false
   },
   {
     "name": "git",
@@ -236,8 +211,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-git"
+    "forked": false
   },
   {
     "name": "guardian",
@@ -245,8 +219,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-guardian"
+    "forked": false
   },
   {
     "name": "guardian-env",
@@ -254,8 +227,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-guardian-env"
+    "forked": false
   },
   {
     "name": "hallucination-guard",
@@ -263,8 +235,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-hallucination-guard"
+    "forked": false
   },
   {
     "name": "idea",
@@ -272,8 +243,7 @@ const CATALOG = [
     "model": "opus",
     "layer": "L2",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-idea"
+    "forked": false
   },
   {
     "name": "improve-architecture",
@@ -281,8 +251,7 @@ const CATALOG = [
     "model": "opus",
     "layer": "L2",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-improve-architecture"
+    "forked": false
   },
   {
     "name": "incident",
@@ -290,8 +259,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-incident"
+    "forked": false
   },
   {
     "name": "integrate",
@@ -299,8 +267,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-integrate"
+    "forked": false
   },
   {
     "name": "integrity-check",
@@ -308,8 +275,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": false,
-    "forked": false,
-    "slashAlias": "topia-integrity-check"
+    "forked": false
   },
   {
     "name": "journal",
@@ -317,8 +283,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-journal"
+    "forked": false
   },
   {
     "name": "launch",
@@ -326,8 +291,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L1",
     "userInvocable": true,
-    "forked": true,
-    "slashAlias": "topia-launch"
+    "forked": true
   },
   {
     "name": "logic-guardian",
@@ -335,8 +299,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-logic-guardian"
+    "forked": false
   },
   {
     "name": "marketing",
@@ -344,8 +307,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-marketing"
+    "forked": false
   },
   {
     "name": "mcp-builder",
@@ -353,8 +315,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-mcp-builder"
+    "forked": false
   },
   {
     "name": "neural-memory",
@@ -362,8 +323,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-neural-memory"
+    "forked": false
   },
   {
     "name": "onboard",
@@ -371,8 +331,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-onboard"
+    "forked": false
   },
   {
     "name": "org-config",
@@ -380,8 +339,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-org-config"
+    "forked": false
   },
   {
     "name": "perf",
@@ -389,8 +347,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-perf"
+    "forked": false
   },
   {
     "name": "plan",
@@ -398,8 +355,7 @@ const CATALOG = [
     "model": "opus",
     "layer": "L2",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-plan"
+    "forked": false
   },
   {
     "name": "problem-solver",
@@ -407,8 +363,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L3",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-problem-solver"
+    "forked": false
   },
   {
     "name": "quarantine",
@@ -416,8 +371,7 @@ const CATALOG = [
     "model": "opus",
     "layer": "L3",
     "userInvocable": false,
-    "forked": false,
-    "slashAlias": "topia-quarantine"
+    "forked": false
   },
   {
     "name": "readiness",
@@ -425,8 +379,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-readiness"
+    "forked": false
   },
   {
     "name": "recall",
@@ -434,8 +387,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-recall"
+    "forked": false
   },
   {
     "name": "recon",
@@ -443,8 +395,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L2",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-recon"
+    "forked": false
   },
   {
     "name": "rescue",
@@ -452,8 +403,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L1",
     "userInvocable": true,
-    "forked": true,
-    "slashAlias": "topia-rescue"
+    "forked": true
   },
   {
     "name": "research",
@@ -461,8 +411,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-research"
+    "forked": false
   },
   {
     "name": "retro",
@@ -470,8 +419,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-retro"
+    "forked": false
   },
   {
     "name": "review",
@@ -479,8 +427,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-review"
+    "forked": false
   },
   {
     "name": "review-intake",
@@ -488,8 +435,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-review-intake"
+    "forked": false
   },
   {
     "name": "safeguard",
@@ -497,8 +443,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-safeguard"
+    "forked": false
   },
   {
     "name": "sast",
@@ -506,8 +451,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-sast"
+    "forked": false
   },
   {
     "name": "scaffold",
@@ -515,8 +459,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L1",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-scaffold"
+    "forked": false
   },
   {
     "name": "scope-guard",
@@ -524,8 +467,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": false,
-    "forked": false,
-    "slashAlias": "topia-scope-guard"
+    "forked": false
   },
   {
     "name": "sequential-thinking",
@@ -533,8 +475,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L3",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-sequential-thinking"
+    "forked": false
   },
   {
     "name": "session-bridge",
@@ -542,8 +483,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-session-bridge"
+    "forked": false
   },
   {
     "name": "skill-forge",
@@ -551,8 +491,7 @@ const CATALOG = [
     "model": "opus",
     "layer": "L2",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-skill-forge"
+    "forked": false
   },
   {
     "name": "skill-router",
@@ -560,8 +499,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L0",
     "userInvocable": false,
-    "forked": false,
-    "slashAlias": "topia-skill-router"
+    "forked": false
   },
   {
     "name": "slides",
@@ -569,8 +507,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L3",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-slides"
+    "forked": false
   },
   {
     "name": "stack",
@@ -578,8 +515,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-stack"
+    "forked": false
   },
   {
     "name": "surgeon",
@@ -587,8 +523,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-surgeon"
+    "forked": false
   },
   {
     "name": "team",
@@ -596,8 +531,7 @@ const CATALOG = [
     "model": "opus",
     "layer": "L1",
     "userInvocable": true,
-    "forked": true,
-    "slashAlias": "topia-team"
+    "forked": true
   },
   {
     "name": "test",
@@ -605,8 +539,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L2",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-test"
+    "forked": false
   },
   {
     "name": "trend-scout",
@@ -614,8 +547,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-trend-scout"
+    "forked": false
   },
   {
     "name": "tut",
@@ -623,8 +555,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-tut"
+    "forked": false
   },
   {
     "name": "verification",
@@ -632,8 +563,7 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-verification"
+    "forked": false
   },
   {
     "name": "video-creator",
@@ -641,8 +571,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L3",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-video-creator"
+    "forked": false
   },
   {
     "name": "watchdog",
@@ -650,8 +579,7 @@ const CATALOG = [
     "model": "sonnet",
     "layer": "L3",
     "userInvocable": true,
-    "forked": false,
-    "slashAlias": "topia-watchdog"
+    "forked": false
   },
   {
     "name": "worktree",
@@ -659,12 +587,11 @@ const CATALOG = [
     "model": "haiku",
     "layer": "L3",
     "userInvocable": false,
-    "forked": false,
-    "slashAlias": "topia-worktree"
+    "forked": false
   }
 ];
 
-const RESERVED_COMMANDS = new Set(["topia","finalize","org-config","migrate-from-rune"]);
+const RESERVED_COMMANDS = new Set(["topia","finalize","migrate-from-rune"]);
 
 function matchBareTopiaSlash(prompt) {
   const trimmed = String(prompt || '').trim();
@@ -678,11 +605,9 @@ function matchBareTopiaSlash(prompt) {
 }
 
 function formatBareSlashRedirect(skillName) {
-  const entry = CATALOG.find((s) => s.name === skillName);
-  const alias = entry?.slashAlias ?? `topia-${skillName}`;
   return (
     `[Topia] Bare \`/${skillName}\` is not a Topia command (avoids clashes with built-in slash commands). ` +
-    `Use \`/${alias}\` or \`/topia:${skillName}\` or \`/topia ${skillName}\`.`
+    `Use \`/topia:${skillName}\` or \`/topia ${skillName}\`.`
   );
 }
 

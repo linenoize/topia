@@ -20,7 +20,7 @@ Run a local or self-hosted Docker Compose stack the same safe way every time. It
 
 ## Triggers
 
-- `/topia stack`, `/topia-stack` or `topia:stack` — manual invocation
+- `/topia:stack` or `/topia stack` — manual invocation
 - Auto-trigger: the user asks to rebuild, restart, start, stop or check "the stack", "the containers" or "compose"
 - Auto-trigger: the user pastes container logs, or asks why a service will not start
 - Auto-trigger: the user asks for start/stop scripts, or whether `.env` has every key from `.env.example`

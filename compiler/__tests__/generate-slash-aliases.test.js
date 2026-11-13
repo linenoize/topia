@@ -1,22 +1,27 @@
 import assert from 'node:assert/strict';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import module, { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, test } from 'node:test';
 import { pathToFileURL } from 'node:url';
-import { generateSlashAliases, renderSkillRoutes, renderSkillRoutesJson } from '../commands/generate-slash-aliases.js';
+import { generateSkillCatalog, renderSkillRoutes, renderSkillRoutesJson } from '../commands/generate-slash-aliases.js';
 import { INTENT_CHAINS, INTENT_KEYWORDS, INTENT_PROMPTS } from '../lib/intent-keywords.js';
-import { formatBareSlashRedirect, loadSkillCatalog, matchBareTopiaSlash } from '../lib/skill-catalog.js';
+import {
+  findSlashCollisions,
+  formatBareSlashRedirect,
+  loadCommandNames,
+  loadSkillCatalog,
+  matchBareTopiaSlash,
+} from '../lib/skill-catalog.js';
 
 const REPO = join(import.meta.dirname, '..', '..');
 
 describe('skill-catalog', () => {
-  test('loadSkillCatalog includes design with slash alias', () => {
+  test('loadSkillCatalog includes design', () => {
     const catalog = loadSkillCatalog(REPO);
     const design = catalog.find((s) => s.name === 'design');
     assert.ok(design);
-    assert.equal(design.slashAlias, 'topia-design');
     assert.equal(design.userInvocable, true);
     assert.equal(design.model, 'sonnet');
   });
@@ -38,12 +43,6 @@ describe('skill-catalog', () => {
     assert.equal(catalog.find((s) => s.name === 'design').forked, false);
   });
 
-  test('alias for a forked skill says the report arrives later', () => {
-    const alias = readFileSync(join(REPO, 'commands', 'topia-build.md'), 'utf-8');
-    assert.match(alias, /in the background by default/);
-    assert.doesNotMatch(alias, /Follow the full workflow defined in that skill/);
-  });
-
   test('matchBareTopiaSlash detects bare skill names only', () => {
     const catalog = loadSkillCatalog(REPO);
     assert.equal(matchBareTopiaSlash('/design', catalog), 'design');
@@ -53,28 +52,87 @@ describe('skill-catalog', () => {
     assert.equal(matchBareTopiaSlash('/finalize', catalog), null);
   });
 
-  test('formatBareSlashRedirect mentions topia- prefix', () => {
-    const catalog = loadSkillCatalog(REPO);
-    const msg = formatBareSlashRedirect('design', catalog);
-    assert.match(msg, /topia-design/);
-    assert.match(msg, /topia:design/);
+  test('formatBareSlashRedirect points at /topia:<skill>', () => {
+    const msg = formatBareSlashRedirect('design');
+    assert.match(msg, /`\/topia:design`/);
+    assert.doesNotMatch(msg, /topia-design/);
   });
 });
 
-describe('generateSlashAliases', () => {
+// Every skill is `/topia:<name>`, and every command in commands/ is too. Two
+// claims on one name put it in the slash menu twice; a `topia-<skill>` command
+// is a second entry for the same skill.
+describe('slash menu', () => {
+  test('no two skills or commands claim the same slash name', () => {
+    assert.deepEqual(findSlashCollisions(REPO), []);
+  });
+
+  test('commands/ holds no topia-<skill> alias files', () => {
+    const skills = new Set(loadSkillCatalog(REPO).map((s) => s.name));
+    const aliases = readdirSync(join(REPO, 'commands')).filter(
+      (file) => file.startsWith('topia-') && skills.has(file.slice('topia-'.length, -'.md'.length)),
+    );
+    assert.deepEqual(aliases, []);
+  });
+
+  test('every command name is distinct from every skill name', () => {
+    const skills = new Set(loadSkillCatalog(REPO).map((s) => s.name));
+    const commands = loadCommandNames(REPO).map((c) => c.name);
+    assert.ok(commands.includes('topia'), 'the /topia router command is still there');
+    assert.deepEqual(
+      commands.filter((name) => skills.has(name)),
+      [],
+    );
+  });
+});
+
+describe('findSlashCollisions', () => {
   let scratch;
 
   afterEach(() => {
     if (scratch) rmSync(scratch, { recursive: true, force: true });
   });
 
-  test('writes topia-design.md and skips skill-router', () => {
+  const skill = (name) => `---\nname: ${name}\ndescription: "x"\nmetadata:\n  layer: L2\n  model: sonnet\n---\n`;
+
+  test('flags a command named like a skill, and a topia-<skill> alias', () => {
+    scratch = mkdtempSync(join(tmpdir(), 'topia-slash-'));
+    for (const name of ['build', 'org-config']) {
+      mkdirSync(join(scratch, 'skills', name), { recursive: true });
+      writeFileSync(join(scratch, 'skills', name, 'SKILL.md'), skill(name), 'utf-8');
+    }
+    mkdirSync(join(scratch, 'commands'), { recursive: true });
+    writeFileSync(join(scratch, 'commands', 'org-config.md'), '---\nname: org-config\n---\n', 'utf-8');
+    writeFileSync(join(scratch, 'commands', 'topia-build.md'), '# alias\n', 'utf-8');
+    writeFileSync(join(scratch, 'commands', 'finalize.md'), '---\nname: finalize\n---\n', 'utf-8');
+
+    assert.deepEqual(findSlashCollisions(scratch), [
+      { name: 'build', sources: ['skills/build/SKILL.md', 'commands/topia-build.md'] },
+      { name: 'org-config', sources: ['skills/org-config/SKILL.md', 'commands/org-config.md'] },
+    ]);
+    assert.throws(() => generateSkillCatalog(scratch), /org-config/);
+  });
+});
+
+describe('generateSkillCatalog', () => {
+  let scratch;
+
+  afterEach(() => {
+    if (scratch) rmSync(scratch, { recursive: true, force: true });
+  });
+
+  test('writes no alias commands and deletes old generated ones', () => {
     scratch = mkdtempSync(join(tmpdir(), 'topia-alias-'));
     mkdirSync(join(scratch, 'skills', 'design'), { recursive: true });
     mkdirSync(join(scratch, 'skills', 'skill-router'), { recursive: true });
     mkdirSync(join(scratch, 'commands'), { recursive: true });
     mkdirSync(join(scratch, 'references'), { recursive: true });
     mkdirSync(join(scratch, 'hooks', 'lib'), { recursive: true });
+    writeFileSync(
+      join(scratch, 'commands', 'topia-design.md'),
+      '---\nname: topia-design\n---\n\nUser-facing alias for the Topia **design** skill.\n',
+      'utf-8',
+    );
 
     writeFileSync(
       join(scratch, 'skills', 'design', 'SKILL.md'),
@@ -107,19 +165,14 @@ metadata:
       'utf-8',
     );
 
-    const { written, catalog } = generateSlashAliases(scratch);
-    assert.equal(written, 1);
+    const { removed, catalog } = generateSkillCatalog(scratch);
+    assert.equal(removed, 1);
     assert.equal(catalog.length, 2);
-
-    const aliasPath = join(scratch, 'commands', 'topia-design.md');
-    assert.ok(existsSync(aliasPath));
-    const content = readFileSync(aliasPath, 'utf-8');
-    assert.match(content, /name: topia-design/);
-    assert.match(content, /topia:design/);
-    assert.ok(!existsSync(join(scratch, 'commands', 'topia-skill-router.md')));
+    assert.deepEqual(readdirSync(join(scratch, 'commands')), []);
 
     const cjs = readFileSync(join(scratch, 'hooks', 'lib', 'skill-catalog.cjs'), 'utf-8');
     assert.match(cjs, /AUTO-GENERATED/);
+    assert.doesNotMatch(cjs, /slashAlias/);
 
     const routes = readFileSync(join(scratch, 'mods', 'lib', 'skill-routes.generated.ts'), 'utf-8');
     assert.match(routes, /AUTO-GENERATED/);

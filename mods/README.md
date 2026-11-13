@@ -63,7 +63,7 @@ The keyword table is `lib/skill-routes.generated.ts`, written by `npm run genera
 
 Where this module is loaded, the hook's suggestion block is dropped before the model reads it (whatever the switches), since the band and `promptRoutingHint` stand in for it; the hook's text reaches the model only on hosts without the mods.
 
-Matching is whole words and phrases, case-insensitive, with plain endings (tests, fixed, adding); an apostrophe may be straight, curly or left out. A skill may also list whole-prompt phrases (`INTENT_PROMPTS`) that count only as the entire prompt, give or take spaces and a closing `?`, `.` or `!`: "status" on its own points at `recall`, while "git status" or "HTTP status code" does not. A keyword scores 3 a word, an L1 orchestrator 1 more, and a skill named outright (`/topia-debug`, `topia:debug`) wins. With no match the row stays hidden; it never guesses.
+Matching is whole words and phrases, case-insensitive, with plain endings (tests, fixed, adding); an apostrophe may be straight, curly or left out. A skill may also list whole-prompt phrases (`INTENT_PROMPTS`) that count only as the entire prompt, give or take spaces and a closing `?`, `.` or `!`: "status" on its own points at `recall`, while "git status" or "HTTP status code" does not. A keyword scores 3 a word, an L1 orchestrator 1 more, and a skill named outright (`/topia:debug`, `/topia debug`) wins. With no match the row stays hidden; it never guesses.
 
 A chip's skill description shows at the end of the row under a resting pointer, and under the band when the chip takes the focus (ctrl+x tab, the arrows) or is clicked.
 

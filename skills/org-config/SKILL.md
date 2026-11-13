@@ -25,9 +25,16 @@ Do NOT delete any of the five required sections: `## Teams`, `## Roles`, `## Pol
 
 ## Triggers
 
-- `/topia org-config` — manual invocation
+- `/topia:org-config` — manual invocation (also `/topia org-config`)
 - Called from `/topia finalize` after machine-wide setup (Step 2b)
+- First time in a new repo: replace the template placeholders with real team data
+- Policy change: re-run, or edit `org.md` by hand, then refresh hooks
 - Auto-suggest when `org.md` still contains template placeholders (`_(lead`, `Organization: topia`, `_(team slug)_`)
+
+## Flags
+
+- `--force` — overwrite `org.md` even if it looks customized, without asking first
+- `--dry-run` — run the interview and show the planned changes, but write nothing (no `org.md`, no `.configured`)
 
 ## Calls (outbound)
 
@@ -35,7 +42,7 @@ Do NOT delete any of the five required sections: `## Teams`, `## Roles`, `## Pol
 
 ## Called By (inbound)
 
-- User: `/topia org-config`
+- User: `/topia:org-config` or `/topia org-config`
 - `/topia finalize` command flow
 - `tut` skill when user asks to configure team policy
 
@@ -60,7 +67,7 @@ Refresh hooks if gates feel stale:
   node "<topia>/compiler/bin/topia.js" setup --global --preset gentle --yes
 ```
 
-After writing, tell the user to re-run hook compile if they use terminal hooks:
+After writing, if dispatch hooks are installed, tell the user to re-run hook compile so the `<ORG-POLICY>` block updates:
 
 ```bash
 node "<topia>/compiler/bin/topia.js" setup --global --preset gentle --yes
@@ -122,6 +129,8 @@ Skip questions the user marks "defaults" — use Moderate governance and single-
 6. Keep `## Approval Flows` — at least one flow (Feature launch); add Hotfix if they deploy to production.
 
 Use `Write` or `Edit` — preserve markdown tables and section order.
+
+With `--dry-run`, show the planned `org.md` changes as a diff or summary instead, skip the write and Step 4's `.configured` file, and stop after the summary.
 
 ### Step 4 — Confirm and flag
 

@@ -1,18 +1,23 @@
 #!/usr/bin/env node
 /**
- * generate-slash-aliases.js — emit commands/topia-<skill>.md for user-invocable skills
+ * generate-slash-aliases.js — write the skill catalog and prompt-routing tables
  *
- * Keeps Skill tool IDs as topia:<name>; slash surface becomes /topia-<name>.
- * Also writes references/skill-catalog.json for hooks (session report), and the
- * prompt-routing table twice: hooks/lib/skill-routes.json for the intent-router
- * hook and mods/lib/skill-routes.generated.ts for the prompt-routing mod.
+ * Writes references/skill-catalog.json for hooks (session report),
+ * hooks/lib/skill-catalog.cjs, and the prompt-routing table twice:
+ * hooks/lib/skill-routes.json for the intent-router hook and
+ * mods/lib/skill-routes.generated.ts for the prompt-routing mod.
+ *
+ * It no longer writes commands/topia-<skill>.md aliases. Each skill is reached
+ * as /topia:<skill>; the aliases listed every skill in the slash menu twice.
+ * The run deletes alias files left from older checkouts, and fails when a
+ * skill and a command claim the same slash name.
  */
 
-import { mkdirSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { INTENT_CHAINS, INTENT_KEYWORDS, INTENT_PROMPTS } from '../lib/intent-keywords.js';
-import { loadSkillCatalog, RESERVED_COMMANDS } from '../lib/skill-catalog.js';
+import { findSlashCollisions, loadSkillCatalog, RESERVED_COMMANDS } from '../lib/skill-catalog.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const TOPIA_ROOT = join(__dirname, '../..');
@@ -20,35 +25,6 @@ const CATALOG_JSON_REL = 'references/skill-catalog.json';
 const CATALOG_CJS_REL = 'hooks/lib/skill-catalog.cjs';
 const ROUTES_TS_REL = 'mods/lib/skill-routes.generated.ts';
 const ROUTES_JSON_REL = 'hooks/lib/skill-routes.json';
-
-function escapeYamlDoubleQuoted(value) {
-  return value.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
-}
-
-// A `context: fork` skill runs as a subagent, in the background by default on
-// Claude Code 2.1.218+, so the main conversation does not follow its workflow.
-const FORKED_STEP =
-  'Pass the request as the skill arguments. The skill runs as a forked subagent, in the background by default, and cannot see this conversation. Do not claim results until its report arrives as a task notification; then relay any Decision Needed block (skill-router Step 4.5)';
-
-function renderAliasCommand(entry) {
-  const desc = escapeYamlDoubleQuoted(entry.description || `Topia ${entry.name} skill`);
-  return `---
-name: ${entry.slashAlias}
-description: "${desc}"
-disable-model-invocation: true
----
-
-# /${entry.slashAlias}
-
-User-facing alias for the Topia **${entry.name}** skill (\`/topia:${entry.name}\`).
-
-1. Invoke the Skill tool with \`topia:${entry.name}\`
-2. ${entry.forked ? FORKED_STEP : 'Follow the full workflow defined in that skill — do not shortcut steps'}
-3. Announce: "Routing to topia:${entry.name} (${entry.layer}, ${entry.model})"
-
-Also reachable via \`/topia ${entry.name}\` or \`/topia:${entry.name}\`.
-`;
-}
 
 function renderCatalogCjs(catalog) {
   const json = JSON.stringify(catalog, null, 2);
@@ -74,11 +50,9 @@ function matchBareTopiaSlash(prompt) {
 }
 
 function formatBareSlashRedirect(skillName) {
-  const entry = CATALOG.find((s) => s.name === skillName);
-  const alias = entry?.slashAlias ?? \`topia-\${skillName}\`;
   return (
     \`[Topia] Bare \\\`/\${skillName}\\\` is not a Topia command (avoids clashes with built-in slash commands). \` +
-    \`Use \\\`/\${alias}\\\` or \\\`/topia:\${skillName}\\\` or \\\`/topia \${skillName}\\\`.\`
+    \`Use \\\`/topia:\${skillName}\\\` or \\\`/topia \${skillName}\\\`.\`
   );
 }
 
@@ -177,36 +151,48 @@ export const SKILL_ROUTES: readonly SkillRoute[] = ${JSON.stringify(routes, null
 `;
 }
 
+/** The line every generated alias file carried; only files with it are deleted. */
+const ALIAS_MARKER = 'User-facing alias for the Topia';
+
 /**
- * @param {string} [topiaRoot]
- * @returns {{ written: number, removed: number, catalog: import('../lib/skill-catalog.js').SkillCatalogEntry[] }}
+ * Delete commands/topia-<skill>.md alias files an older generator wrote.
+ * @param {string} topiaRoot
+ * @param {import('../lib/skill-catalog.js').SkillCatalogEntry[]} catalog
+ * @returns {number} files deleted
  */
-export function generateSlashAliases(topiaRoot = TOPIA_ROOT) {
-  const catalog = loadSkillCatalog(topiaRoot);
-  const invocable = catalog.filter((s) => s.userInvocable);
-
+function removeAliasCommands(topiaRoot, catalog) {
   const commandsDir = join(topiaRoot, 'commands');
-  const catalogJson = join(topiaRoot, CATALOG_JSON_REL);
-  const catalogCjs = join(topiaRoot, CATALOG_CJS_REL);
-
-  mkdirSync(commandsDir, { recursive: true });
-  mkdirSync(dirname(catalogJson), { recursive: true });
-
-  const expected = new Set(invocable.map((s) => `${s.slashAlias}.md`));
-
-  for (const entry of invocable) {
-    const filePath = join(commandsDir, `${entry.slashAlias}.md`);
-    writeFileSync(filePath, renderAliasCommand(entry), 'utf-8');
-  }
-
+  if (!existsSync(commandsDir)) return 0;
+  const aliasFiles = new Set(catalog.map((s) => `topia-${s.name}.md`));
   let removed = 0;
   for (const file of readdirSync(commandsDir)) {
-    if (!file.startsWith('topia-') || !file.endsWith('.md')) continue;
-    if (!expected.has(file)) {
-      rmSync(join(commandsDir, file));
-      removed += 1;
-    }
+    if (!aliasFiles.has(file)) continue;
+    const path = join(commandsDir, file);
+    if (!readFileSync(path, 'utf-8').includes(ALIAS_MARKER)) continue;
+    rmSync(path);
+    removed += 1;
   }
+  return removed;
+}
+
+/**
+ * @param {string} [topiaRoot]
+ * @returns {{ removed: number, catalog: import('../lib/skill-catalog.js').SkillCatalogEntry[] }}
+ */
+export function generateSkillCatalog(topiaRoot = TOPIA_ROOT) {
+  const catalog = loadSkillCatalog(topiaRoot);
+  const removed = removeAliasCommands(topiaRoot, catalog);
+
+  const collisions = findSlashCollisions(topiaRoot);
+  if (collisions.length > 0) {
+    const lines = collisions.map(({ name, sources }) => `  /topia:${name} — ${sources.join(', ')}`);
+    throw new Error(`Slash names claimed more than once:\n${lines.join('\n')}`);
+  }
+
+  const catalogJson = join(topiaRoot, CATALOG_JSON_REL);
+  const catalogCjs = join(topiaRoot, CATALOG_CJS_REL);
+  mkdirSync(dirname(catalogJson), { recursive: true });
+  mkdirSync(dirname(catalogCjs), { recursive: true });
 
   writeFileSync(
     catalogJson,
@@ -219,13 +205,13 @@ export function generateSlashAliases(topiaRoot = TOPIA_ROOT) {
   writeFileSync(routesTs, renderSkillRoutes(catalog), 'utf-8');
   writeFileSync(join(topiaRoot, ROUTES_JSON_REL), renderSkillRoutesJson(catalog), 'utf-8');
 
-  return { written: invocable.length, removed, catalog };
+  return { removed, catalog };
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
-  const { written, removed } = generateSlashAliases();
-  console.log(`  ✓ Generated ${written} slash aliases (commands/topia-*.md)`);
-  if (removed > 0) console.log(`  ✓ Removed ${removed} stale alias file(s)`);
+  const { removed, catalog } = generateSkillCatalog();
+  console.log(`  ✓ Cataloged ${catalog.length} skills (each reached as /topia:<skill>)`);
+  if (removed > 0) console.log(`  ✓ Removed ${removed} old commands/topia-<skill>.md alias file(s)`);
   console.log(
     `  ✓ Wrote references/skill-catalog.json, hooks/lib/skill-catalog.cjs, ${ROUTES_JSON_REL} and ${ROUTES_TS_REL}`,
   );

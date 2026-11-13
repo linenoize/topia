@@ -1,5 +1,5 @@
 ---
-description: "Topia skill toolkit — interconnected workflows for the full project lifecycle. Use /topia-<skill> or /topia <action> to invoke a skill or run a CLI command."
+description: "Topia skill toolkit — interconnected workflows for the full project lifecycle. Use /topia:<skill> or /topia <action> to invoke a skill or run a CLI command."
 disable-model-invocation: true
 ---
 
@@ -20,7 +20,7 @@ Route to the appropriate Topia skill, CLI command, or extension pack based on th
 
 ## Team policy
 
-- 👤 `/topia org-config` — interview-driven setup for `.topia/org/org.md` (roles, policies, governance). See [`commands/org-config.md`](org-config.md). Teams should commit `.topia/org/`.
+- 👤 `/topia org-config` — interview-driven setup for `.topia/org/org.md` (roles, policies, governance). See [`skills/org-config/SKILL.md`](../skills/org-config/SKILL.md). Flags: `--force`, `--dry-run`. Teams should commit `.topia/org/`.
 
 ## CLI commands (run from terminal)
 
