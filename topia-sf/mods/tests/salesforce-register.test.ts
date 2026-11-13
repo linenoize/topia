@@ -9,7 +9,7 @@ import type { SalesforceResolved } from '../types'
 type On = Parameters<TestBody>[1]
 
 const ROOT = '/work/example-project'
-const TOOL = 'mcp__topia__sf_org_register'
+const TOOL = 'mcp__topia-sf__sf_org_register'
 const QUIET_START = { gitBand: false, quietReports: false, modelPreset: false }
 const BAND = {
   component: 'AbovePrompt',
@@ -53,7 +53,7 @@ function engine(on: On, options: { resolved?: unknown; answer?: string | null; r
   on('tool.check', () => ({ decision: 'allow' as const }))
   on('tool.register', ($, e) => {
     registered.push(e.name)
-    return { value: { tool: `mcp__topia__${e.name}` } }
+    return { value: { tool: `mcp__topia-sf__${e.name}` } }
   })
   on('process.run', ($, e) => {
     const call = { command: String(e.argv[2]), input: JSON.parse(e.init?.stdin ?? '{}') as Record<string, unknown> }
@@ -81,9 +81,9 @@ function engine(on: On, options: { resolved?: unknown; answer?: string | null; r
   return { calls, asked, registered, stores }
 }
 
-const CONNECT = { command: 'topia:sf:connect', args: '', origin: { kind: 'composer' as const }, presentation: { isFullscreen: false, columns: 100 } }
+const CONNECT = { command: 'topia-sf:connect', args: '', origin: { kind: 'composer' as const }, presentation: { isFullscreen: false, columns: 100 } }
 
-/** The command leads to the tool, as it does in a session: the table only lets sf_org_register run under /topia:sf:connect. */
+/** The command leads to the tool, as it does in a session: the table only lets sf_org_register run under /topia-sf:connect. */
 const register = async ($: Parameters<TestBody>[0], target: unknown = 'acme-sbx', extra: Record<string, unknown> = {}) => {
   await $.command.run(CONNECT)
   return $.tool.call({ tool: TOOL, target, ...extra } as never) as Promise<{ deny?: string; result?: unknown; text?: string; isError?: boolean }>
@@ -388,7 +388,7 @@ test('the band draws the live identity and the write warning', { options: QUIET_
   await start($)
   await until(() => calls.some(call => call.command === 'identity-check'))
   await new Promise(resolve => setTimeout(resolve, 30))
-  const ui = await $.ui.mount({ plugin: 'topia', surface: 'terminal', ...BAND })
+  const ui = await $.ui.mount({ plugin: 'topia-sf', surface: 'terminal', ...BAND })
   expect(await ui.find({ key: 'sf-class' })).not.toBe(undefined)
   expect(await ui.find({ key: 'salesforce-warning' })).not.toBe(undefined)
 })
@@ -401,7 +401,7 @@ test('with identity unchecked or failed, the band says so and shows no identity'
   await start($)
   await until(() => calls.some(call => call.command === 'identity-check'))
   await new Promise(resolve => setTimeout(resolve, 30))
-  const ui = await $.ui.mount({ plugin: 'topia', surface: 'terminal', ...BAND })
+  const ui = await $.ui.mount({ plugin: 'topia-sf', surface: 'terminal', ...BAND })
   expect(await ui.find({ key: 'sf-class' })).toBe(undefined)
   expect(await ui.find({ key: 'sf-continue' })).toBe(undefined)
   expect(await ui.find({ key: 'salesforce' })).not.toBe(undefined)
@@ -415,7 +415,7 @@ test('a notice can be acknowledged, in memory, and that clears only that notice'
   await start($)
   await until(() => calls.some(call => call.command === 'identity-check'))
   await new Promise(resolve => setTimeout(resolve, 30))
-  const ui = await $.ui.mount({ plugin: 'topia', surface: 'terminal', ...BAND })
+  const ui = await $.ui.mount({ plugin: 'topia-sf', surface: 'terminal', ...BAND })
   await ui.press({ key: 'sf-continue' })
   expect(await ui.find({ key: 'sf-continue' })).toBe(undefined)
   expect(await ui.find({ key: 'sf-class' })).not.toBe(undefined)

@@ -79,7 +79,7 @@ function lockedRunner(initial: 'on' | 'off') {
 
 test('the mod runs bin/runner.js by its plugin path and not from the project folder', { options: QUIET_START }, async ($, on) => {
   const { calls } = engine(on, lockedRunner('on'))
-  await $.command.run(command('topia:sf:disable'))
+  await $.command.run(command('topia-sf:disable'))
   expect(calls[0]?.argv[0]).toBe('node')
   expect(calls[0]?.argv[1]).toBe(`${calls[0]?.cwd}/salesforce/service/bin/runner.js`)
   expect(calls[0]?.cwd?.includes(ROOT)).toBe(false)
@@ -88,18 +88,18 @@ test('the mod runs bin/runner.js by its plugin path and not from the project fol
 
 test('with no lock, disable says so and offers nothing', { options: QUIET_START }, async ($, on) => {
   engine(on, lockedRunner('off'))
-  const answer = await $.command.run(command('topia:sf:disable'))
+  const answer = await $.command.run(command('topia-sf:disable'))
   expect(answer.text).toContain('not on')
-  const ui = await $.ui.mount({ plugin: 'topia', surface: 'terminal', ...BAND })
+  const ui = await $.ui.mount({ plugin: 'topia-sf', surface: 'terminal', ...BAND })
   expect(await ui.find({ key: 'sf-disable' })).toBe(undefined)
 })
 
 test('asking to disable does nothing until a person presses the button, and the runner does the change', { options: QUIET_START }, async ($, on) => {
   const { calls, toasts, storeOps } = engine(on, lockedRunner('on'))
-  const answer = await $.command.run(command('topia:sf:disable'))
+  const answer = await $.command.run(command('topia-sf:disable'))
   expect(answer.text).toContain(ROOT)
   expect(calls.some(call => call.command === 'disable')).toBe(false)
-  const ui = await $.ui.mount({ plugin: 'topia', surface: 'terminal', ...BAND })
+  const ui = await $.ui.mount({ plugin: 'topia-sf', surface: 'terminal', ...BAND })
   await ui.press({ key: 'sf-disable' })
   expect(calls.some(call => call.command === 'disable')).toBe(true)
   expect(toasts.join(' ')).toContain('off')
@@ -110,8 +110,8 @@ test('asking to disable does nothing until a person presses the button, and the 
 test('a failed disable leaves it on and says so', { options: QUIET_START }, async ($, on) => {
   const inner = lockedRunner('on')
   const { toasts } = engine(on, call => (call.command === 'disable' ? { exitCode: 0, reply: { ok: false, reason: 'The store cannot be read.' } } : inner(call)))
-  await $.command.run(command('topia:sf:disable'))
-  const ui = await $.ui.mount({ plugin: 'topia', surface: 'terminal', ...BAND })
+  await $.command.run(command('topia-sf:disable'))
+  const ui = await $.ui.mount({ plugin: 'topia-sf', surface: 'terminal', ...BAND })
   await ui.press({ key: 'sf-disable' })
   expect(toasts.join(' ')).toContain('still on')
 })
@@ -122,27 +122,27 @@ test('a runner that throws during a press does not escape the handler', { option
     if (call.command === 'disable') throw new Error('spawn failed')
     return inner(call)
   })
-  await $.command.run(command('topia:sf:disable'))
-  const ui = await $.ui.mount({ plugin: 'topia', surface: 'terminal', ...BAND })
+  await $.command.run(command('topia-sf:disable'))
+  const ui = await $.ui.mount({ plugin: 'topia-sf', surface: 'terminal', ...BAND })
   await ui.press({ key: 'sf-disable' })
   expect(toasts.join(' ')).toContain('still on')
 })
 
 test('cancel keeps it on and takes the button away', { options: QUIET_START }, async ($, on) => {
   const { calls } = engine(on, lockedRunner('on'))
-  await $.command.run(command('topia:sf:disable'))
-  await $.command.run(command('topia:sf:disable', 'cancel'))
-  const ui = await $.ui.mount({ plugin: 'topia', surface: 'terminal', ...BAND })
+  await $.command.run(command('topia-sf:disable'))
+  await $.command.run(command('topia-sf:disable', 'cancel'))
+  const ui = await $.ui.mount({ plugin: 'topia-sf', surface: 'terminal', ...BAND })
   expect(await ui.find({ key: 'sf-disable' })).toBe(undefined)
   expect(calls.some(call => call.command === 'disable')).toBe(false)
 })
 
 test('enable arms a button, and only the press writes the lock through the runner', { options: QUIET_START }, async ($, on) => {
   const { calls, storeOps } = engine(on, lockedRunner('off'))
-  const answer = await $.command.run(command('topia:sf:enable'))
+  const answer = await $.command.run(command('topia-sf:enable'))
   expect(answer.text).toContain(ROOT)
   expect(calls.some(call => call.command === 'enable')).toBe(false)
-  const ui = await $.ui.mount({ plugin: 'topia', surface: 'terminal', ...BAND })
+  const ui = await $.ui.mount({ plugin: 'topia-sf', surface: 'terminal', ...BAND })
   await ui.press({ key: 'sf-enable' })
   expect(calls.some(call => call.command === 'enable')).toBe(true)
   expect(storeOps.filter(op => op.includes('sf:'))).toEqual([])
@@ -150,16 +150,16 @@ test('enable arms a button, and only the press writes the lock through the runne
 
 test('enable says so when the lock cannot be read, and arms nothing', { options: QUIET_START }, async ($, on) => {
   engine(on, () => ({ exitCode: 0, reply: { lock: { state: 'unreadable', message: 'The store cannot be read.' }, session: null } }))
-  const answer = await $.command.run(command('topia:sf:enable'))
+  const answer = await $.command.run(command('topia-sf:enable'))
   expect(answer.text).toContain('cannot be read')
-  const ui = await $.ui.mount({ plugin: 'topia', surface: 'terminal', ...BAND })
+  const ui = await $.ui.mount({ plugin: 'topia-sf', surface: 'terminal', ...BAND })
   expect(await ui.find({ key: 'sf-enable' })).toBe(undefined)
 })
 
 test('a runner that fails or prints junk reads as cannot check, never as on or off', { options: QUIET_START }, async ($, on) => {
   engine(on, () => ({ exitCode: 1, stdout: 'not json' }))
-  const answer = await $.command.run(command('topia:sf:disable'))
+  const answer = await $.command.run(command('topia-sf:disable'))
   expect(answer.text).toContain('could not')
-  const enable = await $.command.run(command('topia:sf:enable'))
+  const enable = await $.command.run(command('topia-sf:enable'))
   expect(enable.text).toContain('could not')
 })

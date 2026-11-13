@@ -30,7 +30,7 @@ function checkRequest(ctx, raw, confirmedBriefHash) {
     const stop = (message, note) => ({ refusal: refuse(ctx, TOOL, orgId, '', message, { note }) });
     const lock = lockState(ctx.storeRoot, ctx.projectRoot);
     if (lock.state === 'off')
-        return { refusal: refuse(ctx, TOOL, orgId, '', 'Salesforce is not on for this project. /topia:sf:enable turns it on.', { record: false }) };
+        return { refusal: refuse(ctx, TOOL, orgId, '', 'Salesforce is not on for this project. /topia-sf:enable turns it on.', { record: false }) };
     if (lock.state === 'unreadable')
         return { refusal: refuse(ctx, TOOL, orgId, '', lock.message, { record: false }) };
     const problem = validateArgs(SHOW_VALUES_SCHEMA, raw);

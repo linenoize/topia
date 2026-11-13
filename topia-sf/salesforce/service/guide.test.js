@@ -6,20 +6,22 @@ import { fileURLToPath } from 'node:url'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const root = join(here, '..', '..')
+const repo = join(root, '..')
 const read = (...parts) => readFileSync(join(root, ...parts), 'utf8').replace(/\r\n/g, '\n')
+const readRepo = (...parts) => readFileSync(join(repo, ...parts), 'utf8').replace(/\r\n/g, '\n')
 
 const contract = read('salesforce', 'service', 'contract.ts')
 const PROMISE = contract.match(/SALESFORCE_PROMISE =\s*"([^"]+)"/)?.[1]
 const readme = read('docs', 'salesforce', 'README.md')
-const connect = read('commands', 'sf', 'connect.md')
-const enable = read('commands', 'sf', 'enable.md')
+const connect = read('commands', 'connect.md')
+const enable = read('commands', 'enable.md')
 const checklist = read('docs', 'salesforce', 'LIVE-CHECKLIST.md')
 const design = read('docs', 'plans', '2026-11-01-salesforce-safety-design.md')
 
 test('the promise is the same words everywhere, and the guide leads with it', () => {
   assert.ok(PROMISE, 'the contract holds the promise')
   assert.ok(design.includes(PROMISE), 'the design contract')
-  assert.ok(enable.includes(PROMISE), '/topia:sf:enable')
+  assert.ok(enable.includes(PROMISE), '/topia-sf:enable')
   const firstParagraph = readme.split('\n').find(line => line.length > 0 && !line.startsWith('#'))
   assert.equal(firstParagraph, PROMISE)
 })
@@ -69,7 +71,7 @@ test('the guide names dependency_report as advisory, and it exists', () => {
 })
 
 test('the changelog calls this experimental, and says it has not run live', () => {
-  const changelog = read('docs', 'CHANGELOG.md')
+  const changelog = readRepo('docs', 'CHANGELOG.md')
   const section = changelog.slice(changelog.indexOf('## [3.11.0]'), changelog.indexOf('## [3.10.3]'))
   assert.match(section, /Experimental/)
   assert.match(section, /Use a sandbox/)
@@ -77,7 +79,9 @@ test('the changelog calls this experimental, and says it has not run live', () =
 })
 
 test('the install docs and the readme point at the guide', () => {
-  for (const file of [['README.md'], ['docs', 'INSTALL.md']]) assert.ok(read(...file).includes('salesforce/README.md'), file.join('/'))
+  for (const file of [['README.md'], ['docs', 'INSTALL.md']]) {
+    assert.ok(readRepo(...file).includes('topia-sf/docs/salesforce/README.md'), file.join('/'))
+  }
 })
 
 test('the checklist runs identity before anything that could write, ends at the release gate, and names the steps', () => {
@@ -134,7 +138,7 @@ test('no Salesforce doc calls the journal tamper-proof (contract 10.7)', () => {
       else if (entry.name.endsWith('.md')) files.push(path)
     }
   }
-  for (const dir of [join(root, 'docs', 'salesforce'), join(root, 'salesforce'), join(root, 'commands', 'sf')]) walk(dir)
+  for (const dir of [join(root, 'docs', 'salesforce'), join(root, 'salesforce'), join(root, 'commands')]) walk(dir)
   files.push(join(root, 'docs', 'plans', '2026-11-01-salesforce-safety-design.md'))
   assert.ok(files.length > 10, 'the scan found the docs')
   const offenders = files.flatMap(file => claimsIn(readFileSync(file, 'utf8').replace(/\r\n/g, '\n')).map(claim => `${file}: ${claim}`))

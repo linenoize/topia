@@ -1,7 +1,7 @@
 {
   "name": "topia",
   "displayName": "Topia",
-  "version": "3.11.0",
+  "version": "3.12.0",
   "description": "71-skill Topia Nexus for Claude Code — discipline rails via native hooks (readiness/guardian/completion-gate/quarantine). 315 synapses + 49 pulses, Maestro routing, optional agora-code neural memory. Use topia:build for code, topia:architecture-mapper for legacy mapping, topia:team for parallel work, topia:launch for deploy, topia:rescue for legacy code.",
   "author": {
     "name": "topia"
@@ -18,18 +18,6 @@
     "neural-memory"
   ],
   "types": "./mods/types/index.d.ts",
-  "mcpServers": {
-    "topia-salesforce": {
-      "command": "node",
-      "args": [
-        "${CLAUDE_PLUGIN_ROOT}/salesforce/service/bin/mcp.js"
-      ],
-      "env": {
-        "CLAUDE_PROJECT_DIR": "${CLAUDE_PROJECT_DIR}",
-        "TOPIA_SF_HOOK_HOST": "1"
-      }
-    }
-  },
   "userConfig": {
     "gitBand": {
       "type": "boolean",

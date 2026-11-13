@@ -53,7 +53,7 @@ Before stopping on a vendor or product name, call `vendor_findings_list` with no
 
 - **The name matches a registered vendor, product, package name, or namespace:** it resolves to "vendor/package", with no stop. Mark that subject known, and put the vendor folder name in the brief. It says what the name means. It doesn't say the package is in this org, or at the same version.
 - **It matches nothing, or the list reports a malformed file:** stop and ask, using the row in the table. An unknown product name still stops. Don't guess a package from what the name sounds like.
-- **Tell the person how to register it** if they say it's an installed package: `/topia:sf:vendor fingerprint`.
+- **Tell the person how to register it** if they say it's an installed package: `/topia-sf:vendor fingerprint`.
 
 ## The only org call before confirmation
 

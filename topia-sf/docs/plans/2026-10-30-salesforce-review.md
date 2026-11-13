@@ -43,10 +43,10 @@ Priority key: **P0** breaks a safety invariant, leaks data, or breaks install. *
 | # | P | Finding | Fix | Why |
 | --- | --- | --- | --- | --- |
 | 1 | P0 | `ensure-gitignore.js` un-ignores `/.topia/salesforce/**` in **every user project**. That commits `activation.json` (absolute path and username), `session.json` (org id, user), journals (SOQL), plans, executions, validations, `pending-enable.json`, and `orgs.json`. | Keep `/.topia/*` ignored. Share team knowledge through `docs/salesforce/` only, or un-ignore an explicit allowlist such as `plans/`. | Violates "no personal data in repo; per-project stores". |
-| 2 | P0 | No MCP server is registered (no `mcpServers` in plugin.json), so every `/topia:sf:*` command calls tools that don't exist. | Add `mcpServers.topia-salesforce` → `node ${CLAUDE_PLUGIN_ROOT}/salesforce/service/dist/mcp.js`, gated on activation. | Nothing works at runtime. |
+| 2 | P0 | No MCP server is registered (no `mcpServers` in plugin.json), so every `/topia-sf:*` command calls tools that don't exist. | Add `mcpServers.topia-salesforce` → `node ${CLAUDE_PLUGIN_ROOT}/salesforce/service/dist/mcp.js`, gated on activation. | Nothing works at runtime. |
 | 3 | P0 | `salesforce/service/dist/` is gitignored, but marketplace installs are git clones, so `dist/cli.js` and the server are missing. | Commit built JS (like the hooks), or ship plain ESM `.js` with JSDoc types and drop the build step. | Install-time break. |
 | 4 | P1 | The gitignore change is half-applied. `REQUIRED_PATTERNS` is unchanged, so existing projects return `already_ok` and never get the new lines. No test covers the block. | Moot once #1 is fixed. Otherwise add the patterns and a test. | New and existing projects behave differently. |
-| 5 | P1 | `commands/sf/*.md` with `name: sf:ask` is the first subfolder and first colon name. No validator enumerates it. Cursor may not recurse. The mod hooks both `sf:enable` and `topia:sf:enable`. | Verify on a real install. If unsure, flatten to `commands/sf-ask.md` (`name: sf-ask`), as the other commands are. | Commands may not surface. |
+| 5 | P1 | `commands/sf/*.md` with `name: sf:ask` is the first subfolder and first colon name. No validator enumerates it. Cursor may not recurse. The mod hooks both `sf:enable` and `topia-sf:enable`. | Verify on a real install. If unsure, flatten to `commands/sf-ask.md` (`name: sf-ask`), as the other commands are. | Commands may not surface. |
 | 6 | P1 | `session.start` awaits a node spawn (8s timeout) in **every** project, ungated. | Skip when there is no store key and no pending enable. Otherwise `void` it. | It slows every user who never uses Salesforce. |
 | 7 | P1 | `turn.complete` refresh races session start and can clear the band and pending atom. Button handlers have no try/catch. `pressSalesforceEnable` ignores a failed file write. | Use a single in-flight refresh promise and handle errors. | Flaky band. |
 | 8 | P1 | `mods/lib/salesforce-env.ts` duplicates `paths.ts` and `activation.ts`, and the copies have already drifted: the mod accepts an empty `user`, the service doesn't. | One source of truth, plus a parity test. | The lock can flip states. |
@@ -77,7 +77,7 @@ Evaluated at `219a84a` (release 1.68.0): 260 skills, Apache-2.0, weekly releases
 
 **Decision: port the prose. Do not vendor the repo or install it alongside Topia.**
 - Most of its skills generate, deploy, write records, run anonymous Apex, or grant permissions, which conflicts with this plugin's gate.
-- Its descriptions are routing-aggressive, and the `salesforce-development` plugin's `PreToolUse Bash(sf *)` hooks would intercept `/topia:sf:*` work.
+- Its descriptions are routing-aggressive, and the `salesforce-development` plugin's `PreToolUse Bash(sf *)` hooks would intercept `/topia-sf:*` work.
 - It does not depend on `@salesforce/mcp`.
 
 | Port into | From sf-skills | What |
@@ -142,7 +142,7 @@ Each finding (`<id>.md`) has the existing seven required fields (scope, owner, e
 - **re-verify on**: package upgrade, sandbox refresh, Salesforce release.
 
 **Service changes:**
-1. Add an `EntryKind` `vendor-finding` in `document.ts`, with a `vendors/` folder and validation of the extra fields. `/topia:sf:document` accepts it. Optionally add a thin `/topia:sf:vendor` command with `fingerprint | add-finding | list | reverify`.
+1. Add an `EntryKind` `vendor-finding` in `document.ts`, with a `vendors/` folder and validation of the extra fields. `/topia-sf:document` accepts it. Optionally add a thin `/topia-sf:vendor` command with `fingerprint | add-finding | list | reverify`.
 2. Add a read-only `packages.inventory` tool. It runs Tooling SOQL on `InstalledSubscriberPackage` (name, namespace, version) and `NamespacePrefix` queries on ApexTrigger, ApexClass, FlowDefinition, EntityDefinition and PermissionSet, plus `PackageLicense`/`UserPackageLicense` counts. Its output seeds `package.md`.
 3. **Annotation:** when `schema.describe`, `metadata.retrieve`, `explain` or `diagnose` touches a component whose namespace is registered, attach the matching findings to the result ("Known vendor behavior: …, verified v1.4.2 on 2026-11-02"). This is how "Salesforce behaves differently here" reaches the admin at the moment it matters.
 4. **Drift:** add an issue kind `vendor-version-drift`. When the live installed version ≠ a finding's pinned version, the finding shows as stale. Re-check it before relying on it, using the existing `stale-verification` notice pattern.

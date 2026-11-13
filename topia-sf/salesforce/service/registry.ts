@@ -45,9 +45,9 @@ export type RegisteredOrg = { entry: OrgEntry; record: OrgRecord }
 export function findRegistered(storeRoot: string, projectRoot: string, orgId: string): RegisteredOrg | { missing: string } {
   const entry = readOrgsFile(projectRoot).find(item => sameId(item.orgId, orgId))
   const record = listOrgRecords(storeRoot, projectRoot).find(item => sameId(item.orgId, orgId))
-  if (!entry && !record) return { missing: `Org ${orgId} is not registered. The CLI default org is not used. /topia:sf:connect registers one.` }
-  if (!entry) return { missing: `Org ${orgId} is not in this project's orgs.json. /topia:sf:connect registers it again.` }
-  if (!record) return { missing: `Org ${orgId} is in orgs.json but is not connected on this machine. /topia:sf:connect connects it.` }
+  if (!entry && !record) return { missing: `Org ${orgId} is not registered. The CLI default org is not used. /topia-sf:connect registers one.` }
+  if (!entry) return { missing: `Org ${orgId} is not in this project's orgs.json. /topia-sf:connect registers it again.` }
+  if (!record) return { missing: `Org ${orgId} is in orgs.json but is not connected on this machine. /topia-sf:connect connects it.` }
   return { entry, record }
 }
 
@@ -106,8 +106,8 @@ export function writeTargetOf(storeRoot: string, projectRoot: string, reader: Or
   const writer = readWriter(storeRoot, projectRoot, reader.orgId)
   if (writer !== null) return { record: writer }
   if (reader.singleUserAcceptedAt !== undefined) return { record: reader }
-  const accept = reader.writeAccess.canWrite === 'no' ? '' : ` If this org has only one user that can write, /topia:sf:connect lets you accept that when you register ${reader.username} again.`
-  return { refused: `This is production, and no writer is registered, so nothing changed. In your own terminal, run sf org login web --instance-url ${reader.instanceUrl}, and sign in as a write-capable user in the browser, with MFA. Then run /topia:sf:connect, and register that user with role writer.${accept}` }
+  const accept = reader.writeAccess.canWrite === 'no' ? '' : ` If this org has only one user that can write, /topia-sf:connect lets you accept that when you register ${reader.username} again.`
+  return { refused: `This is production, and no writer is registered, so nothing changed. In your own terminal, run sf org login web --instance-url ${reader.instanceUrl}, and sign in as a write-capable user in the browser, with MFA. Then run /topia-sf:connect, and register that user with role writer.${accept}` }
 }
 
 /** Drops an org a person has replaced in the dialog, from both halves, with its writer. */

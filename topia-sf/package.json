@@ -1,0 +1,28 @@
+{
+  "name": "@linenoize/topia-sf",
+  "version": "3.12.0",
+  "private": true,
+  "description": "Optional Salesforce add-on plugin for Topia (not published).",
+  "type": "module",
+  "scripts": {
+    "build:sf": "tsc -p salesforce/service/tsconfig.bin.json",
+    "test": "tsc -p salesforce/service/tsconfig.json && node salesforce/service/publish-tests.js && node --test \"salesforce/service/**/*.test.js\" \"scripts/**/*.test.js\"",
+    "ci": "npm test"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "files": [
+    ".claude-plugin/",
+    "hooks/",
+    "mods/",
+    "commands/",
+    "agents/",
+    "salesforce/",
+    "!salesforce/service/test-fixtures/"
+  ],
+  "devDependencies": {
+    "@types/node": "^22.19.0",
+    "typescript": "~5.9.3"
+  }
+}

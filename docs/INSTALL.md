@@ -73,7 +73,7 @@ Install scope (user / project / local): [`INSTALL-SCOPES.md`](INSTALL-SCOPES.md)
 
 ## Salesforce (optional, per project)
 
-Topia has Salesforce tools, off everywhere until you turn them on for one project with `/topia:sf:enable`. They read an org and plan changes, and in Claude Code they make a change only after you approve it in a dialog. The approval isn't a hard limit on its own: connect production with a read-only Salesforce user. This hasn't run against a live org yet. See the [Salesforce guide](salesforce/README.md).
+Salesforce tools are the optional `topia-sf` plugin (install after Topia: `/plugin install topia-sf@linenoize`). Off everywhere until you turn them on for one project with `/topia-sf:enable`. They read an org and plan changes, and in Claude Code they make a change only after you approve it in a dialog. The approval isn't a hard limit on its own: connect production with a read-only Salesforce user. This hasn't run against a live org yet. See the [Salesforce guide](../topia-sf/docs/salesforce/README.md).
 
 ---
 

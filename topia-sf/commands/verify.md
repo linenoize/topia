@@ -1,10 +1,10 @@
 ---
-name: sf:verify
+name: verify
 description: "Check a Salesforce deploy or record change against its plan afterward. A failed check stays failed."
 disable-model-invocation: true
 ---
 
-# /topia:sf:verify
+# /topia-sf:verify
 
 Refuse until this project has an activation lock. Paths below start at the Topia plugin folder (`${CLAUDE_PLUGIN_ROOT}`), not this project.
 
@@ -20,7 +20,7 @@ It reads the deploy by its id, then re-retrieves with the same manifest. Report 
 2. `retrieve`: what the org holds now, compared to what shipped.
 3. `audit`: whether `SetupAuditTrail` could be read. Report anything by this user that isn't in the journal, through `audit_query`.
 4. `identity`: the org it reached. A mismatch reads as written to the wrong org.
-5. Type-specific checks are yours to add: describe for fields, and active version for flows. Tests only through `/topia:sf:test`.
+5. Type-specific checks are yours to add: describe for fields, and active version for flows. Tests only through `/topia-sf:test`.
 6. Quick deploy runs under its own job id. Report on that id, not the validation's.
 
 A deploy that may have landed is queried, never retried.
@@ -38,7 +38,7 @@ It re-reads every frozen id and classifies each one: `done`, `untouched`, `chang
 
 A failed check stays failed. Don't re-run it until it passes, and don't report the change as complete.
 
-If a check fails, repeat the reversibility text from `salesforce/skills/references/reversibility.md`, with what can't be undone first. A restore is a new approved plan, through `/topia:sf:plan`. A git revert isn't an org rollback.
+If a check fails, repeat the reversibility text from `salesforce/skills/references/reversibility.md`, with what can't be undone first. A restore is a new approved plan, through `/topia-sf:plan`. A git revert isn't an org rollback.
 
 ## Hosts and refusals
 

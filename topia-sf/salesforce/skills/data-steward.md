@@ -78,7 +78,7 @@ For a high-risk change, recommend a sandbox rehearsal. That is a real save in a 
 
 ## Writing
 
-Only `sf_records_execute` writes records, after a person approves in its dialog. A person gets there with `/topia:sf:execute`. If it doesn't exist on this host, stop and say so. There's no substitute.
+Only `sf_records_execute` writes records, after a person approves in its dialog. A person gets there with `/topia-sf:execute`. If it doesn't exist on this host, stop and say so. There's no substitute.
 
 The approval screen is built by code, not from your text. Operations are `update` and `delete` only. There's no upsert, insert, hard delete, or merge. A delete is capped by a constant in code, and `orgs.json` can only lower it.
 

@@ -42,11 +42,11 @@ export function findRegistered(storeRoot, projectRoot, orgId) {
     const entry = readOrgsFile(projectRoot).find(item => sameId(item.orgId, orgId));
     const record = listOrgRecords(storeRoot, projectRoot).find(item => sameId(item.orgId, orgId));
     if (!entry && !record)
-        return { missing: `Org ${orgId} is not registered. The CLI default org is not used. /topia:sf:connect registers one.` };
+        return { missing: `Org ${orgId} is not registered. The CLI default org is not used. /topia-sf:connect registers one.` };
     if (!entry)
-        return { missing: `Org ${orgId} is not in this project's orgs.json. /topia:sf:connect registers it again.` };
+        return { missing: `Org ${orgId} is not in this project's orgs.json. /topia-sf:connect registers it again.` };
     if (!record)
-        return { missing: `Org ${orgId} is in orgs.json but is not connected on this machine. /topia:sf:connect connects it.` };
+        return { missing: `Org ${orgId} is in orgs.json but is not connected on this machine. /topia-sf:connect connects it.` };
     return { entry, record };
 }
 /** A username somebody added by hand to the committed file does not survive the next write. */
@@ -103,8 +103,8 @@ export function writeTargetOf(storeRoot, projectRoot, reader) {
         return { record: writer };
     if (reader.singleUserAcceptedAt !== undefined)
         return { record: reader };
-    const accept = reader.writeAccess.canWrite === 'no' ? '' : ` If this org has only one user that can write, /topia:sf:connect lets you accept that when you register ${reader.username} again.`;
-    return { refused: `This is production, and no writer is registered, so nothing changed. In your own terminal, run sf org login web --instance-url ${reader.instanceUrl}, and sign in as a write-capable user in the browser, with MFA. Then run /topia:sf:connect, and register that user with role writer.${accept}` };
+    const accept = reader.writeAccess.canWrite === 'no' ? '' : ` If this org has only one user that can write, /topia-sf:connect lets you accept that when you register ${reader.username} again.`;
+    return { refused: `This is production, and no writer is registered, so nothing changed. In your own terminal, run sf org login web --instance-url ${reader.instanceUrl}, and sign in as a write-capable user in the browser, with MFA. Then run /topia-sf:connect, and register that user with role writer.${accept}` };
 }
 /** Drops an org a person has replaced in the dialog, from both halves, with its writer. */
 export function removeOrg(storeRoot, projectRoot, orgId) {

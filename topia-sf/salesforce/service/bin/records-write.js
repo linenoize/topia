@@ -45,7 +45,7 @@ function reasonOf(result) {
 function lockProblem(ctx) {
     const lock = lockState(ctx.storeRoot, ctx.projectRoot);
     if (lock.state === 'off')
-        return 'Salesforce is not on for this project. /topia:sf:enable turns it on.';
+        return 'Salesforce is not on for this project. /topia-sf:enable turns it on.';
     return lock.state === 'unreadable' ? lock.message : null;
 }
 function modeProblem(mode, tool) {

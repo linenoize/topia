@@ -40,7 +40,7 @@ function reasonOf(result) {
 function gateProblem(ctx, mode) {
     const lock = lockState(ctx.storeRoot, ctx.projectRoot);
     if (lock.state === 'off')
-        return 'Salesforce is not on for this project. /topia:sf:enable turns it on.';
+        return 'Salesforce is not on for this project. /topia-sf:enable turns it on.';
     if (lock.state === 'unreadable')
         return lock.message;
     return modeAllowsTool(mode, TOOL) ? null : `${TOOL} does not run in ${mode} mode. ${toolRefusal(TOOL, null) ?? ''}`.trim();
@@ -134,7 +134,7 @@ export async function prepareDeployWrite(adapter, input, request, confirmedBrief
             return stop(ctx, plan.orgId, auditStop);
         const validation = readValidation(ctx.storeRoot, ctx.projectRoot, plan.id);
         if (validation === null || validation.planHash !== loaded.planHash)
-            return stop(ctx, plan.orgId, 'This plan has no validation yet. /topia:sf:validate runs deployment_validate first.');
+            return stop(ctx, plan.orgId, 'This plan has no validation yet. /topia-sf:validate runs deployment_validate first.');
         if (validation.state === 'failed')
             return stop(ctx, plan.orgId, revalidate(validation.problems.join(' ')));
         if (validation.state !== 'passed')

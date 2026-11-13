@@ -1,10 +1,10 @@
 ---
-name: sf:review-access
+name: review-access
 description: "Review Salesforce permission and sensitive-field impact. Naming a permission does not assign it."
 disable-model-invocation: true
 ---
 
-# /topia:sf:review-access
+# /topia-sf:review-access
 
 <!-- Adapted from forcedotcom/sf-skills skills/platform-permission-set-generate/SKILL.md @219a84a, Apache-2.0; modified -->
 
@@ -17,7 +17,7 @@ Mode: `review`. No grants and no writes. Print the identity block first.
 3. Say who gains or loses access, which objects and fields, and which sharing or field-level rules apply. Configured access isn't proof of use.
 4. Run the least-privilege checklist on any proposed change. `ViewAllData`, `ModifyAllData`, and `ManageUsers` need a named person's security review. Don't add a permission just to clear a dependency error.
 5. PII stays aggregated unless values are approved through `sf_show_values`. Naming a missing permission doesn't assign it.
-6. A proposed change goes to `/topia:sf:plan`, with class `access`: an assignment can be removed, and access already used can't be undone.
+6. A proposed change goes to `/topia-sf:plan`, with class `access`: an assignment can be removed, and access already used can't be undone.
 
 ## Hosts and refusals
 

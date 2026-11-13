@@ -102,9 +102,9 @@ export function writeRequest(tool: SalesforceWriteTool, input: Record<string, un
 }
 
 /** After a person approved, a silent runner can't mean nothing happened. */
-export const SALESFORCE_WRITE_UNKNOWN = "The runner didn't answer after a person approved this, so the result is unknown. It isn't stopped: anything it started in the org may still be running. Nothing is re-sent. /topia:sf:verify reads it."
+export const SALESFORCE_WRITE_UNKNOWN = "The runner didn't answer after a person approved this, so the result is unknown. It isn't stopped: anything it started in the org may still be running. Nothing is re-sent. /topia-sf:verify reads it."
 
-export const SALESFORCE_STDIO_PREFIX = 'mcp__plugin_topia_topia-salesforce__'
+export const SALESFORCE_STDIO_PREFIX = 'mcp__plugin_topia-sf_topia-salesforce__'
 export const SALESFORCE_ACK_LABEL = 'Acknowledge this notice'
 
 const STALE_MS = 24 * 60 * 60 * 1000
@@ -116,7 +116,7 @@ export const SALESFORCE_ABOUT = {
   user: 'The Salesforce user the CLI targets, by username.',
   mode: 'What the last command you ran allows, this turn only: read-only, explain, investigate, plan, validate, execute, or review. It is an accident guard, not the boundary, and it goes back to read-only when the turn ends.',
   continue: 'Acknowledges this notice for this issue, org, user, and operation. It is not a production-write grant.',
-  enable: 'Turns Salesforce on for this project path only. No other project is included. /topia:sf:disable turns it off.',
+  enable: 'Turns Salesforce on for this project path only. No other project is included. /topia-sf:disable turns it off.',
   disable: 'Turns Salesforce off for this project path only, and removes its lock. Other projects stay as they are.',
 } as const
 
@@ -201,7 +201,7 @@ export function viewBand(input: {
   }
   const session = input.session
   if (session === null) {
-    const message = input.registeredOrgs === 0 ? 'No org is registered. /topia:sf:connect registers one.' : 'Identity has not been checked yet this session.'
+    const message = input.registeredOrgs === 0 ? 'No org is registered. /topia-sf:connect registers one.' : 'Identity has not been checked yet this session.'
     return { kind: 'notice', text: `Salesforce: ${message}`, canContinue: false, ...(input.writerNotice ? { warning: input.writerNotice } : {}) }
   }
   const warning = [session.writeWarning, input.writerNotice, session.audit?.text].filter((part): part is string => typeof part === 'string' && part.length > 0).join(' ') || undefined
@@ -215,7 +215,7 @@ export function viewBand(input: {
   const checked = Date.parse(session.checkedAt)
   if (Number.isNaN(checked) || input.now - checked > STALE_MS) {
     const stale = {
-      ...plainIssue('stale-verification', session.identity.orgName, 'The last live check is stale. /topia:sf:context runs a fresh one.'),
+      ...plainIssue('stale-verification', session.identity.orgName, 'The last live check is stale. /topia-sf:context runs a fresh one.'),
       orgId: session.identity.orgId,
       user: session.identity.user,
     }
@@ -317,7 +317,7 @@ export function registrationScreen(resolved: SalesforceResolved): RegistrationSc
     lines.push(`This is production, and this user can write. "${label}" keeps it for reads, and writes stay refused until a second user is registered as the writer.`, `If this org has only one user that can write, "${SINGLE_USER_LABEL}" lets that user do both, and the band keeps saying so. This is what you'd be accepting:`, SALESFORCE_PROMISE)
     return { question: `${lines.join('\n')}\n\nRegister this org for this project?`, options: ['Stop', label, SINGLE_USER_LABEL], approveLabel: label, acceptLabel: SINGLE_USER_LABEL, typedName: null, pinned }
   }
-  if (!live.isSandbox) lines.push('A write on production takes a second user: /topia:sf:connect, with role writer, after a person logs that user in.')
+  if (!live.isSandbox) lines.push('A write on production takes a second user: /topia-sf:connect, with role writer, after a person logs that user in.')
   return { question: `${lines.join('\n')}\n\nRegister this org for this project?`, options: ['Stop', label], approveLabel: label, typedName: null, pinned }
 }
 

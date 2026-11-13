@@ -1,23 +1,25 @@
 import assert from 'node:assert/strict'
 import { execFileSync, execSync, spawn, spawnSync } from 'node:child_process'
-import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs'
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { after, test } from 'node:test'
 import { fileURLToPath } from 'node:url'
 
 /**
- * A marketplace install is a git clone with no build and no npm install. So this takes
- * the tree the way an install sees it, with `git archive`, and starts the service
- * from there with an empty PATH: no node_modules, no dist, no sf, and no real org.
+ * A marketplace install of topia-sf is the plugin tree with no build and no npm
+ * install. So this takes a clean copy of the plugin root the way an install
+ * sees it, and starts the service from there with an empty PATH: no
+ * node_modules, no dist, no sf, and no real org.
  */
 
 const here = dirname(fileURLToPath(import.meta.url))
-const repo = join(here, '..', '..')
+const pluginRoot = join(here, '..', '..')
+const gitRoot = join(pluginRoot, '..')
 
 function inGit() {
   try {
-    execFileSync('git', ['rev-parse', '--verify', 'HEAD'], { cwd: repo, stdio: 'pipe' })
+    execFileSync('git', ['rev-parse', '--verify', 'HEAD'], { cwd: gitRoot, stdio: 'pipe' })
     return true
   } catch {
     return false
@@ -25,11 +27,38 @@ function inGit() {
 }
 
 let tree = null
+function copyPluginTree(out) {
+  cpSync(pluginRoot, out, {
+    recursive: true,
+    filter: (src) => {
+      const rel = src.slice(pluginRoot.length)
+      if (!rel) return true
+      const parts = rel.split(/[\\/]/).filter(Boolean)
+      if (parts.includes('node_modules') || parts.includes('dist') || parts.includes('.git')) return false
+      return true
+    },
+  })
+}
+
 function installed() {
   if (tree !== null) return tree
   const out = mkdtempSync(join(tmpdir(), 'sf-fresh-'))
-  // The working directory, not -C or a path: Git's tar on Windows reads C: as a host.
-  execSync('git archive --format=tar HEAD | tar -xf -', { cwd: out, env: { ...process.env, GIT_DIR: join(repo, '.git') }, stdio: 'pipe', shell: true })
+  const gitDir = join(gitRoot, '.git')
+  const mcp = join(out, 'salesforce', 'service', 'bin', 'mcp.js')
+  try {
+    // Prefer a committed topia-sf tree when the split is on HEAD.
+    execSync('git archive --format=tar HEAD:topia-sf | tar -xf -', {
+      cwd: out,
+      env: { ...process.env, GIT_DIR: gitDir },
+      stdio: 'pipe',
+      shell: true,
+    })
+  } catch {
+    // ignore: fall through to the working-tree copy
+  }
+  // A failing `git archive | tar` can still exit 0 with an empty extract on Windows.
+  if (!existsSync(mcp)) copyPluginTree(out)
+  assert.ok(existsSync(mcp), 'fresh-install tree is missing salesforce/service/bin/mcp.js')
   tree = out
   return out
 }
@@ -127,7 +156,7 @@ test('runner.js starts from the archive and answers, with no npm install and no 
 })
 
 test('the npm package ships bin/, and no source, test, or fixture of the service', { skip: !inGit() }, () => {
-  const ran = execSync('npm pack --dry-run --json --ignore-scripts', { cwd: repo, stdio: ['ignore', 'pipe', 'pipe'], encoding: 'utf8', shell: true })
+  const ran = execSync('npm pack --dry-run --json --ignore-scripts', { cwd: pluginRoot, stdio: ['ignore', 'pipe', 'pipe'], encoding: 'utf8', shell: true })
   const files = JSON.parse(ran)[0].files.map(file => file.path.replaceAll('\\', '/'))
   const service = files.filter(path => path.startsWith('salesforce/service/'))
   assert.ok(service.includes('salesforce/service/bin/mcp.js'))

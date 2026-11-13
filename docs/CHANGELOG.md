@@ -4,9 +4,23 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
+## [3.12.0] — 2026-11-13
+
+The Salesforce tools moved out of Topia into their own plugin, `topia-sf`, in the same marketplace. Topia itself no longer loads a Salesforce MCP server, mod, or commands. If you don't use Salesforce, nothing else changes.
+
+### Changed
+
+- **Salesforce is a separate install** — `/plugin install topia-sf@linenoize`. It declares `topia` as a dependency, so Claude Code installs Topia too if it's missing. If you used Salesforce on 3.11.0, updating Topia removes the Salesforce server until you install `topia-sf`. Commands are now `/topia-sf:<name>` (was `/topia:sf:<name>`), and the MCP tools are `mcp__plugin_topia-sf_topia-salesforce__*`. A project that turned Salesforce on keeps its lock and orgs, because they live in the project, not the plugin. It's still experimental and still hasn't run against a live org. Start at `topia-sf/docs/salesforce/README.md`.
+- **Core installs are lighter** — TypeScript and `@types/node` are dev dependencies of `topia-sf` only, and core `npm test` no longer compiles the Salesforce service. CI runs the `topia-sf` suite as its own step.
+- **Releases bump both plugins** — `scripts/bump-version.js` and `scripts/version-sync-check.js` now cover `topia-sf/.claude-plugin/plugin.json`, `topia-sf/package.json`, and both marketplace entries.
+
+### Fixed
+
+- On `main` after commit `04f9129`, the core mod imported Salesforce files from their old path, so a fresh install got a mod that couldn't load. 3.12.0 is the first tagged build with the split finished.
+
 ## [3.11.0] — 2026-11-02
 
-Experimental Salesforce tools, for testing, off everywhere until a person turns them on for one project. **Use a sandbox. This hasn't run against a live org.** It was built and tested against a fake Salesforce CLI, and `docs/salesforce/LIVE-CHECKLIST.md` lists what a person still has to confirm before a release. Start at `docs/salesforce/README.md`.
+Experimental Salesforce tools, for testing, off everywhere until a person turns them on for one project. **Use a sandbox. This hasn't run against a live org.** It was built and tested against a fake Salesforce CLI, and `docs/salesforce/LIVE-CHECKLIST.md` (now `topia-sf/docs/salesforce/LIVE-CHECKLIST.md`) lists what a person still has to confirm before a release. Start at `topia-sf/docs/salesforce/README.md`.
 
 ### Added
 
@@ -20,7 +34,7 @@ The approval covers Topia's tools, not everything the assistant can do. A shell 
 
 ### Known issues
 
-Open review findings are listed in `docs/salesforce/LIVE-CHECKLIST.md` section 19b. Real Salesforce CLI output may differ from what the parsers expect. A mismatch stops the operation and reads as `unknown`, and that's the most useful thing to report.
+Open review findings are listed in `topia-sf/docs/salesforce/LIVE-CHECKLIST.md` section 19b. Real Salesforce CLI output may differ from what the parsers expect. A mismatch stops the operation and reads as `unknown`, and that's the most useful thing to report.
 
 ## [3.10.3] — 2026-11-02
 

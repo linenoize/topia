@@ -31,4 +31,13 @@ describe('marketplace.json', () => {
     const entry = marketplace.plugins.find((p) => p.name === 'topia');
     assert.equal(entry.version, pkg.version);
   });
+
+  test('lists topia-sf as a local plugin entry', () => {
+    const marketplace = JSON.parse(readFileSync(join(ROOT, '.claude-plugin', 'marketplace.json'), 'utf8'));
+    const entry = marketplace.plugins.find((p) => p.name === 'topia-sf');
+    assert.ok(entry, 'topia-sf plugin entry required');
+    assert.equal(entry.source, './topia-sf');
+    const sfPlugin = JSON.parse(readFileSync(join(ROOT, 'topia-sf', '.claude-plugin', 'plugin.json'), 'utf8'));
+    assert.equal(entry.version, sfPlugin.version);
+  });
 });

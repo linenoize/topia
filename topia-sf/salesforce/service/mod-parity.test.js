@@ -50,8 +50,8 @@ test('what the mod imports from the service needs no Node, and imports siblings 
 test('the mod states the stdio prefix and the guards the same way the service names them', () => {
   const mod = readFileSync(join(here, '..', '..', 'mods', 'index.tsx'), 'utf8')
   const lib = readFileSync(join(here, '..', '..', 'mods', 'lib', 'salesforce-env.ts'), 'utf8')
-  assert.equal(lib.includes("SALESFORCE_STDIO_PREFIX = 'mcp__plugin_topia_topia-salesforce__'"), true)
-  assert.equal(mod.includes('/^mcp__plugin_topia_topia-salesforce__/'), true)
+  assert.equal(lib.includes("SALESFORCE_STDIO_PREFIX = 'mcp__plugin_topia-sf_topia-salesforce__'"), true)
+  assert.equal(mod.includes('/^mcp__plugin_topia-sf_topia-salesforce__/'), true)
   for (const tools of ["'Bash', 'PowerShell'", "'Read', 'Write', 'Edit'", "'WebFetch', 'WebSearch'"]) assert.equal(mod.includes(tools), true, tools)
   // A guard that fails denies, and none is gated on a mod switch.
   const guards = mod.split('\n').filter(line => /on\('tool\.check'/.test(line))

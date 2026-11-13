@@ -82,6 +82,32 @@ if (existsSync(marketplacePath)) {
   } else {
     pass('marketplace plugin name matches plugin.json');
   }
+  const sfPluginPath = join(ROOT, 'topia-sf/.claude-plugin/plugin.json');
+  if (existsSync(sfPluginPath)) {
+    const sfPlugin = JSON.parse(readFileSync(sfPluginPath, 'utf8'));
+    if (sfPlugin.version === pkg.version) {
+      pass(`topia-sf plugin.json version: ${sfPlugin.version}`);
+    } else {
+      fail(`Version mismatch: package.json=${pkg.version} vs topia-sf plugin.json=${sfPlugin.version}`);
+    }
+    const sfEntry = marketplace.plugins?.find((p) => p.name === 'topia-sf');
+    if (!sfEntry) {
+      fail('marketplace.json: missing plugins[] entry "topia-sf"');
+    } else if (sfEntry.version && sfEntry.version !== pkg.version) {
+      fail(`marketplace plugins[topia-sf].version=${sfEntry.version} vs package.json=${pkg.version}`);
+    } else if (sfEntry.version === pkg.version) {
+      pass('marketplace topia-sf plugin entry version matches package.json');
+    }
+    const sfPkgPath = join(ROOT, 'topia-sf/package.json');
+    if (existsSync(sfPkgPath)) {
+      const sfPkg = JSON.parse(readFileSync(sfPkgPath, 'utf8'));
+      if (sfPkg.version === pkg.version) {
+        pass(`topia-sf package.json version: ${sfPkg.version}`);
+      } else {
+        fail(`Version mismatch: package.json=${pkg.version} vs topia-sf package.json=${sfPkg.version}`);
+      }
+    }
+  }
 } else {
   fail('Missing .claude-plugin/marketplace.json');
 }

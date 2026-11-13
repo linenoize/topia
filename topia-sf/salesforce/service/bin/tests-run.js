@@ -36,7 +36,7 @@ function journaled(ctx, reason) {
 function gateProblem(ctx, mode, briefId, confirmedBriefHash) {
     const lock = lockState(ctx.storeRoot, ctx.projectRoot);
     if (lock.state === 'off')
-        return 'Salesforce is not on for this project. /topia:sf:enable turns it on.';
+        return 'Salesforce is not on for this project. /topia-sf:enable turns it on.';
     if (lock.state === 'unreadable')
         return lock.message;
     if (!modeAllowsTool(mode, TOOL))

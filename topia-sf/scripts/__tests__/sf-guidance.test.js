@@ -41,7 +41,7 @@ function rel(file) {
   return relative(ROOT, file).replaceAll('\\', '/');
 }
 
-const commands = walk(join(ROOT, 'commands', 'sf')).filter((file) => !NOT_OURS.has(file.split(/[\\/]/).pop()));
+const commands = walk(join(ROOT, 'commands')).filter((file) => !NOT_OURS.has(file.split(/[\\/]/).pop()));
 const skills = walk(join(ROOT, 'salesforce', 'skills'));
 const agent = join(ROOT, 'agents', 'sf-practice-review.md');
 const guidance = [...commands, ...skills, agent];
@@ -68,7 +68,7 @@ describe('Salesforce guidance', () => {
 
   test('investigative commands clarify through the confirmed-brief tools', () => {
     for (const name of INVESTIGATIVE) {
-      const text = read(join(ROOT, 'commands', 'sf', `${name}.md`));
+      const text = read(join(ROOT, 'commands', `${name}.md`));
       assert.ok(text.includes('sf_brief_confirm'), `${name} must use sf_brief_confirm`);
       if (name !== 'verify') {
         assert.ok(text.includes('brief_propose'), `${name} must use brief_propose`);
@@ -99,7 +99,7 @@ describe('Salesforce guidance', () => {
   });
 
   test('the record preview and plan commands present checked and not_checked', () => {
-    for (const file of ['commands/sf/plan.md', 'salesforce/skills/data-steward.md']) {
+    for (const file of ['commands/plan.md', 'salesforce/skills/data-steward.md']) {
       const text = read(join(ROOT, file));
       assert.ok(text.includes('not_checked'), file);
       assert.ok(text.includes('Anonymous Apex is banned'), file);
@@ -148,7 +148,7 @@ describe('Salesforce guidance', () => {
   });
 
   test('the vendor command names its subcommands and its tools', () => {
-    const text = read(join(ROOT, 'commands', 'sf', 'vendor.md'));
+    const text = read(join(ROOT, 'commands', 'vendor.md'));
     for (const word of [
       'fingerprint',
       'add-finding',

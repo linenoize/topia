@@ -1,10 +1,10 @@
 ---
-name: sf:context
+name: context
 description: "Show the Salesforce org, user, repo, branch, mode, and allowed operations for this project."
 disable-model-invocation: true
 ---
 
-# /topia:sf:context
+# /topia-sf:context
 
 Refuse until this project has an activation lock. Paths below start at the Topia plugin folder (`${CLAUDE_PLUGIN_ROOT}`), not this project.
 

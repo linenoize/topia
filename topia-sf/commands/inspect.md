@@ -1,10 +1,10 @@
 ---
-name: sf:inspect
+name: inspect
 description: "Inspect Salesforce schema, metadata, and dependencies, including coverage gaps."
 disable-model-invocation: true
 ---
 
-# /topia:sf:inspect
+# /topia-sf:inspect
 
 <!-- Adapted from forcedotcom/sf-skills skills/platform-metadata-discovery-get/SKILL.md @219a84a, Apache-2.0; modified -->
 

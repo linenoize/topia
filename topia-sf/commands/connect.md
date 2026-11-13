@@ -1,10 +1,10 @@
 ---
-name: sf:connect
+name: connect
 description: "Register a Salesforce org for this project, from a live check, after a person approves it in a dialog. On production, guides the person to a read-only user and a separate writer."
 disable-model-invocation: true
 ---
 
-# /topia:sf:connect
+# /topia-sf:connect
 
 Refuse until this project has an activation lock.
 

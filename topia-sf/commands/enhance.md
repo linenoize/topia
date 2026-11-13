@@ -1,10 +1,10 @@
 ---
-name: sf:enhance
-description: "Clarify a Salesforce request and stop. Also runs inside other /topia:sf commands when the instruction is ambiguous."
+name: enhance
+description: "Clarify a Salesforce request and stop. Also runs inside other /topia-sf commands when the instruction is ambiguous."
 disable-model-invocation: true
 ---
 
-# /topia:sf:enhance
+# /topia-sf:enhance
 
 Refuse until this project has an activation lock. Paths below start at the Topia plugin folder (`${CLAUDE_PLUGIN_ROOT}`), not this project.
 
@@ -17,7 +17,7 @@ Mode: `explain`. Clarify and stop. Don't investigate, and don't write.
 
 Print the identity block when an org is confirmed. If none is confirmed, say the environment is unconfirmed. Don't label anything with the CLI default org.
 
-The same steps run inside the other `/topia:sf:*` commands.
+The same steps run inside the other `/topia-sf:*` commands.
 
 ## Hosts and refusals
 

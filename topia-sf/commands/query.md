@@ -1,10 +1,10 @@
 ---
-name: sf:query
+name: query
 description: "Run a bounded Salesforce query with explicit fields. Access failure is not an empty result."
 disable-model-invocation: true
 ---
 
-# /topia:sf:query
+# /topia-sf:query
 
 <!-- Adapted from forcedotcom/sf-skills skills/platform-soql-query/references/anti-patterns.md @219a84a, Apache-2.0; modified -->
 

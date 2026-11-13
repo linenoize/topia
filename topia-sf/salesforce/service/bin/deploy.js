@@ -18,7 +18,7 @@ const RUNNING = new Set(['Pending', 'InProgress', 'Canceling', 'Finalizing', 'Qu
 export function apexIn(manifest) {
     return manifest.members.filter(member => /^(?:ApexClass|ApexTrigger):/.test(member));
 }
-export const APEX_NEEDS_PERSON = 'This zip holds Apex, and validating it runs that code in the org with every local test. Under stdio there is no person to approve that. A person runs /topia:sf:validate and the assistant calls sf_deployment_validate, which opens a dialog that says so.';
+export const APEX_NEEDS_PERSON = 'This zip holds Apex, and validating it runs that code in the org with every local test. Under stdio there is no person to approve that. A person runs /topia-sf:validate and the assistant calls sf_deployment_validate, which opens a dialog that says so.';
 export const VALIDATE_NEEDS_HOOKS = "Deployment validation needs a host where Topia's hooks run, and this call carries no stamp from one. Hosts without hooks are read-only, so nothing was validated.";
 export function isRunning(status) {
     return RUNNING.has(status);
@@ -49,7 +49,7 @@ function expectedFor(plan, built, user, now, production) {
 function validationData(record, job) {
     const stateNext = {
         'in-progress': 'Still running in the org. Call deployment_validate again with this planId to pick it up. It starts nothing new.',
-        passed: 'It counts for now. Any later deployment, by anyone, voids it, and so do 10 days from when it started. The next step is /topia:sf:deploy, where a person approves.',
+        passed: 'It counts for now. Any later deployment, by anyone, voids it, and so do 10 days from when it started. The next step is /topia-sf:deploy, where a person approves.',
         failed: 'It does not count. Fix what it names, then call deployment_validate with revalidate. Nothing falls back to a full deploy.',
     };
     return {
@@ -94,7 +94,7 @@ export async function deploymentValidate(adapter, args, ctx) {
     if (ledger.state === 'unreadable')
         return stop('The ledger for this plan can not be read, so nothing was validated.');
     if (ledger.state !== 'missing' && !(ledger.entry.kind === 'deploy' && ledger.entry.refused))
-        return stop('A deploy under this plan has already started, so validating it again means nothing. /topia:sf:verify reads it.');
+        return stop('A deploy under this plan has already started, so validating it again means nothing. /topia-sf:verify reads it.');
     const held = readJsonFile(validationFile(ctx.storeRoot, ctx.projectRoot, plan.id));
     if (held.state === 'unreadable')
         return stop('The validation record for this plan can not be read. Pass revalidate to start again.');
@@ -166,7 +166,7 @@ export function mergeChecks(before, next) {
 const NEXT = {
     done: 'It shipped. The component, retrieve, and identity checks passed. Setup Audit Trail was read, not judged: the deploy explains its own rows, so that check says only that the trail could be read.',
     partial: 'A post-deploy check failed, or the job did not fully succeed. That stays failed, and this plan does not run again. A fix is a new plan.',
-    unknown: 'Unknown. It may have landed, and it is never retried. /topia:sf:verify queries it, and the Deployment Status page in Setup shows it too.',
+    unknown: 'Unknown. It may have landed, and it is never retried. /topia-sf:verify queries it, and the Deployment Status page in Setup shows it too.',
     started: 'Still running in the org. Nothing was sent again. A deploy that may have landed is queried, never retried, so call this again to read it.',
     refused: 'Salesforce refused that validation, so nothing shipped, and never a full deploy instead. Call deployment_validate with revalidate, then come back for a new approval.',
     unreadable: "The ledger can't be read, so this plan stops here, and nothing was sent again. A fix is a new plan.",

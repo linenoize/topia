@@ -17,7 +17,7 @@
       "portedInto": [
         "salesforce/skills/investigate.md",
         "salesforce/skills/navigator.md",
-        "commands/sf/inspect.md"
+        "commands/inspect.md"
       ]
     },
     {
@@ -35,8 +35,8 @@
       "sha256": "0237b74c128b886bba5ec49c4a7e6fb6a4e4ff9121b86d30c8c7a14ee7343bdd",
       "portedInto": [
         "salesforce/skills/release-engineer.md",
-        "commands/sf/validate.md",
-        "commands/sf/deploy.md"
+        "commands/validate.md",
+        "commands/deploy.md"
       ]
     },
     {
@@ -46,7 +46,7 @@
       "portedInto": [
         "agents/sf-practice-review.md",
         "salesforce/skills/automation-reviewer.md",
-        "commands/sf/review-flow.md"
+        "commands/review-flow.md"
       ]
     },
     {
@@ -71,7 +71,7 @@
       "sha256": "67d02f9daa2908090fd9a28a3c9c90e27018378e4f3b1b3e6502a21f6dd115d9",
       "portedInto": [
         "salesforce/skills/data-steward.md",
-        "commands/sf/query.md"
+        "commands/query.md"
       ]
     },
     {
@@ -88,7 +88,7 @@
       "sha256": "eff5c8c15f9335c30af3e22bf2ac70965e8f06150c2f81d244f8679fbf10f8dd",
       "portedInto": [
         "salesforce/skills/automation-reviewer.md",
-        "commands/sf/diagnose.md"
+        "commands/diagnose.md"
       ]
     },
     {
@@ -97,7 +97,7 @@
       "sha256": "5e8819061238d6f30002cc45980bbee2d8982d4d1562fd47cec7cd03786ce618",
       "portedInto": [
         "salesforce/skills/automation-reviewer.md",
-        "commands/sf/diagnose.md"
+        "commands/diagnose.md"
       ]
     },
     {
@@ -114,7 +114,7 @@
       "sha256": "e4e7a98940d3723a246a5f76d1b9afab2a10a0e86ca05558024c776348307cf1",
       "portedInto": [
         "salesforce/skills/automation-reviewer.md",
-        "commands/sf/test.md"
+        "commands/test.md"
       ]
     },
     {
@@ -122,7 +122,7 @@
       "sourcePath": "skills/platform-apex-test-run/references/test-fix-loop.md",
       "sha256": "fc634b3d1df37fa9cc1f5a8203289585f172d261665cf4a349590bdb7238460d",
       "portedInto": [
-        "commands/sf/test.md"
+        "commands/test.md"
       ]
     },
     {
@@ -131,7 +131,7 @@
       "sha256": "6f71f605b2cb88464931ac8806ea733d03bbbed84cde4e0a5ca2d80bb0235085",
       "portedInto": [
         "salesforce/skills/security-reviewer.md",
-        "commands/sf/review-access.md"
+        "commands/review-access.md"
       ]
     },
     {

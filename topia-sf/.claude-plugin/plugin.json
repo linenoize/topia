@@ -1,0 +1,32 @@
+{
+  "name": "topia-sf",
+  "displayName": "Topia Salesforce",
+  "version": "3.12.0",
+  "description": "Optional Salesforce add-on for Topia — MCP server, person-gated tools, shell/file/network guards, and project lock. Install topia first, then topia-sf.",
+  "author": {
+    "name": "topia"
+  },
+  "repository": "https://github.com/linenoize/topia",
+  "homepage": "https://github.com/linenoize/topia",
+  "license": "MIT",
+  "keywords": [
+    "salesforce",
+    "mcp",
+    "topia",
+    "coding-agent"
+  ],
+  "types": "./mods/types/index.d.ts",
+  "dependencies": ["topia"],
+  "mcpServers": {
+    "topia-salesforce": {
+      "command": "node",
+      "args": [
+        "${CLAUDE_PLUGIN_ROOT}/salesforce/service/bin/mcp.js"
+      ],
+      "env": {
+        "CLAUDE_PROJECT_DIR": "${CLAUDE_PROJECT_DIR}",
+        "TOPIA_SF_HOOK_HOST": "1"
+      }
+    }
+  }
+}

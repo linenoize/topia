@@ -59,7 +59,7 @@ export const DESTRUCTIVE_CEILING = 100;
 /** The most records one plan can touch. A constant in code, like the delete ceiling, and the plan tool's schema says the same. */
 export const RECORD_WRITE_CEILING = 10_000;
 export const ALLOWED_OPERATION_CLASSES = ['read', 'plan', 'validate', 'write'];
-/** The promise, word for word. The README, /topia:sf:enable, and the dialog that accepts one user all carry it. */
+/** The promise, word for word. The README, /topia-sf:enable, and the dialog that accepts one user all carry it. */
 export const SALESFORCE_PROMISE = "Topia's Salesforce tools can change your org only after you approve the exact change in a dialog. That applies to Topia's tools, not to everything the assistant can do. The assistant can also run shell commands as you, and if your Salesforce CLI login can write, a shell command can write too. This approval slows that down, but it can't prevent it. To make it a hard limit, connect production with a read-only Salesforce user, and log in as a write-capable user only when you intend to make a change.";
 export const WRITE_WARNING = "This CLI user can write directly. Topia's approval doesn't stop a shell command.";
 export const SINGLE_USER_WARNING = `One user both reads and writes this production org, as a person accepted at registration. ${WRITE_WARNING}`;

@@ -1,10 +1,10 @@
 ---
-name: sf:plan
+name: plan
 description: "Write a Salesforce change plan and stop. Do not execute it."
 disable-model-invocation: true
 ---
 
-# /topia:sf:plan
+# /topia-sf:plan
 
 Refuse until this project has an activation lock. Paths below start at the Topia plugin folder (`${CLAUDE_PLUGIN_ROOT}`), not this project.
 
@@ -19,7 +19,7 @@ Mode: `plan`. It lasts this turn: it goes back to read-only when the turn ends, 
 5. Call `records_plan_update` with `{orgId, briefId, practiceReviewId, object, operation, changes, frozenRecordIds}`, or `deployment_plan` with `{orgId, briefId, practiceReviewId, artifactPath, destructive}`. `operation` is `update` or `delete`. There's no upsert or insert. You can add `businessObjective` and `notes`: they stay in the local store and appear below a rule, labelled as unchecked.
 
    A deploy artifact is a folder in metadata format with a `package.xml` at its root, or a zip of one, with every member named. Source format isn't converted here. `ignoreWarnings` goes on the plan only if the person agrees to it, and the screen names it. To put back what a deploy replaced, pass `rollbackOf` with that plan's id instead of `artifactPath`.
-6. Stop. Don't execute. Say what comes next. For records, `/topia:sf:execute` runs `sf_records_execute`, and a person approves in its dialog. For a deploy, `/topia:sf:validate`, then `/topia:sf:deploy`. A person has to run those commands: each sets its mode for one turn.
+6. Stop. Don't execute. Say what comes next. For records, `/topia-sf:execute` runs `sf_records_execute`, and a person approves in its dialog. For a deploy, `/topia-sf:validate`, then `/topia-sf:deploy`. A person has to run those commands: each sets its mode for one turn.
 
 The code computes counts, state, expiry, the plan hash, the artifact hash, and the reversibility class. Anything you send for those is ignored, and an `approval` field is stripped. Your text is informational, and it never enters a safety decision. Any later edit to the plan, its local values, or its brief voids the plan.
 

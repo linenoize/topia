@@ -56,7 +56,7 @@ function refusalWhenOff(projectRoot, storeRoot) {
         case 'on':
             return null;
         case 'off':
-            return 'Salesforce is not on for this project. /topia:sf:enable turns it on.';
+            return 'Salesforce is not on for this project. /topia-sf:enable turns it on.';
         case 'unreadable':
             return lock.message;
         default: {
@@ -125,11 +125,11 @@ async function orgResolve(projectRoot, storeRoot, input) {
     const reader = records.find(item => sameId(item.orgId, live.orgId)) ?? null;
     if (asWriter) {
         if (reader === null)
-            return { ok: false, reason: `Register this org's read-only user first, with /topia:sf:connect. Reads go to that user, and ${display.username} only writes.` };
+            return { ok: false, reason: `Register this org's read-only user first, with /topia-sf:connect. Reads go to that user, and ${display.username} only writes.` };
         if (live.isSandbox)
-            return { ok: false, reason: "A sandbox doesn't need a second user. /topia:sf:connect registers one user for it, and that user reads and writes." };
+            return { ok: false, reason: "A sandbox doesn't need a second user. /topia-sf:connect registers one user for it, and that user reads and writes." };
         if (changed)
-            return { ok: false, reason: 'This org changed class since it was registered. Register it again with /topia:sf:connect first.' };
+            return { ok: false, reason: 'This org changed class since it was registered. Register it again with /topia-sf:connect first.' };
         if (reader.username.toLowerCase() === username)
             return { ok: false, reason: `${display.username} is the registered reader. A writer has to be a different user, so log in as that user first.` };
         if (writeAccess.canWrite === 'no')
@@ -267,7 +267,7 @@ async function orgRegister(projectRoot, storeRoot, input, now) {
     if (isFailure(live))
         return { ok: false, reason: reasonFor(live) };
     if (!sameId(live.orgId, expect.orgId) || live.isSandbox !== expect.isSandbox) {
-        return { ok: false, reason: 'The org changed since the dialog was shown, so nothing was written. Run /topia:sf:connect again.' };
+        return { ok: false, reason: 'The org changed since the dialog was shown, so nothing was written. Run /topia-sf:connect again.' };
     }
     const at = new Date(now).toISOString();
     const correlationId = `registration-${now}`;

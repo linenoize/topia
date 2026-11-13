@@ -37,6 +37,8 @@ Full guide: [`docs/INSTALL.md`](docs/INSTALL.md). **Teams:** see [Team policy](#
 /plugin install topia@linenoize
 ```
 
+Optional Salesforce add-on (after Topia): `/plugin install topia-sf@linenoize`. See [`topia-sf/docs/salesforce/README.md`](topia-sf/docs/salesforce/README.md).
+
 Restart Claude Code if `/topia:build` does not appear.
 
 | Marketplace path | Works? |
@@ -350,7 +352,7 @@ The `org/` tree holds stable team and policy configuration. `guardian` and `read
 | [`docs/INSTALL.md`](docs/INSTALL.md) | Install hub — Claude, Cursor, hybrid |
 | [`docs/INSTALL-CLAUDE-CODE.md`](docs/INSTALL-CLAUDE-CODE.md) | Claude Code plugin install |
 | [`docs/INSTALL-NON-CLAUDE.md`](docs/INSTALL-NON-CLAUDE.md) | Cursor, Codex, Windsurf, etc. |
-| [`docs/salesforce/README.md`](docs/salesforce/README.md) | Experimental Salesforce tools, for testing in a sandbox. Off until a project turns them on. Not yet run against a live org |
+| [`topia-sf/docs/salesforce/README.md`](topia-sf/docs/salesforce/README.md) | Optional `topia-sf` plugin: experimental Salesforce tools for sandbox testing. Install after Topia. Not yet run against a live org |
 | [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md) | First 5 minutes |
 | [`docs/SKILLS.md`](docs/SKILLS.md) | Full skill catalog with invocation markers |
 | [`docs/SKILL-CATEGORIES.md`](docs/SKILL-CATEGORIES.md) | Skill taxonomy reference |

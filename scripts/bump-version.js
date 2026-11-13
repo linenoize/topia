@@ -74,6 +74,21 @@ const targets = [
     replace: () => `"version": "${newVersion}"`,
   },
   {
+    file: '.claude-plugin/marketplace.json',
+    find: new RegExp(`"version":\\s*"${oldEsc}"`),
+    replace: () => `"version": "${newVersion}"`,
+  },
+  {
+    file: 'topia-sf/.claude-plugin/plugin.json',
+    find: new RegExp(`"version":\\s*"${oldEsc}"`),
+    replace: () => `"version": "${newVersion}"`,
+  },
+  {
+    file: 'topia-sf/package.json',
+    find: new RegExp(`"version":\\s*"${oldEsc}"`),
+    replace: () => `"version": "${newVersion}"`,
+  },
+  {
     file: '.cursor-plugin/plugin.json',
     find: new RegExp(`"version":\\s*"${oldEsc}"`),
     replace: () => `"version": "${newVersion}"`,

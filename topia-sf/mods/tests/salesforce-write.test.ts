@@ -28,11 +28,11 @@ const REPORT = { ok: true, action: 'report', text: WRITE_TEXT, data: { status: '
 const LABEL = 'Update 3 Widget__c in Sandbox'
 
 const TOOLS = [
-  { tool: 'sf_records_execute', command: 'topia:sf:execute', prepare: 'records-prepare', run: 'records-run', args: { planId: PLAN } },
-  { tool: 'sf_deployment_execute', command: 'topia:sf:deploy', prepare: 'deploy-prepare', run: 'deploy-run', args: { planId: PLAN } },
-  { tool: 'sf_restore_plan_execute', command: 'topia:sf:restore', prepare: 'restore-prepare', run: 'records-run', args: { planId: PLAN, briefId: BRIEF_ID } },
-  { tool: 'sf_deployment_validate', command: 'topia:sf:validate', prepare: 'validate-prepare', run: 'validate-run', args: { planId: PLAN } },
-  { tool: 'sf_tests_run', command: 'topia:sf:test', prepare: 'tests-prepare', run: 'tests-run', args: { orgId: ORG, briefId: BRIEF_ID } },
+  { tool: 'sf_records_execute', command: 'topia-sf:execute', prepare: 'records-prepare', run: 'records-run', args: { planId: PLAN } },
+  { tool: 'sf_deployment_execute', command: 'topia-sf:deploy', prepare: 'deploy-prepare', run: 'deploy-run', args: { planId: PLAN } },
+  { tool: 'sf_restore_plan_execute', command: 'topia-sf:restore', prepare: 'restore-prepare', run: 'records-run', args: { planId: PLAN, briefId: BRIEF_ID } },
+  { tool: 'sf_deployment_validate', command: 'topia-sf:validate', prepare: 'validate-prepare', run: 'validate-run', args: { planId: PLAN } },
+  { tool: 'sf_tests_run', command: 'topia-sf:test', prepare: 'tests-prepare', run: 'tests-run', args: { orgId: ORG, briefId: BRIEF_ID } },
 ] as const
 
 const CHEAT = [
@@ -93,7 +93,7 @@ function engine(on: On, options: Options = {}) {
   on('command.run', () => ({ text: 'the command ran' }))
   on('tool.register', ($, e) => {
     registered.push(e.name)
-    return { value: { tool: `mcp__topia__${e.name}` } }
+    return { value: { tool: `mcp__topia-sf__${e.name}` } }
   })
   on('tool.check', () => options.verdict ?? { decision: 'allow' as const })
   on('process.run', ($, e) => {
@@ -121,7 +121,7 @@ function engine(on: On, options: Options = {}) {
 
 type Called = { deny?: string; result?: unknown; text?: string; isError?: boolean }
 
-const call = ($: Engine, tool: string, input: Record<string, unknown>, agentId?: string) => $.tool.call({ tool: `mcp__topia__${tool}`, ...input, ...(agentId === undefined ? {} : { agentId }) } as never) as Promise<Called>
+const call = ($: Engine, tool: string, input: Record<string, unknown>, agentId?: string) => $.tool.call({ tool: `mcp__topia-sf__${tool}`, ...input, ...(agentId === undefined ? {} : { agentId }) } as never) as Promise<Called>
 
 async function confirmBrief($: Engine): Promise<void> {
   // Answering Confirm needs its own answer, so a test that goes through here sets it first.
@@ -143,7 +143,7 @@ for (const row of TOOLS) {
 
   test(`${row.tool} runs only under its own command`, { options: QUIET }, async ($, on) => {
     const { runner, asked } = engine(on)
-    await $.command.run(slash('topia:sf:query'))
+    await $.command.run(slash('topia-sf:query'))
     const result = await call($, row.tool, row.args)
     expect(String(result.deny)).toContain(row.tool)
     expect(commands(runner)).toEqual([])
@@ -236,7 +236,7 @@ for (const row of TOOLS) {
     expect(result.deny).toBeUndefined()
     expect(String(result.result)).toContain('unknown')
     expect(/nothing was written/i.test(String(result.result))).toBe(false)
-    expect(String(result.result)).toContain('/topia:sf:verify')
+    expect(String(result.result)).toContain('/topia-sf:verify')
   })
 
   test(`${row.tool}: a refusal from the second step is passed on`, { options: QUIET }, async ($, on) => {
@@ -263,7 +263,7 @@ for (const row of TOOLS) {
 for (const answer of ['Stop', 'update 3 widget__c in sandbox', ` ${LABEL}`, `${LABEL} `, 'Yes', 'Okay to continue', '', `${LABEL},Stop`]) {
   test(`only the exact label approves, and ${JSON.stringify(answer)} does not`, { options: QUIET }, async ($, on) => {
     const { runner } = engine(on, { answer })
-    await $.command.run(slash('topia:sf:execute'))
+    await $.command.run(slash('topia-sf:execute'))
     const result = await call($, 'sf_records_execute', { planId: PLAN })
     expect(typeof result.deny).toBe('string')
     expect(commands(runner)).toEqual(['records-prepare'])
@@ -272,7 +272,7 @@ for (const answer of ['Stop', 'update 3 widget__c in sandbox', ` ${LABEL}`, `${L
 
 test('the screen comes from what the runner read, and the dialog ends in a question', { options: QUIET }, async ($, on) => {
   const { asked } = engine(on)
-  await $.command.run(slash('topia:sf:execute'))
+  await $.command.run(slash('topia-sf:execute'))
   await call($, 'sf_records_execute', { planId: PLAN, businessObjective: 'Update 3 test records' })
   const shown = asked[0]?.question ?? ''
   expect(shown).toContain('Class: Sandbox')
@@ -286,14 +286,14 @@ test('the screen comes from what the runner read, and the dialog ends in a quest
 
 test('a person-gated tool never reuses the words for lesser things', { options: QUIET }, async ($, on) => {
   const { asked } = engine(on)
-  await $.command.run(slash('topia:sf:execute'))
+  await $.command.run(slash('topia-sf:execute'))
   await call($, 'sf_records_execute', { planId: PLAN })
   for (const option of asked[0]?.options ?? []) expect(option.includes('Okay to continue')).toBe(false)
 })
 
 test('production: the button is not there, and only the typed org name approves', { options: QUIET }, async ($, on) => {
   const first = engine(on, { prepared: PROD_APPROVE, answer: 'Acme Production' })
-  await $.command.run(slash('topia:sf:execute'))
+  await $.command.run(slash('topia-sf:execute'))
   const result = await call($, 'sf_records_execute', { planId: PLAN })
   expect(result.deny).toBeUndefined()
   expect(first.asked[0]?.options).toEqual(['Stop', 'Not this change'])
@@ -303,7 +303,7 @@ test('production: the button is not there, and only the typed org name approves'
 for (const answer of ['Update 3 Widget__c in Production', 'acme production', 'Acme Production ', 'Stop', 'Not this change']) {
   test(`production: ${JSON.stringify(answer)} does not approve`, { options: QUIET }, async ($, on) => {
     const { runner } = engine(on, { prepared: PROD_APPROVE, answer })
-    await $.command.run(slash('topia:sf:execute'))
+    await $.command.run(slash('topia-sf:execute'))
     const result = await call($, 'sf_records_execute', { planId: PLAN })
     expect(typeof result.deny).toBe('string')
     expect(commands(runner)).toEqual(['records-prepare'])
@@ -312,7 +312,7 @@ for (const answer of ['Update 3 Widget__c in Production', 'acme production', 'Ac
 
 test('the brief the runner gets is what a person confirmed this session', { options: QUIET }, async ($, on) => {
   const { runner } = engine(on, { answer: 'Confirm' })
-  await $.command.run(slash('topia:sf:execute'))
+  await $.command.run(slash('topia-sf:execute'))
   await confirmBrief($)
   await call($, 'sf_records_execute', { planId: PLAN })
   expect(runner.find(item => item.command === 'records-prepare')?.input.confirmedBriefHash).toBe(BRIEF_HASH)
@@ -320,7 +320,7 @@ test('the brief the runner gets is what a person confirmed this session', { opti
 
 test('mode comes from what a typed command set, for both steps', { options: QUIET }, async ($, on) => {
   const { runner } = engine(on)
-  await $.command.run(slash('topia:sf:execute'))
+  await $.command.run(slash('topia-sf:execute'))
   await call($, 'sf_records_execute', { planId: PLAN })
   expect(runner.find(item => item.command === 'records-prepare')?.input.mode).toBe('execute')
   expect(runner.find(item => item.command === 'records-run')?.input.mode).toBe('execute')
@@ -328,7 +328,7 @@ test('mode comes from what a typed command set, for both steps', { options: QUIE
 
 test('the write step gets a long budget, and the runner path is the plugin path', { options: QUIET }, async ($, on) => {
   const { runner } = engine(on)
-  await $.command.run(slash('topia:sf:execute'))
+  await $.command.run(slash('topia-sf:execute'))
   await call($, 'sf_records_execute', { planId: PLAN })
   const run = runner.find(item => item.command === 'records-run')
   expect(String(run?.argv[1])).toContain('salesforce/service/bin/runner.js')
@@ -352,7 +352,7 @@ test('a project that is off lists none of them', { options: QUIET }, async ($, o
 
 test('a write result counts as org text, so later network tools ask', { options: QUIET }, async ($, on) => {
   engine(on, { verdict: { decision: 'allow' } })
-  await $.command.run(slash('topia:sf:execute'))
+  await $.command.run(slash('topia-sf:execute'))
   await call($, 'sf_records_execute', { planId: PLAN })
   const verdict = (await $.tool.check({ tool: 'WebFetch', input: { url: 'https://example.com' } } as never)) as { decision: string }
   expect(verdict.decision).toBe('ask')
@@ -363,7 +363,7 @@ test('a write result counts as org text, so later network tools ask', { options:
 test('M1: a screen too long to show whole is refused, no dialog opens, and nothing runs', { options: QUIET }, async ($, on) => {
   const many = Array.from({ length: 80 }, (_, index) => ({ field: `F${index}__c`, value: 'v'.repeat(300) }))
   const { asked, runner } = engine(on, { prepared: { ...APPROVE, screenPlan: { ...SCREEN_PLAN, changes: many } } })
-  await $.command.run(slash('topia:sf:execute'))
+  await $.command.run(slash('topia-sf:execute'))
   const result = await call($, 'sf_records_execute', { planId: PLAN })
   expect(String(result.deny)).toContain('too long to show whole')
   expect(asked).toHaveLength(0)
@@ -373,7 +373,7 @@ test('M1: a screen too long to show whole is refused, no dialog opens, and nothi
 test('H1: a value with hidden characters is shown written out in the dialog', { options: QUIET }, async ($, on) => {
   const value = `ok${String.fromCodePoint(0xe0041)}\n${String.fromCodePoint(0x202e)}x`
   const { asked } = engine(on, { prepared: { ...APPROVE, screenPlan: { ...SCREEN_PLAN, changes: [{ field: 'Notes__c', value }] } } })
-  await $.command.run(slash('topia:sf:execute'))
+  await $.command.run(slash('topia-sf:execute'))
   await call($, 'sf_records_execute', { planId: PLAN })
   const shown = asked[0]?.question ?? ''
   expect(shown).toContain(String.raw`Notes__c: "ok\u{e0041}\n\u{202e}x" (6 characters)`)

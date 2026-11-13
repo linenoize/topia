@@ -54,9 +54,9 @@ export const SF_COMMANDS = Object.keys(COMMAND_TOOLS);
 const PERSON_GATED = ['sf_brief_confirm', 'sf_show_values', 'sf_ack_issue', 'sf_records_execute', 'sf_deployment_execute', 'sf_deployment_validate', 'sf_tests_run', 'sf_restore_plan_execute', 'sf_org_register'];
 /** Read tools a subagent still can't call: this one walks the user directory, one prefix at a time, and needs no brief. */
 const NO_SUBAGENT = ['users_resolve'];
-/** Accepts the two names `command.run` may carry for a command, and nothing else. */
+/** Accepts `topia-sf:<action>` and the bare action `command.run` may carry, and nothing else. */
 export function commandFromName(name) {
-    const match = /^(?:topia:)?sf:([a-z-]+)$/.exec(name);
+    const match = /^(?:topia-sf:)?([a-z-]+)$/.exec(name);
     const command = match?.[1];
     return command !== undefined && Object.hasOwn(COMMAND_TOOLS, command) ? command : null;
 }
@@ -88,7 +88,7 @@ export function toolRefusal(tool, command, agentId) {
     if (toolAllowed(isSubagent ? null : command, tool))
         return null;
     const home = commandFor(tool);
-    const where = home === undefined ? 'No command leads to it.' : `A person runs /topia:sf:${home} for that, and it applies to that turn only.`;
+    const where = home === undefined ? 'No command leads to it.' : `A person runs /topia-sf:${home} for that, and it applies to that turn only.`;
     return isSubagent ? `A subagent is read-only, so it cannot call ${tool}.` : `${tool} does not run here. ${where}`;
 }
 /** These run before confirmation: the identity check, and lookups that return a list to confirm. Anything else needs a brief, including a tool nobody listed. */

@@ -1,10 +1,10 @@
 ---
-name: sf:vendor
+name: vendor
 description: "Find which vendor packages an org has installed, record how each changes Salesforce, and re-check those notes after an upgrade."
 disable-model-invocation: true
 ---
 
-# /topia:sf:vendor
+# /topia-sf:vendor
 
 Refuse until this project has an activation lock. Paths below start at the Topia plugin folder (`${CLAUDE_PLUGIN_ROOT}`), not this project.
 

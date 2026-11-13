@@ -1,10 +1,10 @@
 ---
-name: sf:execute
+name: execute
 description: "Run an approved Salesforce record plan. A person approves the exact change in a dialog."
 disable-model-invocation: true
 ---
 
-# /topia:sf:execute
+# /topia-sf:execute
 
 Refuse until this project has an activation lock. Paths below start at the Topia plugin folder (`${CLAUDE_PLUGIN_ROOT}`), not this project.
 
@@ -12,7 +12,7 @@ Mode: `execute`, for this turn only. Print the identity block first. Follow `sal
 
 ## Before calling the tool
 
-- The plan exists: `records_plan_update` returned its `planId`. If not, go to `/topia:sf:plan`.
+- The plan exists: `records_plan_update` returned its `planId`. If not, go to `/topia-sf:plan`.
 - Its brief was confirmed through `sf_brief_confirm` this session. If not, call it now. A chat reply isn't confirmation.
 - Say the plan's reversibility class first: `restorable` for an update, `recycle-bin` for a soft delete. Use the service's fixed text from `salesforce/skills/references/reversibility.md`.
 
@@ -34,7 +34,7 @@ Report the status in the result, in its own words. Don't soften it.
 | --- | --- | --- |
 | `done` | Every frozen record now holds the intended values | Name any `sideEffects`: fields that moved beyond the plan, from automation or someone else |
 | `partial` | Some records are written, and some aren't | Give the counts and the failures by id. Work already done isn't rolled back |
-| `started` | A Bulk job is still running in the org | Say so. Calling this again, or `/topia:sf:verify`, picks it up. It sends nothing new |
+| `started` | A Bulk job is still running in the org | Say so. Calling this again, or `/topia-sf:verify`, picks it up. It sends nothing new |
 | `unknown` | Nothing here can say what landed | Say `unknown`. It isn't stopped, and it isn't failed |
 | `unreadable` | The ledger is damaged, so this plan stops | The counts come from the org. A new plan covers what remains |
 
@@ -44,9 +44,9 @@ A rate limit partway through doesn't mean nothing was written. Don't say it does
 
 ## After
 
-- Run `/topia:sf:verify` if the result asks for it.
-- Restoring is a new plan with its own dialog: `/topia:sf:restore`. Automation fires again on what it restores.
-- A soft delete has no restore tool. `/topia:sf:restore` reads the Recycle Bin, and a person restores from Setup.
+- Run `/topia-sf:verify` if the result asks for it.
+- Restoring is a new plan with its own dialog: `/topia-sf:restore`. Automation fires again on what it restores.
+- A soft delete has no restore tool. `/topia-sf:restore` reads the Recycle Bin, and a person restores from Setup.
 
 ## Hosts and refusals
 

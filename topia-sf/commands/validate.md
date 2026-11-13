@@ -1,10 +1,10 @@
 ---
-name: sf:validate
+name: validate
 description: "Check-only Salesforce metadata validation with tests. Changes nothing in the org. Records have no equivalent."
 disable-model-invocation: true
 ---
 
-# /topia:sf:validate
+# /topia-sf:validate
 
 <!-- Adapted from forcedotcom/sf-skills skills/platform-metadata-deploy/SKILL.md @219a84a, Apache-2.0; modified -->
 
@@ -12,7 +12,7 @@ Refuse until this project has an activation lock. Paths below start at the Topia
 
 Mode: `validate`. No promote. Print the identity block first. Follow `salesforce/skills/release-engineer.md`. Pipeline order: inspect, diff, dependencies, validate, review, apply, verify.
 
-1. The plan exists and names the org and the artifact. If not, go to `/topia:sf:plan`.
+1. The plan exists and names the org and the artifact. If not, go to `/topia-sf:plan`.
 2. Look at the zip first. If the plan's artifact holds any `ApexClass` or `ApexTrigger`, call `sf_deployment_validate` with `{planId}`: a person answers a dialog that says it runs code in the org. If it holds none, call `deployment_validate` with `{orgId, briefId, planId}`. It refuses with no stamp, and a zip with Apex. On production it runs as the writer, because a quick deploy has to come from the user who validated. If the writer isn't logged in, it refuses and names the steps for the person's own terminal. The service builds and hashes the zip, retrieves a baseline with the same manifest, then picks the path from live `IsSandbox`:
 
 | Org | What the service runs |
@@ -31,7 +31,7 @@ Mode: `validate`. No promote. Print the identity block first. Follow `salesforce
 
 This check applies to metadata only. Records have no dry run. See `salesforce/skills/data-steward.md`.
 
-Never fall back to a full deploy when a validation is refused. Validate again. The next step is `/topia:sf:deploy`, which a person runs.
+Never fall back to a full deploy when a validation is refused. Validate again. The next step is `/topia-sf:deploy`, which a person runs.
 
 ## Hosts and refusals
 

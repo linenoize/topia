@@ -369,7 +369,7 @@ export type WriteRig = {
   input: (at?: number) => CallInput
   briefHash: string
   briefId: string
-  /** Writes a plan the way /topia:sf:plan does, through the tools. */
+  /** Writes a plan the way /topia-sf:plan does, through the tools. */
   plan: (over?: Record<string, unknown>) => Promise<string>
   prepare: (planId: string, over?: { brief?: string | null; mode?: SfMode; now?: number }) => Promise<WriteReply>
   /** Approves as a person would: the label on the screen, exactly. */

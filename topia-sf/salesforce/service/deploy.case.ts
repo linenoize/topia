@@ -1051,7 +1051,7 @@ test('a plan names an artifact or a snapshot, not both and not neither', sandbox
   await assert.rejects(rigged.plan({ artifactPath: undefined }))
 }))
 
-test('/topia:sf:restore on a deploy gives guidance, with what a redeploy can not restore first', sandbox(async rigged => {
+test('/topia-sf:restore on a deploy gives guidance, with what a redeploy can not restore first', sandbox(async rigged => {
   const { planId, reply } = await rigged.ready()
   reported(await rigged.run(reply.pinned))
   const before = rigged.shipped().length

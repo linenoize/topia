@@ -75,10 +75,11 @@ test('the table has one row for each command, and no more', () => {
 })
 
 for (const [command, row] of Object.entries(EXPECTED) as [SfCommandName, { mode: SfMode; tools: string[] }][]) {
-  test(`/topia:sf:${command} runs in ${row.mode} and reaches exactly its tools`, () => {
+  test(`/topia-sf:${command} runs in ${row.mode} and reaches exactly its tools`, () => {
     assert.equal(COMMAND_TOOLS[command]?.mode, row.mode)
-    assert.equal(commandFromName(`topia:sf:${command}`), command)
-    assert.equal(commandFromName(`sf:${command}`), command)
+    assert.equal(commandFromName(`topia-sf:${command}`), command)
+    assert.equal(commandFromName(command), command)
+    assert.equal(commandFromName(`sf:${command}`), null)
     for (const tool of ALL_TOOLS) assert.equal(toolAllowed(command, tool), row.tools.includes(tool), `${command} and ${tool}`)
   })
 }
@@ -94,7 +95,9 @@ test('every tool that exists has a place in the table', () => {
 })
 
 test('other names are not commands', () => {
-  for (const name of ['orders', 'sf', 'sf:', 'sf:nope', 'topia:sf:', 'topia:sf:PLAN', 'other:sf:plan', 'sf:plan ', 'sf:plan:x']) assert.equal(commandFromName(name), null, name)
+  for (const name of ['orders', 'sf', 'sf:', 'sf:nope', 'sf:plan', 'topia:sf:plan', 'topia-sf:', 'topia-sf:PLAN', 'other:sf:plan', 'sf:plan ', 'sf:plan:x']) {
+    assert.equal(commandFromName(name), null, name)
+  }
 })
 
 test('absent mode means read-only', () => {
@@ -124,10 +127,10 @@ test('a subagent keeps the reads and loses the plan tools', () => {
 
 test('a refusal names the command that leads to the tool', () => {
   assert.equal(toolRefusal('records_plan_update', 'plan'), null)
-  assert.match(String(toolRefusal('records_plan_update', null)), /\/topia:sf:plan/)
-  assert.match(String(toolRefusal('sf_records_execute', 'plan')), /\/topia:sf:execute/)
-  assert.match(String(toolRefusal('sf_org_register', null)), /\/topia:sf:connect/)
-  assert.match(String(toolRefusal('sf_deployment_execute', 'validate')), /\/topia:sf:deploy/)
+  assert.match(String(toolRefusal('records_plan_update', null)), /\/topia-sf:plan/)
+  assert.match(String(toolRefusal('sf_records_execute', 'plan')), /\/topia-sf:execute/)
+  assert.match(String(toolRefusal('sf_org_register', null)), /\/topia-sf:connect/)
+  assert.match(String(toolRefusal('sf_deployment_execute', 'validate')), /\/topia-sf:deploy/)
 })
 
 test('the mode check is what the server can see from a stamp', () => {

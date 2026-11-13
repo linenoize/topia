@@ -62,9 +62,9 @@ const PERSON_GATED: readonly string[] = ['sf_brief_confirm', 'sf_show_values', '
 /** Read tools a subagent still can't call: this one walks the user directory, one prefix at a time, and needs no brief. */
 const NO_SUBAGENT: readonly string[] = ['users_resolve']
 
-/** Accepts the two names `command.run` may carry for a command, and nothing else. */
+/** Accepts `topia-sf:<action>` and the bare action `command.run` may carry, and nothing else. */
 export function commandFromName(name: string): SfCommandName | null {
-  const match = /^(?:topia:)?sf:([a-z-]+)$/.exec(name)
+  const match = /^(?:topia-sf:)?([a-z-]+)$/.exec(name)
   const command = match?.[1]
   return command !== undefined && Object.hasOwn(COMMAND_TOOLS, command) ? (command as SfCommandName) : null
 }
@@ -96,7 +96,7 @@ export function toolRefusal(tool: string, command: SfCommandName | null, agentId
   if (isSubagent && PERSON_GATED.includes(tool)) return `A subagent cannot call ${tool}, because a person has to answer it. Do this from the main conversation.`
   if (toolAllowed(isSubagent ? null : command, tool)) return null
   const home = commandFor(tool)
-  const where = home === undefined ? 'No command leads to it.' : `A person runs /topia:sf:${home} for that, and it applies to that turn only.`
+  const where = home === undefined ? 'No command leads to it.' : `A person runs /topia-sf:${home} for that, and it applies to that turn only.`
   return isSubagent ? `A subagent is read-only, so it cannot call ${tool}.` : `${tool} does not run here. ${where}`
 }
 

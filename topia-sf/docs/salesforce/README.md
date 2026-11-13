@@ -1,6 +1,8 @@
-# Salesforce in Topia
+# Salesforce (topia-sf)
 
 Topia's Salesforce tools can change your org only after you approve the exact change in a dialog. That applies to Topia's tools, not to everything the assistant can do. The assistant can also run shell commands as you, and if your Salesforce CLI login can write, a shell command can write too. This approval slows that down, but it can't prevent it. To make it a hard limit, connect production with a read-only Salesforce user, and log in as a write-capable user only when you intend to make a change.
+
+Optional add-on plugin for Topia. Install Topia first, then `topia-sf` from the same marketplace (`/plugin install topia-sf@linenoize`).
 
 **Status: experimental, for testing. Use a sandbox.** Please don't use it on production yet. This feature hasn't run against a live org. It was built and tested against a fake Salesforce CLI that returns documented JSON. [LIVE-CHECKLIST.md](LIVE-CHECKLIST.md) lists what a person still has to confirm, and it's the release gate.
 
@@ -8,7 +10,7 @@ Testing it? [LIVE-CHECKLIST.md](LIVE-CHECKLIST.md) is the runbook, and its secti
 
 ## Quickstart
 
-You need Node 22 or later, the Salesforce CLI (`sf`), and Claude Code in a terminal. Start with a sandbox. Each project turns this on by itself, and every other project stays off.
+You need Node 22 or later, the Salesforce CLI (`sf`), Claude Code in a terminal, and both `topia` and `topia-sf` installed. Start with a sandbox. Each project turns this on by itself, and every other project stays off.
 
 1. **Log in yourself, in your own terminal.** The assistant never logs in, and never sees a token.
 
@@ -16,10 +18,10 @@ You need Node 22 or later, the Salesforce CLI (`sf`), and Claude Code in a termi
    sf org login web --alias acme-sbx --instance-url <your sandbox login URL>
    ```
 
-2. **Turn it on for this project.** Run `/topia:sf:enable`, then press **Okay to continue** in the band above the prompt. It applies to the path it shows, and nowhere else.
-3. **Register the org.** Run `/topia:sf:connect acme-sbx`. A dialog shows what a live check found. Approve it, and the band shows the org's class, name, id, user, and mode.
-4. **Ask something.** `/topia:sf:ask How many Widget__c records have no owner?` The assistant clarifies the request, you confirm it in a dialog, and it reads. Personal values stay out of the answer unless you approve showing them.
-5. **Plan a change.** `/topia:sf:plan`, then `/topia:sf:execute` for records, or `/topia:sf:validate` and `/topia:sf:deploy` for metadata. You run each of these commands yourself, because each one sets its mode for one turn.
+2. **Turn it on for this project.** Run `/topia-sf:enable`, then press **Okay to continue** in the band above the prompt. It applies to the path it shows, and nowhere else.
+3. **Register the org.** Run `/topia-sf:connect acme-sbx`. A dialog shows what a live check found. Approve it, and the band shows the org's class, name, id, user, and mode.
+4. **Ask something.** `/topia-sf:ask How many Widget__c records have no owner?` The assistant clarifies the request, you confirm it in a dialog, and it reads. Personal values stay out of the answer unless you approve showing them.
+5. **Plan a change.** `/topia-sf:plan`, then `/topia-sf:execute` for records, or `/topia-sf:validate` and `/topia-sf:deploy` for metadata. You run each of these commands yourself, because each one sets its mode for one turn.
 
 Production takes more setup, and it's worth it. See [Production](#production).
 
@@ -46,8 +48,8 @@ Each step binds to the one before it by hash, so an edit voids everything after 
 2. **Plan.** `dependency_report` lists what uses what. `records_plan_update` freezes the record ids and their before-state, or `deployment_plan` hashes the artifact. A plan holds a structured payload. The code computes its counts, hash, expiry, and reversibility class.
 3. **Preview.** Records have no dry run. `records_preview` says what it checked and what only a save would exercise. Metadata has a real check: a check-only deploy with `RunLocalTests`. That runs code in the org, so a zip with no Apex is validated by `deployment_validate` (on a host with hooks), and a zip that holds Apex is validated by `sf_deployment_validate`, where a person answers a dialog that says "This runs code in the org".
 4. **Approve.** `sf_records_execute` or `sf_deployment_execute` reads the org again, and opens a dialog built from what it just read: class, org, user, operation, exact count, new values, samples, automation, and what can't be undone. Production needs the org name typed. Nothing the assistant writes can approve it, and its own text sits below a rule, labelled as not checked.
-5. **Verify.** After a write, the service re-reads the frozen ids and reports fields that moved beyond the plan. After a deploy, it checks the components, retrieves again, and reads Setup Audit Trail. `/topia:sf:verify` reads any of this again later, and sends nothing.
-6. **Restore.** `/topia:sf:restore` builds a new plan with its own approval, for records still holding what was written. Records changed since are listed, not overwritten.
+5. **Verify.** After a write, the service re-reads the frozen ids and reports fields that moved beyond the plan. After a deploy, it checks the components, retrieves again, and reads Setup Audit Trail. `/topia-sf:verify` reads any of this again later, and sends nothing.
+6. **Restore.** `/topia-sf:restore` builds a new plan with its own approval, for records still holding what was written. Records changed since are listed, not overwritten.
 
 `dependency_report` is advisory. Every result states its coverage and its blind spots: dynamic references are invisible, one query reads at most 2,000 rows, and not every metadata type is indexed. It can't show that a change is safe.
 
@@ -65,7 +67,7 @@ A write through the shell can't be stopped from this machine. A Salesforce user 
 sf org login web --alias acme-prod --instance-url <your My Domain URL>
 ```
 
-Then `/topia:sf:connect acme-prod`. The dialog says what this user can write, from a live probe of its permissions. If it can write, the band says so permanently: "This CLI user can write directly. Topia's approval doesn't stop a shell command."
+Then `/topia-sf:connect acme-prod`. The dialog says what this user can write, from a live probe of its permissions. If it can write, the band says so permanently: "This CLI user can write directly. Topia's approval doesn't stop a shell command."
 
 **2. A write-capable user, logged in only for the change.** In your own terminal, log in through a browser, with MFA. The assistant can't complete this, and it never runs these commands:
 
@@ -73,7 +75,7 @@ Then `/topia:sf:connect acme-prod`. The dialog says what this user can write, fr
 sf org login web --instance-url <your My Domain URL>
 ```
 
-The first time, register it as the writer: run `/topia:sf:connect <that username>`, and ask for `role: 'writer'`. The read-only user has to be registered first. The writer stays in the service store on this machine, and never reaches `orgs.json`.
+The first time, register it as the writer: run `/topia-sf:connect <that username>`, and ask for `role: 'writer'`. The read-only user has to be registered first. The writer stays in the service store on this machine, and never reaches `orgs.json`.
 
 **3. Make the change.** Writes, restores, validations, and test runs target the writer. Reads stay with the read-only user. If the writer isn't logged in, those tools refuse, and tell you what to run.
 
@@ -215,8 +217,8 @@ Entries in a project's `docs/salesforce/` each have scope, owner, evidence, last
 | `reporting/` | Reports and what a row cap means |
 | `integrations/` | Callouts and outside systems |
 | `runbooks/` | How to validate, deploy, and recover |
-| `decisions/` | Confirmed decisions from `/topia:sf:document` |
-| `vendors/` | One folder per vendor package: `package.md` and `findings/<id>.md`, from `/topia:sf:vendor` |
+| `decisions/` | Confirmed decisions from `/topia-sf:document` |
+| `vendors/` | One folder per vendor package: `package.md` and `findings/<id>.md`, from `/topia-sf:vendor` |
 | `preferences/` | Personal preferences |
 | `known-limitations/` | What is still uncertain |
 
@@ -226,9 +228,9 @@ A managed package can make Salesforce behave differently from standard, and you 
 
 First steps:
 
-1. **Run the inventory in a sandbox, then in production.** `/topia:sf:vendor fingerprint` lists what's installed and writes `vendors/<vendor>/package.md`. Run it in each org. Read what it says wasn't checked: a CLI user with limited access gets a partial list.
+1. **Run the inventory in a sandbox, then in production.** `/topia-sf:vendor fingerprint` lists what's installed and writes `vendors/<vendor>/package.md`. Run it in each org. Read what it says wasn't checked: a CLI user with limited access gets a partial list.
 2. **Ask the vendor** for the namespace, version history, install and upgrade guide, and release notes. Keep their reference numbers.
-3. **Record each difference as `suspected`** with `/topia:sf:vendor add-finding`. It stays `suspected` until you reproduce it in a sandbox. Then `/topia:sf:vendor reverify` moves it to `confirmed-in-org`, with evidence that names the org. `vendor-confirmed` needs a vendor ticket.
+3. **Record each difference as `suspected`** with `/topia-sf:vendor add-finding`. It stays `suspected` until you reproduce it in a sandbox. Then `/topia-sf:vendor reverify` moves it to `confirmed-in-org`, with evidence that names the org. `vendor-confirmed` needs a vendor ticket.
 4. **Pin every finding to the installed version.** The tool does this, reading the version from the org.
 5. **Re-run the inventory after each package upgrade or sandbox refresh.** A finding pinned to another version shows as stale, with a notice, until you check it again and re-verify it.
 

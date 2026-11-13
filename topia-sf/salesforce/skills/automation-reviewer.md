@@ -119,7 +119,7 @@ Report: what failed, where, why, severity, the recommended fix, and how to verif
 - A test with no assertions proves nothing, whatever its coverage.
 - Bulk coverage needs 251 or more records, so it crosses the batch boundary of 200.
 
-Tests run only through `sf_tests_run`. See `/topia:sf:test`.
+Tests run only through `sf_tests_run`. See `/topia-sf:test`.
 
 ## Sources
 

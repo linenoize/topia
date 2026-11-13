@@ -84,7 +84,7 @@ export async function prepareRestore(adapter, input, request, confirmedBriefHash
     try {
         const lock = lockState(ctx.storeRoot, ctx.projectRoot);
         if (lock.state === 'off')
-            return stop('Salesforce is not on for this project. /topia:sf:enable turns it on.');
+            return stop('Salesforce is not on for this project. /topia-sf:enable turns it on.');
         if (lock.state === 'unreadable')
             return stop(lock.message);
         if (!modeAllowsTool(mode, TOOL))
@@ -112,7 +112,7 @@ export async function prepareRestore(adapter, input, request, confirmedBriefHash
         const unanswered = lastAttempt !== undefined && lastAttempt.answered !== true && (lastAttempt.transport === 'bulk' || ctx.now - Date.parse(lastAttempt.startedAt) < SETTLE_MS);
         const running = ledger.state === 'started' || unanswered;
         if (running)
-            return stop('That plan may still be running in the org, so a restore would race it. /topia:sf:verify reads it. It has to settle before anything is restored.', ctx, source.orgId);
+            return stop('That plan may still be running in the org, so a restore would race it. /topia-sf:verify reads it. It has to settle before anything is restored.', ctx, source.orgId);
         const image = readPreImage(ctx.storeRoot, ctx.projectRoot, source.id, ctx.now);
         if (image.state === 'missing')
             return stop('No pre-image of that plan is on this machine, so there is nothing to restore from.', ctx, source.orgId);

@@ -47,7 +47,7 @@ function journaled(ctx: CallContext, reason: string): string {
 
 function gateProblem(ctx: CallContext, mode: SfMode, briefId: unknown, confirmedBriefHash: string | null): string | null {
   const lock = lockState(ctx.storeRoot, ctx.projectRoot)
-  if (lock.state === 'off') return 'Salesforce is not on for this project. /topia:sf:enable turns it on.'
+  if (lock.state === 'off') return 'Salesforce is not on for this project. /topia-sf:enable turns it on.'
   if (lock.state === 'unreadable') return lock.message
   if (!modeAllowsTool(mode, TOOL)) return journaled(ctx, `${TOOL} does not run in ${mode} mode. ${toolRefusal(TOOL, null) ?? ''}`.trim())
   const brief = typeof briefId === 'string' ? readBrief(ctx.storeRoot, ctx.projectRoot, briefId) : null

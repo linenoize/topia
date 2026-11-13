@@ -95,7 +95,7 @@ export async function prepareRestore(adapter: Adapter & OrgWrites, input: CallIn
   const ctx: CallContext = { ...input, mode, stamp: null, brief: null }
   try {
     const lock = lockState(ctx.storeRoot, ctx.projectRoot)
-    if (lock.state === 'off') return stop('Salesforce is not on for this project. /topia:sf:enable turns it on.')
+    if (lock.state === 'off') return stop('Salesforce is not on for this project. /topia-sf:enable turns it on.')
     if (lock.state === 'unreadable') return stop(lock.message)
     if (!modeAllowsTool(mode, TOOL)) return stop(`${TOOL} does not run in ${mode} mode. ${toolRefusal(TOOL, null) ?? ''}`.trim(), ctx)
     const brief = readBrief(ctx.storeRoot, ctx.projectRoot, request.briefId)
@@ -117,7 +117,7 @@ export async function prepareRestore(adapter: Adapter & OrgWrites, input: CallIn
     const lastAttempt = ledger.state === 'unknown' && ledger.entry.kind === 'records' ? ledger.entry.attempts.at(-1) : undefined
     const unanswered = lastAttempt !== undefined && lastAttempt.answered !== true && (lastAttempt.transport === 'bulk' || ctx.now - Date.parse(lastAttempt.startedAt) < SETTLE_MS)
     const running = ledger.state === 'started' || unanswered
-    if (running) return stop('That plan may still be running in the org, so a restore would race it. /topia:sf:verify reads it. It has to settle before anything is restored.', ctx, source.orgId)
+    if (running) return stop('That plan may still be running in the org, so a restore would race it. /topia-sf:verify reads it. It has to settle before anything is restored.', ctx, source.orgId)
 
     const image = readPreImage(ctx.storeRoot, ctx.projectRoot, source.id, ctx.now)
     if (image.state === 'missing') return stop('No pre-image of that plan is on this machine, so there is nothing to restore from.', ctx, source.orgId)

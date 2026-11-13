@@ -1,10 +1,10 @@
 ---
-name: sf:diff
+name: diff
 description: "Describe org, repo, and working-tree differences in admin language."
 disable-model-invocation: true
 ---
 
-# /topia:sf:diff
+# /topia-sf:diff
 
 Refuse until this project has an activation lock. Paths below start at the Topia plugin folder (`${CLAUDE_PLUGIN_ROOT}`), not this project.
 

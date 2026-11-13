@@ -330,14 +330,14 @@ export async function reconcileRecords(adapter: Adapter & Pick<OrgChecks, 'bulkJ
 const NEXT: Record<ReconcileStatus, string> = {
   done: 'Every record is written. Nothing else runs.',
   partial: "Partial. Nothing is re-sent on its own. A retry fires automation again, so if the person wants one, sf_records_execute opens a new dialog over what's left.",
-  unknown: 'Unknown, and nothing was re-sent. /topia:sf:verify reads it again. If it never settles, a new plan over fresh ids covers what remains.',
-  started: 'Still running in the org. Nothing was re-sent. Call this again, or /topia:sf:verify, to pick it up.',
+  unknown: 'Unknown, and nothing was re-sent. /topia-sf:verify reads it again. If it never settles, a new plan over fresh ids covers what remains.',
+  started: 'Still running in the org. Nothing was re-sent. Call this again, or /topia-sf:verify, to pick it up.',
   unreadable: "The ledger can't be read, so this plan stops here, and nothing was re-sent. The counts come from the org. A new plan over fresh ids covers what remains.",
   missing: 'Nothing has been written under this plan, as far as the org shows.',
 }
 
-export const RESTORE_OFFER = `Restoring is a new plan with its own dialog, through /topia:sf:restore. ${REVERSIBILITY_TEXT.restorable}`
-export const DELETE_GUIDANCE = `${REVERSIBILITY_TEXT['recycle-bin']} /topia:sf:restore checks with --all-rows whether each record is still in the bin.`
+export const RESTORE_OFFER = `Restoring is a new plan with its own dialog, through /topia-sf:restore. ${REVERSIBILITY_TEXT.restorable}`
+export const DELETE_GUIDANCE = `${REVERSIBILITY_TEXT['recycle-bin']} /topia-sf:restore checks with --all-rows whether each record is still in the bin.`
 
 /** What goes back to the model: ids, counts, and codes. No value and no org message. */
 export function reconcileData(plan: RecordsPlan, rec: Reconciled): Record<string, unknown> {

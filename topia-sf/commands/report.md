@@ -1,10 +1,10 @@
 ---
-name: sf:report
+name: report
 description: "Explain a Salesforce report: meaning, filters, and whether the extract is complete."
 disable-model-invocation: true
 ---
 
-# /topia:sf:report
+# /topia-sf:report
 
 Refuse until this project has an activation lock. Paths below start at the Topia plugin folder (`${CLAUDE_PLUGIN_ROOT}`), not this project.
 

@@ -4,7 +4,7 @@ Status: binding for phases C1 to C6. Where this differs from the older phase tex
 
 ## 1. The promise
 
-Use this wording in `docs/salesforce/README.md` and `/topia:sf:enable`:
+Use this wording in `docs/salesforce/README.md` and `/topia-sf:enable`:
 
 > Topia's Salesforce tools can change your org only after you approve the exact change in a dialog. That applies to Topia's tools, not to everything the assistant can do. The assistant can also run shell commands as you, and if your Salesforce CLI login can write, a shell command can write too. This approval slows that down, but it can't prevent it. To make it a hard limit, connect production with a read-only Salesforce user, and log in as a write-capable user only when you intend to make a change.
 
@@ -25,7 +25,7 @@ The hard boundary lives in Salesforce. Everything local defends against accident
 | `sf_deployment_validate` | **mod only** | A zip that holds Apex runs model-written code in the org when it is validated, so a person approves in a dialog that says "This runs code in the org". Picking up a validation already started reads, and opens no dialog |
 
 - `users_resolve` returns names and usernames, because a person must confirm which user is meant. It's the one stdio exception to "no personal values".
-- The commands that lead to person-gated tools: `/topia:sf:execute` runs an approved record plan through `sf_records_execute`, `/topia:sf:deploy` runs `sf_deployment_execute`, and `/topia:sf:restore` runs `sf_restore_plan_execute`.
+- The commands that lead to person-gated tools: `/topia-sf:execute` runs an approved record plan through `sf_records_execute`, `/topia-sf:deploy` runs `sf_deployment_execute`, and `/topia-sf:restore` runs `sf_restore_plan_execute`.
 - Stdio tool names match `^[a-zA-Z0-9_-]{1,64}$`. No dots anywhere.
 - Mod-only tools do not exist on Cursor, remote connectors, or `claude -p`. Those hosts get reads without personal values, and plans. State this plainly. HTTP mode is removed.
 - A person-gated tool runs like this: a `tool.call` hook builds the screen from a fresh live check, awaits `$.ui.ask`, compares the answer to the label exactly, then runs `salesforce/service/bin/runner.js` through `$.process.run`, passing the pinned plan bytes on stdin. The runner never re-reads the plan file. A dismissal or any other answer refuses.

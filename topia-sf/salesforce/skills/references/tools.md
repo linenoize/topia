@@ -16,7 +16,7 @@ Every skill and command uses these names. Tool names use underscores. There are 
 | `sf_records_execute`, `sf_deployment_execute`, `sf_tests_run`, `sf_restore_plan_execute`, `sf_org_register` | Mod. A person approves at execution | **Claude Code only** |
 | `sf_deployment_validate` | Mod. Validates a zip that holds Apex. A person approves a dialog that says "This runs code in the org". Pass the same `planId` to read a validation already started, with no dialog | **Claude Code only** |
 
-Which command leads to which person-gated tool: `/topia:sf:execute` to `sf_records_execute`, `/topia:sf:restore` to `sf_restore_plan_execute`, `/topia:sf:deploy` to `sf_deployment_execute`, `/topia:sf:validate` or `/topia:sf:deploy` to `sf_deployment_validate`, `/topia:sf:test` to `sf_tests_run`, and `/topia:sf:connect` to `sf_org_register`. A person runs the command, and it lasts one turn.
+Which command leads to which person-gated tool: `/topia-sf:execute` to `sf_records_execute`, `/topia-sf:restore` to `sf_restore_plan_execute`, `/topia-sf:deploy` to `sf_deployment_execute`, `/topia-sf:validate` or `/topia-sf:deploy` to `sf_deployment_validate`, `/topia-sf:test` to `sf_tests_run`, and `/topia-sf:connect` to `sf_org_register`. A person runs the command, and it lasts one turn.
 
 On production, writes, restores, validations, and test runs target a second user, the writer, that a person logged in for this change. `sf_org_register` with `role: 'writer'` registers it, and it never reaches `orgs.json`. Reads stay with the read-only user. A refusal over this names steps for the person's own terminal. Show them. Don't run them, and don't run `sf org logout` either.
 

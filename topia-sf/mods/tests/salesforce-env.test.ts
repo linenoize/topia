@@ -1,6 +1,5 @@
 import { expect, test } from 'claude-code/testing'
 
-import { MOD_IDS } from '../lib/mod-settings.ts'
 import {
   acknowledgementApplies,
   acknowledgementGrantsProductionWrite,
@@ -43,10 +42,6 @@ test('the quiet band names class, org, id, user, and mode', async () => {
   expect(bandText(IDENTITY).includes('default')).toBe(false)
   expect(bandParts(IDENTITY).map(part => part.key)).toEqual(['sf-class', 'sf-org', 'sf-user', 'sf-mode'])
   expect(on()?.kind).toBe('quiet')
-})
-
-test('this is not a /mods switch', async () => {
-  expect((MOD_IDS as readonly string[]).includes('salesforce')).toBe(false)
 })
 
 test('the mod uses the service copy of the shared logic, not one of its own', async () => {
@@ -96,7 +91,7 @@ test('with no live check yet, the band says so and shows no identity', async () 
   expect(none?.kind).toBe('notice')
   expect(none?.text).toContain('not been checked')
   const unregistered = on({ session: null, registeredOrgs: 0 })
-  expect(unregistered?.text).toContain('/topia:sf:connect')
+  expect(unregistered?.text).toContain('/topia-sf:connect')
 })
 
 test('an old snapshot is stale, not live', async () => {

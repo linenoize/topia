@@ -1,10 +1,10 @@
 ---
-name: sf:test
+name: test
 description: "Run the project's Salesforce tests through the tool service after a person approves."
 disable-model-invocation: true
 ---
 
-# /topia:sf:test
+# /topia-sf:test
 
 <!-- Adapted from forcedotcom/sf-skills skills/platform-apex-test-run/SKILL.md @219a84a, Apache-2.0; modified -->
 <!-- Adapted from forcedotcom/sf-skills skills/platform-apex-test-run/references/test-fix-loop.md @219a84a, Apache-2.0; modified -->

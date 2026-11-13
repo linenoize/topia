@@ -1,10 +1,10 @@
 ---
-name: sf:explain
+name: explain
 description: "Explain current Salesforce behavior. No writes."
 disable-model-invocation: true
 ---
 
-# /topia:sf:explain
+# /topia-sf:explain
 
 Refuse until this project has an activation lock. Paths below start at the Topia plugin folder (`${CLAUDE_PLUGIN_ROOT}`), not this project.
 

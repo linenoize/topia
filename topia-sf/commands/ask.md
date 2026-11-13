@@ -1,10 +1,10 @@
 ---
-name: sf:ask
+name: ask
 description: "Free-form Salesforce request. Enhance it, wait for confirmation, then investigate. No writes."
 disable-model-invocation: true
 ---
 
-# /topia:sf:ask
+# /topia-sf:ask
 
 Refuse until this project has an activation lock. Another project stays off. Paths below start at the Topia plugin folder (`${CLAUDE_PLUGIN_ROOT}`), not this project.
 

@@ -287,7 +287,7 @@ export async function callTool(adapter: Adapter, name: string, args: unknown, in
   const orgId = typeof given.orgId === 'string' ? given.orgId : ''
   try {
     const lock = lockState(ctx.storeRoot, ctx.projectRoot)
-    if (lock.state === 'off') return refuse(ctx, tool, orgId, '', 'This project is not activated. Another project stays off. /topia:sf:enable turns it on for this one.', { record: false })
+    if (lock.state === 'off') return refuse(ctx, tool, orgId, '', 'This project is not activated. Another project stays off. /topia-sf:enable turns it on for this one.', { record: false })
     if (lock.state === 'unreadable') return refuse(ctx, tool, orgId, '', lock.message, { record: false })
     if (taken.problem !== null) return refuse(ctx, tool, orgId, '', taken.problem)
     const problem = validateArgs(TOOL_SCHEMAS[tool].inputSchema, sent ?? {})
@@ -451,7 +451,7 @@ async function inspect(adapter: Adapter, args: Args, ctx: CallContext): Promise<
   let orgId = typeof args.orgId === 'string' ? args.orgId : ''
   if (orgId.length === 0) {
     const records = listOrgRecords(ctx.storeRoot, ctx.projectRoot)
-    if (records.length === 0) return refuse(ctx, 'org_inspect', '', '', 'No org is registered for this project. /topia:sf:connect registers one.')
+    if (records.length === 0) return refuse(ctx, 'org_inspect', '', '', 'No org is registered for this project. /topia-sf:connect registers one.')
     if (records.length > 1) {
       return refuse(ctx, 'org_inspect', '', '', 'More than one org is registered. Name one by orgId.', { data: { message: 'More than one org is registered. Name one by orgId.', orgs: records.map(item => ({ orgId: item.orgId, name: item.name })) } })
     }

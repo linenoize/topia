@@ -1,10 +1,10 @@
 ---
-name: sf:capture
+name: capture
 description: "Retrieve selected Salesforce Setup metadata without overwriting uncommitted work."
 disable-model-invocation: true
 ---
 
-# /topia:sf:capture
+# /topia-sf:capture
 
 Refuse until this project has an activation lock. Paths below start at the Topia plugin folder (`${CLAUDE_PLUGIN_ROOT}`), not this project.
 

@@ -41,7 +41,7 @@ function stop(ctx: CallContext, reason: string): ValidateReply {
 
 function gateProblem(ctx: CallContext, mode: SfMode, planBriefHash: string | null, confirmedBriefHash: string | null): string | null {
   const lock = lockState(ctx.storeRoot, ctx.projectRoot)
-  if (lock.state === 'off') return 'Salesforce is not on for this project. /topia:sf:enable turns it on.'
+  if (lock.state === 'off') return 'Salesforce is not on for this project. /topia-sf:enable turns it on.'
   if (lock.state === 'unreadable') return lock.message
   if (!modeAllowsTool(mode, TOOL)) return `${TOOL} does not run in ${mode} mode. ${toolRefusal(TOOL, null) ?? ''}`.trim()
   if (planBriefHash !== null && (confirmedBriefHash === null || planBriefHash !== confirmedBriefHash)) return 'This plan needs a brief a person has confirmed this session. Call sf_brief_confirm first. A chat reply is not confirmation.'

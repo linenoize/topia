@@ -1,10 +1,10 @@
 ---
-name: sf:diagnose
+name: diagnose
 description: "Gather Salesforce evidence and a diagnosis. No writes."
 disable-model-invocation: true
 ---
 
-# /topia:sf:diagnose
+# /topia-sf:diagnose
 
 <!-- Adapted from forcedotcom/sf-skills skills/platform-apex-logs-debug/SKILL.md @219a84a, Apache-2.0; modified -->
 <!-- Adapted from forcedotcom/sf-skills skills/platform-apex-generate/SKILL.md @219a84a, Apache-2.0; modified -->

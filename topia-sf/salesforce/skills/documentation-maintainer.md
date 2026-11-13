@@ -37,7 +37,7 @@ Don't describe the journal as tamper-proof, or a practice review as evidence of 
 
 ## Recording vendor findings
 
-A vendor finding records one way an installed package makes Salesforce behave differently from standard. Write it with `vendor_finding_add` and `vendor_finding_reverify`, through `/topia:sf:vendor`. Don't write these files by hand: the tools read the version from the org and apply the status rules.
+A vendor finding records one way an installed package makes Salesforce behave differently from standard. Write it with `vendor_finding_add` and `vendor_finding_reverify`, through `/topia-sf:vendor`. Don't write these files by hand: the tools read the version from the org and apply the status rules.
 
 ```
 docs/salesforce/vendors/<vendor>/package.md

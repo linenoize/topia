@@ -24,20 +24,20 @@ The order matters. Sections 1 to 3 need no org. Sections 4 to 11 prove identity 
 Docs say `${CLAUDE_PLUGIN_ROOT}` and `${CLAUDE_PROJECT_DIR}` both resolve in a plugin's `mcpServers`, and `claude plugin validate` accepts the entry. Neither was seen on a real install.
 
 1. Install the plugin from a marketplace, not from a folder. Start a session in the scratch project.
-2. Run `/mcp`. Expect `plugin:topia:topia-salesforce`, connected.
-3. Confirm its tools are named `mcp__plugin_topia_topia-salesforce__org_inspect` and so on, and that they sit behind tool search, as names only.
+2. Run `/mcp`. Expect `plugin:topia-sf:topia-salesforce`, connected.
+3. Confirm its tools are named `mcp__plugin_topia-sf_topia-salesforce__org_inspect` and so on, and that they sit behind tool search, as names only.
 4. With no lock, ask the assistant to call `org_inspect`. Expect a refusal saying the project isn't activated.
 5. Start a session from a subfolder of the project, with a lock on. Expect `org_inspect` to find the lock. If it says not activated, `CLAUDE_PROJECT_DIR` is not the root that `$.session.root()` gave the band, and the two need aligning.
 6. In a project that never uses Salesforce, run `tasklist` or `ps`. Expect one idle `node .../bin/mcp.js`, and no `sf`. Record what the deferred tool names cost in `/context`.
 
 ## 2. Enable and disable, and the command name
 
-The mod hooks both `sf:enable` and `topia:sf:enable`, because which one `command.run` carries wasn't confirmed.
+The mod hooks both `enable` and `topia-sf:enable`, because which one `command.run` carries wasn't confirmed.
 
-1. Run `claude --debug`, then `/topia:sf:enable`. Note which matcher fired in the debug log. Drop the other from `mods/index.tsx`. Do the same for disable.
+1. Run `claude --debug`, then `/topia-sf:enable`. Note which matcher fired in the debug log. Drop the other from `mods/index.tsx`. Do the same for disable.
 2. Expect the promise in the command's answer, then a band row with **Okay to continue** and the project path. Press it.
 3. Confirm `~/.claude/plugins/store/topia-salesforce.json` holds `sf:activation:<root>`, and that no `.topia/salesforce/activation.json` exists.
-4. Run `/topia:sf:disable`, press the button, and confirm the key is gone and other projects' keys are not.
+4. Run `/topia-sf:disable`, press the button, and confirm the key is gone and other projects' keys are not.
 5. Delete `topia-salesforce.json` entirely and start a session in a project that never used Salesforce. Confirm no `node .../runner.js` spawns.
 6. Put junk in `topia-salesforce.json`. Confirm the band says the lock can't be read, and that `org_inspect` refuses. Restore the file.
 
@@ -57,8 +57,8 @@ The resolver is tested against each layout built by hand. Confirm on real instal
 
 The test kit runs this path and it passes, but the kit stands in for the host. Contract section 2 rests on it. Nothing writes to the org here.
 
-1. In an activated project, run `/topia:sf:connect` and name the sandbox alias.
-2. Confirm `mcp__topia__sf_org_register` is listed, that a dialog opens, and that the tool call waits on it.
+1. In an activated project, run `/topia-sf:connect` and name the sandbox alias.
+2. Confirm `mcp__topia-sf__sf_org_register` is listed, that a dialog opens, and that the tool call waits on it.
 3. Note whether a permission prompt also appears. The hook answers in place of the tool, so we expect none.
 4. Read the dialog. Confirm the class, org name, org id, instance host, username, and write access all show on separate lines, uncut. Record any length limit.
 5. Press **Stop**. Expect a refusal, and no change to `orgs.json`.
@@ -69,7 +69,7 @@ The test kit runs this path and it passes, but the kit stands in for the host. C
 10. Run it from `claude -p`. Expect a refusal, since nobody can answer.
 11. Ask a subagent to call the tool. Expect a refusal before any dialog.
 12. Note how the model reads the `{ result: string }` the hook returns.
-13. Point the alias at a different sandbox with `sf alias set`, then run `/topia:sf:connect` for that same username after a refresh, or use a second login with the same username if you have one. Expect old and new side by side, and that only the typed org name approves.
+13. Point the alias at a different sandbox with `sf alias set`, then run `/topia-sf:connect` for that same username after a refresh, or use a second login with the same username if you have one. Expect old and new side by side, and that only the typed org name approves.
 14. Call `sf_org_register` on this sandbox with `role: 'writer'`. Expect a refusal saying a sandbox doesn't need a second user.
 
 ## 5. Live identity on the band
@@ -100,20 +100,20 @@ The approval screen for a record write holds record values, in the question text
 
 A hook rewrites the input of every stdio call. The test kit passes the rewrite through, and the real engine has not been seen doing it.
 
-1. In an activated project, run `/topia:sf:query`, and let it reach `org_inspect`. Expect the call to run, and the result to say `"mode": "investigate"`, not read-only. If it says read-only, the `sfStamp` key isn't reaching the server.
+1. In an activated project, run `/topia-sf:query`, and let it reach `org_inspect`. Expect the call to run, and the result to say `"mode": "investigate"`, not read-only. If it says read-only, the `sfStamp` key isn't reaching the server.
 2. If it fails with an argument error naming `sfStamp`, the engine checks the published schema after the hook. The fix is to publish `sfStamp` with a description that says only a hook sets it. Don't drop the check on the server.
 3. Confirm `TOPIA_SF_HOOK_HOST=1` reaches the server from `plugin.json`. Ask the model to send `sfStamp` itself, and expect the hook to overwrite it.
-4. Confirm the regular expression matcher `/^mcp__plugin_topia_topia-salesforce__/` fires on the real tool names from section 1.
+4. Confirm the regular expression matcher `/^mcp__plugin_topia-sf_topia-salesforce__/` fires on the real tool names from section 1.
 5. On Cursor, with the server added by hand and no flag, send `sfStamp`. Expect a refusal naming a host with no hooks.
 6. Run `claude -p` in an activated project. Expect no stamp, reads with `briefConfirmed: false`, and a refusal from any `sf_` tool.
 
 ## 9. Mode and the command origin
 
-1. Run `/topia:sf:plan` by typing it. Expect the band to say Plan during the turn, and Read-only after.
+1. Run `/topia-sf:plan` by typing it. Expect the band to say Plan during the turn, and Read-only after.
 2. Confirm `e.origin.kind` is `composer` for a typed slash command. If a typed command arrives as something else, every mode reads read-only, and plan tools refuse.
 3. Queue a command while a turn runs. The running turn's `turn.complete` may clear the mode before the command's turn starts. Record what happens. A refusal is safe but annoying.
 4. Send a slash command by another route if you have one: a schedule, a peer session, or a plugin's `$.command.run`. Expect read-only.
-5. Start a subagent during `/topia:sf:plan`. Expect its `org_inspect` to say read-only, and any plan tool or `sf_` tool to refuse.
+5. Start a subagent during `/topia-sf:plan`. Expect its `org_inspect` to say read-only, and any plan tool or `sf_` tool to refuse.
 
 ## 10. `tool.check` under each permission mode
 
@@ -220,7 +220,7 @@ Nothing about `MetadataComponentDependency` has been seen on a real org. The fak
 3. Try `CustomField` with the field's name, with and without its suffix and object. Record which form finds it, and put that in the tool's description. The result's blind spot on field names is a guess until then.
 4. Find something with over 2,000 references if you can. Expect `cut-at-limit` and `partial: true`, and confirm the row limit is what the result says.
 5. Confirm a dynamic reference, a class named in a string, doesn't appear, and that every result says it wouldn't.
-6. Find out whether production serves this object. If it doesn't, `dependency_report` reads as denied there, and `/topia:sf:plan` lists that as its coverage.
+6. Find out whether production serves this object. If it doesn't, `dependency_report` reads as denied there, and `/topia-sf:plan` lists that as its coverage.
 
 ## 16. Package inventory
 
@@ -253,7 +253,7 @@ Any error name not in `sf-parse.ts` reads as `unknown`: listed as not checked, o
 ### The rest of the path
 
 1. Time `packages_inventory`. It starts nine CLI processes at once. If that's slow or hits a limit, run them in sequence.
-2. Run `/topia:sf:vendor fingerprint`, then `add-finding`, in the scratch project. Read both files. Confirm no username, and that the package name reads as it does in Setup.
+2. Run `/topia-sf:vendor fingerprint`, then `add-finding`, in the scratch project. Read both files. Confirm no username, and that the package name reads as it does in Setup.
 3. Run `schema_describe` on an object with a packaged field, and `metadata_retrieve` on a packaged member you can retrieve. Expect the finding on both. Confirm the prefix appears the way the matcher expects: `vendorco__Name`. A managed class referred to as `vendorco.Name` isn't matched.
 4. Upgrade the package in the sandbox, if you can. Expect the same describe to show the finding as stale, with `vendor-version-drift`. Re-verify it and expect that to clear.
 5. Find out what a sandbox refresh does to `InstalledSubscriberPackage` and the org id. A new org id is a stop under contract section 4, before any of this runs.
@@ -262,7 +262,7 @@ Any error name not in `sf-parse.ts` reads as `unknown`: listed as not checked, o
 
 Cursor does not read `mcpServers` from `plugin.json`, so a person has to add the server. None of this has been run.
 
-1. Confirm `/topia:sf:*` commands appear. If nested names don't work, flatten them to `commands/sf-*.md`.
+1. Confirm `/topia-sf:*` commands appear. If nested names don't work, flatten them to `commands/sf-*.md`.
 2. Confirm `${CLAUDE_PLUGIN_ROOT}` expands in command markdown.
 3. Add the server to `.cursor/mcp.json`, with `command: node`, `args: ["<plugin>/salesforce/service/bin/mcp.js"]`, and `env: { "CLAUDE_PROJECT_DIR": "<project>" }`.
 4. In your own terminal, run `node <plugin>/salesforce/service/bin/cli.js enable`, and type the project path. Confirm that piping the path in refuses.
@@ -272,19 +272,19 @@ Cursor does not read `mcpServers` from `plugin.json`, so a person has to add the
 
 Nothing about writes has touched a real org. Use a scratch custom object with a few records, a validation rule you can trip, and a trigger or flow that sets another field.
 
-1. `/topia:sf:plan`: `brief_propose`, `sf_brief_confirm`, the practice review, `records_preview`, `records_plan_update`, on three records. Expect a plan under `.topia/salesforce/plans/` holding ids and hashes, and no values.
+1. `/topia-sf:plan`: `brief_propose`, `sf_brief_confirm`, the practice review, `records_preview`, `records_plan_update`, on three records. Expect a plan under `.topia/salesforce/plans/` holding ids and hashes, and no values.
 2. Read the preview. Expect `checked` and `not_checked`, and your trigger and flow in `automation`. Nothing in it may say dry run.
-3. `/topia:sf:execute`, then call `sf_records_execute`. Read the dialog: class, org, id, host, username, operation, object, exact count, each new value, three samples before and after, automation, the reversibility class first, and the assistant's text below the rule. Record what's cut.
+3. `/topia-sf:execute`, then call `sf_records_execute`. Read the dialog: class, org, id, host, username, operation, object, exact count, each new value, three samples before and after, automation, the reversibility class first, and the assistant's text below the rule. Record what's cut.
 4. Press **Stop**. Expect no write, and no ledger under `topia-salesforce-local/`.
 5. Run it again, and press the label. Expect `status: done`, and the three records changed in the org. Check `LastModifiedById` yourself.
 6. Confirm the result holds counts and ids, and no record value. Confirm `sideEffects` names the field your automation set, with a count.
-7. `/topia:sf:verify`. Expect the same status, and nothing written.
+7. `/topia-sf:verify`. Expect the same status, and nothing written.
 8. **Report partial on purpose.** Write a plan over three records where one trips your validation rule, and execute it. Expect `status: partial`, zero done, the record that failed listed with `FIELD_CUSTOM_VALIDATION_EXCEPTION`, and the others untouched, because this path is all or nothing. Confirm in the org that nothing changed.
 9. **Do it over 200.** A plan over 205 records, with one tripping the rule. Expect Bulk, a screen that says records can partly succeed, `status: partial`, 204 done, the failure listed by id, and the CSVs under `topia-salesforce-local/<project>/results/`, not in the project.
 10. Delete a ledger file, then call `sf_records_execute` on that plan. Expect a report and no dialog, with the records counted as done. Then cut a ledger file in half. Expect a stop, and the file left as it was.
 11. Kill the runner while a Bulk job is running: `Stop-Process` on it from your own terminal. Call again. Expect the same job picked up, and no second job in Setup, Bulk Data Load Jobs.
-12. `/topia:sf:restore` on the plan from step 5. Change one of the records by hand first. Expect a dialog over two, one conflict listed, and that record untouched after. Confirm the automation fired again.
-13. `/topia:sf:restore` on a soft delete. Expect counts from the Recycle Bin, and guidance. Restore one from Setup yourself, and ask again.
+12. `/topia-sf:restore` on the plan from step 5. Change one of the records by hand first. Expect a dialog over two, one conflict listed, and that record untouched after. Confirm the automation fired again.
+13. `/topia-sf:restore` on a soft delete. Expect counts from the Recycle Bin, and guidance. Restore one from Setup yourself, and ask again.
 14. **Setup Audit Trail unavailable, on a sandbox.** Take the permission from section 14 away from the CLI user, then execute a plan. Expect the dialog to open with "Couldn't check" as its first line, and the label to still approve. Give the permission back.
 
 ### What the record write assumes
@@ -317,12 +317,12 @@ Nothing about writes has touched a real org. Use a scratch custom object with a 
 
 Use a scratch project and one small Apex class with a test. Build a folder in metadata format, with a `package.xml` at its root.
 
-1. `/topia:sf:plan`, then `deployment_plan`. `/topia:sf:validate`. Expect `project deploy start --dry-run --metadata-dir <zip> --single-package --test-level=RunLocalTests --async`, then a pick-up.
+1. `/topia-sf:plan`, then `deployment_plan`. `/topia-sf:validate`. Expect `project deploy start --dry-run --metadata-dir <zip> --single-package --test-level=RunLocalTests --async`, then a pick-up.
 2. Confirm the job in Setup, Deployment Status, is check-only, with your tests run.
 3. **Settle the project question.** Run the validate command by hand from an empty folder with no `sfdx-project.json`. If it works, set `DEPLOY_WORKSPACE` to `bare` in `sf-cli.ts`. Keep the one function. This is research item 2.
-4. `/topia:sf:deploy`. Read the dialog. Expect the components from the zip, Runs code, the test level, the job id and age, and what a redeploy can't restore first. Press **Stop**, then run it again and press the label.
+4. `/topia-sf:deploy`. Read the dialog. Expect the components from the zip, Runs code, the test level, the job id and age, and what a redeploy can't restore first. Press **Stop**, then run it again and press the label.
 5. Expect `status: done`, with `components`, `retrieve`, `audit`, and `identity` all passed. **`retrieve` is the one to watch.** Salesforce rewrites XML on the way in, so a byte compare may fail on metadata that deployed fine. If it fails on anything but Apex source, the compare in `differencesFromZip` has to learn to normalize per type. A false failure stays failed, and it's safe, but it's noise.
-6. Change the class in Setup after validating, then `/topia:sf:deploy`. Expect a stop naming drift, and nothing shipped.
+6. Change the class in Setup after validating, then `/topia-sf:deploy`. Expect a stop naming drift, and nothing shipped.
 7. Deploy the same class again unchanged. Expect `components` failed, because it shows neither changed nor created, even though the job succeeded. Decide whether that's what you want for a no-op.
 8. Deploy a `destructiveChanges.xml` that removes a test field. Expect Deletes on the screen, and `deleted: true` in the result. Then find out what a redeploy of the snapshot does to that field, and whether its data comes back. Research says it likely doesn't.
 9. Take the rollback offer: `deployment_plan` with `rollbackOf`, then validate, then deploy. Expect the old class back.
@@ -330,7 +330,7 @@ Use a scratch project and one small Apex class with a test. Build a folder in me
 11. **`sf_tests_run`.** Run it at each level, and pick the result up by run id. Then one with a failing test.
 12. **No local tests.** In a sandbox with no Apex tests, validate. Expect a refusal saying the job completed no tests. Confirm what the job reports: `numberTestsCompleted` of 0 is what the code reads.
 13. **A manifest as the CLI writes it.** Run `sf project generate manifest` (or write one by hand from the Metadata API docs) and plan over it. Expect it to be read. Then add a space inside a tag (`<name >`), and expect the plan to be refused with where it stopped. Whether Salesforce itself accepts those spellings is not settled, and the refusal does not depend on it.
-14. **A large screen.** Run `/topia:sf:deploy` on a plan with 40 components. Record whether the whole screen shows. A screen that's cut hides what's approved, and that's a stop.
+14. **A large screen.** Run `/topia-sf:deploy` on a plan with 40 components. Record whether the whole screen shows. A screen that's cut hides what's approved, and that's a stop.
 
 ### What the deploy assumes
 
@@ -399,16 +399,16 @@ Everything above ran in a sandbox. This section is the only one that touches pro
 
 Run this with a person watching, on a change you'd make anyway, after sections 18 and 19 pass. A production org has no way to rehearse this path, because the writer rules come from the live flag.
 
-1. **The reader.** In your own terminal, `sf org login web --alias <alias> --instance-url <My Domain URL>`, as a read-only user. `/topia:sf:connect <alias>`. Expect the dialog to say no write access, and to explain that a write takes a second user. Approve. Expect no write warning on the band.
-2. **A reader that can write.** Run `/topia:sf:connect` with a write-capable user, read the dialog, and press **Stop**. Expect it to say the user can write, to show the promise word for word, and to offer **Accept one user for writes**. Nothing changes.
-3. **No writer.** With a plan ready, run `/topia:sf:execute`. Expect a refusal saying no writer is registered, with the steps.
-4. **Register the writer.** Log in as a write-capable user, in your own terminal, through the browser, with MFA. `/topia:sf:connect <username>`, with `role: 'writer'`. Approve. Confirm `sf:writer:<root>:<org id>` is in `topia-salesforce.json`, and that `orgs.json` holds neither username. Expect the band to say "Writer still logged in".
-5. **Logged out.** `sf org logout --target-org <username>`. Take a turn. Expect the band to clear within that turn or the next. Run `/topia:sf:validate`. Expect a refusal with the login steps, and no stop row on the band.
-6. **Validate.** Log the writer in. `/topia:sf:validate`. Expect `project deploy validate --metadata-dir <zip> --single-package --test-level=RunLocalTests --async`, as the writer, then `passed`.
-7. **Deploy.** `/topia:sf:deploy`. Expect the dialog to show the writer's username, to have no button that approves, and to ask for the org name. Type it wrong. Expect a refusal. Type it right. Expect `project deploy quick --job-id=<id> --target-org=<writer> --async`, and a new deploy id. Confirm in Setup. Expect the result to carry `afterThis`, with the logout command.
-8. **A spent validation.** Validate again, then deploy something else in the org by hand, then `/topia:sf:deploy`. Expect a refusal asking to validate again, and **no `project deploy start` in the log**. Find out which step refused: the job fetch, or quick itself. This is what "any later deployment voids all validations" looks like, and research only has that from a search excerpt.
-9. **A record write.** `/topia:sf:plan`, then `/topia:sf:execute`, on a small change you'd make anyway. Expect the writer's username on the screen, and a typed org name. Confirm `LastModifiedById` is the writer.
-10. **After the writer logs out.** `sf org logout --target-org <username>`. `/topia:sf:verify`, in a new session. Expect it to read as the reader, and to say plainly what the reader can't see. Record whether a read-only user can read a deploy's status. Expect the session-start comparison to look up the writer through the reader, and to find nothing unexplained.
+1. **The reader.** In your own terminal, `sf org login web --alias <alias> --instance-url <My Domain URL>`, as a read-only user. `/topia-sf:connect <alias>`. Expect the dialog to say no write access, and to explain that a write takes a second user. Approve. Expect no write warning on the band.
+2. **A reader that can write.** Run `/topia-sf:connect` with a write-capable user, read the dialog, and press **Stop**. Expect it to say the user can write, to show the promise word for word, and to offer **Accept one user for writes**. Nothing changes.
+3. **No writer.** With a plan ready, run `/topia-sf:execute`. Expect a refusal saying no writer is registered, with the steps.
+4. **Register the writer.** Log in as a write-capable user, in your own terminal, through the browser, with MFA. `/topia-sf:connect <username>`, with `role: 'writer'`. Approve. Confirm `sf:writer:<root>:<org id>` is in `topia-salesforce.json`, and that `orgs.json` holds neither username. Expect the band to say "Writer still logged in".
+5. **Logged out.** `sf org logout --target-org <username>`. Take a turn. Expect the band to clear within that turn or the next. Run `/topia-sf:validate`. Expect a refusal with the login steps, and no stop row on the band.
+6. **Validate.** Log the writer in. `/topia-sf:validate`. Expect `project deploy validate --metadata-dir <zip> --single-package --test-level=RunLocalTests --async`, as the writer, then `passed`.
+7. **Deploy.** `/topia-sf:deploy`. Expect the dialog to show the writer's username, to have no button that approves, and to ask for the org name. Type it wrong. Expect a refusal. Type it right. Expect `project deploy quick --job-id=<id> --target-org=<writer> --async`, and a new deploy id. Confirm in Setup. Expect the result to carry `afterThis`, with the logout command.
+8. **A spent validation.** Validate again, then deploy something else in the org by hand, then `/topia-sf:deploy`. Expect a refusal asking to validate again, and **no `project deploy start` in the log**. Find out which step refused: the job fetch, or quick itself. This is what "any later deployment voids all validations" looks like, and research only has that from a search excerpt.
+9. **A record write.** `/topia-sf:plan`, then `/topia-sf:execute`, on a small change you'd make anyway. Expect the writer's username on the screen, and a typed org name. Confirm `LastModifiedById` is the writer.
+10. **After the writer logs out.** `sf org logout --target-org <username>`. `/topia-sf:verify`, in a new session. Expect it to read as the reader, and to say plainly what the reader can't see. Record whether a read-only user can read a deploy's status. Expect the session-start comparison to look up the writer through the reader, and to find nothing unexplained.
 11. **Optional, if you can do it safely.** Take View Setup and Configuration from the writer, try a change, and expect a refusal naming the permission and the user. Give it back.
 
 ### Pass criteria
@@ -462,7 +462,7 @@ Only after the pass criteria hold.
 
 What was found about these mirrors, reading them without changing them:
 
-- **skill-topia, `tsc` in `npm test`.** No workflow edit is needed for that. Its CI runs `npm ci` and `npm run ci`, and both come from `package.json`, which the port carries, so `tsc` comes along with its dev dependencies. The plugin name stays `topia` there, so the tool prefix `mcp__plugin_topia_topia-salesforce__` still matches.
+- **skill-topia, `tsc` in `npm test`.** No workflow edit is needed for that. Its CI runs `npm ci` and `npm run ci`, and both come from `package.json`, which the port carries, so `tsc` comes along with its dev dependencies. The plugin name stays `topia` there, so the tool prefix `mcp__plugin_topia-sf_topia-salesforce__` still matches.
 - **skill-topia, Node 20.** Its `ci.yml` pins Node 20, while topia's tests 22, 24, and 26, and `engines` says 22 or later. The service refuses a Node under 22. That job was already red at v3.10.0 and v3.10.1, and workflow edits can't be pushed to that repo with the token at hand. So run `npm run ci` there on Node 22 or later before pushing, and expect its hosted CI to stay red until a person with workflow scope changes that one line.
 - **topia4hermes, the scan.** `scripts/sync.mjs` copies only `skills/`, and this feature changes nothing under `skills/`. So `salesforce/service/redact.ts` and its token patterns never reach that mirror, and no allowlist is needed. This release is a version-only sync there. If `salesforce/` is ever mirrored, exclude the service, because `redact.ts` holds the patterns a scanner would trip on.
 - **topia4hermes, `tsc`.** It runs no npm step. Its CI is the scan.

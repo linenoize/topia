@@ -36,17 +36,17 @@ export function hostOf(url) {
  */
 export function compareLive(record, live, extras = {}) {
     if (!sameId(live.orgId, record.orgId)) {
-        return { ok: false, kind: 'org-id-mismatch', message: `The live org id ${live.orgId} is not the registered ${record.orgId}. Re-register with /topia:sf:connect.` };
+        return { ok: false, kind: 'org-id-mismatch', message: `The live org id ${live.orgId} is not the registered ${record.orgId}. Re-register with /topia-sf:connect.` };
     }
     if (live.isSandbox !== record.isSandbox) {
-        return { ok: false, kind: 'org-id-mismatch', message: 'The live sandbox flag does not match what was registered. Re-register with /topia:sf:connect.' };
+        return { ok: false, kind: 'org-id-mismatch', message: 'The live sandbox flag does not match what was registered. Re-register with /topia-sf:connect.' };
     }
     if (extras.display !== undefined) {
         if (!sameId(extras.display.orgId, record.orgId)) {
-            return { ok: false, kind: 'org-id-mismatch', message: 'The CLI login for this username points at a different org. Re-register with /topia:sf:connect.' };
+            return { ok: false, kind: 'org-id-mismatch', message: 'The CLI login for this username points at a different org. Re-register with /topia-sf:connect.' };
         }
         if (hostOf(extras.display.instanceUrl) !== hostOf(record.instanceUrl)) {
-            return { ok: false, kind: 'org-id-mismatch', message: 'The live instance host does not match what was registered. Re-register with /topia:sf:connect.' };
+            return { ok: false, kind: 'org-id-mismatch', message: 'The live instance host does not match what was registered. Re-register with /topia-sf:connect.' };
         }
         if (extras.display.username.toLowerCase() !== record.username.toLowerCase()) {
             return { ok: false, kind: 'user-changed-on-read', message: `The CLI user changed on a read (registered ${record.username}, live ${extras.display.username}).` };

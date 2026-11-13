@@ -1,10 +1,10 @@
 ---
-name: sf:enable
-description: "Turn the Salesforce sub-plugin on for this project path only. No other project, no user-wide switch. /topia:sf:disable turns it off."
+name: enable
+description: "Turn the Salesforce sub-plugin on for this project path only. No other project, no user-wide switch. /topia-sf:disable turns it off."
 disable-model-invocation: true
 ---
 
-# /topia:sf:enable
+# /topia-sf:enable
 
 Enable Salesforce for the workspace root this command was run in, and no other. There is no user-wide switch and no `userConfig` toggle.
 

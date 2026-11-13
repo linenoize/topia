@@ -115,7 +115,7 @@ function loadPackage(projectRoot: string, vendor: string, into: VendorNotes): Pa
   const file = packageFilePath(projectRoot, vendor)
   const shown = projectPath(projectRoot, file)
   if (!existsSync(file)) {
-    into.malformed.push({ file: shown, problems: ['package.md is missing. /topia:sf:vendor fingerprint writes it.'] })
+    into.malformed.push({ file: shown, problems: ['package.md is missing. /topia-sf:vendor fingerprint writes it.'] })
     return null
   }
   const text = readBounded(file)
@@ -273,7 +273,7 @@ export function driftIssue(record: OrgRecord, views: FindingView[]): SfIssue | u
     orgName: record.name,
     user: record.username,
     operationClass: 'read',
-    message: `${stale.length === 1 ? 'A vendor finding is' : `${stale.length} vendor findings are`} pinned to a different package version than this org has: ${shown.join(', ')}${more}. They show as stale until re-verified with /topia:sf:vendor reverify.`,
+    message: `${stale.length === 1 ? 'A vendor finding is' : `${stale.length} vendor findings are`} pinned to a different package version than this org has: ${shown.join(', ')}${more}. They show as stale until re-verified with /topia-sf:vendor reverify.`,
   })
 }
 
@@ -374,7 +374,7 @@ async function fingerprint(adapter: Adapter, args: Args, ctx: CallContext, gate:
 
 function loadOwner(ctx: CallContext, vendor: string): { owner: PackageFileEntry } | { problem: string; problems?: string[] } {
   const file = packageFilePath(ctx.projectRoot, vendor)
-  if (!existsSync(file)) return { problem: 'This vendor has no package.md yet. Run /topia:sf:vendor fingerprint first.' }
+  if (!existsSync(file)) return { problem: 'This vendor has no package.md yet. Run /topia-sf:vendor fingerprint first.' }
   const text = readBounded(file)
   const parsed = typeof text === 'string' ? parsePackageFile(text, vendor) : { problems: [text.problem] }
   if ('problems' in parsed) return { problem: "package.md can't be read back. Fix it or remove it first.", problems: parsed.problems }
@@ -400,7 +400,7 @@ async function findingAdd(adapter: Adapter, args: Args, ctx: CallContext, gate: 
   const vendor = args.vendor as string
   const id = args.id as string
   const file = vendorFindingPath(ctx.projectRoot, vendor, id)
-  if (existsSync(file)) return gate.refuse(orgId, '', 'A finding with that id already exists. Use /topia:sf:vendor reverify to change it.')
+  if (existsSync(file)) return gate.refuse(orgId, '', 'A finding with that id already exists. Use /topia-sf:vendor reverify to change it.')
   const owned = loadOwner(ctx, vendor)
   if ('problem' in owned) return gate.refuse(orgId, '', owned.problem, owned.problems === undefined ? undefined : { problems: owned.problems })
 
@@ -440,7 +440,7 @@ async function findingAdd(adapter: Adapter, args: Args, ctx: CallContext, gate: 
   const problems = vendorFindingProblems(entry)
   if (problems.length > 0) return gate.refuse(record.orgId, record.username, 'That finding was not written.', { problems })
   const written = writeVendorFinding(ctx.projectRoot, entry, { createOnly: true })
-  return gate.ok(checked, { wrote: projectPath(ctx.projectRoot, written), status: entry.status, pinnedVersion: entry.pinnedVersion, note: 'A new finding starts at suspected. It stays there until it is reproduced, then /topia:sf:vendor reverify moves it.' })
+  return gate.ok(checked, { wrote: projectPath(ctx.projectRoot, written), status: entry.status, pinnedVersion: entry.pinnedVersion, note: 'A new finding starts at suspected. It stays there until it is reproduced, then /topia-sf:vendor reverify moves it.' })
 }
 
 async function findingReverify(adapter: Adapter, args: Args, ctx: CallContext, gate: VendorGate): Promise<ToolResult> {

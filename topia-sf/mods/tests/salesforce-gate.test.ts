@@ -12,7 +12,7 @@ type On = Parameters<TestBody>[1]
 type Engine = Parameters<TestBody>[0]
 
 const ROOT = '/work/example-project'
-const PREFIX = 'mcp__plugin_topia_topia-salesforce__'
+const PREFIX = 'mcp__plugin_topia-sf_topia-salesforce__'
 const QUIET = { gitBand: false, quietReports: false, modelPreset: false }
 const ORG = '00D000000000001AAA'
 const BRIEF_ID = 'brief-0123456789abcdef'
@@ -106,7 +106,7 @@ function engine(on: On, options: Options = {}) {
   on('command.run', () => ({ text: 'the command ran' }))
   on('tool.register', ($, e) => {
     registered.push(e.name)
-    return { value: { tool: `mcp__topia__${e.name}` } }
+    return { value: { tool: `mcp__topia-sf__${e.name}` } }
   })
   on('tool.check', () => options.verdict ?? { decision: 'allow' as const })
   on('process.run', ($, e) => {
@@ -151,9 +151,9 @@ type Called = { deny?: string; result?: unknown; text?: string; isError?: boolea
 
 const call = ($: Engine, tool: string, input: Record<string, unknown> = {}, agentId?: string) => $.tool.call({ tool, ...input, ...(agentId === undefined ? {} : { agentId }) } as never) as Promise<Called>
 const stdioCall = ($: Engine, name: string, input: Record<string, unknown> = { orgId: ORG }, agentId?: string) => call($, `${PREFIX}${name}`, input, agentId)
-const confirm = ($: Engine, input: Record<string, unknown> = { briefId: BRIEF_ID }, agentId?: string) => call($, 'mcp__topia__sf_brief_confirm', input, agentId)
-const showValues = ($: Engine, input: Record<string, unknown> = { orgId: ORG, briefId: BRIEF_ID, object: 'Widget__c', fields: ['Id', 'Contact_Email__c'], limit: 50 }, agentId?: string) => call($, 'mcp__topia__sf_show_values', input, agentId)
-const ack = ($: Engine, issueId = LIVE_ISSUE.id, agentId?: string) => call($, 'mcp__topia__sf_ack_issue', { issueId }, agentId)
+const confirm = ($: Engine, input: Record<string, unknown> = { briefId: BRIEF_ID }, agentId?: string) => call($, 'mcp__topia-sf__sf_brief_confirm', input, agentId)
+const showValues = ($: Engine, input: Record<string, unknown> = { orgId: ORG, briefId: BRIEF_ID, object: 'Widget__c', fields: ['Id', 'Contact_Email__c'], limit: 50 }, agentId?: string) => call($, 'mcp__topia-sf__sf_show_values', input, agentId)
+const ack = ($: Engine, issueId = LIVE_ISSUE.id, agentId?: string) => call($, 'mcp__topia-sf__sf_ack_issue', { issueId }, agentId)
 
 function stampOf(input: Record<string, unknown> | undefined): { mode?: string; agentId?: string | null; confirmedBriefHash?: string | null; ack?: unknown } {
   return (input?.[STAMP_KEY] ?? {}) as { mode?: string }
@@ -166,14 +166,14 @@ const bash = ($: Engine, command: string) => check($, 'Bash', { command })
 
 test('a command typed at the prompt sets the mode', { options: QUIET }, async ($, on) => {
   const { stdio } = engine(on)
-  await $.command.run(slash('topia:sf:plan'))
+  await $.command.run(slash('topia-sf:plan'))
   await stdioCall($, 'org_inspect')
   expect(stampOf(stdio[0]).mode).toBe('plan')
 })
 
 test('the short name of a command sets it too', { options: QUIET }, async ($, on) => {
   const { stdio } = engine(on)
-  await $.command.run(slash('sf:validate'))
+  await $.command.run(slash('validate'))
   await stdioCall($, 'org_inspect')
   expect(stampOf(stdio[0]).mode).toBe('validate')
 })
@@ -181,7 +181,7 @@ test('the short name of a command sets it too', { options: QUIET }, async ($, on
 for (const kind of ['plugin', 'sdk', 'bridge', 'peer', 'scheduled-trigger', 'unclassified', 'task-notification']) {
   test(`a command from ${kind} does not set the mode`, { options: QUIET }, async ($, on) => {
     const { stdio } = engine(on)
-    await $.command.run(slash('topia:sf:deploy', { kind, name: 'x' }))
+    await $.command.run(slash('topia-sf:deploy', { kind, name: 'x' }))
     await stdioCall($, 'org_inspect')
     expect(stampOf(stdio[0]).mode).toBe('read-only')
   })
@@ -189,15 +189,15 @@ for (const kind of ['plugin', 'sdk', 'bridge', 'peer', 'scheduled-trigger', 'unc
 
 test('a command from elsewhere drops a mode already set', { options: QUIET }, async ($, on) => {
   const { stdio } = engine(on)
-  await $.command.run(slash('topia:sf:plan'))
-  await $.command.run(slash('topia:sf:deploy', { kind: 'peer' }))
+  await $.command.run(slash('topia-sf:plan'))
+  await $.command.run(slash('topia-sf:deploy', { kind: 'peer' }))
   await stdioCall($, 'org_inspect')
   expect(stampOf(stdio[0]).mode).toBe('read-only')
 })
 
 test('the main loop ending a turn resets the mode', { options: QUIET }, async ($, on) => {
   const { stdio } = engine(on)
-  await $.command.run(slash('topia:sf:plan'))
+  await $.command.run(slash('topia-sf:plan'))
   await $.turn.complete(TURN)
   await stdioCall($, 'org_inspect')
   expect(stampOf(stdio[0]).mode).toBe('read-only')
@@ -205,7 +205,7 @@ test('the main loop ending a turn resets the mode', { options: QUIET }, async ($
 
 test('a subagent ending its turn does not reset the mode', { options: QUIET }, async ($, on) => {
   const { stdio } = engine(on)
-  await $.command.run(slash('topia:sf:plan'))
+  await $.command.run(slash('topia-sf:plan'))
   await $.turn.complete({ ...TURN, agentId: 'agent-1' })
   await stdioCall($, 'org_inspect')
   expect(stampOf(stdio[0]).mode).toBe('plan')
@@ -218,9 +218,9 @@ test('with no command at all, the mode is read-only', { options: QUIET }, async 
 })
 
 for (const command of SF_COMMANDS.filter(name => name !== 'enable' && name !== 'disable')) {
-  test(`/topia:sf:${command} stamps its row's mode, and the table decides what reaches the server`, { options: QUIET }, async ($, on) => {
+  test(`/topia-sf:${command} stamps its row's mode, and the table decides what reaches the server`, { options: QUIET }, async ($, on) => {
     const { stdio } = engine(on)
-    await $.command.run(slash(`topia:sf:${command}`))
+    await $.command.run(slash(`topia-sf:${command}`))
     const row = COMMAND_TOOLS[command]
     for (const tool of TOOL_NAMES) {
       const before = stdio.length
@@ -235,13 +235,13 @@ for (const command of SF_COMMANDS.filter(name => name !== 'enable' && name !== '
 
 test('enable and disable still answer for themselves', { options: QUIET }, async ($, on) => {
   engine(on, { lock: 'off' })
-  expect((await $.command.run(slash('topia:sf:enable'))).text).toContain('Enable Salesforce for this project only')
+  expect((await $.command.run(slash('topia-sf:enable'))).text).toContain('Enable Salesforce for this project only')
 })
 
 test('a person-gated write tool needs its own command', { options: QUIET }, async ($, on) => {
   const { runner } = engine(on)
-  const result = await call($, 'mcp__topia__sf_org_register', { target: 'acme-sbx' })
-  expect(String(result.deny)).toContain('/topia:sf:connect')
+  const result = await call($, 'mcp__topia-sf__sf_org_register', { target: 'acme-sbx' })
+  expect(String(result.deny)).toContain('/topia-sf:connect')
   expect(runner.some(item => item.command === 'org-resolve')).toBe(false)
 })
 
@@ -251,7 +251,7 @@ for (const tool of TOOL_NAMES) {
   test(`every stdio call gets a stamp, and what the model sent is overwritten: ${tool}`, { options: QUIET }, async ($, on) => {
     const { stdio } = engine(on)
     const home = ['vendor_fingerprint', 'vendor_finding_add', 'vendor_finding_reverify'].includes(tool) ? 'vendor' : tool === 'deployment_validate' ? 'validate' : tool === 'deployment_verify' ? 'verify' : 'plan'
-    await $.command.run(slash(`topia:sf:${home}`))
+    await $.command.run(slash(`topia-sf:${home}`))
     await stdioCall($, tool, { orgId: ORG, mode: 'execute', confirmedBriefHash: 'forged', briefConfirmed: true, ack: { kind: 'unknown' }, [STAMP_KEY]: { mode: 'execute', agentId: null, confirmedBriefHash: 'forged', ack: { kind: 'unknown' } } })
     const sent = stdio[0]
     expect(sent?.[STAMP_KEY]).toEqual({ mode: COMMAND_TOOLS[home as keyof typeof COMMAND_TOOLS].mode, agentId: null, confirmedBriefHash: null, ack: null })
@@ -265,14 +265,14 @@ for (const tool of TOOL_NAMES) {
 
 test('a subagent is stamped read-only with its id, whatever the session is doing', { options: QUIET }, async ($, on) => {
   const { stdio } = engine(on)
-  await $.command.run(slash('topia:sf:plan'))
+  await $.command.run(slash('topia-sf:plan'))
   await stdioCall($, 'org_inspect', { orgId: ORG }, 'agent-1')
   expect(stampOf(stdio[0])).toEqual({ mode: 'read-only', agentId: 'agent-1', confirmedBriefHash: null, ack: null })
 })
 
-test('a subagent cannot reach a plan tool, even under /topia:sf:plan', { options: QUIET }, async ($, on) => {
+test('a subagent cannot reach a plan tool, even under /topia-sf:plan', { options: QUIET }, async ($, on) => {
   const { stdio } = engine(on)
-  await $.command.run(slash('topia:sf:plan'))
+  await $.command.run(slash('topia-sf:plan'))
   const result = await stdioCall($, 'records_plan_update', { orgId: ORG }, 'agent-1')
   expect(String(result.deny)).toContain('read-only')
   expect(stdio).toHaveLength(0)
@@ -362,7 +362,7 @@ test('the answer is journaled, with no free text from the box', { options: QUIET
 test('the session ending forgets the confirmation and the mode', { options: QUIET }, async ($, on) => {
   const { stdio } = engine(on, { answer: 'Confirm' })
   on('session.end', () => ({ sessionId: 'session-1' }) as never)
-  await $.command.run(slash('topia:sf:plan'))
+  await $.command.run(slash('topia-sf:plan'))
   await confirm($)
   await $.session.end({ reason: 'clear', sessionId: 'session-1' } as never)
   await stdioCall($, 'org_inspect')
@@ -399,7 +399,7 @@ test('org text in the dialog cannot draw a line', { options: QUIET }, async ($, 
 
 test('the exact label runs what was pinned, and the result is org text', { options: QUIET }, async ($, on) => {
   const { runner } = engine(on, { answer: 'Show 2 fields on up to 50 Widget__c rows' })
-  await $.command.run(slash('topia:sf:query'))
+  await $.command.run(slash('topia-sf:query'))
   const result = await showValues($)
   expect(runner.find(item => item.command === 'values-run')?.input.pinned).toEqual(PREPARED.pinned)
   expect(String(result.result)).toContain(ORG_TEXT_OPEN)
@@ -534,7 +534,7 @@ test('the band button acknowledges the notice that was drawn, and only while it 
   const { stdio, toasts } = engine(on, options)
   await $.session.start({ cwd: ROOT, surface: 'terminal', isInteractive: true })
   await new Promise(resolve => setTimeout(resolve, 30))
-  const ui = await $.ui.mount({ plugin: 'topia', surface: 'terminal', ...BAND })
+  const ui = await $.ui.mount({ plugin: 'topia-sf', surface: 'terminal', ...BAND })
   // Between the drawing and the press, the store changes to another notice.
   options.session = { ...SESSION_WITH_ISSUE, issue: { ...LIVE_ISSUE, id: 'report-row-cap-2', message: 'A different notice.' } }
   await ui.press({ key: 'sf-continue' })
@@ -547,7 +547,7 @@ test('pressed while it is still live, the band button acknowledges it once', { o
   const { stdio } = engine(on, { session: SESSION_WITH_ISSUE })
   await $.session.start({ cwd: ROOT, surface: 'terminal', isInteractive: true })
   await new Promise(resolve => setTimeout(resolve, 30))
-  const ui = await $.ui.mount({ plugin: 'topia', surface: 'terminal', ...BAND })
+  const ui = await $.ui.mount({ plugin: 'topia-sf', surface: 'terminal', ...BAND })
   await ui.press({ key: 'sf-continue' })
   await stdioCall($, 'org_inspect')
   expect(stampOf(stdio.at(-1)).ack).toEqual({ kind: 'report-row-cap', orgId: ORG, user: 'ada@example.com', orgIdentityHash: `${ORG}|ada@example.com|sandbox` })
@@ -765,8 +765,8 @@ test('registering an org is stopped too', { options: QUIET, plugins: CHEAT as ne
     requiresTypedName: false,
   }
   const { asked, runner } = engine(on, { answer: 'x', resolved })
-  await $.command.run(slash('topia:sf:connect'))
-  const result = await call($, 'mcp__topia__sf_org_register', { target: 'acme-sbx' })
+  await $.command.run(slash('topia-sf:connect'))
+  const result = await call($, 'mcp__topia-sf__sf_org_register', { target: 'acme-sbx' })
   expect(String(result.deny)).toMatch(/guard/i)
   expect(asked).toHaveLength(0)
   expect(runner.some(item => item.command === 'org-register')).toBe(false)
@@ -928,7 +928,7 @@ test('M9: after org text, an MCP tool that can send is an ask, and a read-only o
   expect((await check($, 'mcp__claude-in-chrome__navigate', { url: 'https://example.test' })).decision).toBe('ask')
   expect((await check($, 'mcp__claude_ai_Gmail__list_labels', {})).decision).toBe('allow')
   expect((await check($, `${PREFIX}org_inspect`, {})).decision).toBe('allow')
-  expect((await check($, 'mcp__topia__sf_show_values', {})).decision).toBe('allow')
+  expect((await check($, 'mcp__topia-sf__sf_show_values', {})).decision).toBe('allow')
 })
 
 // ── M4: a reason that came from the runner is org text ──

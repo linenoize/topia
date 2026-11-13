@@ -1,10 +1,10 @@
 ---
-name: sf:deploy
+name: deploy
 description: "Apply an approved Salesforce deployment that has a current validation. A person approves in a dialog."
 disable-model-invocation: true
 ---
 
-# /topia:sf:deploy
+# /topia-sf:deploy
 
 <!-- Adapted from forcedotcom/sf-skills skills/platform-metadata-deploy/SKILL.md @219a84a, Apache-2.0; modified -->
 
@@ -15,7 +15,7 @@ Mode: `execute`. Print the identity block first. Follow `salesforce/skills/relea
 ## Before calling the tool
 
 - The plan exists, and its brief was confirmed through `sf_brief_confirm`.
-- `deployment_validate` passed for this org and this plan: `/topia:sf:validate`. It says `passed` only when it meets the acceptance list in the skill.
+- `deployment_validate` passed for this org and this plan: `/topia-sf:validate`. It says `passed` only when it meets the acceptance list in the skill.
 - Say the plan's reversibility class. A deploy is `forward-only`. List what a redeploy can't restore first: deleted field data, type changes, picklist replacements, and flow versions already run.
 
 ## On production
@@ -32,12 +32,12 @@ Then it re-reads the org. If anything in the manifest changed since it was valid
 
 - Production applies by quick deploy of the validated job. Sandbox deploys the same zip, with its hash re-checked.
 - **On a refused or voided validation, revalidate with `deployment_validate` (or `sf_deployment_validate` for a zip with Apex) and `revalidate: true`, then come back for a new approval. Never fall back to a full deploy.** Any later deployment voids all validations.
-- A timeout or killed CLI means `unknown`, not stopped. Don't retry. Calling this again, or `/topia:sf:verify`, queries it and sends nothing.
+- A timeout or killed CLI means `unknown`, not stopped. Don't retry. Calling this again, or `/topia-sf:verify`, queries it and sends nothing.
 - A deploy still running comes back as `started`, with its id. Calling this again reads it. To stop it, call `sf_deployment_execute` with `{planId, cancel: true}`: that takes its own dialog, and it's done only at `Canceled`.
 
 ## After
 
-Report the status and the `checks` from the result. `done` means the component, retrieve, and identity checks passed and Setup Audit Trail could be read. The audit check reads the trail and judges nothing. A planned component showing neither changed nor created is a failed outcome, even with `success: true`. A failed post-deploy check stays failed, and `/topia:sf:verify` won't clear it. Partial is partial. Don't report it as complete.
+Report the status and the `checks` from the result. `done` means the component, retrieve, and identity checks passed and Setup Audit Trail could be read. The audit check reads the trail and judges nothing. A planned component showing neither changed nor created is a failed outcome, even with `success: true`. A failed post-deploy check stays failed, and `/topia-sf:verify` won't clear it. Partial is partial. Don't report it as complete.
 
 There's no undo. The result offers a redeploy of the rollback snapshot as a new plan, with what that can't restore listed first. See `salesforce/skills/references/reversibility.md`.
 

@@ -1,10 +1,10 @@
 ---
-name: sf:review-flow
+name: review-flow
 description: "Review a Salesforce flow: fault paths, trigger order, save context, recursion, bulk behavior, and entry criteria."
 disable-model-invocation: true
 ---
 
-# /topia:sf:review-flow
+# /topia-sf:review-flow
 
 <!-- Adapted from forcedotcom/sf-skills plugins/builder/salesforce-code-quality/skills/platform-architecture-analyze/references/well-architected-rubric.md @219a84a, Apache-2.0; modified -->
 

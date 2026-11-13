@@ -31,3 +31,6 @@ jobs:
       # can't drift to a newer formatter/linter than developers run locally.
       - run: npm ci
       - run: npm run ci
+      - name: topia-sf tests
+        working-directory: topia-sf
+        run: npm ci && npm test

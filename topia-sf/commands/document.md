@@ -1,10 +1,10 @@
 ---
-name: sf:document
+name: document
 description: "Update a docs/salesforce entry from a confirmed decision."
 disable-model-invocation: true
 ---
 
-# /topia:sf:document
+# /topia-sf:document
 
 Refuse until this project has an activation lock. Paths below start at the Topia plugin folder (`${CLAUDE_PLUGIN_ROOT}`), not this project.
 

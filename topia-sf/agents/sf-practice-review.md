@@ -1,6 +1,6 @@
 ---
 name: sf-practice-review
-description: "Salesforce only. Called by /topia:sf commands to review findings against Salesforce practice, experience, security, PII, and vendor impact. Read-only. Its output is not evidence of safety and approves nothing."
+description: "Salesforce only. Called by /topia-sf commands to review findings against Salesforce practice, experience, security, PII, and vendor impact. Read-only. Its output is not evidence of safety and approves nothing."
 model: sonnet
 tools: Read, Grep, Glob
 ---

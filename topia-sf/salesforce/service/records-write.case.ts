@@ -99,7 +99,7 @@ test('a done plan offers restore as a new plan, says automation fires again, and
   const data = reported(await run((await approve(await plan())).pinned))
   assert.match(String(data.restore), /new plan/)
   assert.match(String(data.restore), /automation fires again/i)
-  assert.match(String(data.restore), /topia:sf:restore/)
+  assert.match(String(data.restore), /topia-sf:restore/)
 }))
 
 test('the order on the wire: identity, re-read, then the write, then the re-read, then identity', rig(async ({ home, plan, approve, run }) => {

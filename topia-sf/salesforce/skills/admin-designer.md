@@ -38,6 +38,6 @@ The existing path through the app stays intact unless they say otherwise. Walk i
 
 ## Handing off
 
-Write the change as a plan (`/topia:sf:plan`), with its reversibility class and what can't be undone first. See `references/reversibility.md`. Don't deploy from this skill.
+Write the change as a plan (`/topia-sf:plan`), with its reversibility class and what can't be undone first. See `references/reversibility.md`. Don't deploy from this skill.
 
 Practice review checks practice, experience and continuity, security, and PII before the plan is offered. It can stop a recommendation. It can't widen the confirmed change.
