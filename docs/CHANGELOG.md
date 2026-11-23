@@ -4,6 +4,15 @@ All notable changes to Topia will be documented in this file.
 
 ---
 
+## [Unreleased]
+
+### Changed
+
+- **`stack`'s `env-sync.js --fix` writes usable defaults (0.2.0).** It used to append empty `KEY=` lines only. It now backs `.env` up to `.env.bak-<timestamp>` (owner-only, never overwritten), then appends each missing key with its `.env.example` line and the notes above it, so a new setting arrives with its default and its explanation. Secret-named keys and placeholder values (`changeme`, `<…>`, `your-…`) are still written empty. `--generate-secrets` fills secret-named keys with random values, written but never printed. `--empty` keeps the old behaviour, and `--no-backup` skips the copy. It still only appends, and it never prints a value.
+- **`env-sync.js` reports two more findings, by key name only.** `commented KEY` means `.env` has the key only commented out. That may be deliberate, so `--fix` leaves it alone and it doesn't cause exit 5. `needs-quotes KEY` means an unquoted value holds spaces or glob characters, which run as a command under `set -a; source .env`. A warning is printed when the backup file would be committed. These fixes come from the hand-rolled checkers in other repos (bash `check-env.sh --add`, node `env-sync.mjs`, python `check_env.py`), which this script now covers.
+
+---
+
 ## [3.14.0] — 2026-11-13
 
 A cleanup driven by five weeks of real usage: Claude picked a Topia skill on its own only 22 times, and 51 of 73 skills were never used. No skill was deleted. The skill list Claude reads is shorter and clearer, and the numbers are now logged, so the next round can measure the effect. How to re-run the assessment: [`docs/MAINTENANCE.md`](MAINTENANCE.md).
