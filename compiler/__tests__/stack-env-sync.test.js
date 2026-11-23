@@ -6,20 +6,25 @@
 
 import assert from 'node:assert';
 import { spawnSync } from 'node:child_process';
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { afterEach, beforeEach, describe, test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import {
   appendMissingKeys,
+  backupEnv,
   checkEnvFiles,
   compareKeys,
   EXIT,
+  isPlaceholder,
+  isSecretKey,
   main,
   parseEnvKeys,
+  planAdditions,
   resolveExamplePath,
   resolveOutDir,
+  scanEnv,
 } from '../../skills/stack/scripts/env-sync.js';
 
 const SCRIPT = resolve(fileURLToPath(import.meta.url), '../../../skills/stack/scripts/env-sync.js');
@@ -161,14 +166,162 @@ describe('files and CLI', () => {
     assert.deepStrictEqual(parseEnvKeys(readFileSync(join(root, '.env'), 'utf8')).keys, ['FAKE_A', 'FAKE_B']);
   });
 
-  test('--fix --yes creates .env when it is missing', async () => {
+  test('--fix --yes creates .env when it is missing, with the example default', async () => {
     write('.env.example', 'FAKE_A=x\n');
     const c = capture();
-    assert.strictEqual(await main(['--root', root, '--fix', '--yes'], c.io), EXIT.OK);
+    const now = new Date('2026-01-02T03:04:05.678Z');
+    assert.strictEqual(await main(['--root', root, '--fix', '--yes'], { ...c.io, now }), EXIT.OK);
     assert.strictEqual(
       readFileSync(join(root, '.env'), 'utf8'),
-      '# Added by env-sync. Fill in these values.\nFAKE_A=\n',
+      '# Added by env-sync 2026-01-02T03:04:05Z from .env.example. Review these values.\nFAKE_A=x\n',
     );
+    assert.deepStrictEqual(
+      readdirSync(root).filter((f) => f.startsWith('.env.bak')),
+      [],
+      'no backup when there was no .env',
+    );
+  });
+
+  test('--fix copies example defaults and notes, but never secrets or placeholders', async () => {
+    write(
+      '.env.example',
+      [
+        '# Database',
+        '# host and port share this note',
+        'FAKE_DB_HOST=localhost',
+        'FAKE_DB_PORT=5432',
+        '',
+        '# Signing',
+        `FAKE_SIGNING_SECRET=${SECRET}`,
+        'FAKE_API_KEY=abc123',
+        'FAKE_ADMIN_EMAIL=your-email-here',
+        'FAKE_OWNER=<name>',
+        'FAKE_MODE="two words"',
+        '',
+      ].join('\n'),
+    );
+    write('.env', 'FAKE_DB_HOST=db\n');
+    const c = capture();
+    const now = new Date(2026, 0, 1, 0, 0, 0); // fixed, so the backup name cannot contain "5432"
+    assert.strictEqual(await main(['--root', root, '--fix', '--yes'], { ...c.io, now }), EXIT.OK);
+    const after = readFileSync(join(root, '.env'), 'utf8');
+    assert.match(
+      after,
+      /^# host and port share this note\nFAKE_DB_PORT=5432$/m,
+      'shared note written once above the key',
+    );
+    assert.match(after, /^# Signing\nFAKE_SIGNING_SECRET=\nFAKE_API_KEY=\n/m);
+    assert.match(after, /^FAKE_ADMIN_EMAIL=$/m);
+    assert.match(after, /^FAKE_OWNER=$/m);
+    assert.match(after, /^FAKE_MODE="two words"$/m);
+    assert.ok(!after.includes(SECRET), 'a secret example value was copied');
+    assert.ok(!after.includes('abc123'), 'an API key example value was copied');
+    assert.ok(!c.all().includes(SECRET) && !c.all().includes('5432'), 'a value was printed');
+    assert.match(c.lines.err.join('\n'), /FAKE_DB_PORT \(default from example\)/);
+    assert.match(c.lines.err.join('\n'), /FAKE_SIGNING_SECRET \(empty: secret\)/);
+    assert.match(c.lines.err.join('\n'), /FAKE_ADMIN_EMAIL \(empty: example had a placeholder\)/);
+  });
+
+  test('--fix --empty keeps the 0.1 behaviour', async () => {
+    write('.env.example', 'FAKE_A=one\n');
+    write('.env', 'FAKE_B=1\n');
+    const c = capture();
+    assert.strictEqual(await main(['--root', root, '--fix', '--yes', '--empty', '--no-backup'], c.io), EXIT.OK);
+    assert.match(readFileSync(join(root, '.env'), 'utf8'), /^FAKE_A=$/m);
+  });
+
+  test('--generate-secrets fills secret-named keys and never prints them', async () => {
+    write('.env.example', 'FAKE_TOKEN=\nFAKE_PORT=80\n');
+    write('.env', '');
+    const c = capture();
+    const random = () => 'GENERATED_SENTINEL';
+    assert.strictEqual(
+      await main(['--root', root, '--fix', '--yes', '--generate-secrets', '--json'], { ...c.io, random }),
+      EXIT.OK,
+    );
+    const after = readFileSync(join(root, '.env'), 'utf8');
+    assert.match(after, /^FAKE_TOKEN=GENERATED_SENTINEL$/m);
+    assert.match(after, /^FAKE_PORT=80$/m);
+    assert.ok(!c.all().includes('GENERATED_SENTINEL'));
+    assert.deepStrictEqual(JSON.parse(c.lines.out.join('\n')).plan, [
+      { key: 'FAKE_TOKEN', source: 'generated' },
+      { key: 'FAKE_PORT', source: 'example' },
+    ]);
+  });
+
+  test('--fix backs up an existing .env first, owner-only, without overwriting', async () => {
+    write('.env.example', 'FAKE_A=\nFAKE_B=\n');
+    write('.env', `FAKE_A=${SECRET}\n`);
+    const now = new Date(2026, 0, 2, 3, 4, 5);
+    write('.env.bak-20260102-030405', 'older backup\n');
+    const c = capture();
+    assert.strictEqual(await main(['--root', root, '--fix', '--yes'], { ...c.io, now }), EXIT.OK);
+    assert.strictEqual(readFileSync(join(root, '.env.bak-20260102-030405'), 'utf8'), 'older backup\n');
+    assert.strictEqual(readFileSync(join(root, '.env.bak-20260102-030405-1'), 'utf8'), `FAKE_A=${SECRET}\n`);
+    assert.match(c.lines.err.join('\n'), /backup at \.env\.bak-20260102-030405-1/);
+    assert.strictEqual(backupEnv(join(root, 'nope')), null);
+  });
+
+  test('a key commented out in .env is reported, not added, and does not fail the check', async () => {
+    write('.env.example', 'FAKE_A=\nFAKE_B=\n');
+    write('.env', 'FAKE_A=1\n# FAKE_B=off-on-purpose\n');
+    const c = capture();
+    assert.strictEqual(await main(['--root', root], c.io), EXIT.OK);
+    assert.deepStrictEqual(c.lines.out, ['commented FAKE_B']);
+    const fix = capture();
+    assert.strictEqual(await main(['--root', root, '--fix', '--yes'], fix.io), EXIT.OK);
+    assert.strictEqual(readFileSync(join(root, '.env'), 'utf8'), 'FAKE_A=1\n# FAKE_B=off-on-purpose\n');
+  });
+
+  test('needs-quotes flags unquoted values a shell cannot source, by key only', async () => {
+    write('.env.example', 'FAKE_CRON=\nFAKE_OK=\nFAKE_Q=\nFAKE_C=\nFAKE_H=\n');
+    write('.env', `FAKE_CRON=*/5 * * * * ${SECRET}\nFAKE_OK=a.b:c/d\nFAKE_Q="x y"\nFAKE_C=plain # note\nFAKE_H=a#b\n`);
+    const c = capture();
+    assert.strictEqual(await main(['--root', root], c.io), EXIT.OK);
+    assert.deepStrictEqual(c.lines.out, ['needs-quotes FAKE_CRON']);
+    assert.ok(!c.all().includes(SECRET));
+  });
+
+  test('scanEnv returns key names only', () => {
+    const r = scanEnv(`A=${SECRET} x\n# B=${SECRET}\nC="${SECRET}"\n`);
+    assert.deepStrictEqual(r, {
+      keys: ['A', 'C'],
+      duplicates: [],
+      invalidLines: [],
+      commented: ['B'],
+      needsQuotes: ['A'],
+    });
+    assert.ok(!JSON.stringify(r).includes(SECRET));
+  });
+
+  test('isSecretKey and isPlaceholder', () => {
+    for (const k of [
+      'JWT_SECRET',
+      'GITHUB_TOKEN',
+      'DB_PASSWORD',
+      'STRIPE_API_KEY',
+      'PRIVATE_PEM',
+      'SESSION_KEY',
+      'SALT',
+    ]) {
+      assert.ok(isSecretKey(k), k);
+    }
+    for (const k of ['PORT', 'DB_HOST', 'NODE_ENV', 'KEYBOARD_LAYOUT']) assert.ok(!isSecretKey(k), k);
+    for (const v of ['', 'changeme', '"CHANGE_ME"', 'your_key', '<token>', 'xxxx', 'put-it-here', 'todo']) {
+      assert.ok(isPlaceholder(v), v);
+    }
+    for (const v of ['localhost', '5432', 'production', '"two words"']) assert.ok(!isPlaceholder(v), v);
+  });
+
+  test('a multi-line example value is copied whole', () => {
+    const plan = planAdditions('FAKE_CERT="line1\nline2"\nNEXT=1\n', ['FAKE_CERT']);
+    assert.deepStrictEqual(plan[0].lines, ['FAKE_CERT="line1', 'line2"']);
+    assert.strictEqual(plan[0].source, 'example');
+  });
+
+  test('--empty without --fix is a usage error', async () => {
+    const c = capture();
+    assert.strictEqual(await main(['--root', root, '--empty'], c.io), EXIT.USAGE);
   });
 
   test('--fix --dry-run writes nothing', async () => {
@@ -202,7 +355,7 @@ describe('files and CLI', () => {
     };
     assert.strictEqual(await main(['--root', root, '--fix'], no), EXIT.MISSING);
     assert.strictEqual(readFileSync(join(root, '.env'), 'utf8'), '');
-    assert.match(asked[0], /Append 1 empty key/);
+    assert.match(asked[0], /Append 1 key\(s\) to \.env: FAKE_A \(empty\) \(backup first\)/);
     const yes = { ...capture().io, isTTY: true, confirm: async () => true };
     assert.strictEqual(await main(['--root', root, '--fix'], yes), EXIT.OK);
     assert.match(readFileSync(join(root, '.env'), 'utf8'), /^FAKE_A=$/m);

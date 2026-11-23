@@ -8,11 +8,13 @@
 |---|---|---|
 | 0 | Every example key is in `.env` (extra keys are only reported), or `--fix` added the missing ones | Continue |
 | 1 | Unexpected runtime error | Report; retry once |
-| 2 | Usage error (bad flag, or `--fix` without a terminal and without `--yes`) | Fix the call; do not retry as is |
+| 2 | Usage error (bad flag, `--fix` without a terminal and without `--yes`, or `--empty`/`--generate-secrets`/`--no-backup` without `--fix`) | Fix the call; do not retry as is |
 | 3 | No example file (`.env.example`, `.env.sample`, `.env.template`, `.env.dist`) | Tell the user; nothing to compare |
 | 5 | Keys missing from `.env` (or `.env` absent) | Report the key names; offer `--fix` |
 
-Default stdout: one finding per line (`missing KEY`, `extra KEY`, `duplicate KEY`, `unparsed-line N`). After a successful `--fix`, stdout is the path of the written file. Summary goes to stderr. `--json` prints one JSON object.
+Keys that `.env` has only commented out (`# KEY=`) are reported as `commented KEY` and do not cause exit 5.
+
+Default stdout: one finding per line (`missing KEY`, `commented KEY`, `extra KEY`, `duplicate KEY`, `needs-quotes KEY`, `unparsed-line N`). After a successful `--fix`, stdout is the path of the written file. Summary goes to stderr: each added key with where its value came from (`default from example`, `empty`, `empty: secret`, `empty: example had a placeholder`, `generated`), the backup path, and a warning when the backup is not gitignored. `--json` prints one JSON object; 0.2.0 added `plan`, `backup`, `backupTracked`, `commentedOut` and `needsQuotes`.
 
 ## stack-inspect.js
 

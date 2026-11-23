@@ -64,7 +64,7 @@ Paths below use `{scripts_dir}`. In Claude Code that is `${CLAUDE_SKILL_DIR}/scr
 | Script | Does |
 |---|---|
 | `stack-inspect.js` | Services, profiles, health, ports. Flags internal ports. Never prints env values. |
-| `env-sync.js` | `.env` vs `.env.example` by key name. `--fix` appends missing keys with empty values. |
+| `env-sync.js` | `.env` vs `.env.example` by key name. `--fix` backs up, then appends missing keys with the example's defaults and notes (secrets and placeholders empty). |
 | `templates/server.sh`, `templates/server.ps1` | Start/build/restart/stop/logs/status/prune/env script pair. |
 
 Node 18+, no dependencies. Exit codes: `references/exit-codes.md`. Command details: `references/compose-ops.md`.
@@ -103,7 +103,7 @@ Read the last 200 lines first, then widen with `--since`. Quote only the lines t
 
 ### Step 5 — Check env keys
 
-Run `node {scripts_dir}/env-sync.js --root <project>`. It prints `missing KEY` and `extra KEY` lines. It never compares values: two files with the same keys and different values are in sync. Only with the user's go-ahead, run it again with `--fix`. That asks first, then appends `KEY=` lines with empty values. Never open `.env` to read it. Never fill in values yourself.
+Run `node {scripts_dir}/env-sync.js --root <project>`. It prints `missing KEY` and `extra KEY` lines, plus `commented KEY` (only commented out in `.env`, so probably switched off on purpose) and `needs-quotes KEY` (an unquoted value that breaks `source .env`). It never compares values: two files with the same keys and different values are in sync. Only with the user's go-ahead, run it again with `--fix`. That asks first, backs `.env` up to `.env.bak-<timestamp>`, then appends each missing key with its `.env.example` line and the notes above it. Secret-named keys (`*_SECRET`, `*_TOKEN`, `*_PASSWORD`, `*_KEY`…) and placeholders (`changeme`, `<…>`, `your-…`) are written empty. Add `--generate-secrets` only when the user asks for random secrets; the script writes them and never prints them. `--empty` writes every key empty. Never open `.env` to read it. Never fill in values yourself. Commented-out keys are not added; tell the user and let them decide.
 
 ### Step 6 — Apply the ports rule
 
